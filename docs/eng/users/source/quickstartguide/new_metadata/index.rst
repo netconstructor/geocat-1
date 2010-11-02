@@ -267,6 +267,86 @@ To Upload a Dataset, follow these steps:
 
 	*An online resource*
 
+
+Linking WMS for data visualization
+----------------------------------
+
+You can link a dataset published in an OGC WMS service using the online resource section.
+
+#. Edit the metadata record
+
+#. Move to the distribution tab
+
+#. The URL field contains the WMS service URL;
+
+#. Select the correct protocol to be used (ie. OGC Web Map Service ver 1.1.1);
+
+#. The name of the resource is the name of the layer in the service (as defined in the GetCapabilities document);
+
+#. The description is optional;
+
+#. Click save.
+
+.. figure:: linkwms.png
+
+
+
+
+
+
+Publish uploaded data as WMS, WFS in GeoServer
+----------------------------------------------
+
+Integration of a map server allows users to quickly configure their data for interactive access without the need to go through the complexities of setting up and configuring a web map server. Web map server supported are:
+
+- GeoServer embedded with GeoNetwork
+- Remote GeoServer node (tested with 2.x or sup.)
+
+
+.. figure:: geopub-tiff.png
+
+
+This mechanism allows users to upload a GeoTIFF file or a zipped Shapefile to a metadata record and deploy that dataset as a Web Map Service on one or more GeoServer node. After linking the data for download, the user will see a button that allows her/him to trigger this deployment. The metadata online source section is updated.
+
+Configuration
+~~~~~~~~~~~~~
+
+If after uploading data, you cannot see the geopublisher button, ask the catalogue administrator to check the configuration.
+This feature is disabled by default. It could be activated in the config-gui.xml configuration file.
+
+If you cannot see your GeoServer node, ask the catalogue administrator to add the new node in geoserver-nodes.xml configuration file.
+
+
+Publish your data
+~~~~~~~~~~~~~~~~~
+
+* Edit a metadata
+* Upload a file as explained in the linking data section.
+
+In edit mode, online source section with a file for download attached, will provide the geopublisher panel:
+
+* Select a node to publish the dataset in (See configuration for details on adding a node)
+* GeoNetwork checks if:
+
+    - the file provided is correct (eg. ZIP contains one Shapefile or a tiff)
+    - the layer has already been published to that node. If yes, the layer is added to the map preview.
+
+* Publish button: Publish current dataset to remote node. If dataset is already publish in that node, it will be updated.
+* Unpublish button: Remove current dataset from remote node.
+* Add online source button: Add an onlinesource section to the current metadata record pointing to the WMS and layername in order to display the layer in the map viewer of the search interface.
+* Style button: Only available if the GeoServer styler has been installed and declared in the configuration.
+
+
+No layer names are asked to the user. Layer name is compute from the file name.
+
+In case of ZIP compression, ZIP file base name must be equal to Shapefile or GeoTiff base name (ie. if the shapefile is rivers.shp, ZIP file name must be rivers.zip).
+
+One Datastore, FeatureType, Layer and Style are created for a vector dataset (one to one relation).
+One CoverageStore, Coverage, Layer are created for a raster dataset (one to one relation).
+
+
+
+
 Linking metadata
 ----------------
 
