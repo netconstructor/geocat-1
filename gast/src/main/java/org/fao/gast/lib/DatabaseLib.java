@@ -523,38 +523,35 @@ public class DatabaseLib
 
 		int serial = 1;
 
-		File schemaDir = new File(Config.getConfig().getTemplates());
+		Set<String> schemas = Lib.metadata.getSchemas();
+		for (String schemaName : schemas) {
+			System.out.println("Processing schema "+schemaName+":"+Lib.metadata.getSchemaTemplatesDir(schemaName));
+			for (File temp : Lib.io.scanDir(new File(Lib.metadata.getSchemaTemplatesDir(schemaName)), "xml")) {
+				Lib.log.debug(" - Adding template file (for schema " + schemaName + "): " + temp.getName());
 
-		for (File schema : Lib.io.scanDir(schemaDir))
-			//--- skip '.svn' folders and other hidden files
-			if (!schema.getName().startsWith("."))
-				for (File temp : Lib.io.scanDir(schema, "xml"))
-				{
-					Lib.log.debug(" - Adding template file (for schema " + schema.getName() + "): " + temp.getName());
+				Document doc  = Lib.xml.load(temp);
+				String   uuid = UUID.randomUUID().toString();
+				Element  xml  = doc.getRootElement();
+	
+				String file  = temp.getName();
+				String templ = "y";
+				String title = null;
 
-					Document doc  = Lib.xml.load(temp);
-					String   uuid = UUID.randomUUID().toString();
-					Element  xml  = doc.getRootElement();
-
-					String file  = temp.getName();
-					String templ = "y";
-					String title = null;
-
-					if (file.startsWith("sub-"))
-					{
+				if (file.startsWith("sub-")) {
 						templ = "s";
 						title = file.substring(4, file.length() -4);
-					}
+				}
 
-					//--- templates are by default assigned to administrator/intranet group
+				//--- templates are by default assigned to administrator/intranet group
 
-					Lib.metadata.insertMetadata(dbms, schema.getName(), xml, serial, siteId,
+				Lib.metadata.insertMetadata(dbms, schemaName, xml, serial, siteId,
 														 date, date, uuid, 1, null, templ, title);
 
-					setupTemplatePriv(dbms, serial);
-					dbms.commit();
-					serial++;
-				}
+				setupTemplatePriv(dbms, serial);
+				dbms.commit();
+				serial++;
+			}
+		}
 	}
 
 	//---------------------------------------------------------------------------

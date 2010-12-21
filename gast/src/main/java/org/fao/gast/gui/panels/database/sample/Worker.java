@@ -26,6 +26,7 @@ package org.fao.gast.gui.panels.database.sample;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Set;
 
 import jeeves.utils.XmlRequest;
 
@@ -101,17 +102,20 @@ public class Worker implements Runnable
 
 		//--- scan for mef files
 
-		File mapsDir = new File(Config.getConfig().getSampleData());
+		Set<String> schemas = Lib.metadata.getSchemas();
+		for (String schemaName : schemas) {
+			File mefDir = new File(Lib.metadata.getSchemaSampleDataDir(schemaName));
 
-		List<File> files = Lib.io.scanDir(mapsDir, "mef");
+			List<File> files = Lib.io.scanDir(mefDir, "mef");
 
-		//--- export
+			//--- export
 
-		dlg.reset((files.size() * runs));
+			dlg.reset((files.size() * runs));
 
-		for (int i=0; i<runs; i++)
-			for (File file : files)
-				send(req, file);
+			for (int i=0; i<runs; i++)
+				for (File file : files)
+					send(req, file);
+		}
 
 		//--- logout
 

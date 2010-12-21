@@ -25,6 +25,7 @@ package org.fao.gast.cli.sampledata;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 import jeeves.resources.dbms.Dbms;
 import org.fao.gast.boot.Config;
 import org.fao.gast.lib.Lib;
@@ -54,19 +55,22 @@ public class SampleData
 			int serial = Lib.database.getNextSerial(dbms, "Metadata");
 			dbms.commit();
 
-			File   sampleDir = new File(Config.getConfig().getSampleData());
-			File[] samples   = sampleDir.listFiles();
+			Set<String> schemas = Lib.metadata.getSchemas();
+			for (String schema : schemas) {
+				File   sampleDir = new File(Lib.metadata.getSchemaSampleDataDir(schema));
+				File[] samples   = sampleDir.listFiles();
 
-			if (samples == null)
-				Lib.log.warning("Cannot scan directory : "+ sampleDir.getAbsolutePath());
-			else
-			{
-				for (File sample : samples)
-					if (sample.getName().endsWith(".mef"))
-					{
-						Lib.mef.doImport(dbms, serial++, sample);
-						dbms.commit();
-					}
+				if (samples == null)
+					Lib.log.warning("Cannot scan directory : "+ sampleDir.getAbsolutePath());
+				else
+				{
+					for (File sample : samples)
+						if (sample.getName().endsWith(".mef"))
+						{
+							Lib.mef.doImport(dbms, serial++, sample);
+							dbms.commit();
+						}
+				}
 			}
 
 			Lib.log.info("Synchronizing metadata");

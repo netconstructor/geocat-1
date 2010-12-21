@@ -117,14 +117,6 @@ public class Config {
         props.setProperty("setup-config", setupConfig);
     }
 
-    public String getTemplates() {
-        return resolvePath(props.getProperty("templates"), false);
-    }
-
-    public void setTemplates(String templates) {
-        props.setProperty("templates", templates);
-    }
-
     public String getEmbeddedDb() {
         return resolvePath(props.getProperty("embedded-db"), false);
     }
@@ -168,14 +160,6 @@ public class Config {
 
     public void setJettyPort(int jettyPort) {
         props.setProperty("jetty-port", ""+jettyPort);
-    }
-
-    public String getSampleData() {
-        return resolvePath(props.getProperty("sample-data"),false);
-    }
-
-    public void setSampleData(String sampleData) {
-        props.setProperty("sample-data", sampleData);
     }
 
     public String getLogOutputDir() {
