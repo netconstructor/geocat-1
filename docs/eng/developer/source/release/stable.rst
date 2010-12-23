@@ -104,14 +104,15 @@ Update changes file
 Update versions number for release
 ----------------------------------
 
-.. warning :: All operations for the remainder of this guide must be performed from the release tag, not the branch. Unless otherwise stated.
-
 A \*NIX (Linux, OSX etc..) operating system can use the following batch script.
 
-1. Execute in root of the **branch** source tree ``updateVersionForTag.sh`` (TO TEST) Example to create version 2.6.1 ::
+1. Execute in root of the **branch** source tree ``updateReleaseVersions.sh``. Example to create version 2.6.1 from 2.6.1-SNAPSHOT ::
 
-	$ ./updateVersionForTag.sh 2.6.1
+	$ ./updateReleaseVersions.sh 2.6.1
 
+2. Commit updated files ::
+
+	$ svn commit -m "Updated files version to [VERSION]" .
 
 Create release tag
 ------------------
@@ -130,7 +131,7 @@ Create release tag
 Build release artifacts
 -----------------------
 
-.. warning :: This steps must be performed using the tag code checkout in previous step.
+.. warning :: All operations for the remainder of this guide must be performed from the release tag, not the branch. Unless otherwise stated.
 
 1. Uncomment doc sections in ``web/pom.xml``::
 
@@ -268,9 +269,11 @@ Upgrade branch pom versions
 
 After a release has being created the branch version number must be increased to next release version. A \*NIX (Linux, OSX etc..) operating system can use the following batch script.
 
-1. Execute in root of the **branch** source tree the script ``updateBranchVersions.sh``. Example to update from version 2.6.1 to 2.6.2 (TO TEST) ::
+1. Execute in root of the **branch** source tree the script ``updateBranchVersions.sh``. Example to update from version 2.6.1-SNAPSHOT to 2.6.2-SNAPSHOT ::
 
 	$ ./updateBranchVersions.sh 2.6.1 2.6.2
 
+2. Commit updated files ::
 
+	$ svn commit -m "Updated files version to [VERSION]-SNAPSHOT" .
 
