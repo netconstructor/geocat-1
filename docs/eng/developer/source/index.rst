@@ -15,6 +15,7 @@ Other documents:
     :maxdepth: 2
 
     development/index.rst
+    release/index.rst
     harvesting/index.rst
     mef/index.rst
     xml_services/index.rst
