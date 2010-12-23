@@ -100,6 +100,19 @@ Update changes file
 
 	$ svn commit -m "Updating CHANGES for [VERSION]" docs/changes.txt
 
+
+Update versions number for release
+----------------------------------
+
+.. warning :: All operations for the remainder of this guide must be performed from the release tag, not the branch. Unless otherwise stated.
+
+A \*NIX (Linux, OSX etc..) operating system can use the following batch script.
+
+1. Execute in root of the **branch** source tree ``updateVersionForTag.sh`` (TO TEST) Example to create version 2.6.1 ::
+
+	$ ./updateVersionForTag.sh 2.6.1
+
+
 Create release tag
 ------------------
 
@@ -113,20 +126,11 @@ Create release tag
 
  	$ svn co https://geonetwork.svn.sourceforge.net/svnroot/geonetwork/tags/[VERSION]
 
-Update versions number for release
-``````````````````````````````````
-
-.. warning :: All operations for the remainder of this guide must be performed from the release tag, not the branch. Unless otherwise stated.
-
-A \*NIX (Linux, OSX etc..) operating system can use the following batch script.
-
-1. Execute in root of the **tag** source tree ``updateTagVersions.sh`` (TO TEST) Example to create version 2.6.1 ::
-
-	$ ./updateTagVersions.sh 2.6.1
-
 
 Build release artifacts
 -----------------------
+
+.. warning :: This steps must be performed using the tag code checkout in previous step.
 
 1. Uncomment doc sections in ``web/pom.xml``::
 
@@ -260,7 +264,7 @@ After a version is released we must "close" the tag to prevent commits using a *
 Upgrade branch pom versions
 ---------------------------
 
-.. warning :: This steps must be performed in branch code.
+.. warning :: This steps must be performed using branch code.
 
 After a release has being created the branch version number must be increased to next release version. A \*NIX (Linux, OSX etc..) operating system can use the following batch script.
 
