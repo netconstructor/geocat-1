@@ -63,3 +63,7 @@ Protocoles de moissonnage
 - Système de fichiers
 
 - Fragment de métadonnées via WFS
+
+
+Voir la section :ref:`how_to_harvest` pour plus d'information.
+
