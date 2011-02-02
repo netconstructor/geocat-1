@@ -1137,7 +1137,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gmd-descriptionLI-Source:
         
                         
-**Description** (cf. `LI_Source <#iso19139-li-source>`_)
+**Description** 
                   
 - *Code :* gmd:description
                 
@@ -1266,7 +1266,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gmd-descriptionLI-ProcessStep:
         
                         
-**Description de l'événement** (cf. `LI_ProcessStep <#iso19139-li-processstep>`_)
+**Description de l'événement**
                   
 - *Code :* gmd:description
                 
@@ -1925,7 +1925,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gml-idgmd-MD-CRS:
         
                         
-**Ellipsoïde** (cf. `gmd:MD_CRS <#iso19139-gmd-md-crs>`_)
+**Ellipsoïde**
                   
 - *Code :* gml:id
                 
@@ -3018,7 +3018,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gmd-citationgmd-MD-Identification:
         
                         
-**Informations de référence** (cf. `gmd:MD_Identification <#iso19139-gmd-md-identification>`_)
+**Informations de référence**
                   
 - *Code :* gmd:citation
                 
@@ -3913,7 +3913,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gmd-namegmd-RS-ReferenceSystem:
         
                         
-**Nom du système de référence** (cf. `gmd:RS_ReferenceSystem <#iso19139-gmd-rs-referencesystem>`_)
+**Nom du système de référence**
                   
 - *Code :* gmd:name
                 
@@ -3939,7 +3939,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gco-Measuregmd-DQ-Element:
         
                         
-**Nom du test** (cf. `gmd:DQ_Element <#iso19139-gmd-dq-element>`_)
+**Nom du test**
                   
 - *Code :* gco:Measure
                 
@@ -4488,7 +4488,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gmd-countrygmd-MD-Legislation:
         
                         
-**Pays** (cf. `gmd:MD_Legislation <#iso19139-gmd-md-legislation>`_)
+**Pays**
                   
 - *Code :* gmd:country
                 
@@ -4501,7 +4501,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gmd-countryPT-Group:
         
                         
-**Pays** (cf. `PT_Group <#iso19139-pt-group>`_)
+**Pays**
                   
 - *Code :* gmd:country
                 
@@ -4927,7 +4927,7 @@ Glossaire des champs de métadonnées (ISO19139)
 .. _iso19139-gmd-dateTimegmd-DQ-Element:
         
                         
-**Période de test** (cf. `gmd:DQ_Element <#iso19139-gmd-dq-element>`_)
+**Période de test**
                   
 - *Code :* gmd:dateTime
                 
