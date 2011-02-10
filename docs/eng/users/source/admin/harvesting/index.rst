@@ -755,7 +755,7 @@ The available options are:
 More about PQF Z3950 Queries
 ````````````````````````````
 
-PQF is a rather arcane query language. It is based around the idea of attributes and attribute sets. The most common attribute set used for geospatial metadata in Z3950 servers is the geo attribute set (which is an extension of the BIB-1 attribute set - see http://www.fgdc.gov/standards/projects/GeoProfile). So all PQF queries to geospatial metadata Z3950 servers should start off with @attrset geo.
+PQF is a rather arcane query language. It is based around the idea of attributes and attribute sets. The most common attribute set used for geospatial metadata in Z3950 servers is the GEO attribute set (which is an extension of the BIB-1 and GILS attribute sets - see http://www.fgdc.gov/standards/projects/GeoProfile). So all PQF queries to geospatial metadata Z3950 servers should start off with @attrset geo.
 
 The most useful attribute types in the geo attribute set are as follows:
 
@@ -787,7 +787,7 @@ In GeoNetwork the numeric values that can be specified for @attr 1 map to the lu
 2060                  northBL,eastBL,southBL,westBL  gmd:identificationInfo//gmd:extent//gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude*/gco:Decimal (etc)
 ====================  =============================  ================================================================================================================
 
-Note that this is not a complete set of the mappings between Z3950 GEO profile and the GeoNetwork lucene index field names for ISO19139. Check out INSTALL_DIR/web/geonetwork/xml/search/z3950Server.xsl and INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/index-fields.xsl for more details and annexe A of the GEO Profile for Z3950 at http://www.fgdc.gov/standards/projects/GeoProfile/annex_a.html for more details.
+Note that this is not a complete set of the mappings between Z3950 GEO profile and the GeoNetwork lucene index field names for ISO19139. Check out INSTALL_DIR/web/geonetwork/xml/search/z3950Server.xsl and INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/index-fields.xsl for more details and annexe A of the GEO attribute set for Z3950 at http://www.fgdc.gov/standards/projects/GeoProfile/annex_a.html for more details.
 
 Common values for the relation attribute (@attr=2):
 
