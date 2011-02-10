@@ -712,7 +712,7 @@ The options described above for the *Extract Unidata dataset discovery metadata 
 
 #. The harvester bundles up the catalog URI, a generated uuid, the THREDDS metadata for the dataset (generated using the catalog subset web service) and the ncml for netCDF datasets into a single xml document. An example is shown below.
 #. This document is then transformed using the specified stylesheet (see *Stylesheet* option above) to obtain a metadata fragments document.
-#. Calls the metadata fragment harvester to create subtemplates and/or metadata for the each dataset as requested
+#. The metadata fragment harvester is then called to create subtemplates and/or metadata for the each dataset as requested
 
 .. figure:: web-harvesting-threddsdocument.png
 
@@ -725,3 +725,96 @@ Two reference stylesheets are provided as examples of how to harvest metadata fr
 
 A sample template 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' has been provided for use with the stylesheets described above for the iso19139 metadata schema. This template is in the schema 'templates' directory eg. for ISO19139, this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/templates/thredds-harvester-unidata-data-discovery.xml.
 
+Adding Z3950 Server(s) 
+``````````````````````
+
+In this type of harvesting, the harvester searches one or more Z3950 servers and retrieves metadata records from them.
+
+.. figure:: web-harvesting-z3950.png
+		
+		*Adding a Z3950 harvester node*
+
+The available options are:
+
+- **Site**
+
+	- *Name* - This is a short description of the node. It will be shown in the harvesting main page.
+	- *Z3950 Server(s)* - These are the Z3950 servers that will be searched. You can select one or more of these servers.
+	- *Z3950 Query* - Specify the Z3950 query to use when searching the selected Z3950 servers. At present this field is known to support the Prefix Query Format (also known as Prefix Query Notation) which is described at this URL: http://www.indexdata.com/yaz/doc/tools.html#PQF.
+	- *Icon* - An icon to assign to harvested metadata. The icon will be used when showing search results. 
+
+- **Options** - Same for the WebDAV harvester above.
+- **Harvested Content**
+
+	- *Apply this XSLT to harvested records* - Choose an XSLT here that will convert harvested records to a different format.
+	- *Validate* - If checked, records that do not/cannot be validated will be rejected.
+
+- **Privileges** - Same as for WebDAV harvesting. 
+- **Categories** - Same as for WebDAV harvesting. 
+
+More about PQF Z3950 Queries
+````````````````````````````
+
+PQF is a rather arcane query language. It is based around the idea of attributes and attribute sets. The most common attribute set used for geospatial metadata in Z3950 servers is the geo attribute set (which is an extension of the BIB-1 attribute set - see http://www.fgdc.gov/standards/projects/GeoProfile). So all PQF queries to geospatial metadata Z3950 servers should start off with @attrset geo.
+
+The most useful attribute types in the geo attribute set are as follows:
+
+================  ==========  =================================================
+@attr number      Meaning     Description
+================  ==========  =================================================
+1                 Use         What field to search
+2                 Relation    How to compare the term specified
+4                 Structure   What type is the term? eg. date, numeric, phrase 
+5                 Truncation  How to truncate eg. right
+================  ==========  =================================================
+
+In GeoNetwork the numeric values that can be specified for @attr 1 map to the lucene index field names as follows:
+
+====================  =============================  ================================================================================================================
+@attr 1=              Lucene index field             ISO19139 element*
+====================  =============================  ================================================================================================================
+1016                  any                            All text from all metadata elements
+4                     title, altTitle                gmd:identificationInfo//gmd:citation//gmd:title/gco:CharacterString
+62                    abstract                       gmd:identificationInfo//gmd:abstract/gco:CharacterString
+1012                  _changeDate                    Not a metadata element (maintained by GeoNetwork)
+30                    createDate                     gmd:MD_Metadata/gmd:dateStamp/gco:Date
+31                    publicationDate            	   gmd:identificationInfo//gmd:citation//gmd:date/gmd:CI_DateCode/@codeListValue='publication'
+2072                  tempExtentBegin            	   gmd:identificationInfo//gmd:extent//gmd:temporalElement//gml:begin(Position)
+2073                  tempExtentEnd              	   gmd:identificationInfo//gmd:extent//gmd:temporalElement//gml:end(Position)
+2012                  fileId                         gmd:MD_Metadata/gmd:fileIdentifier/*
+12                    identifier                     gmd:identificationInfo//gmd:citation//gmd:identifier//gmd:code/*
+21,29,2002,3121,3122  keyword                        gmd:identificationInfo//gmd:keyword/*
+2060                  northBL,eastBL,southBL,westBL  gmd:identificationInfo//gmd:extent//gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude*/gco:Decimal (etc)
+====================  =============================  ================================================================================================================
+
+Note that this is not a complete set of the mappings between Z3950 GEO profile and the GeoNetwork lucene index field names for ISO19139. Check out INSTALL_DIR/web/geonetwork/xml/search/z3950Server.xsl and INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/index-fields.xsl for more details and annexe A of the GEO Profile for Z3950 at http://www.fgdc.gov/standards/projects/GeoProfile/annex_a.html for more details.
+
+Common values for the relation attribute (@attr=2):
+
+====================  ===================================================================================
+@attr 2=              Description
+====================  ===================================================================================
+1                     Less than
+2                     Less than or equal to
+3                     Equals
+4                     Greater than or equal to
+5                     Greater than
+6                     Not equal to
+7                     Overlaps
+8                     Fully enclosed within
+9                     Encloses
+10                    Fully outside of
+====================  ===================================================================================
+
+
+So a simple query to get all metadata records that have the word 'the' in any field would be:
+
+*@attrset geo @attr 1=1016 the*
+
+A more sophisticated search on a bounding box might be formulated as:
+
+*@attrset geo @attr 1=2060 @attr 4=201 @attr 2=7 "-36.8262 142.6465 -44.3848 151.2598"*
+
+- @attr 1=2060 means that we are doing a bounding box search
+- @attr 4=201 means that the query contains coordinate strings 
+- @attr 2=7 means that we are searching for records whose bounding box overlaps the query box specified at the end of the query
