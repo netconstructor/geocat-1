@@ -606,7 +606,7 @@ The available options are:
  - *GetFeature Query* - The OGC WFS GetFeature query used to extract features from the WFS.
  - *Stylesheet used to create fragments* - User-supplied stylesheet that transforms the GetFeature response to a metadata fragments document (see below for the format of that document).
  - *Feature based* - Check this box if you expect the WFS GetFeature response to be large (>10MB). If checked, the GetFeature response will be saved to disk in a temporary file. Each feature will then be parsed from the temporary file and used to create the fragments and metadata records. If not checked, the response will be held in RAM.
- - *Create subtemplates* - Check this box if you want the harvested metadata fragments to be saved as subtemplates in the metadata catalog. If not checked, the metadata fragments will exist only in the XLink cache.
+ - *Create subtemplates* - Check this box if you want the harvested metadata fragments to be saved as subtemplates in the metadata catalog and xlink'd into the metadata template (see next option). If not checked, the fragments will be copied into the metadata template.
  - *Template to use to build metadata using fragments* - Choose the metadata template that will be combined with the harvested metadata fragments to create metadata records. This is a standard GeoNetwork metadata template record.
  - *Category for records built with linked fragments* - Choose the metadata template that will be combined with the harvested metadata fragments to create metadata records. This is a standard GeoNetwork metadata template record.
 
@@ -649,8 +649,8 @@ ReplacementGroup                Id                              Id of element in
 
 Finally, two examples of how to use the Metadata Fragments from OGC WFS can be given from stylesheets and information supplied in the GeoNetwork install.
 
-Deegree Version 2.2 Philopsopher Database example
-`````````````````````````````````````````````````
+Deegree Version 2.2 Philosopher Database example
+````````````````````````````````````````````````
 
 
 
@@ -665,46 +665,62 @@ In this type of harvesting, the harvester crawls through a THREDDS catalog extra
 
 The available options are:
 
-- **Name** - This is a short description of the node. It will be shown in the harvesting main page.
-- **Catalog URL** - The remote URL of the THREDDS Catalog from which metadata will be harvested. This must be the xml version of the catalaog (i.e. ending with .xml).  The harvester will crawl through all datasets and services defined in this catalog creating metadata for them as specified by the options described further below.
-- **Metadata language** - Use this option to specify the language of service metadata.
-- **ISO topic category** - Use this option to specify the ISO topic category of service metadata.
-- **Create service metadata** - Select this option to generate iso19119 metadata for services defined in the THREDDS catalog and for the catalog itself.
-- **Create metadata for Collection datasets** -  Select this option to generate metadata for each collection dataset (THREDDS dataset containing other datasets).  Creation of metadata can be customised using options that are displayed when this option is selected as described further below.
-- **Create metadata for Atomic datasets** - Select this option to generate metadata for each atomic dataset (THREDDS dataset not containing other datasets – for example cataloguing a netCDF dataset).  Creation of metadata can be customised using options that are displayed when this option is selected as described further below.
-- **Ignore harvesting attribute** - Select this option to harvest metadata for selected datasets  regardless of the harvest attribute for the dataset in the THREDDS catalog.  If this option is not selected, metadata will only be created for datasets that have a harvest attribute set to true.
-- **Create default metadata** - Select this option to generate default metadata for selected datasets.  When this option is selected iso19139 (or other schemas such as the iso19139 Marine Community Profile (MCP)) schema can be selected.  Metadata is generated using Unidata dataset to DIF and generic DIF to iso19139 translations.
-- **Customise metadata generation using fragments** - Select this option when you wish to 
-	#. customise the generation of metadata,
-	#. create metadata sub-templates from THREDDS dataset metadata for inclusion in other metadata or
-	#. use reference stylesheets and templates to generate metadata from THREDDS or netCDF datasets following Unidata dataset discovery conventions.  Further options allowing the stylesheet, template and generation options to be specified will be displayed when this option is selected and are described below.
-- **Stylesheet** - Select a stylesheet to use to convert metadata for the dataset (THREDDS metadata and netCDF ncml where applicable) into metadata fragments.  Two reference stylesheets are provided as examples, one for generating iso19139 metadata fragments from THREDDS metadata following Unidata dataset discovery conventions and one for generating iso19139 fragments from netCDF datasets following Unidata dataset discovery conventions.  These stylesheets are designed for use with the 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' template.   Alternatively, custom stylesheets can be selected here after adding them to web/geonetwork/xsl/conversion/ThreddsToFragments in the geonetwork installation directory.  Refer to metadata fragment harvesting documentation and reference stylesheets for examples on how to create one of these.
-- **Create sub-templates** - Select this option to create a sub-template for each metadata fragment generated.  These sub-templates can then be included in other metadata as required or referenced in generated metadata as described below.
-- **Template** - Enter a template to be used to create complete metadata records from the metadata fragments generated for each dataset.  The generated metadata fragments are used to replace referenced elements in the templates with a link to a sub-template (when this option has been selected) or with the generated metadata fragments.  A sample template 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY'  has been provided for use with the reference stylesheets described above.  Use this or a similar template to add common metadata not sourced from the THREDDS catalog or netCDF datasets as required.  Refer to metadata fragment harvesting documentation and the reference template for an example of how to do this. 
-- **Create Thumbnails** - Select this option to create thumbnails for WMS layers in referenced WMS services
-- **Icon** - An icon to assign to harvested metadata. The icon will be used when showing search results. 
-- **Every** - This is the harvesting period. The smallest value is 1 minute while the greatest value is 100 days.
-- **One run only** - If this option is checked, the harvester will do only one run after which it will become inactive.
-- **Privileges** - Here it is possible to assign privileges to imported metadata. The Groups area lists all available groups in GeoNetwork. Once one (or more) group has been selected, it can be added through the Add button (each group can be added only once). For each added group, a row of privileges is created at the bottom of the list to allow privilege selection. To remove a row simply press the associated Remove button on its right.
-- **Categories** - Here you can assign local categories to harvested metadata.
+- **Site**
+
+	- *Name* - This is a short description of the node. It will be shown in the harvesting main page.
+	- *Catalog URL* - The remote URL of the THREDDS Catalog from which metadata will be harvested. This must be the xml version of the catalaog (i.e. ending with .xml).  The harvester will crawl through all datasets and services defined in this catalog creating metadata for them as specified by the options described further below.
+	- *Metadata language* - Use this option to specify the language of service metadata.
+	- *ISO topic category* - Use this option to specify the ISO topic category of service metadata.
+	- *Create service metadata* - Select this option to generate iso19119 metadata for services defined in the THREDDS catalog and for the catalog itself.
+	- *Create metadata for Collection datasets* -  Select this option to generate metadata for each collection dataset (THREDDS dataset containing other datasets).  Creation of metadata can be customised using options that are displayed when this option is selected as described further below.
+	- *Create metadata for Atomic datasets* - Select this option to generate metadata for each atomic dataset (THREDDS dataset not containing other datasets – for example cataloguing a netCDF dataset).  Creation of metadata can be customised using options that are displayed when this option is selected as described further below.
+	- *Ignore harvesting attribute* - Select this option to harvest metadata for selected datasets  regardless of the harvest attribute for the dataset in the THREDDS catalog.  If this option is not selected, metadata will only be created for datasets that have a harvest attribute set to true.
+	- *Use DIFWriter and DIFToISO to create metadata* - Select this option to generate ISO metadata for datasets in the THREDDS catalog that have DIF metadata elements.  When this option is selected a list of schemas is shown that have a DIFToISO.xsl stylesheet available (see for example INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/convert/DIFToISO.xsl). Metadata is generated by reading the DIF metadata items in the THREDDS into a DIF format metadata record and then converting that DIF record to ISO using the DIFToISO stylesheet. 
+
+	- *Extract Unidata dataset discovery metadata using fragments* - Select this option when the metadata in your THREDDS or netCDF/ncml datasets follows Unidata dataset discovery conventions. You will need to write your own stylesheets and templates to extract this metadata. When this option is selected the following additional options will be shown: 
+
+		- Stylesheet - Select a stylesheet to use to convert metadata for the dataset (THREDDS metadata and netCDF ncml where applicable) into metadata fragments.
+		- Create sub-templates - Select this option to create a sub-template for each metadata fragment generated.
+		- Template - Enter a template to be used to create complete metadata records from the metadata fragments generated for each dataset.  The generated metadata fragments are used to replace referenced elements in the templates with an xlink to a sub-template if the *Create sub-templates* option is checked. If *Create sub-templates* is not checked, then the fragments are simply copied into the template metadata record.  
+
+	- *Create Thumbnails* - Select this option to create thumbnails for WMS layers in referenced WMS services
+	- *Icon* - An icon to assign to harvested metadata. The icon will be used when showing search results. 
+
+- **Options** - Same as for WebDAV harvesting. 
+- **Privileges** - Same as for WebDAV harvesting. 
+- **Categories** - Same as for WebDAV harvesting.
 
 At the bottom of the page there are the following buttons:
+
 - **Back** - Go back to the main harvesting page. The harvesting is not added.
 - **Save** - Saves this node’s data creating a new harvesting node. After the save operation has completed, the main harvesting page will be displayed.
 
-Harvesting Fragments of Metadata using the THREDDS Harvester
-````````````````````````````````````````````````````````````
+More about harvesting THREDDS DIF metadata elements with the THREDDS Harvester
+``````````````````````````````````````````````````````````````````````````````
 
-The THREDDS fragment harvester provides the option to perform metadata fragment harvesting for collection datasets and atomic datasets. If you are unsure what a metadata fragment is, please read the section entitled *Harvesting Fragments of Metadata* above.
+THREDDS catalogs can include elements from the DIF metadata standard. The Unidata netcdf-java library provides a DIFWriter process that can create a DIF metadata record from these elements. GeoNetwork has a DIFToISO stylesheet to transform these DIF records to ISO. An example of a THREDDS Catalog with DIF-compliant metadata elements is shown below.
 
-For each collection dataset or atomic dataset where this option is specified, the harvester:
+.. figure:: web-harvesting-examplethreddsdifmetadata.png
+		
+		*A THREDDS catalog with DIF compliant metadata elements*
 
-#. Bundles up the catalog URI, a generated uuid, the THREDDS metadata for the dataset (generated using the catalog subset web service) and the ncml for netCDF datasets into a single xml document. An example is shown below.
-#. Transforms this xml document using the specified stylesheet to obtain a metadata fragments document for the dataset
+More about harvesting metadata fragments with the THREDDS Harvester
+```````````````````````````````````````````````````````````````````
+
+The options described above for the *Extract Unidata dataset discovery metadata using fragments* invoke the following process for each collection dataset or atomic dataset:
+
+#. The harvester bundles up the catalog URI, a generated uuid, the THREDDS metadata for the dataset (generated using the catalog subset web service) and the ncml for netCDF datasets into a single xml document. An example is shown below.
+#. This document is then transformed using the specified stylesheet (see *Stylesheet* option above) to obtain a metadata fragments document.
 #. Calls the metadata fragment harvester to create sub-templates and/or metadata for the each dataset as requested
 
 .. figure:: web-harvesting-threddsdocument.png
 
 		*An example THREDDS dataset document created by the THREDDS fragment harvester*
 
+Examples
+````````
+
+Two reference stylesheets are provided as examples of how to harvest metadata fragments from a THREDDS catalog. One of these stylesheets, thredds-metadata.xsl, is for generating iso19139 metadata fragments from THREDDS metadata following Unidata dataset discovery conventions. The other stylesheet, netcdf-attributes.xsl, is for generating iso19139 fragments from netCDF datasets following Unidata dataset discovery conventions. These stylesheets are designed for use with the 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' template and can be found in the schema 'convert' directory eg. for ISO19139 this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/convert/ThreddsToFragments. 
+
+A sample template 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' has been provided for use with the stylesheets described above for the iso19139 metadata schema. This template is in the schema 'templates' directory eg. for ISO19139, this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/templates/thredds-harvester-unidata-data-discovery.xml.
 
