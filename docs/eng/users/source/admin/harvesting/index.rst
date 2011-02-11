@@ -650,14 +650,34 @@ ReplacementGroup                Id                              Id of element in
                                                                 replace or link from to contained fragments
 ==============================  ==============================  ==============================
 
-Finally, two examples of how to use the Features from an OGC WFS harvester can be given using stylesheets and templates supplied with GeoNetwork.
+Finally, an of how to use the Features from an OGC WFS harvester can be given using stylesheets and templates supplied with GeoNetwork.
 
 Deegree Version 2.2 Philosopher Database example
 ````````````````````````````````````````````````
 
-This example assumes that you have downloaded Deegree version 2.2 and loaded the Philosopher example database. 
+This example assumes that you have downloaded Deegree version 2.2 and loaded the Philosopher example database. The end result of this example will be 7 ISO19139 metadata records that link in 42 fragments (6 per record) created from the GetFeature response from your deegree installation. The records contain metadata about 7 famous philosophers.
 
+The procedure to follow is:
 
+- From the Administration->System Configuration menu, enable the XLink Resolver.
+- Add a *Features from OGC WFS harvester* from the Administration->Harvesting menu.
+- Give it a *Name* (eg. deegree22-philosopher-test) and enter the URL of your deegree 2.2 installation in the *Service URL* field.
+- We'll use a simple GetFeature query to select all philosophers from the database under the WFS. The XML for such a query (which is to be entered in the *GetFeature Query* textarea) is:
+
+::
+
+    <wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" 
+               xmlns:wfs="http://www.opengis.net/wfs">
+
+     <!-- request all Philosopher instances -->
+     <wfs:Query typeName="app:Philosopher"/>
+
+    </wfs:GetFeature>
+
+- Choose the supplied 'deegree2_philosopher_fragments' stylesheet to extract fragments from the GetFeature response in the *Stylesheet to use to create fragments* pull-down list. This stylesheet can be found in INSTALL_DIR/web/geonetwork/web/xml/schemas/iso19139/convert/WFSToFragments. 
+- Select the supplied 'Deegree 22 WFS Fragments Philosopher Database Test Template' template from the *Template to use to build metadata using fragments* pull-down list. This template can be found in INSTALL_DIR/web/geonetwork/web/xml/schemas/iso19139/templates/deegree_fragment_tester.xml. 
+- Choose a category for the records created by the harvester, check the *One run only* box, add some privileges (simplest is to let All users have View rights.
+- Save the fields, activate the harvester and run it.
 
 Adding a THREDDS Catalog
 ````````````````````````
@@ -755,7 +775,7 @@ The available options are:
 	- *Validate* - If checked, records that do not/cannot be validated will be rejected.
 
 - **Privileges** - Same as for WebDAV harvesting. 
-- **Categories** - Same as for WebDAV harvesting. 
+- **Categories** - Same as for WebDAV harvesting but this harvester automatically creates a new Category named after each of the Z3950 servers that return records. Records that are returned by a server are assigned to the category named after that server.
 
 More about PQF Z3950 Queries
 ````````````````````````````
