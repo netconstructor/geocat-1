@@ -31,7 +31,7 @@ GeoNetwork is able to harvest from the following sources (for more details see b
 #. An OGC service using its GetCapabilities document. These include WMS, WFS, WPS and WCS services.
 #. An ArcSDE server.
 #. A THREDDS catalog.
-#. Feature data from an OGC WFS (GetFeature query).
+#. An OGC WFS using a GetFeature query.
 #. One or more Z3950 servers.
 
 Mechanism overview
@@ -155,14 +155,14 @@ THREDDS catalog harvesting type
 
 #.	Every time the harvester runs, it will remove previously harvested fragments/records and create new fragments/records.
 
-Feature data from an OGC WFS (GetFeature query)
-```````````````````````````````````````````````
+OGC WFS Feature harvesting type
+````````````````````````````````
 
 #.	The first time the harvester runs, new records will be created with xlinks to fragments.
 #.	Thereafter, every time the harvester runs, it will remove previously harvested fragments and create new ones.
 
-One or more Z3950 servers
-`````````````````````````
+Z3950 server(s) harvesting type
+```````````````````````````````
 
 #.	Every time the harvester runs, it will remove previously harvested records and create new ones.
 
@@ -383,8 +383,8 @@ by the remote server. The supported protocols are:
 #.  *THREDDS Catalogs* 
 				THREDDS catalogs describe inventories of datasets. They are organised in a hierarchical manner, listing descriptive information and access methods for each dataset.  They typically catalog netCDF datasets but are not restricted to these types of files.  This harvesting type crawls through a THREDDS catalog harvesting metadata for datasets and services described in it or in referenced netCDF datasets.
 
-#.  *Metadata Fragments from an OGC WFS* 
-				Metadata can be present in relational databases, which are commonly used by many organisations. Putting a Web Feature Service over a relational database will allow the metadata to be extracted via standard query mechanisms. This harvesting type allows the user to specify a GetFeature query and map information from the features to fragments of metadata that can be xlinked into metadata records.
+#.  *OGC WFS Features* 
+				Metadata can be present in relational databases, which are commonly used by many organisations. Putting an OGC Web Feature Service (WFS) over a relational database will allow the metadata to be extracted via standard query mechanisms. This harvesting type allows the user to specify a GetFeature query and map information from the features to fragments of metadata that can be xlinked into metadata records.
 
 #.  *Z3950 Server(s)* 
         Z3950 is a remote search and harvesting protocol that is commonly used to permit search and harvest of metadata. Although the protocol is often used for library catalogs, significant geospatial metadata catalogs can also be searched using Z3950 (eg. the nodes of the Australian Government agencies). This harvester allows the user to specify a Z3950 query and retrieve metadata records from one or more Z3950 servers. 
@@ -587,14 +587,14 @@ Configuration options:
 - **Category for service** - Metadata for the harvested service is linked to the category selected for the service (usually "interactive resources").
 - **Category for datasets** - For each dataset, the "category for datasets" is linked to each metadata for datasets.
 
-Adding Metadata Fragments from an OGC Web Feature Service
-`````````````````````````````````````````````````````````
+Adding Features from OGC Web Feature Service
+````````````````````````````````````````````
 
 An OGC web feature service (WFS) implements a GetFeature query operation that returns data in the form of features (usually rows from related tables in a relational database). GeoNetwork, acting as a client, can read the GetFeature response and apply a user-supplied XSLT stylesheet to produce metadata fragments that can be linked into a user-supplied template to build metadata records.
 
 .. figure:: web-harvesting-features.png
 
-		*Adding a Metadata Fragments from OGC WFS harvester node*
+		*Adding a Features from OGC WFS harvester node*
 
 The available options are:
 
@@ -614,7 +614,10 @@ The available options are:
 - **Privileges** - Same as for WebDAV harvesting. 
 - **Category for fragments** - When fragments are saved to GeoNetwork as subtemplates they will be assigned to the category selected here.
 
-The structure of the metadata fragments document that your XSLT must produce from the GetFeature response is shown below.
+More about turning the GetFeature Response into metadata fragments
+``````````````````````````````````````````````````````````````````
+
+The structure of the metadata fragments document that your XSLT (see *Stylesheet used to create fragments* above) must produce from the GetFeature response is shown below.
 
 .. figure:: web-harvesting-metadatafragmentsdocument.png
 
@@ -647,10 +650,12 @@ ReplacementGroup                Id                              Id of element in
                                                                 replace or link from to contained fragments
 ==============================  ==============================  ==============================
 
-Finally, two examples of how to use the Metadata Fragments from OGC WFS can be given from stylesheets and information supplied in the GeoNetwork install.
+Finally, two examples of how to use the Features from an OGC WFS harvester can be given using stylesheets and templates supplied with GeoNetwork.
 
 Deegree Version 2.2 Philosopher Database example
 ````````````````````````````````````````````````
+
+This example assumes that you have downloaded Deegree version 2.2 and loaded the Philosopher example database. 
 
 
 
@@ -677,7 +682,7 @@ The available options are:
 
 		- *Ignore harvesting attribute* - Select this option to harvest metadata for selected datasets  regardless of the harvest attribute for the dataset in the THREDDS catalog.  If this option is not selected, metadata will only be created for datasets that have a harvest attribute set to true.
 		- *Extract DIF metadata elements and create ISO metadata* - Select this option to generate ISO metadata for datasets in the THREDDS catalog that have DIF metadata elements.  When this option is selected a list of schemas is shown that have a DIFToISO.xsl stylesheet available (see for example INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/convert/DIFToISO.xsl). Metadata is generated by reading the DIF metadata items in the THREDDS into a DIF format metadata record and then converting that DIF record to ISO using the DIFToISO stylesheet. 
-		- *Extract Unidata dataset discovery metadata using fragments* - Select this option when the metadata in your THREDDS or netCDF/ncml datasets follows Unidata dataset discovery conventions. You will need to write your own stylesheets and templates to extract this metadata. When this option is selected the following additional options will be shown: 
+		- *Extract Unidata dataset discovery metadata using fragments* - Select this option when the metadata in your THREDDS or netCDF/ncml datasets follows Unidata dataset discovery conventions (see http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html). You will need to write your own stylesheets and templates to extract this metadata. When this option is selected the following additional options will be shown: 
 
 			- Stylesheet - Select a stylesheet to use to convert metadata for the dataset (THREDDS metadata and netCDF ncml where applicable) into metadata fragments.
 			- Create subtemplates - Select this option to create a subtemplate (=metadata fragment stored in GeoNetwork catalog) for each metadata fragment generated.
@@ -708,7 +713,7 @@ THREDDS catalogs can include elements from the DIF metadata standard. The Unidat
 More about harvesting metadata fragments with the THREDDS Harvester
 ```````````````````````````````````````````````````````````````````
 
-The options described above for the *Extract Unidata dataset discovery metadata using fragments* invoke the following process for each collection dataset or atomic dataset:
+The options described above for the *Extract Unidata dataset discovery metadata using fragments* (see http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html for more details of these conventions) invoke the following process for each collection dataset or atomic dataset:
 
 #. The harvester bundles up the catalog URI, a generated uuid, the THREDDS metadata for the dataset (generated using the catalog subset web service) and the ncml for netCDF datasets into a single xml document. An example is shown below.
 #. This document is then transformed using the specified stylesheet (see *Stylesheet* option above) to obtain a metadata fragments document.
@@ -740,7 +745,7 @@ The available options are:
 
 	- *Name* - This is a short description of the node. It will be shown in the harvesting main page.
 	- *Z3950 Server(s)* - These are the Z3950 servers that will be searched. You can select one or more of these servers.
-	- *Z3950 Query* - Specify the Z3950 query to use when searching the selected Z3950 servers. At present this field is known to support the Prefix Query Format (also known as Prefix Query Notation) which is described at this URL: http://www.indexdata.com/yaz/doc/tools.html#PQF.
+	- *Z3950 Query* - Specify the Z3950 query to use when searching the selected Z3950 servers. At present this field is known to support the Prefix Query Format (also known as Prefix Query Notation) which is described at this URL: http://www.indexdata.com/yaz/doc/tools.html#PQF. See below for more information and some simple examples.
 	- *Icon* - An icon to assign to harvested metadata. The icon will be used when showing search results. 
 
 - **Options** - Same for the WebDAV harvester above.
@@ -757,7 +762,7 @@ More about PQF Z3950 Queries
 
 PQF is a rather arcane query language. It is based around the idea of attributes and attribute sets. The most common attribute set used for geospatial metadata in Z3950 servers is the GEO attribute set (which is an extension of the BIB-1 and GILS attribute sets - see http://www.fgdc.gov/standards/projects/GeoProfile). So all PQF queries to geospatial metadata Z3950 servers should start off with @attrset geo.
 
-The most useful attribute types in the geo attribute set are as follows:
+The most useful attribute types in the GEO attribute set are as follows:
 
 ================  ==========  =================================================
 @attr number      Meaning     Description
@@ -771,7 +776,7 @@ The most useful attribute types in the geo attribute set are as follows:
 In GeoNetwork the numeric values that can be specified for @attr 1 map to the lucene index field names as follows:
 
 ====================  =============================  ================================================================================================================
-@attr 1=              Lucene index field             ISO19139 element*
+@attr 1=              Lucene index field             ISO19139 element
 ====================  =============================  ================================================================================================================
 1016                  any                            All text from all metadata elements
 4                     title, altTitle                gmd:identificationInfo//gmd:citation//gmd:title/gco:CharacterString
@@ -787,7 +792,7 @@ In GeoNetwork the numeric values that can be specified for @attr 1 map to the lu
 2060                  northBL,eastBL,southBL,westBL  gmd:identificationInfo//gmd:extent//gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude*/gco:Decimal (etc)
 ====================  =============================  ================================================================================================================
 
-Note that this is not a complete set of the mappings between Z3950 GEO profile and the GeoNetwork lucene index field names for ISO19139. Check out INSTALL_DIR/web/geonetwork/xml/search/z3950Server.xsl and INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/index-fields.xsl for more details and annexe A of the GEO attribute set for Z3950 at http://www.fgdc.gov/standards/projects/GeoProfile/annex_a.html for more details.
+Note that this is not a complete set of the mappings between Z3950 GEO attribute set and the GeoNetwork lucene index field names for ISO19139. Check out INSTALL_DIR/web/geonetwork/xml/search/z3950Server.xsl and INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/index-fields.xsl for more details and annexe A of the GEO attribute set for Z3950 at http://www.fgdc.gov/standards/projects/GeoProfile/annex_a.html for more details.
 
 Common values for the relation attribute (@attr=2):
 
@@ -811,6 +816,8 @@ So a simple query to get all metadata records that have the word 'the' in any fi
 
 *@attrset geo @attr 1=1016 the*
 
+- @attr 1=1016 means that we are doing a search on any field in the metadata record
+
 A more sophisticated search on a bounding box might be formulated as:
 
 *@attrset geo @attr 1=2060 @attr 4=201 @attr 2=7 "-36.8262 142.6465 -44.3848 151.2598"*
@@ -818,3 +825,4 @@ A more sophisticated search on a bounding box might be formulated as:
 - @attr 1=2060 means that we are doing a bounding box search
 - @attr 4=201 means that the query contains coordinate strings 
 - @attr 2=7 means that we are searching for records whose bounding box overlaps the query box specified at the end of the query
+
