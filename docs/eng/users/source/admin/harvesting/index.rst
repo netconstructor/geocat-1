@@ -650,7 +650,7 @@ ReplacementGroup                Id                              Id of element in
                                                                 replace or link from to contained fragments
 ==============================  ==============================  ==============================
 
-Finally, an of how to use the Features from an OGC WFS harvester can be given using stylesheets and templates supplied with GeoNetwork.
+Finally, an example of how to use the Features from an OGC WFS harvester can be given using stylesheets and templates supplied with GeoNetwork.
 
 Deegree Version 2.2 Philosopher Database example
 ````````````````````````````````````````````````
@@ -749,6 +749,45 @@ Examples
 Two reference stylesheets are provided as examples of how to harvest metadata fragments from a THREDDS catalog. One of these stylesheets, thredds-metadata.xsl, is for generating iso19139 metadata fragments from THREDDS metadata following Unidata dataset discovery conventions. The other stylesheet, netcdf-attributes.xsl, is for generating iso19139 fragments from netCDF datasets following Unidata dataset discovery conventions. These stylesheets are designed for use with the 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' template and can be found in the schema 'convert' directory eg. for ISO19139 this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/convert/ThreddsToFragments. 
 
 A sample template 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' has been provided for use with the stylesheets described above for the iso19139 metadata schema. This template is in the schema 'templates' directory eg. for ISO19139, this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/templates/thredds-harvester-unidata-data-discovery.xml.
+
+We'll now give an example of how to set up a harvester and harvest THREDDS metadata from one of the public unidata motherlode catalogs at http://motherlode.ucar.edu:8080/thredds/catalog/satellite/3.9/WEST-CONUS_4km/catalog.xml.
+
+.. figure:: web-harvesting-thredds-motherlode-catalogxml.png
+
+In GeoNetwork, go into the Administration menu, choose Harvesting Management as described earlier. Add a Thredds Catalog harvester. Fill out the harvesting management form as shown in the form below. 
+
+.. figure:: web-harvesting-thredds-motherlode-example.png
+
+The first thing to notice is that the *Service URL* should be http://motherlode.ucar.edu:8080/thredds/catalog/satellite/3.9/WEST-CONUS_4km/catalog.xml. Make sure that you use the xml version of the catalog. If you use an html version, you will not be able to harvest any metadata.
+
+Now because the catalog has lots of file level datasets, we will only harvest collection metadata so you should check *Create metadata for Collection Datasets*. 
+The metadata in this catalog follows Unidata data discovery conventions, so we will choose *Extract Unidata dataset discovery metadata using fragments*.
+
+Next, we will check *Ignore harvesting attribute on collection datasets in catalog*. We do this because datasets in the Thredds catalog can have an attribute indicating whether the dataset should be harvested or not. Since none of the datasets in this catalog have the harvesting attribute, we will ignore it. If we didn't check this box, all the datasets would be skipped.
+
+Next we will select the metadata schema that the harvested metadata will be written out in. We will choose *iso19139* here because this is the schema for which we have stylesheets that will convert Thredds metadata to ISO19139 and a template into which the fragments of metadata can be copied or linked.
+
+After choosing *iso19139*, more choices will appear that show the stylesheets and templates available for this schema. Because we are interested in the thredds metadata elements in the Thredds catalog, we will choose *(iso19139) thredds-metadata* to convert these elements to iso19139 metadata fragments.
+
+For the purposes of this demonstration, we will not check *Create subtemplates for fragments (xlinks...)*. This means that the fragments of metadata created by the stylesheet will be copied directly into the metadata template. They will not be able to be reused (eg. shared between different metadata records). See the earlier section on metadata fragments if you are not sure what this means.
+
+Finally, we will choose *HARVESTING TEMPLATE - THREDDS - UNIDATA DISCOVERY* as the template metadata record. The process by which the template is used to create metadata records is as follows: 
+
+ #. For each dataset in the Thredds catalog, the template will be copied to create a new iso19139 metadata record
+ #. Each fragment of metadata harvested from a Thredds dataset will be copied into the new iso19139 metadata record by matching an identifier in the template with an identifier in the fragment (this match is created by the developer of the template and the stylesheet).
+ #. The new record is then inserted into the GeoNetwork metadata catalog and the record content is indexed in Lucene for searching.
+
+You can then fill out the remainder of the form according to how often you want the harvested metadata to be updated, what categories will be assigned to the created metadata record, which icon will be displayed with the metadata records in the search results and what the privileges on the created metadata records will be.
+
+Save the harvester screen. Then from the harvesting management screen, check the box beside the newly created harvester, *Activate* it and then *Run* it. After a few moments (depending on your internet connection and machine) you should click on *Refresh*. If your harvest has been successful you should see a results panel appear something like the one shown in the following screenshot.
+
+.. figure:: web-harvesting-thredds-motherlode-example-results.png
+
+Notice that there were 48 metadata records created for the 48 collection level datasets in this Thredds catalog. Each metadata record was formed by duplicating the metadata template and then copying 13 fragments of metadata into it - hence the total of 624 fragments harvested.
+
+An example of the ISO metadata record created by the harvester and rendered by GeoNetwork is shown below.
+
+.. figure:: web-harvesting-thredds-outputisometadata.png
 
 Adding Z3950 Server(s) 
 ``````````````````````
