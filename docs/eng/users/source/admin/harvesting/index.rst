@@ -748,7 +748,7 @@ Examples
 
 Two reference stylesheets are provided as examples of how to harvest metadata fragments from a THREDDS catalog. One of these stylesheets, thredds-metadata.xsl, is for generating iso19139 metadata fragments from THREDDS metadata following Unidata dataset discovery conventions. The other stylesheet, netcdf-attributes.xsl, is for generating iso19139 fragments from netCDF datasets following Unidata dataset discovery conventions. These stylesheets are designed for use with the 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' template and can be found in the schema 'convert' directory eg. for ISO19139 this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/convert/ThreddsToFragments. 
 
-A sample template 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' has been provided for use with the stylesheets described above for the iso19139 metadata schema. This template is in the schema 'templates' directory eg. for ISO19139, this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/templates/thredds-harvester-unidata-data-discovery.xml.
+A sample template 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' has been provided for use with the stylesheets described above for the iso19139 metadata schema. This template is in the schema 'templates' directory eg. for ISO19139, this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/templates/thredds-harvester-unidata-data-discovery.xml. *Before* attempting to run this example, you should make sure that this template and others from the iso19139 schema have been loaded into GeoNetwork using the 'Add templates' function in the Administration menu.
 
 We'll now give an example of how to set up a harvester and harvest THREDDS metadata from one of the public unidata motherlode catalogs at http://motherlode.ucar.edu:8080/thredds/catalog/satellite/3.9/WEST-CONUS_4km/catalog.xml.
 
@@ -760,18 +760,19 @@ In GeoNetwork, go into the Administration menu, choose Harvesting Management as 
 
 The first thing to notice is that the *Service URL* should be http://motherlode.ucar.edu:8080/thredds/catalog/satellite/3.9/WEST-CONUS_4km/catalog.xml. Make sure that you use the xml version of the catalog. If you use an html version, you will not be able to harvest any metadata.
 
-Now because the catalog has lots of file level datasets, we will only harvest collection metadata so you should check *Create metadata for Collection Datasets*. 
-The metadata in this catalog follows Unidata data discovery conventions, so we will choose *Extract Unidata dataset discovery metadata using fragments*.
+Now because this unidata motherload Thredds catalog has lots of file level datasets (many thousands in fact), we will only harvest collection metadata. To do this you should check *Create metadata for Collection Datasets* and ignore the atomic datasets. 
+
+Next, because the metadata in this catalog follows Unidata data discovery conventions, so we will choose *Extract Unidata dataset discovery metadata using fragments*.
 
 Next, we will check *Ignore harvesting attribute on collection datasets in catalog*. We do this because datasets in the Thredds catalog can have an attribute indicating whether the dataset should be harvested or not. Since none of the datasets in this catalog have the harvesting attribute, we will ignore it. If we didn't check this box, all the datasets would be skipped.
 
-Next we will select the metadata schema that the harvested metadata will be written out in. We will choose *iso19139* here because this is the schema for which we have stylesheets that will convert Thredds metadata to ISO19139 and a template into which the fragments of metadata can be copied or linked.
+Next we will select the metadata schema that the harvested metadata will be written out in. We will choose *iso19139* here because this is the schema for which we have stylesheets that will convert Thredds metadata to fragments of iso19139 metadata and a template into which these fragments of metadata can be copied or linked. After choosing *iso19139*, choices will appear that show these stylesheets and templates. 
 
-After choosing *iso19139*, more choices will appear that show the stylesheets and templates available for this schema. Because we are interested in the thredds metadata elements in the Thredds catalog, we will choose *(iso19139) thredds-metadata* to convert these elements to iso19139 metadata fragments.
+The first choice is the stylesheet that will create iso19139 metadata fragments. Because we are interested in the thredds metadata elements in the Thredds catalog, we will choose the *(iso19139) thredds-metadata* (located in INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/convert/ThreddsToFragments) to convert these elements to iso19139 metadata fragments.
 
-For the purposes of this demonstration, we will not check *Create subtemplates for fragments (xlinks...)*. This means that the fragments of metadata created by the stylesheet will be copied directly into the metadata template. They will not be able to be reused (eg. shared between different metadata records). See the earlier section on metadata fragments if you are not sure what this means.
+For the purposes of this demonstration, we will *not* check *Create subtemplates for fragments (xlinks...)*. This means that the fragments of metadata created by the stylesheet will be copied directly into the metadata template. They will not be able to be reused (eg. shared between different metadata records). See the earlier section on metadata fragments if you are not sure what this means.
 
-Finally, we will choose *HARVESTING TEMPLATE - THREDDS - UNIDATA DISCOVERY* as the template metadata record. The process by which the template is used to create metadata records is as follows: 
+Finally, we will choose *HARVESTING TEMPLATE - THREDDS - UNIDATA DISCOVERY* as the template metadata record (this template will have been loaded into GeoNetwork from INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/templates/thredds-harvester-unidata-data-discovery.xml through the Add Templates function in the Administration interface). The process by which the template is used to create metadata records is as follows: 
 
  #. For each dataset in the Thredds catalog, the template will be copied to create a new iso19139 metadata record
  #. Each fragment of metadata harvested from a Thredds dataset will be copied into the new iso19139 metadata record by matching an identifier in the template with an identifier in the fragment (this match is created by the developer of the template and the stylesheet).
