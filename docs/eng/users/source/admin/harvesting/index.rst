@@ -786,7 +786,7 @@ Save the harvester screen. Then from the harvesting management screen, check the
 
 Notice that there were 48 metadata records created for the 48 collection level datasets in this Thredds catalog. Each metadata record was formed by duplicating the metadata template and then copying 13 fragments of metadata into it - hence the total of 624 fragments harvested.
 
-An example of the ISO metadata record created by the harvester and rendered by GeoNetwork is shown below.
+An example of one of the collection level metadata records created by the harvester in this example and rendered by GeoNetwork is shown below.
 
 .. figure:: web-harvesting-thredds-outputisometadata.png
 
