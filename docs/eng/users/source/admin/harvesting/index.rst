@@ -606,16 +606,19 @@ The available options are:
  - *Name* - This is a short description of the node. It will be shown in the harvesting main page.
  - *Service URL* - The bare URL of the WFS service (no OGC params required)
  - *Metadata language* - The language that will be used in the metadata records created by the harvester
- - *GetFeature Query* - The OGC WFS GetFeature query used to extract features from the WFS.
- - *Stylesheet used to create fragments* - User-supplied stylesheet that transforms the GetFeature response to a metadata fragments document (see below for the format of that document).
- - *Feature based* - Check this box if you expect the WFS GetFeature response to be large (>10MB). If checked, the GetFeature response will be saved to disk in a temporary file. Each feature will then be parsed from the temporary file and used to create the fragments and metadata records. If not checked, the response will be held in RAM.
- - *Create subtemplates* - Check this box if you want the harvested metadata fragments to be saved as subtemplates in the metadata catalog and xlink'd into the metadata template (see next option). If not checked, the fragments will be copied into the metadata template.
- - *Template to use to build metadata using fragments* - Choose the metadata template that will be combined with the harvested metadata fragments to create metadata records. This is a standard GeoNetwork metadata template record.
+ - *OGC WFS GetFeature Query* - The OGC WFS GetFeature query used to extract features from the WFS.
+ - *Schema for output metadata records* - choose the metadata schema or profile for the harvested metadata records. Note: only the schemas that have WFS fragment stylesheets will be displayed in the list (see the next option for the location of these stylesheets). 
+
+ 		- *Stylesheet to create fragments* - User-supplied stylesheet that transforms the GetFeature response to a metadata fragments document (see below for the format of that document). Stylesheets exist in the WFSToFragments directory which is in the convert directory of the selected output schema. eg. for the iso19139 schema, this directory is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/convert/WFSToFragments.
+ 		- *Save large response to disk* - Check this box if you expect the WFS GetFeature response to be large (eg. greater than 10MB). If checked, the GetFeature response will be saved to disk in a temporary file. Each feature will then be extracted from the temporary file and used to create the fragments and metadata records. If not checked, the response will be held in RAM.
+ 		- *Create subtemplates* - Check this box if you want the harvested metadata fragments to be saved as subtemplates in the metadata catalog and xlink'd into the metadata template (see next option). If not checked, the fragments will be copied into the metadata template.
+ 		- *Template to use to build metadata using fragments* - Choose the metadata template that will be combined with the harvested metadata fragments to create metadata records. This is a standard GeoNetwork metadata template record.
+
  - *Category for records built with linked fragments* - Choose the metadata template that will be combined with the harvested metadata fragments to create metadata records. This is a standard GeoNetwork metadata template record.
 
 - **Options** - Same as for WebDAV harvesting. 
 - **Privileges** - Same as for WebDAV harvesting. 
-- **Category for fragments** - When fragments are saved to GeoNetwork as subtemplates they will be assigned to the category selected here.
+- **Category for subtemplates** - When fragments are saved to GeoNetwork as subtemplates they will be assigned to the category selected here.
 
 More about turning the GetFeature Response into metadata fragments
 ``````````````````````````````````````````````````````````````````
@@ -682,8 +685,14 @@ The procedure to follow is:
 	- Choose the supplied 'deegree2_philosopher_fragments' stylesheet to extract fragments from the GetFeature response in the *Stylesheet to use to create fragments* pull-down list. This stylesheet can be found in INSTALL_DIR/web/geonetwork/web/xml/schemas/iso19139/convert/WFSToFragments. 
 	- Select the supplied 'Deegree 22 WFS Fragments Philosopher Database Test Template' template from the *Template to use to build metadata using fragments* pull-down list. This template can be found in INSTALL_DIR/web/geonetwork/web/xml/schemas/iso19139/templates/deegree_fragment_tester.xml. 
 
-- Choose a category for the records created by the harvester, check the *One run only* box, add some privileges (simplest is to let All users have View rights.
-- *Save* the harvester entry form. You will be returned to the harvester operations menu where you can *Activate* the harvester and then *Run* it.
+- Choose a category for the records created by the harvester, check the *One run only* box, add some privileges (simplest is to let All users have View rights). At this stage your harvester entry form should look like the following screenshot.
+
+.. figure:: web-harvesting-features.png
+
+		*Adding a Features from OGC WFS harvester node*
+
+- *Save* the harvester entry form. 
+- You will be returned to the harvester operations menu where you can *Activate* the harvester and then *Run* it.
 
 After the harvester has been run you should see a results screen that looks something like the following screenshot.
 
@@ -692,6 +701,8 @@ After the harvester has been run you should see a results screen that looks some
 *WFS GetFeature Harvesting - Results for deegree philosopher database example*
 
 The results page shows that there were 42 fragments of metadata harvested from the WFS GetFeature response. They were saved to the GeoNetwork database as subtemplates and linked into the metadata template to form 7 new metadata records.
+
+
 
 Adding a THREDDS Catalog
 ````````````````````````
