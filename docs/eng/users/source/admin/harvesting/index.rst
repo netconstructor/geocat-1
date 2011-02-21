@@ -757,8 +757,8 @@ THREDDS catalogs can include elements from the DIF metadata standard. The Unidat
 		
 		*A THREDDS catalog with DIF compliant metadata elements*
 
-More about harvesting metadata fragments with the THREDDS Harvester
-```````````````````````````````````````````````````````````````````
+More about harvesting Unidata dataset discovery metadata with the THREDDS Harvester
+```````````````````````````````````````````````````````````````````````````````````
 
 The options described above for the *Extract Unidata dataset discovery metadata using fragments* (see http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html for more details of these conventions) invoke the following process for each collection dataset or atomic dataset in the THREDDS catalog:
 
@@ -770,8 +770,10 @@ The options described above for the *Extract Unidata dataset discovery metadata 
 
 		*An example THREDDS dataset document created by the THREDDS fragment harvester*
 
-Examples
-````````
+Example
+```````
+
+DIF Metadata elements on datasets in THREDDS catalogs are not as widely used as metadata elements that follow the Unidata dataset discovery metadata conventions. This example will show how to harvest metadata elements that follow the Unidata data discovery conventions. (see http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html). 
 
 Two reference stylesheets are provided as examples of how to harvest metadata fragments from a THREDDS catalog. One of these stylesheets, thredds-metadata.xsl, is for generating iso19139 metadata fragments from THREDDS metadata following Unidata dataset discovery conventions. The other stylesheet, netcdf-attributes.xsl, is for generating iso19139 fragments from netCDF datasets following Unidata dataset discovery conventions. These stylesheets are designed for use with the 'HARVESTING TEMPLATE – THREDDS – DATA DISCOVERY' template and can be found in the schema 'convert' directory eg. for ISO19139 this is INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/convert/ThreddsToFragments. 
 
