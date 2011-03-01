@@ -41,6 +41,7 @@ import org.fao.gast.lib.Lib;
 import org.fao.gast.localization.Messages;
 import org.fao.geonet.constants.Geonet;
 import org.jdom.Element;
+import org.jdom.Namespace;
 
 //==============================================================================
 
@@ -116,7 +117,7 @@ public class Worker implements Runnable
 			Element rec = (Element) r;
 
 			//--- go to 'geonet.info element'
-			rec = (Element) rec.getChildren().get(0);
+			rec = (Element) rec.getChild("info", INFO_NAMESPACE);
 
 			String uuid = rec.getChildText("uuid");
 
@@ -264,6 +265,11 @@ public class Worker implements Runnable
 
 	private ProgressDialog dlg;
 	private SearchPanel    panSearch;
+
+	public static final String NS_PREFIX = "geonet";
+	public static final String NS_URI    = "http://www.fao.org/geonetwork";
+
+	public static final Namespace INFO_NAMESPACE = Namespace.getNamespace(NS_PREFIX, NS_URI);
 }
 
 //==============================================================================
