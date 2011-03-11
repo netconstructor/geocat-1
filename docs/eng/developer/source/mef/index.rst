@@ -1,7 +1,7 @@
 .. _mef:
 
-Metadata Exchange Format v1.1
-=============================
+Metadata Exchange Format
+========================
 
 Introduction
 ------------
@@ -35,10 +35,21 @@ In the paragraphs below, some terms should be intended as follows:
 #.  the term writer will be used to indicate any actor that can generate a MEF
     file.
 
-File format
------------
+MEF v1 file format
+------------------
 
-A MEF file is simply a ZIP file which contains the following files:
+A MEF file is simply a ZIP file which contains the following files::
+
+    Root
+     |
+     +--- metadata.xml
+     +--- info.xml
+     +--- public
+     |        +---- all public documents and thumbnails
+     +--- private
+               +---- all private documents and thumbnails
+
+
 
 #.  *metadata.xml*: this file contains the metadata itself, in XML format. The
     text encoding of the metadata is that one specified into the XML
@@ -61,6 +72,7 @@ A MEF file is simply a ZIP file which contains the following files:
     required to access them. There are no restrictions on the file types that
     can be stored into this directory.
 
+
 Any other file or directory present into the MEF file should be ignored by readers
 that don’t recognise them. This allows actors to add custom extensions to the MEF
 file.
@@ -75,6 +87,43 @@ format, which can be:
 #.  *full*: both public and private files are provided.
 
 It is recommended to use the .mef extension when naming MEF files.
+
+
+
+
+MEF v2 file format
+------------------
+
+MEF version 2 support the following:
+
+- multi-metadata support: be able to have more than one metadata record in a single MEF file.
+- multi-metadata format support: be able to store in a single MEF n formats (eg. for ISO profil, also store ISO19139 record)
+- related metadata export: export related metadata in the MEF file. Related metadata record could be :
+ - child metadata (Using parentUuid search field)
+ - service metadata (Using operatesOn search field)
+ - related metadata (Using xml.relation.get service)
+
+
+MEF v2 format structure is the following::
+
+    Root 
+      | 
+     + 0..n metadata
+         |
+         +--- metadata
+         |     +--- metadata.xml (ISO19139)
+         |     +--- (optional) metadata.profil.xml (ISO19139profil)
+         +--- info.xml
+         +--- applischema
+         |     +--- (optional) schema.xml (ISO19110)
+         +--- public
+         |     +---- all public documents and thumbnails
+         +--- private
+               +---- all private documents and thumbnails
+
+
+
+
 
 The info.xml file
 -----------------
