@@ -16,7 +16,7 @@ into 2 groups:
   changed when the system is not running.
 
 The first group of parameters can be queried or changed through 2 services:
-xml.config.get and xml.config.update. The second group of parameters can be
+xml.config.get and xml.config.set. The second group of parameters can be
 changed using the GAST tool.
 
 xml.config.get
@@ -158,8 +158,8 @@ Example of xml.config.get response::
         </ldap>
     </config>
 
-xml.config.update
------------------
+xml.config.set
+--------------
 
 This service is used to update the system’s information and so it is
 restricted to administrators.
@@ -175,7 +175,7 @@ information (i.e. the value cannot be empty). Please, refer to :ref:`table_confi
 
 .. _table_config_parameters:
 
-**Mandatory and optional parameters for the xml.config.update service:**
+**Mandatory and optional parameters for the xml.config.set service:**
 
 =============================       ========            ==========
 Parameter                           Type                Mandatory
