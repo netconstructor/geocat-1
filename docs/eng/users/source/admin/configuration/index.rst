@@ -129,6 +129,13 @@ Clickable hyperlinks
 ````````````````````
 Enables/disables hyperlinks in metadata content for urls.
 
+
+Automatic fixes
+```````````````
+Enabled by default. It is recommended you do not use the GeoNetwork default or advanced editor when auto-changing is disabled.
+See http://trac.osgeo.org/geonetwork/ticket/368 for more details.
+
+
 INSPIRE
 ```````
 Enables/disables the INSPIRE search options in advanced search panel.
