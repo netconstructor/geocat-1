@@ -1,5 +1,34 @@
 ================================================================================
 ===
+=== GeoNetwork 2.6.4: List of changes
+===
+================================================================================
+--------------------------------------------------------------------------------
+--- Changes
+--------------------------------------------------------------------------------
+
+- #456 Catalan translation, thanks Montserrat Marco Sabaté.
+- #462: Load wms in map viewer for service metadata
+- #463: Update Web Map Viewer OpenLayers to 2.10
+- CSW Server configuration: use textarea for abstract and increase field size (label) in CswServerCapabilitiesInfo table
+- Set WMC panel layout
+
+--------------------------------------------------------------------------------
+--- Bug fixes
+--------------------------------------------------------------------------------
+
+- #395: Use proxy configuration for built in proxy in GeoNetwork. Thanks schaubr for patch
+- Fix for ticket #435 - thanks to Craig Jones, IMOS/eMii and Andrew Walsh, AODN
+- #467: Search by abstract in Dublin Core doesn't find results
+- #473: Left-column disappearing. Disabled scroll effect
+- #476: Improvements to GeoNetworkAnalyzer
+- Restore ending wildcard. Related to #476.
+- Fix #478. Thanks Justin Rowles
+- Fix resumptionToken handling in OAI-PMH harvester: backporting #7189
+- OAIPHM havester fix for Until date, the From date value was used instead
+
+================================================================================
+===
 === GeoNetwork 2.6.3: List of changes
 ===
 ================================================================================
