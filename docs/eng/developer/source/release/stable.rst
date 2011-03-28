@@ -50,10 +50,9 @@ Test issues solved for new release
 	$ cd installer
 	$ ant
 	
-2. Intall the installer located in ``geonetwork-[VERSION]`` folder
+2. Install the installer located in ``geonetwork-[VERSION]`` folder
 
 3. Test the issues included for the release, checking in `GeoNetwork trac <http://trac.osgeo.org/geonetwork/>`_.
-
 
 If tests are passed, proceed with the release. Otherwise:
 
@@ -64,19 +63,18 @@ If tests are passed, proceed with the release. Otherwise:
 
 	This approach implicates a code freeze in branch until the release is done, if all test are ok (no bugs found in tests or non critical bugs), 1 day or less is ok.
 
-	If a critical bug is detected, then code freeze can take some time if bug is complicate to fix. To avoid this code freeze some alternatives to discuss:
+	If a critical bug is detected, the code freeze can take some time if a bug is complicated to fix. To avoid this code freeze some alternatives can be considered:
 
-	1. If any commit in branch until the critical fix is commited will be part of the release (properly tested in new release cycle)
-	2. Create a tag anyway of any critical bug and commit the critical fix to tag/branch/trunk so branch is not freezed. 
-	No other commits in tag except critical bug fixes should happen. Also people can commit in branch while the the critical bug is solved.
+	1. If there is a commit on the branch before the critical fix is commited, it will be part of the release (properly tested in a new release cycle)
+	2. Create a tag anyway and commit the critical fix to that tag/branch/trunk so there is no freeze on the branch at all. 
+	No other commits should happen on a tag, except critical bug fixes. This allows people to commit on the branch while the critical bug is been solved.
 
+Update changes.txt file
+----------------------
 
+1. Add an entry to ``docs/changes.txt`` describing the changes in this new release, using the following template. 
 
-Update changes file
--------------------
-
-1. Add an entry to ``docs/changes.txt`` describing the changes in this new release, using next template. Comments from the SVN commits are used to extract the most important changes from ::
-
+Comments from the SVN commits are used to extract the most important changes (e.g. use ``svn log -r 7219:HEAD > ~/changes264.txt`` to obtain these. Some cleanup is required before adding them in the changes.txt document) ::
 	================================================================================
 	===
 	=== GeoNetwork [VERSION]: List of changes
@@ -101,8 +99,8 @@ Update changes file
 	$ svn commit -m "Updating CHANGES for [VERSION]" docs/changes.txt
 
 
-Update versions number for release
-----------------------------------
+Update version numbers for a release
+------------------------------------
 
 A \*NIX (Linux, OSX etc..) operating system can use the following batch script.
 
