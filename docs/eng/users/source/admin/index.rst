@@ -7,6 +7,7 @@ Administration
     :maxdepth: 2
 
     configuration/index.rst
+    csw-configuration/index.rst
     administration/index.rst
     import/index.rst
     harvesting/index.rst

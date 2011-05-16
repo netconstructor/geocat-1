@@ -139,3 +139,8 @@ Rights associated with the profiles are illustrated in detail in the list below:
     The Registered User has more access privileges than non-authenticated Guest users:
     
     - Right to download protected data
+
+User Self-Registration
+----------------------
+
+
