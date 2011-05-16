@@ -85,6 +85,11 @@ standard one, but to have multiple GeoNetwork nodes on the same machine you
 have to change this value in order to avoid port conflicts between the
 different nodes.
 
+XLink resolver
+``````````````
+Enables/disables the XLink resolver. XLink resolver replaces content of the elements that have attribute @xlink:href (except for srv:operatesOn element) with the referenced content. The
+XLink resolver is used for example in Metadata fragments harvester to retrieve the metadata fragments referenced in the metadata and insert in it.
+
 Clickable hyperlinks
 ````````````````````
 Enables/disables hyperlinks in metadata content for urls.
