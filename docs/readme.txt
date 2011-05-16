@@ -12,6 +12,11 @@
 - #463: Update Web Map Viewer OpenLayers to 2.10
 - CSW Server configuration: use textarea for abstract and increase field size (label) in CswServerCapabilitiesInfo table
 - Set WMC panel layout
+- Added verbose protocol list for online resources (metadata editor)
+- Turkish transactions
+- #491: Custom ElementSet in CSW 2.0.2
+- INSPIRE schematron fixes integrated from trunk
+- CSW INSPIRE capabilities document updated to 1.0 xsd (scenario 2). Default values in capabilities_inspire.xml for TemporalReference, MetadataDate, SpatialDataServiceType, etc require user customization for his catalog
 
 --------------------------------------------------------------------------------
 --- Bug fixes
@@ -26,6 +31,12 @@
 - Fix #478. Thanks Justin Rowles
 - Fix resumptionToken handling in OAI-PMH harvester: backporting #7189
 - OAIPHM havester fix for Until date, the From date value was used instead
+- #492 : CSW 2.0.2 ElementName processing broken
+- #503 Security hole in metadata insert
+- Metadata insert, fixes when validation option is selected:
+  1) validate xsd and schematron, both in copy&paste and file upload options
+  2) show schematron report with errors (if any)
+- Fix for save template display order
 
 ================================================================================
 ===
