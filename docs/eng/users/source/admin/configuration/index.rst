@@ -195,11 +195,11 @@ GeoNetwork has a self-registration function which allows a user to request a log
 
 .. figure:: web-config-name-organization.png
 
-- configure feedback email address, SMTP host and SMTP port. The feedback email address will be sent an email when a new user registers. An example of how to config these fields in the system configuration form is:
+- configure feedback email address, SMTP host and SMTP port. The feedback email address will be sent an email when a new user registers and requests a profile other than 'Registered User'. An example of how to config these fields in the system configuration form is:
 
 .. figure:: web-config-options-feedback.png
 
-- check the box, enable user self-registration in the Authentication section of the system configuration form:
+- check the box, enable user self-registration in the Authentication section of the system configuration form as follows:
 
 .. figure:: web-config-authentication-self-registration-checked.png
 
@@ -207,3 +207,9 @@ When you save the system configuration form, return to the home page and log out
 
 .. figure:: web-config-banner-with-self-registration.png
 
+You should also configure the xml file that includes contact details to be 
+displayed when an error occurs in the registration process. This file is 
+localized - the english version is located in 
+INSTALL_DIR/web/geonetwork/loc/en/xml/registration-sent.xml.
+
+Finally, if you want to change the content of the email that contains registration details for new users, you should modify INSTALL_DIR/web/geonetwork/xsl/registration-pwd-email.xsl.

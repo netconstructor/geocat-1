@@ -17,3 +17,4 @@ Administration
     gast/index.rst
     localization/index.rst
     import2/index.rst
+    user-self-registration/index.rst
