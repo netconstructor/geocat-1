@@ -245,18 +245,8 @@ Linking WMS online resources
 
 Metadata records in ISO19139 could be related to resources defined in WMS services. When searching metadata that has related WMS online resources, the *Interactive Map* button is displayed to load the WMS layer/s in the map viewer. A WMS online resource can be referenced in metadata like:
 
-- Selecting protocol **OGC Web Map Service 1.1.1** or **OGC Web Map Service 1.3.0**:
 
-#. *URL*: Url of WMS service
-#. *Name of the resource*: WMS layer name
-
-.. figure:: onlineResourceWebMapService1.png
-	
-	*WMS online resource*
-
-In this case the *Interactive Map* button, loads directly the referenced layer in the the map viewer.
-
-- Selecting protocol **OCG-WMS Web Map Capabilities** service:
+- Selecting protocol **OCG-WMS Web Map Capabilities 1.1.1** or **OCG-WMS Web Map Capabilities 1.3.0**:
 
 #. *URL*: Url of WMS service
 #. Name of the resource: empty.
@@ -271,15 +261,15 @@ The *Interactive Map* button opens a window to select the layer/s defined in WMS
 
 	*Window to select WMS layer/s referenced in online resource to load in map viewer*
 
-- Selecting protocol **OGC-WMS Web Map Service** (no version):
+- Selecting protocols **OGC-WMS Web Map Service**, **OGC Web Map Service 1.1.1** or **OGC Web Map Service 1.3.0**:
 
 #. *URL*: Url of WMS service
 #. *Name of the resource*: WMS layer name (optional)
 
-.. figure:: onlineResourceWebMapService3.png
+.. figure:: onlineResourceWebMapService1.png
 
-	*WMS online resource*
-	
+    *WMS online resource*
+
 The behaviour the *Interactive Map* button depends if user indicated the layer name in the field *Name of the resource* or not, to show the window to select the layer/s to load in map viewer or load the layer directly.
 
 
