@@ -106,8 +106,24 @@ GeoNetwork has generated a changeKey from the forgotten password and the
 current date and emailed that to the user as part of a link to a 
 change password form. 
 
-When the user clicks on the link, a change password form is displayed and a 
+If you want to change the content of this email, you should modify INSTALL_DIR/web/geonetwork/xsl/password-forgotten-email.xsl.
+
+When the user clicks on the link, a change password form is displayed in 
+their browser and a 
 new password can be entered. When that form is submitted to GeoNetwork, the 
 changeKey is regenerated and checked with the changeKey supplied in the link, 
 if they match then the password is changed to the new password supplied by 
 the user.
+
+The final step in this process is a verification email sent to the email
+address of the user confirming that a change of password has taken place:
+
+::
+
+	Your Greenhouse GeoNetwork Site password has been changed.
+                       
+	If you did not change this password contact the Greenhouse GeoNetwork Site helpdesk
+
+	The Greenhouse GeoNetwork Site team
+
+If you want to change the content of this email, you should modify INSTALL_DIR/web/geonetwork/xsl/password-changed-email.xsl.
