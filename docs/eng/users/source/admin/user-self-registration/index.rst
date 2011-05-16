@@ -11,34 +11,19 @@ If 'Register' is chosen the user will be asked to fill out a form as follows:
 
 .. figure:: usr-self-registration-form.png
 
-The fields in this form are as follows: 
+The fields in this form are self-explanatory except for the following: 
 
-*First Name*: The user's first name. This is mandatory.
-
-*Last Name*: The user's last name. This is also mandatory.
-
-*Email*: The user's email address. This is also mandatory and will be used as the username.
-
-*Address*: The user's address.
-
-*City*: The user's city.
-
-*Zip*: The user's zip or postal code.
-
-*State*: The user's state.
-
-*Country*: The user's country.
-
-*Organisation/department*: The user's organisation/department.
-
-*Kind*: The kind of organisation/department.
+*Email*: The user's email address. This is mandatory and will be used as the username.
 
 *Profile*: By default, self-registered users are given the 'Registered User' 
-profile (see previous section). If any other profile is selected, the user 
-will still be given the 'Registered User' profile, but a request will be sent 
-to the Email address nominated in the Feedback section of the 
-'System Administration' menu informing them of the request for a more 
-privileged profile.
+profile (see previous section). If any other profile is selected: 
+
+- the user will still be given the 'Registered User' profile
+- an email will be sent to the Email address nominated in the Feedback section of the 'System Administration' menu, informing them of the request for a more privileged profile
+
+
+What happens when a user self-registers?
+----------------------------------------
 
 When a user self-registration occurs, the user receives an email with the
 details they have provided in it that looks something like the following:
@@ -67,6 +52,10 @@ details they have provided in it that looks something like the following:
 
 Notice that the user has requested an 'Editor' profile. As a result an email will be sent to the Email address nominated in the Feedback section of the 'System Adminstration' menu which looks something like the following:
 
+Notice also that the user has been aded to the built-in user group 'GUEST'. This is a security restriction. An administrator/user-administrator can add the user to other groups if that is required later.
+
+If you want to change the content of this email, you should modify INSTALL_DIR/web/geonetwork/xsl/registration-pwd-email.xsl.
+
 ::
 
 	Dear Admin,     
@@ -91,3 +80,12 @@ Notice that the user has requested an 'Editor' profile. As a result an email wil
  	Please action.
 
 	The Greenhouse GeoNetwork Site
+
+If you want to change the content of this email, you should modify INSTALL_DIR/web/geonetwork/xsl/registration-prof-email.xsl.
+
+The 'Forgot your password?' function
+------------------------------------
+
+This function allows users who have forgotten their password to request a new one. For security reasons, only users that have the 'Registered User' profile can request a new password.
+
+
