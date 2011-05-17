@@ -14,7 +14,7 @@
   (label) in CswServerCapabilitiesInfo table
 - Set WMC panel layout
 - Added verbose protocol list for online resources (metadata editor)
-- Turkish transactions
+- Turkish translation, thanks to the Turkish Kadastro (TKGM)
 - #491: Custom ElementSet in CSW 2.0.2
 - INSPIRE schematron fixes integrated from trunk
 - CSW INSPIRE capabilities document updated to 1.0 xsd (scenario 2). Default
