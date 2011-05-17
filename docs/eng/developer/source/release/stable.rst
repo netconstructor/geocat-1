@@ -216,7 +216,8 @@ The website requires updates to reflect the new release. Update the version numb
   website/docsrc/downloads.rst
   website/docsrc/index.rst
   website/docsrc/news.rst
-   
+  website/checkup_docs.sh 
+  
 Commit the changes and build the website using the `Hudson deployment system <http://thor.geocat.net/hudson/>`_
 
 Announce the release
@@ -261,13 +262,13 @@ Upgrade branch pom versions
 
 .. warning :: This steps must be performed using branch code.
 
-After a release has being created the branch version number must be increased to next release version. A \*NIX (Linux, OSX etc..) operating system can use the following batch script.
+After a release has being created the branch version number must be increased to next release version. On a \*NIX (Linux, OSX etc..) operating system you can use the following batch script.
 
-1. Execute in root of the **branch** source tree the script ``updateBranchVersions.sh``. Example to update from version 2.6.1-SNAPSHOT to 2.6.2-SNAPSHOT ::
+1. From the root of the **branch** source tree execute the script ``updateBranchVersions.sh``. To update from version 2.6.1-SNAPSHOT to 2.6.2-SNAPSHOT for example ::
 
 	$ ./updateBranchVersions.sh 2.6.1 2.6.2
 
-2. Commit updated files ::
+2. Commit the updated files ::
 
 	$ svn commit -m "Updated files version to [VERSION]-SNAPSHOT" .
 
