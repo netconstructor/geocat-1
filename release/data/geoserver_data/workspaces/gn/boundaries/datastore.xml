@@ -12,6 +12,6 @@
     <entry key="create spatial index">true</entry>
     <entry key="charset">ISO-8859-1</entry>
     <entry key="url">file:data/boundaries</entry>
-    <entry key="namespace">http://geonetwork</entry>
+    <entry key="namespace">http://geonetwork-opensource.org</entry>
   </connectionParameters>
 </dataStore>
