@@ -172,57 +172,52 @@ To build the Windows and platform independent installers, execute the next comma
 
 The installers (exe and jar) are created in a folder ``geonetwork-[VERSION]``
 
-Upload to SourceForge
----------------------
+Upload and release on SourceForge
+---------------------------------
 
 All of the artifacts generated so far need to be uploaded to the SourceForce File release System:
 
 1. WAR distribution
 2. Installers (exe and jar)
 
-``TODO``: Check by Jeroen
-
-The simplest way for developers working under a \*NIX like system is to use scp: ::
-
-	$ scp geonetwork.war username@frs.sourceforge.net:uploads
-	$ scp geonetwork-[VERSION].jar username@frs.sourceforge.net:uploads
-	$ scp geonetwork-[VERSION].exe username@frs.sourceforge.net:uploads
-
-The same can be accomplished in Windows using `WinSCP <http://winscp.net/>`_.
-
-Release on SourceForge
-----------------------
-
-.. note :: This step requires administrative privileges in SourceForge.
-
-``TODO``: Check by Jeroen
+.. note :: This step requires administrative privileges in SourceForge for the GeoNetwork opensource project.
 
 1. Log in to `SourceForge <http://sourceforge.net/account/login.php>`_.
 
-2. Go to the `GeoNetwork SourceForge page <https://sourceforge.net/projects/geonetwork/>`_.
+2. Go to the ` GeoNetwork Files section <https://sourceforge.net/projects/geonetwork/files/GeoNetwork_opensource/>`_.
 
-3. Under the **Project admin** tab select **Feature Settings**.
+3. Add the new v[VERSION] folder for this release.
 
-4. Click **Manage** in the **File Release System** row
+4.a. Using the commandline secure copy is the simplest way for developers working under a \*NIX like system: ::
 
-5. Click **Add Release** next to the** GeoNetwork** package.
+	$ scp geonetwork.war username@frs.sourceforge.net:/home/frs/project/g/ge/geonetwork/GeoNetwork_opensource/v[VERSION]/
+	$ scp geonetwork-[VERSION].jar username@frs.sourceforge.net:/home/frs/project/g/ge/geonetwork/GeoNetwork_opensource/v[VERSION]/
+	$ scp geonetwork-[VERSION].exe username@frs.sourceforge.net:/home/frs/project/g/ge/geonetwork/GeoNetwork_opensource/v[VERSION]/
+	$ scp docs/readme.txt username@frs.sourceforge.net:/home/frs/project/g/ge/geonetwork/GeoNetwork_opensource/v[VERSION]/
 
-6. Enter the release version and click the **Create This Release** button.
+4.b. The same can be accomplished in Windows using `WinSCP <http://winscp.net/>`_. Or a desktop client like `Cyberduck <http://cyberduck.ch/>`_ on Windows and Mac OS X
 
-7. Copy the contents of the change notes file (from previous step) into the **Release Notes** text box.
+5. Once the upload of the files has been completed, use the web interface to set the default download files. 
+The (i) button allows to set the default operating systems for each installer (.exe for Windows and .jar for all other systems).
 
-8. Click the **Preserve my pre-formatted text** check box.
+.. image:: filerelease.png
+    :align: right
+    :alt: Details of the Windows installer file 
 
-9. Click the **Submit/Refresh** button.
-
-10. Scroll down to the **Add Files To This Release** section and check off all the primary artifacts.
-
-11. Click the **Add Files** and/or **Refresh View** button.
+6. The default downloads are ready now.
 
 Update geonetwork-opensource website
 ------------------------------------
 
-Update the download page in `geonetwork-opensource <http://geonetwork-opensource.org/>`_ page to update the new version number for current release.
+The website requires updates to reflect the new release. Update the version number and add a new news entry in the following files:
+
+  website/docsrc/conf.py
+  website/docsrc/docs.rst
+  website/docsrc/downloads.rst
+  website/docsrc/index.rst
+  website/docsrc/news.rst
+   
+Commit the changes and build the website using the `Hudson deployment system <http://thor.geocat.net/hudson/>`_
 
 Announce the release
 --------------------
@@ -234,6 +229,7 @@ Send an email to both the developers list and users list announcing the release.
 ``TODO``: Template mail?
 
 SourceForge
+
 ```````````
 ``TODO``: Do we create SourceForge notifications?
 
