@@ -10,19 +10,25 @@
 - #456 Catalan translation, thanks Montserrat Marco Sabaté.
 - #462: Load wms in map viewer for service metadata
 - #463: Update Web Map Viewer OpenLayers to 2.10
-- CSW Server configuration: use textarea for abstract and increase field size (label) in CswServerCapabilitiesInfo table
+- CSW Server configuration: use textarea for abstract and increase field size
+  (label) in CswServerCapabilitiesInfo table
 - Set WMC panel layout
 - Added verbose protocol list for online resources (metadata editor)
 - Turkish transactions
 - #491: Custom ElementSet in CSW 2.0.2
 - INSPIRE schematron fixes integrated from trunk
-- CSW INSPIRE capabilities document updated to 1.0 xsd (scenario 2). Default values in capabilities_inspire.xml for TemporalReference, MetadataDate, SpatialDataServiceType, etc require user customization for his catalog
+- CSW INSPIRE capabilities document updated to 1.0 xsd (scenario 2). Default
+  values in capabilities_inspire.xml for TemporalReference, MetadataDate,
+  SpatialDataServiceType, etc require user customization for his catalog
 
 --------------------------------------------------------------------------------
 --- Bug fixes
 --------------------------------------------------------------------------------
 
-- #395: Use proxy configuration for built in proxy in GeoNetwork. Thanks schaubr for patch
+- #299: Catch all empty elements with gco:nilReason=missing attribute to avoid
+  large blank spaces in metadata views.
+- #395: Use proxy configuration for built in proxy in GeoNetwork. Thanks schaubr
+  for patch
 - Fix for ticket #435 - thanks to Craig Jones, IMOS/eMii and Andrew Walsh, AODN
 - #467: Search by abstract in Dublin Core doesn't find results
 - #473: Left-column disappearing. Disabled scroll effect
@@ -50,7 +56,8 @@
 - #422 : 26x numeric fields range query bug
 - #376 : Configurable stopwords fixes
 - Tokenize responsiblePartyRole field to allow case insensitive searches
-- Unification of INSPIRE GEMET thesaurus path for schematron rules and indexing of INSPIRE themes
+- Unification of INSPIRE GEMET thesaurus path for schematron rules and indexing
+  of INSPIRE themes
 - xml.user.metadata service changed to use Lucene instead of SQL
 
 ================================================================================
@@ -64,9 +71,12 @@
 
 - Be sure id is an integer when creating SQL query. Thanks Pierre Mauduit
 - Fix download with special character
-- Protect code in getMetadataFromIndex if createDate or changeDate are null (for example, if created/harvested invalid metadata without this fields)
-- Removed Download link (doesn't work within release documentation unless generic)
-- Use permanent redirect instead of temporal redirect to avoid some issues when running with Apache proxy
+- Protect code in getMetadataFromIndex if createDate or changeDate are null (for
+  example, if created/harvested invalid metadata without this fields)
+- Removed Download link (doesn't work within release documentation unless
+  generic)
+- Use permanent redirect instead of temporal redirect to avoid some issues when
+  running with Apache proxy
 - XSL processor configuration
 - Fix #387 : GN vulnerable to other application's TransformerFactory
 - Fix #397 : Thesaurus name after adding keyword
@@ -107,29 +117,37 @@
 --------------------------------------------------------------------------------
 --- Bug fixes
 --------------------------------------------------------------------------------
-- Exclude some substitutions which prevent the vertical extent element from being fully expanded
+- Exclude some substitutions which prevent the vertical extent element from
+  being fully expanded
 - Fix migration scripts from 2.4.3 to 2.6.0
 - Fix search using INSPIRE annex
 - Typo fix for German language
-- Added support for sqlserver database. Thanks to Mikael Elmquist for provide sql files
+- Added support for sqlserver database. Thanks to Mikael Elmquist for provide
+  sql files
 - Add in xslt converters for DIF to ISO and Thredds
 - Missing xslt to convert netcdf CDM coords to ISO keywords
 - Fix harvesting a OAI set whose name contains a "-". Thanks Tim Proescholdt
-- Fix #335: Max number of children displayed in relation panel. Added from and to parameters to allow paging in related records if needed
+- Fix #335: Max number of children displayed in relation panel. Added from and
+  to parameters to allow paging in related records if needed
 - Fix #339: Wildcard search broken
 - Fix #337: Metadata indexing uses old INSPIRE setting
 - Fix #343: CSW / iso19110 / exception when requesting ISO19139 output
 - Fix #344: bad schema error when using XSL on import. Thanks murrayking
 - Fix #345: Changed postgres driver version to be compatible with Java 1.5
-- Fix #346: Javascript error when setting "singleTile: true" for a WMS layers in Map viewer
+- Fix #346: Javascript error when setting "singleTile: true" for a WMS layers in
+  Map viewer
 - Fix #347: Fix thesaurus directory removed by maven
 - Fix #348: ArcSDE Harvester. Javascript error accessing config panel
 - Fix #354: XSL error message in WMC to Iso19139 transformation
-- Fix #357: Use geometry parameter in GUI search for bounding boxes, instead of lucene bbox fields. Fixed also Disjoint spatial filter
-- Fix #364: CSW queryables, added support for INSPIRE ResponsiblePartyRole and fix for ResourceIdentifier
+- Fix #357: Use geometry parameter in GUI search for bounding boxes, instead of
+  lucene bbox fields. Fixed also Disjoint spatial filter
+- Fix #364: CSW queryables, added support for INSPIRE ResponsiblePartyRole and
+  fix for ResourceIdentifier
 - Fix #365: Allow to configure LDAP uid attribute name
-- Fix #366: Add contextual label translation allowing to use full xpath for elements in metadata editor
-- Fix #367: Not possible to search on Subject queryable for a value that includes spaces
+- Fix #366: Add contextual label translation allowing to use full xpath for
+  elements in metadata editor
+- Fix #367: Not possible to search on Subject queryable for a value that
+  includes spaces
 - Fix #371: Tooltips in System Configuration have disappeared
 
 --------------------------------------------------------------------------------
@@ -137,7 +155,8 @@
 --------------------------------------------------------------------------------
 - Added support for OpenLayers Map config options in map viewer
 - Service to retrieve the metadata owned by a user
-- Use redirect for login and logout services to show in browser address bar the url of main page, after login/logout
+- Use redirect for login and logout services to show in browser address bar the
+  url of main page, after login/logout
 
 ================================================================================
 ===
@@ -150,16 +169,22 @@
 - Fix for windows installer
 - Included developer docs in installer and fixed links in index files
 - Updated images and content in user manual (getting started section)
-- Fix #311: For FGDC metadata the lat/lon values for the CSW response are concatenated instead of separated by a space (Thanks Marten Hogeweg)
+- Fix #311: For FGDC metadata the lat/lon values for the CSW response are
+  concatenated instead of separated by a space (Thanks Marten Hogeweg)
 - Fix #309: Open the CSV in a new page 
-  Could not reproduce the dissapear of left menu. But seem better open CSV in a new window instead of repacing application window
+  Could not reproduce the dissapear of left menu. But seem better open CSV in a
+  new window instead of repacing application window
 - Fix #308: No result for "export as TXT" for templates
-- Fix #303 : Invalid character when connecting to external database (Thanks to zoerb).
+- Fix #303 : Invalid character when connecting to external database (Thanks to
+  zoerb).
 - Add missing data file for PostGIS.
 - Fix to use proxy config in GetRecordsByIdRequest
-- Fix #293: Fix for queries with AS clause in MySql. Thanks Justin Rowles for patch
-- Fix #307: Use default OL cursors to avoid ServiceNotFoundEx exceptions in GN when using IE (IE doesn't resolve correctly cursor image url)
-- Fix #319: Calendar buttons dont show the calendar in metadata editor after click on Check or Save button
+- Fix #293: Fix for queries with AS clause in MySql. Thanks Justin Rowles for
+  patch
+- Fix #307: Use default OL cursors to avoid ServiceNotFoundEx exceptions in GN
+  when using IE (IE doesn't resolve correctly cursor image url)
+- Fix #319: Calendar buttons dont show the calendar in metadata editor after
+  click on Check or Save button
 - OGC harvester / Improve distribution info section for WMS service metadata.
 - Included disclaimer window for WMS services in map viewer
 - Fix to solve about some responses are cut when returned to the client
@@ -168,27 +193,37 @@
 - Fix #306 opener ref not used in trunk.
 - xalan is not longer supported
 - Fix #275: Image not showing
-  The logo image for the GeoNetwork site was only created the first time when the database was initialized. 
-  If the application was updated with a new version (images/logos folder only contains dummy.gif logo then) and preserving the database, the logo was not created again.
-  Changed to check always in startup if logo for GeoNetwork site exists, if not then creates it
+  The logo image for the GeoNetwork site was only created the first time when
+  the database was initialized. 
+  If the application was updated with a new version (images/logos folder only
+  contains dummy.gif logo then) and preserving the database, the logo was not
+  created again.
+  Changed to check always in startup if logo for GeoNetwork site exists, if not
+  then creates it
 - Fix #320: parse and use mapSearch layers setting
-  1) Map search uses custom layers if defined in config-gui.xml (mapSearch/layers). If not defined this section, uses layers defined for map viewer (mapViewer/layers)
+  1) Map search uses custom layers if defined in config-gui.xml
+  (mapSearch/layers). If not defined this section, uses layers defined for map
+  viewer (mapViewer/layers)
   2) Use mapOptions hash, when initializing search maps
 - Fix #323: Scrollbar in IE8
   Also happened in other browsers
 - Zoom to region in search map, when selecting a region in combo list
 - Protect resetInspireOptions method if inspire search panel is not enabled
-- Fixes for thredds harvester - include validator precond, missing gif and recognition for thredds harvester Include baseUrl in geonet:info for scripts that don't have /root/gui info
+- Fixes for thredds harvester - include validator precond, missing gif and
+  recognition for thredds harvester Include baseUrl in geonet:info for scripts
+  that don't have /root/gui info
   Include opendap-2.1 jar needed for thredds harvester
 - Fix #328 LDAP DN Problem. Thanks to JoshVote for the fix.
 - Fix remove uploaded file bug
 - Fix #330 Improve validation report layout. Thanks Justin Rowles. 
-- Fix #334 Web Map Viewer boudingbox taken from /root/gui/config/mapViewer subtree (Thanks Landry Breuil)
+- Fix #334 Web Map Viewer boudingbox taken from /root/gui/config/mapViewer
+  subtree (Thanks Landry Breuil)
 
 fixes in 2.6.0-1
 
 - Fix migration scripts from 2.4.3 to 2.6.0
-- Exclude some substitutions which prevent the vertical extent element from being fully expanded
+- Exclude some substitutions which prevent the vertical extent element from
+  being fully expanded
 
 ================================================================================
 ===
@@ -199,30 +234,36 @@ fixes in 2.6.0-1
 --- Bug fixes
 --------------------------------------------------------------------------------
 
-- Fix #223: manage parameter names from capabilities document in case-insensitive manner
+- Fix #223: manage parameter names from capabilities document in
+  case-insensitive manner
 - Fix #246: Simplify metadata view. Restored old layout to show metadata.
-- Fix #257: Release the screen overlay in metadata editor when an error happen saving the metadata
+- Fix #257: Release the screen overlay in metadata editor when an error happen
+  saving the metadata
 - Fix #265: Fix for mis-aligned options in opera and IE
 - Fix #271: CSW parent identifier field. Thanks Jürgen Weichand.
 - Fix #272. Removing last element in simple mode.
 - Fix #273: Update rss panel after delete metadata records
 - Fix #276: Export as CSV issues
-- Fix #278: Check online source already exist. Copy full distribution section content before update. 
-Thanks Sylvain for testing.
-- Fix #279: All maps are using same background layers. Harmonize size of all bbox inputs in edit and view mode.
+- Fix #278: Check online source already exist. Copy full distribution section
+  content before update. Thanks Sylvain for testing.
+- Fix #279: All maps are using same background layers. Harmonize size of all
+  bbox inputs in edit and view mode.
 - Fix #280: Alignment, highlighted, etc issues in metadata edit
-- Fix #286: After click Metadata button in search results, editing a metadata show advanced edit instead of previously selected.
+- Fix #286: After click Metadata button in search results, editing a metadata
+  show advanced edit instead of previously selected.
 - Fix #288: Show number of records to delete in massive delete confirm message
 - Fix #290: Improvements in export selection to pdf
 - Fix #291: Menu "Actions on selection" issues
 - Fix #292: Don't show the download button if the download link is empty
 - Fix #294: Security hole in GeoNetwork search
-- Fix #295: Calendar << and < buttons are not visible (blue on blue). Thanks Justin Rowles for patch
+- Fix #295: Calendar << and < buttons are not visible (blue on blue). Thanks
+  Justin Rowles for patch
 - Fix #296: Data rating window position
 - Fix #301: Update saxon to fix JIT bug (also introduce 9.1.0.8b) 
 - Fix #302: Include jdbm jar for JZKit3/Z3950 server
 - OGC WMS Harvester / fix malformed URL. Add serviceType lucene field.
-- Fix INSPIRE theme thesaurus name according to RDF file available in SVN utility folder.
+- Fix INSPIRE theme thesaurus name according to RDF file available in SVN
+  utility folder.
 - User manual updates
 - Do not display translation tools icon if no other language declared.
 - Fix selected group in advanced search
@@ -236,24 +277,28 @@ Thanks Sylvain for testing.
 --- Bug fixes
 --------------------------------------------------------------------------------
 - Fix for #263: Screen refresh not working
-- Fix #266: Show alert if click on "Add templates" button and no selected templates. Remove 
-from admin interface iso19115 templates.
+- Fix #266: Show alert if click on "Add templates" button and no selected
+  templates. Remove from admin interface iso19115 templates.
 - Fix for #267: Page coming up blank afer delete
 - Fix for #268: Mis-aligned result in search
 - Fix for #259: Fix for templates menu in administration
 - #255: Fixed help links
 - Fix for #265: Scroll-bar appearing when probably shouldn't
-- #244: Update popup position always to work correctly when the window is resized
-Fixes for IE. Thanks to Jürgen Seib for reporting
-- Fix GAST, "back to normal" since maven migration. Thanks to Jesse Eichar for his contribution.
+- #244: Update popup position always to work correctly when the window is
+  resized
+  Fixes for IE. Thanks to Jürgen Seib for reporting
+- Fix GAST, "back to normal" since maven migration. Thanks to Jesse Eichar for
+  his contribution.
 - Map viewer: save map state in cookies (layers config and extent)
-- Removed xlink:href attribute to link service and dataset in OGC WxS harvester which interact with XLink resolver. 
-Only uuidref attribute is used to navigate between records.
+- Removed xlink:href attribute to link service and dataset in OGC WxS harvester
+  which interact with XLink resolver. 
+  Only uuidref attribute is used to navigate between records.
 - Return all bboxes in brief formatting.
 - Fix #250: Removing old thumbnail for OGC harvester.
-- Fix #251. Xml search service does not use default param and does not keep any search results in session
-Make it behave more like the main search service.
-- Fix PDF print #252. Missing class due to wrong dependency version. Fix pdf selection and present print action.
+- Fix #251. Xml search service does not use default param and does not keep any
+  search results in session. Make it behave more like the main search service.
+- Fix PDF print #252. Missing class due to wrong dependency version. Fix pdf
+  selection and present print action.
 - #244: Fix position of Other actions panel
 - #253: User interface aligment issues in Opera and IE
 - Replaced TRUNCATE with DELETE commands for Oracle data script.
@@ -276,19 +321,26 @@ Make it behave more like the main search service.
 - Fix #146: Illegal character handling not robust
 - Fix #170: Store more than one record in user session. Thanks Simon.
 - Fix #202 to get "Not" and "PropertyIsNotEqualTo" filters work correctly
-- Fix #218: Check privileges before exporting private data in MEF1 and MEF2 export.
+- Fix #218: Check privileges before exporting private data in MEF1 and MEF2
+  export.
 - Fix #219: Sample lacks download button
-- Fix #224. For each outputFormat provided by WFS server add an OnlineSource? link to allow download of features.
+- Fix #224. For each outputFormat provided by WFS server add an OnlineSource?
+  link to allow download of features.
 - Fix #225: Add OpenSearch suggestion support.
 - Fix #228: Add search criteria for revision, publication, creation date. 
 - Fix #237: Replace Intermap with OpenLayers
 - Fix #241: support for IPv6
-- Fix #247: org.apache.lucene.store.AlreadyClosedException occurs for concurrent CSW getRecords requests
-- Fix #248: CSW: Provide configurable limit on records examined for getcapabilities keywords and getdomain propertyname
+- Fix #247: org.apache.lucene.store.AlreadyClosedException occurs for concurrent
+  CSW getRecords requests
+- Fix #248: CSW: Provide configurable limit on records examined for
+  getcapabilities keywords and getdomain propertyname
 - Fix #249: CSW / GetRecords / results_with_summary : empty results
-- CSW: Implement reprojection of geometries in ogc:Filter to WGS84, add missing Equals filter and 
-Within filter does within, make sure filter-to-lucene.xsl doesn't try to handle ogc:Not over spatial expressions
-- CSW and Search: Change IndexReader handling in LuceneSearcher and CatalogSearcher
+- CSW: Implement reprojection of geometries in ogc:Filter to WGS84, add missing
+  Equals filter and 
+  Within filter does within, make sure filter-to-lucene.xsl doesn't try to handle
+  ogc:Not over spatial expressions
+- CSW and Search: Change IndexReader handling in LuceneSearcher and
+  CatalogSearcher
 - Z3950: Don't add collections from GeoNetwork Z server if it isn't enabled
 - Include mime type in Lucene index.
 
@@ -307,7 +359,8 @@ Within filter does within, make sure filter-to-lucene.xsl doesn't try to handle 
 --------------------------------------------------------------------------------
 --- Changes
 --------------------------------------------------------------------------------
-- INSPIRE support, including a specific search form (disabled by default, enable in the System preferences panel)
+- INSPIRE support, including a specific search form (disabled by default, enable
+  in the System preferences panel)
 - CSW ISO profile updates and test suite
 - GeoServer upgrade to v2.0.1 with the REST API and SLD Styler included
 - Search speed improvements (more to come in v2.6.0, due in August 2010!)
@@ -322,18 +375,21 @@ Within filter does within, make sure filter-to-lucene.xsl doesn't try to handle 
 --- Bug fixes
 --------------------------------------------------------------------------------
 
-158: CSW harvesting. Send preferred outputSchema from Capabilties in requests
-155: CSW harverting only supports 2.0.2 servers 
-156:Proxy server is not used for all CSW harvesting operations (also fixed OGCWXS harvester)
-Fix for ticket 125: Increase perfomance of showing metadata executing increase popularity asynchronously
-Fixed keyword identifier with no #. See #147.
-Close existing Lucene searcher. Fixed type issue.
-Case insensitive UUID handling
-Fixed bad attribute name. Thanks Richard Walker.
-Fixed javascript error with IE8 (#145). Thanks to Christopher and Andrew.
-Fixed UUID generation when inserting metadata with option : "Generate UUID ..." (#144).
-updated change log
-Inline documentation
+- 158: CSW harvesting. Send preferred outputSchema from Capabilties in requests
+- 155: CSW harverting only supports 2.0.2 servers 
+- 156:Proxy server is not used for all CSW harvesting operations (also fixed
+  OGCWXS harvester)
+- Fix for ticket 125: Increase perfomance of showing metadata executing increase
+  popularity asynchronously
+- Fixed keyword identifier with no #. See #147.
+- Close existing Lucene searcher. Fixed type issue.
+- Case insensitive UUID handling
+- Fixed bad attribute name. Thanks Richard Walker.
+- Fixed javascript error with IE8 (#145). Thanks to Christopher and Andrew.
+- Fixed UUID generation when inserting metadata with option : "Generate UUID ..."
+  (#144).
+- updated change log
+- Inline documentation
 
 ================================================================================
 ===
@@ -346,11 +402,14 @@ Inline documentation
 
 - Corrected Dutch translation
 - Fixed force rebuild index on startup.
-- Fixed hardcoded english strings in javascript. Use the translate(tagName) function and the js attribute in loc file now.
-- Added login support for CSW operations from CSW test page to easily test transactions.
+- Fixed hardcoded english strings in javascript. Use the translate(tagName)
+  function and the js attribute in loc file now.
+- Added login support for CSW operations from CSW test page to easily test
+  transactions.
 - Translation fix. Thanks Jean Pommier.
 - Added doc to disabled caching and use Saxon.
-- #141 Fixed XSL compilation error for RSS services (due to additional bracket). Thanks to Roger and Jean.
+- #141 Fixed XSL compilation error for RSS services (due to additional bracket).
+  Thanks to Roger and Jean.
 - Fixed typo in codelists (#140).
 - Fixed category search menu. See #139
 - Fixed keyword autocompletion. Thanks Richard Walker. #134
@@ -366,7 +425,8 @@ Inline documentation
 
 - Added MD5 checksum creation to installer build process
 - Alter sections of manual that describe system configuration to include
-- Bring fgdc thumbnail handling into line with ISO (ie. add thumbnail upload/button to editor)
+- Bring fgdc thumbnail handling into line with ISO (ie. add thumbnail
+  upload/button to editor)
 - bulk import.
 - Capabilities_Filter section is mandatory
 - CSW / Fix fallback to POST method if existing.
@@ -376,20 +436,25 @@ Inline documentation
 - Enhancement - ticket #131 - add thumbnail display for fgdc metadata
 - Fix bug with permissions when GN in Z server role
 - Fix for Oracle SQL create database script
-- Fix includes in summary/brief metadata returned by z3950 so that they work with saxon
+- Fix includes in summary/brief metadata returned by z3950 so that they work
+  with saxon
 - Fix links to manual.pdf
 - Fixed checkBoxAsBoolean for multiple checkboxes, thanks FXP
 - Folder related to Jeeves
 - folder related to xslt caching
-- For type gco:Boolean use a checkbox control in the editor. If user checks / unchecks the box, the value of a hidden input is set to true or false respectively.
+- For type gco:Boolean use a checkbox control in the editor. If user checks /
+  unchecks the box, the value of a hidden input is set to true or false
+  respectively.
 - group authentication options to include self-registration, clarify choices
-- Handle <image type="unknown" ..> links to thumbnails from all standards by scaling down
+- Handle <image type="unknown" ..> links to thumbnails from all standards by
+  scaling down
 - harvest from geonetwork node wasn't updating thumbnails
 - harvested records should not be synced by metadata sync in gast
 - Make sure gast picks up xslt transformer factory choices from services
 - Minor fix required to pass two tests from OGC CSW 2.0.2 test suite
 - modalbox fixes including tabbing between form fields
-- Prevent confusing error caused by attempting to add a thumbnail with empty filename
+- Prevent confusing error caused by attempting to add a thumbnail with empty
+  filename
 - Remove unnecessary include which caused saxon to return an error when doing
 - Remove unused xalan namespace from xslt
 - removing geonetwork APIs from SVN
@@ -422,7 +487,8 @@ Inline documentation
   localised string needed in JS files. This could allow to make a better 
   separation with JS and XSL files (ie. remove all JS from XSL files) and call 
   this array to retrieve localised string from JS.
-- edit / edit buttons : localisation and truncate title if larger than XX character.
+- edit / edit buttons : localisation and truncate title if larger than XX
+  character.
 - Do not capitalize all element name to avoid Point Of Contact. Fixe capitalize 
   in localisation files if needed.
 - import / Add batch MEF import
@@ -433,14 +499,16 @@ Inline documentation
 --------------------------------------------------------------------------------
 
 - Add support for proxies to OAI and OGC (thumbnail) harvesters
-- Delete public/private resources after MEF backup in both Delete and MassiveDelete
+- Delete public/private resources after MEF backup in both Delete and
+  MassiveDelete
 - Fix bug in metadata copy/paste reported by Heikki (Ticket 104)
 - Add results page for metadata batch import and metadata copy/paste
 - csw / SummaryComparator should not trigger exception when numeric comparison 
   occurs on wrong data type (eg. scale denominator). Those values are pushed to 
   the bottom of the list.
 - edit / Use new layout for gmd:MD_Metadata/gmd:Contact
-- edit / When duplicating metadata only groupOwner could be set (not a multiple select box)
+- edit / When duplicating metadata only groupOwner could be set (not a multiple
+  select box)
 - Fix some JS error for non escaped character in localised file (french mainly).
 
 ================================================================================
@@ -452,7 +520,7 @@ Inline documentation
 --- Changes
 --------------------------------------------------------------------------------
 
-- Allow Featured map result to be limited to a specified bounding box (global is 
+- Allow Featured map result to be limited to a specified bounding box (global is
   default)
   
 - Fix to prevent Stack Overflow when validating large metadata documents
@@ -500,11 +568,14 @@ Inline documentation
 
 - Added russian translation (Thanks to Igor V. Burago) #93
 
-- Improve CSW 2.0.2 ISO Profil support (http://trac.osgeo.org/geonetwork/wiki/CSW202Improvements)
+- Improve CSW 2.0.2 ISO Profil support
+  (http://trac.osgeo.org/geonetwork/wiki/CSW202Improvements)
 
-- Added import XML/MEF file (http://trac.osgeo.org/geonetwork/wiki/MetadataImport)
+- Added import XML/MEF file
+  (http://trac.osgeo.org/geonetwork/wiki/MetadataImport)
 
-- Added SelectionManager (http://trac.osgeo.org/geonetwork/wiki/SelectionManager)
+- Added SelectionManager
+  (http://trac.osgeo.org/geonetwork/wiki/SelectionManager)
 
 - Ajax Editor Controls and other Editor Enhancements  
   (http://trac.osgeo.org/geonetwork/wiki/AjaxEditorControlsAndValidation)
@@ -518,32 +589,37 @@ Inline documentation
 - Restore editing rights and ownership enhancements
   (http://trac.osgeo.org/geonetwork/wiki/Permissions)
   
-- User Self-Registration Service (http://trac.osgeo.org/geonetwork/wiki/SelfRegistration)
-  option to Administration->System Configuration to enable/disable UserSelfRegistration
+- User Self-Registration Service
+  (http://trac.osgeo.org/geonetwork/wiki/SelfRegistration)
+  option to Administration->System Configuration to enable/disable
+  UserSelfRegistration
 
-- Add Shibboleth as an authentication option (http://trac.osgeo.org/geonetwork/wiki/ShibbolethAuth)
+- Add Shibboleth as an authentication option
+  (http://trac.osgeo.org/geonetwork/wiki/ShibbolethAuth)
 
 - Upgraded GeoServer to version 1.7.3
 
 - Upgraded Jetty servlet container to version 6.1.14
 
-- Moved data folder out of WEB-INF folder to ./data in the root of the application
+- Moved data folder out of WEB-INF folder to ./data in the root of the
+  application
 
 - Added multilingual support in installer
 
 - Added french translation of the documentation
 
-- Added file system harvester to harvest metadata from local directory (from the server perspective)
+- Added file system harvester to harvest metadata from local directory (from the
+  server perspective)
 
 - Added ArcSDE harvester to harvest metadata from an ArcSDE geodatabase 
   (requires dummy library to be replaced with ESRI Java API to work)
 
 - Added support for printing search result in PDF format 
-(http://trac.osgeo.org/geonetwork/wiki/PrintPdf)
+  (http://trac.osgeo.org/geonetwork/wiki/PrintPdf)
 
-- Added support to harvest the OGC:GetCapabilities (WMS, WFS, WCS and WPS) documents
-to produce metadata for services and layers/featuretypes/coverages
-in ISO19139/119 format (http://trac.osgeo.org/geonetwork/wiki/ISO19119impl)
+- Added support to harvest the OGC:GetCapabilities (WMS, WFS, WCS and WPS)
+  documents to produce metadata for services and layers/featuretypes/coverages
+  in ISO19139/119 format (http://trac.osgeo.org/geonetwork/wiki/ISO19119impl)
 
 --------------------------------------------------------------------------------
 --- Bug fixes
@@ -582,7 +658,8 @@ in ISO19139/119 format (http://trac.osgeo.org/geonetwork/wiki/ISO19119impl)
   
 - Presentation updates for embedded metadata show.
 
-- Simplification of the presentation of the metadata using 'fieldset' instead of 
+- Simplification of the presentation of the metadata using 'fieldset' instead of
+
   dotted lines to display metadata blocks
 
 - upgraded Jeeves and related commons-fileupload-1.2.1.jar
@@ -844,8 +921,8 @@ InterMap:
  
 - Added 'sources' to search summary
 
-- Now the mef.export service is accessible to users. Export is limited by metadata
-  privileges.
+- Now the mef.export service is accessible to users. Export is limited by
+  metadata privileges.
 
 --------------------------------------------------------------------------------
 --- Bugs fixed
@@ -880,11 +957,13 @@ InterMap:
 --- Known issues
 -----------------------------------------------------------
 
-- Some of the metadata display links do not open as embedded view while they should
+- Some of the metadata display links do not open as embedded view while they
+  should
 
 - The Map Viewer "Add note" function is not fully functional yet
 
-- The overview map does not automatically refresh when adding a new layer from the metadata
+- The overview map does not automatically refresh when adding a new layer from
+  the metadata
 
 ================================================================================
 ===
@@ -895,7 +974,8 @@ InterMap:
 --- New
 --------------------------------------------------------------------------------
 
-- Added portal.opensearch service to allow search from client supporting OpenSearch.org spec.
+- Added portal.opensearch service to allow search from client supporting
+  OpenSearch.org spec.
 
 - Added xml.region.get service to retrieve Bounding Box given a region id
 
@@ -912,9 +992,11 @@ InterMap:
 
 - Added possibility to specify proxy's credentials
 
-- Included a version of GeoServer with Blue marble and country boundaries base layers
+- Included a version of GeoServer with Blue marble and country boundaries base
+  layers
 
-- Handling interactive maps for metadata with OnlineResources holding getCapabilities WMS servers.
+- Handling interactive maps for metadata with OnlineResources holding
+  getCapabilities WMS servers.
 
 - Build tools for Windows native installer (win and *nix, macosx cleaned up)
 
@@ -922,13 +1004,14 @@ InterMap:
 --- Changes
 --------------------------------------------------------------------------------
 
-- Intermap: added interaction with region selection dropdown list. Overview map zooms
-  to AoI and keeps AoI set
+- Intermap: added interaction with region selection dropdown list. Overview map
+  zooms to AoI and keeps AoI set
   
-- AJAX based default and advanced search interfaces added and navigation improved
+- AJAX based default and advanced search interfaces added and navigation
+  improved
 
-- Intermap: when adding layers, the server list is now created on server via XSL, and no longer
-  via JS on client.
+- Intermap: when adding layers, the server list is now created on server via
+  XSL, and no longer via JS on client.
 
 - Intermap: the layer list is now created on server via XSL, and no longer
   via JS on client.
@@ -955,7 +1038,8 @@ InterMap:
 
 - Improved default and advanced search forms
 
-- Improved presentation of beginPosition and endPosition fields in iso19139 editor (have calendars)
+- Improved presentation of beginPosition and endPosition fields in iso19139
+  editor (have calendars)
 
 - Home link always goes to homepage
 
@@ -1091,7 +1175,8 @@ InterMap:
 - Fixed bug with data upload: if the browser was IE and the server was running
   on linux the upload file name contained the file path
 
-- Fixed a bug in user creation page: it was not possible to create administrators
+- Fixed a bug in user creation page: it was not possible to create
+  administrators
 
 - Fixed a nasty bug in the editor that caused a stack overflow with date
   and thesaurusName elements.
@@ -1137,7 +1222,8 @@ InterMap:
 - Updated documentation.
 
 - Now it is possible to search multiple keywords and categories in the server.
-  Fields are specified using multiple key-value pairs (like category=aaa&category=bbb).
+  Fields are specified using multiple key-value pairs (like
+  category=aaa&category=bbb).
   Fields are put in OR form.
 
 --------------------------------------------------------------------------------
@@ -1196,7 +1282,7 @@ InterMap:
 --- Changes
 --------------------------------------------------------------------------------
 
-- User administration: now the group list is not shown if the choosen profile is 
+- User administration: now the group list is not shown if the choosen profile is
   'Administrator'
 
 - Z39.50 : repositories.xml and schema-mappings.xml files are now processed at
@@ -1213,17 +1299,20 @@ InterMap:
 - Removed 'siteId' option to batch import. Files that do not end with '.xml' are
   skipped during import.
 
-- Now it is possible to remove categories and groups when they have fkey relationships.
-  Affected metadata are now reindexed.
+- Now it is possible to remove categories and groups when they have fkey
+  relationships. Affected metadata are now reindexed.
 
-- User add form : added alert if no group is selected, highlithed mandatory fields
+- User add form : added alert if no group is selected, highlithed mandatory
+  fields
 
 - Metadata privileges : added a button to set all privileges all at once.
 
 - Metadata creation and duplication: changed groups's combobox to a list
 
-- ISO19139: Changed 'language' element to a char 3 code. Added a dropdown to the 
-  editor to choose the language. Updated migration stylesheets from 19115 -> 19139
+- ISO19139: Changed 'language' element to a char 3 code. Added a dropdown to the
+
+  editor to choose the language. Updated migration stylesheets from 19115 ->
+  19139
 
 - ISO19139: Fixed TopicCategoryCode. It is not a codelist
 
@@ -1243,7 +1332,8 @@ InterMap:
 
 - Fixed an exception raised when changing user information
 
-- Fixed bug in metadata.admin.form : now only groups visible to the user are returned
+- Fixed bug in metadata.admin.form : now only groups visible to the user are
+  returned
 
 - Fixed bug in the editor : on Windows machines, CR/LF were doubled on saving
 
@@ -1253,10 +1343,12 @@ InterMap:
 
 - User's form: the group's name was not localized
 
-- Forced the 'gmd' prefix to iso 19139 metadata to both xml insert and batch import
+- Forced the 'gmd' prefix to iso 19139 metadata to both xml insert and batch
+  import
 
 - Fixed bug with metadata xml insert: 'title' is no longer mandatory if the
-  kind is not subtemplate. Added some javascript to show/hide the title textfield.
+  kind is not subtemplate. Added some javascript to show/hide the title
+  textfield.
 
 - Fixed bug with MEF exports that caused corrupted files on Windows machines
 
@@ -1350,7 +1442,8 @@ InterMap:
 --- Bugs fixed
 --------------------------------------------------------------------------------
 
-- Fixed bug with advanced search: the results were wrong if bounds were not specified
+- Fixed bug with advanced search: the results were wrong if bounds were not
+  specified
 
 - Harvesting : fixed an exception raised when adding new nodes
 
@@ -1364,7 +1457,8 @@ InterMap:
 
 - Added catalogue services for the web 2.0.1
 
-- Added ISO19115 CSW 2.0.1 output stylesheets (thanks to Steven Smolders/Stefaan Desender)
+- Added ISO19115 CSW 2.0.1 output stylesheets (thanks to Steven Smolders/Stefaan
+  Desender)
 
 - Added RSS search services
 
@@ -1375,7 +1469,8 @@ InterMap:
 - Logs moved into jetty/log folder. Now old logs are archived
 
 - Added web/WEB-INF/db/data.tgz. This is an empty McKoi database ready for use,
-  very usefull to users that do a cvs checkout/update: simply unpack where it is.
+  very usefull to users that do a cvs checkout/update: simply unpack where it
+  is.
 
 - Added localization of categories, groups, regions, operations and profiles
 
@@ -1417,13 +1512,15 @@ InterMap:
 - Fixed problem with IPv6 protocol: geonetwork was unable to handle the 
   0:0:0:0:0:0:0:1 local address.
 
-- Fixed a security hole: using sql injection was possible to login into geonetwork
+- Fixed a security hole: using sql injection was possible to login into
+  geonetwork
 
 - Fixed "Services is not a subcontext" exception with Z39.50
 
 - Added reconnection patch for MySQL (thanks to Enri Zhou)
 
-- Fixed a security hole in user management : a user admin could gain admin privileges
+- Fixed a security hole in user management : a user admin could gain admin
+  privileges
 
 ================================================================================
 ===
@@ -1431,7 +1528,8 @@ InterMap:
 ===
 ================================================================================
 
-- Removed bug in showing metadata with multiline fields (fields containing CR-LF)
+- Removed bug in showing metadata with multiline fields (fields containing
+  CR-LF)
 
 - Possibly fixed nasty bug in validation on Windows PCs
 
@@ -1442,11 +1540,13 @@ InterMap:
 --------------------------------------------------------------------------------
 
 - List of user: now administrators cannot remove themselves. This prevent some
-  inconsistencies like the user being logged in and not existing into the database.
+  inconsistencies like the user being logged in and not existing into the
+  database.
 
 - Asked confirmation when deleting users
 
-- Now it is not possible to edit metadata which source is different from the site id
+- Now it is not possible to edit metadata which source is different from the
+  site id
 
 - Now thumbnails button in editing is shown only for iso19115 metadata
 
@@ -1458,10 +1558,13 @@ InterMap:
 
 - Added GeoRSS button to the recent additions
 
-- Included MySQL and Oracle JDBC drivers for easy installation on these databases.
-  The warning to put JDBC drivers in place during the installation has been removed.
+- Included MySQL and Oracle JDBC drivers for easy installation on these
+  databases.
+  The warning to put JDBC drivers in place during the installation has been
+  removed.
 
-- Thumbnails are now shown for harvested data (there is a link to the remote site)
+- Thumbnails are now shown for harvested data (there is a link to the remote
+  site)
 
 - Added jdbc drivers for mysql and oracle
 
@@ -1472,8 +1575,8 @@ InterMap:
 - A user can duplicate metadata only if he has the proper privilege 
   ('metadata.duplicate.form')
 
-- maxClauses parameters in Lucene BooleanQuery constructor is now 16384 instead of 
-  the default of 1024
+- maxClauses parameters in Lucene BooleanQuery constructor is now 16384 instead
+  of the default of 1024
 
 - Fixed bug with the mckoi's activator. Now installing a DBMS other than McKoi
   works fine.
@@ -1494,7 +1597,8 @@ InterMap:
 
 - Added french and spanish translations
 
-- Added option to save installation settings for re-installing from the command line
+- Added option to save installation settings for re-installing from the command
+  line
 
 - Added an About page to the site
 
@@ -1505,7 +1609,8 @@ InterMap:
 
 - Added possibility to have multiple inheritance to user profiles
 
-- Added email notification to a group administrator when a user downloads a resource
+- Added email notification to a group administrator when a user downloads a
+  resource
 
 --------------------------------------------------------------------------------
 --- Changes
@@ -1543,14 +1648,14 @@ InterMap:
 
 - Fixed bug in the editor: the template property was not saved
 
-- Fixed bug that caused the editor to open a  different window pressing "Save" and 
-  the other buttons, if "Check" was pressed before
+- Fixed bug that caused the editor to open a  different window pressing "Save"
+  and the other buttons, if "Check" was pressed before
 
 - Fixed Interactive button on search results page to correctly open a WMS in 
   InterMap opensource
 
-- Download link on metadata page checked for dynamic privilege instead of download 
-  privilege
+- Download link on metadata page checked for dynamic privilege instead of
+  download privilege
 
 - Now the feedback email is correctly sent
 
@@ -1571,7 +1676,8 @@ InterMap:
 ===
 ================================================================================
 
-- Added an alpha release of the CSW specification (not usable, work in progress).
+- Added an alpha release of the CSW specification (not usable, work in
+  progress).
 
 ================================================================================
 === Changes
@@ -1579,7 +1685,8 @@ InterMap:
 
 - Upgraded Jetty to 5.1.5 RC2
 
-- Transformed "save & check" in "check". Now opens a different window with diagnostic
+- Transformed "save & check" in "check". Now opens a different window with
+  diagnostic
 
 - Removed thumbnails handling in simple editor
 
@@ -1592,12 +1699,14 @@ InterMap:
 === Bugs fixed
 ================================================================================
 
-- Fixed bug with config.xml. The oracle resource was enabled instead of the McKoi
-  one. This fixes bugs [1349939] and [1349849].
+- Fixed bug with config.xml. The oracle resource was enabled instead of the
+  McKoi one. This fixes bugs [1349939] and [1349849].
 
-- Fixed bug [1314928] : oracle returns "1.0" instead of "1". This caused some problems.
+- Fixed bug [1314928] : oracle returns "1.0" instead of "1". This caused some
+  problems.
 
-- Fixed some bugs with the MySql database schema (converted some varchars to text)
+- Fixed some bugs with the MySql database schema (converted some varchars to
+  text)
 
 ================================================================================
 ===
@@ -1617,7 +1726,8 @@ InterMap:
 === Changes
 ================================================================================
 
-- Search for templates is hidden to simple registerd users (only allow from editors up)
+- Search for templates is hidden to simple registerd users (only allow from
+  editors up)
 
 - Moved login info to the righ
 
@@ -1677,7 +1787,7 @@ InterMap:
 - Added a 'Geonetwork' menu  in the OS 'application' menu
 
 - Added possibility to have a user administrator
-   - Added UserAdmin profile
+  - Added UserAdmin profile
 	- Filtered profile combobox : removed "Guest" profile and listed only profiles
 	  that are equal to or lower than the creating user 
 	
@@ -1707,13 +1817,15 @@ InterMap:
 - Harvesting procedure : if the username/password fields are missing (or empty)
   no login is performed on the remote site
 
-- Editing a user : now the group list is not shown if the user is an administrator
+- Editing a user : now the group list is not shown if the user is an
+  administrator
 
 - Grouped metadata dirs to handle large set of metadata
 
 - Removed "AdvancedEditor" profile. Allowed services moved "UserAdmin"
 
-- Installer : added some defaults. The user's password now must be at least 6 chars
+- Installer : added some defaults. The user's password now must be at least 6
+  chars
 
 - Changes to the database
 	- Renamed field "sourceId" to "sourceUri" in table "Metadata"
@@ -1746,7 +1858,8 @@ InterMap:
 
 - Fixed some issues with the dublin core
 
-- Bug fixed : metadata with empty thumbails generated exceptions on search results
+- Bug fixed : metadata with empty thumbails generated exceptions on search
+  results
  
 - Fixed index.html : now the small "GeoNetwork" text is not displayed
 
@@ -1754,7 +1867,8 @@ InterMap:
 
 - Fixed servlet name in res.xsl stylesheet
 
-- Fixed bug : emails were not sent to the mail account specified during the installation. 
+- Fixed bug : emails were not sent to the mail account specified during the
+  installation. 
 
 ================================================================================
 ===
@@ -1764,7 +1878,7 @@ InterMap:
 
 - Added a form to remove old, empty metadata
   An empty metadata has been defined as follow:
-    - it is not a template
+   - it is not a template
 	 - it is local (its source == to the geonetwork site id)
 	 - the difference between the last change date and the creation date (in
 	   minutes) is less than a given difference
@@ -1773,8 +1887,8 @@ InterMap:
 - Added a button to create a metadata from a template
   Added a form (in administration) to create a metadata from a template
   
-- Added an UUID to metadata when creating it from a template, from the xml import
-  or from the batch import forms.
+- Added an UUID to metadata when creating it from a template, from the xml
+  import or from the batch import forms.
 
 - Improved ISO editor stylesheet
 
@@ -1800,7 +1914,7 @@ InterMap:
   Now the user can see only the groups he belongs to.
 
 - Changes to the database (installer data files adjusted as needed):
-   - Table Metadata: added "uuid"
+  - Table Metadata: added "uuid"
 	- Table Groups  : added "description", "email", "referrer"
 
 - Fixed some initial data in the installer
@@ -1811,7 +1925,7 @@ InterMap:
 - The harvesting procedure now stores the uuid got from the remote site
 
 - Creation of a new metadata ('create' button, xml insert/import): 
-   - privileges belonging to the 'internet' group are removed. This is related
+  - privileges belonging to the 'internet' group are removed. This is related
 	  to the 'search for empty/unused metadata' functionality.
 	- privileges belonging to the 'intranet' group are removed.
 	- the group that is adding the metadata has all privileges on it
@@ -1830,8 +1944,8 @@ InterMap:
 - Search results : fixed metadata logos and added the possibility to have a
   personal logo
 
-- The "UserGroups" data file was missing. The provided one binds the administrator 
-  to groups 0,1,2
+- The "UserGroups" data file was missing. The provided one binds the
+  administrator to groups 0,1,2
 
 - Fixed bug with the '+' button on element 'OnLineRes'
 
@@ -1840,7 +1954,8 @@ InterMap:
   
 - Minor bugs have been fixed.
 
-- Now trying Z39.50 search without search criteria or with no server selected shows an alert
+- Now trying Z39.50 search without search criteria or with no server selected
+  shows an alert
 
 - Thumbnails of harvested metadata are read from the source site
 
@@ -1848,8 +1963,8 @@ InterMap:
 === Known bugs
 ================================================================================
 
-- The stylesheets to store the UUID need to be fixed for the dublin core and fgdc
-  metadata schema
+- The stylesheets to store the UUID need to be fixed for the dublin core and
+  fgdc metadata schema
   
 - Some metadata elements don't get displayed (like those inside the OnLineRes) 
  
@@ -1857,4 +1972,5 @@ InterMap:
 
 - The search shows the templates too.
 
-- The feedback link is broken and some items on the links page are not shown correctly
+- The feedback link is broken and some items on the links page are not shown
+  correctly
