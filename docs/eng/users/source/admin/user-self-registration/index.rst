@@ -26,7 +26,7 @@ What happens when a user self-registers?
 ----------------------------------------
 
 When a user self-registration occurs, the user receives an email with the
-details they have provided in it that looks something like the following:
+new account details that looks something like the following:
 
 ::
 

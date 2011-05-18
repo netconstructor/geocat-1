@@ -656,7 +656,51 @@ ReplacementGroup                Id                              Id of element in
                                                                 replace or link from to contained fragments
 ==============================  ==============================  ==============================
 
-Finally, an example of how to use the Features from an OGC WFS harvester can be given using stylesheets and templates supplied with GeoNetwork.
+Finally, two examples of how to harvest metadata from the Features of an OGC WFS harvester can be given using stylesheets and templates supplied with GeoNetwork.
+
+Bundled GeoServer Boundaries Harvest example
+`````````````````````````````````````````````
+
+This example assumes that you have installed the bundled GeoServer that comes with GeoNetwork. The end result of this example will be 251 ISO19139 metadata records that link in 1506 fragments (6 per record) created from a GetFeature response on the boundaries shapefile in the GeoServer instance supplied with GeoNetwork. The records created contain metadata about the countries of the world.
+
+The procedure to follow is:
+
+- From the Administration->System Configuration menu, enable the XLink Resolver and *Save* the configuration to the database.
+- Add an *OGC WFS GetFeature response* harvester from the Administration->Harvesting menu.
+- Give it a *Name* (eg. gboundaries) and enter the URL of the bundled geoserver (eg. http://localhost:8080/geoserver)  in the *Service URL* field.
+- We'll use a simple GetFeature query to select all countries from the boundaries shapefile behind the WFS. The XML for such a query (which is to be entered in the *GetFeature Query* textarea) is:
+
+::
+
+		<wfs:GetFeature service="WFS" version="1.1.0"
+		  	xmlns:wfs="http://www.opengis.net/wfs">
+
+		 <wfs:Query typeName="gboundaries"/>
+
+		</wfs:GetFeature>
+
+- Choose an output schema - we'll choose *iso19139* as this schema has the example stylesheets and templates we need for this example. Notice that after this option is chosen the following options become visible and we'll take the following actions:
+
+	- Choose the supplied 'geoserver_boundary_fragments' stylesheet to extract fragments from the GetFeature response in the *Stylesheet to use to create fragments* pull-down list. This stylesheet can be found in INSTALL_DIR/web/geonetwork/web/xml/schemas/iso19139/convert/WFSToFragments. 
+	- Select the supplied 'Geoserver WFS Fragments Country Boundaries Test Template' template from the *Template to use to build metadata using fragments* pull-down list. This template can be found in INSTALL_DIR/web/geonetwork/web/xml/schemas/iso19139/templates/geoserver_fragment_tester.xml. 
+
+- Choose a category for the records created by the harvester, check the *One run only* box, add some privileges (simplest is to let All users have View rights). At this stage your harvester entry form should look like the following screenshot.
+
+.. figure:: web-harvesting-features-boundaries-example.png
+
+		*Adding a Features from OGC WFS harvester node - boundaries example*
+
+- *Save* the harvester entry form. 
+- You will be returned to the harvester operations menu where you can *Activate* the harvester and then *Run* it.
+
+After the harvester has been run you should see a results screen that looks something like the following screenshot.
+
+.. figure:: web-harvesting-features-boundaries-example-results.png
+
+*WFS GetFeature Harvesting - Results for geoserver boundaries example*
+
+The results page shows that there were 1506 fragments of metadata harvested from the WFS GetFeature response. They were saved to the GeoNetwork database as subtemplates and linked into the metadata template to form 251 new metadata records.
+
 
 Deegree Version 2.2 Philosopher Database example
 ````````````````````````````````````````````````
@@ -689,7 +733,7 @@ The procedure to follow is:
 
 .. figure:: web-harvesting-features.png
 
-		*Adding a Features from OGC WFS harvester node*
+		*Adding a Features from OGC WFS harvester node - philosopher example*
 
 - *Save* the harvester entry form. 
 - You will be returned to the harvester operations menu where you can *Activate* the harvester and then *Run* it.
