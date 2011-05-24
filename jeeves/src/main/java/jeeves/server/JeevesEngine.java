@@ -146,7 +146,7 @@ public class JeevesEngine
 			scheduleMan.setSerialFactory(serialFact);
 			scheduleMan.setBaseUrl(baseUrl);
 
-			loadConfigFile(configPath, Jeeves.CONFIG_FILE, serviceMan);
+			loadConfigFile(servlet, configPath, Jeeves.CONFIG_FILE, serviceMan);
 
 			info("Initializing profiles...");
 			serviceMan.loadProfiles(profilesFile);
@@ -235,13 +235,15 @@ public class JeevesEngine
 	//---------------------------------------------------------------------------
 
 	@SuppressWarnings("unchecked")
-	private void loadConfigFile(String path, String file, ServiceManager serviceMan) throws Exception
+	private void loadConfigFile(JeevesServlet servlet, String path, String file, ServiceManager serviceMan) throws Exception
 	{
 		file = path + file;
 
 		info("Loading : " + file);
 
 		Element configRoot = Xml.loadFile(file);
+
+        ConfigurationOverrides.updateWithOverrides(file, servlet, configRoot);
 
 		Element elGeneral = configRoot.getChild(ConfigFile.Child.GENERAL);
 		Element elDefault = configRoot.getChild(ConfigFile.Child.DEFAULT);
@@ -301,7 +303,7 @@ public class JeevesEngine
 		{
 			Element include = includes.get(i);
 
-			loadConfigFile(path, include.getText(), serviceMan);
+			loadConfigFile(servlet, path, include.getText(), serviceMan);
 		}
 	}
 
