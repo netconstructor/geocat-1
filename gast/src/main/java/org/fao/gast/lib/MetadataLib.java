@@ -57,7 +57,7 @@ public class MetadataLib
 
 	public MetadataLib() throws Exception
 	{
-		_schemaMan = new SchemaManager(Config.getConfig().getWebapp()+"/", "", "en", "iso19139");
+		_schemaMan = SchemaManager.getInstance(Config.getConfig().getWebapp()+"/", "", "en", "iso19139");
 	}
 
 	//---------------------------------------------------------------------------
