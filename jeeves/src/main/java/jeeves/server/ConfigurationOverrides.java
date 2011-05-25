@@ -202,10 +202,10 @@ class ConfigurationOverrides {
 
     private static void removeXml(Properties properties, Element elem, Element configRoot) throws JDOMException {
         String xpath = getXPath(elem);
-        List<Element> matches = xpathLookup(configRoot, xpath);
+        List<Content> matches = xpathLookup(configRoot, xpath);
         info("Removing xml elements: " + xpath);
 
-        for (Element match : matches) {
+        for (Content match : matches) {
             match.detach();
         }
     }
@@ -224,26 +224,37 @@ class ConfigurationOverrides {
             debug("Adding to root element");
             configRoot.addContent(newXml);
         } else {
-            List<Element> matches = xpathLookup(configRoot, xpath);
-            for (Element match : matches) {
-                debug("Adding xml to "+XPath.getXPath(match));
-                match.addContent(newXml);
+            List<Content> matches = xpathLookup(configRoot, xpath);
+            for (Content match : matches) {
+                if (match instanceof Element) {
+                    Element element = (Element) match;
+                    debug("Adding xml to " + XPath.getXPath(element));
+                    element.addContent(newXml);
+                } else {
+                    throw new IllegalArgumentException("the xpath of an Add XML overrides must select elements only");
+                }
             }
         }
     }
 
     private static void replaceXml(Properties properties, Element elem, Element configRoot) throws JDOMException {
         String xpath = getXPath(elem);
-        List<Element> matches = xpathLookup(configRoot, xpath);
+        List<Content> matches = xpathLookup(configRoot, xpath);
         List<Content> newXml = updateProperties(properties, elem);
-        info("Replacing child xml elements of "+xpath);
-        debug("New elements are:"+Xml.getString(new Element("toAdd").addContent(newXml)));
+        info("Replacing child xml elements of " + xpath);
+        debug("New elements are:" + Xml.getString(new Element("toAdd").addContent(newXml)));
         for (Content content : newXml) {
             content.detach();
         }
-        for (Element toUpdate : matches) {
-            debug("replacingXML of "+ XPath.getXPath(toUpdate));
-            toUpdate.setContent(newXml);
+        for (Content toUpdate : matches) {
+            if (toUpdate instanceof Element) {
+                Element element = (Element) toUpdate;
+                debug("replacingXML of " + XPath.getXPath(element));
+                element.setContent(newXml);
+            } else {
+                throw new IllegalArgumentException("the xpath of an Replace XML override must select elements only");
+            }
+
         }
     }
 
@@ -253,49 +264,69 @@ class ConfigurationOverrides {
         info("Replacing text of " + xpath);
         debug("New text is:" + text);
 
-        List<Element> matches = xpathLookup(configRoot, xpath);
-        for (Element toUpdate : matches) {
+        List<Content> matches = xpathLookup(configRoot, xpath);
+        for (Content toUpdate : matches) {
+            if (toUpdate instanceof Element) {
+                Element element = (Element) toUpdate;
+                debug("replacing Text of " + XPath.getXPath(element));
+                List<Text> textContent = toList(element.getDescendants(TEXTS_FILTER));
 
-            debug("replacing Text of "+ XPath.getXPath(toUpdate));
-            List<Text> textContent = toList(toUpdate.getDescendants(TEXTS_FILTER));
-
-            if (textContent.size() > 0) {
-                for (int i = 0; i < textContent.size(); i++) {
-                    Text text1 = textContent.get(i);
-                    if (i == 0 && text.length() > 0) {
-                        text1.setText(text);
-                    } else {
-                        text1.detach();
+                if (textContent.size() > 0) {
+                    for (int i = 0; i < textContent.size(); i++) {
+                        Text text1 = textContent.get(i);
+                        if (i == 0 && text.length() > 0) {
+                            text1.setText(text);
+                        } else {
+                            text1.detach();
+                        }
                     }
+                } else {
+                    element.addContent(text);
                 }
             } else {
-                toUpdate.addContent(text);
+                throw new IllegalArgumentException("the xpath of an Replace Text override must select elements only");
             }
+
         }
     }
 
     private static void replaceAtts(Properties properties, Element elem, Element configRoot) throws JDOMException {
         String xpath = getXPath(elem);
-        List<Element> matches = xpathLookup(configRoot, xpath);
+        List<Content> matches = xpathLookup(configRoot, xpath);
         String attName = getCaseInsensitiveAttValue(elem, ATTNAME_ATTR_NAME, true);
         String newValue = updatePropertiesInText(properties, getCaseInsensitiveAttValue(elem, VALUE_ATTR_NAME, false));
 
-        info("Replacing attribute "+attName+" of node "+xpath);
+        info("Replacing attribute " + attName + " of node " + xpath);
         debug("New attribute is:" + newValue);
 
 
-        for (Element toUpdate : matches) {
-            debug("Updating attibute of node "+XPath.getXPath(toUpdate));
-            if (newValue == null) {
-                toUpdate.removeAttribute(attName);
+        for (Content toUpdate : matches) {
+            if (toUpdate instanceof Element) {
+                Element element = (Element) toUpdate;
+                debug("Updating attibute of node " + XPath.getXPath(element));
+                if (newValue == null) {
+                    element.removeAttribute(attName);
+                } else {
+                    element.setAttribute(attName, newValue);
+                }
             } else {
-                toUpdate.setAttribute(attName, newValue);
+                throw new IllegalArgumentException("the xpath of an Replace Attribute override must select elements only");
             }
         }
     }
 
-    private static List<Element> xpathLookup(Element configRoot, String xpath) throws JDOMException {
-        return Xml.selectNodes(configRoot, xpath);
+    private static List<Content> xpathLookup(Element configRoot, String xpath) throws JDOMException {
+        List<?> objects = Xml.selectNodes(configRoot, xpath);
+        List<Content> elements = new ArrayList<Content>();
+
+        for (Object object : objects) {
+            if (object instanceof Content) {
+                elements.add((Element) object);
+            } else {
+                throw new Error("How can this not be a content element");
+            }
+        }
+        return elements;
     }
 
     private static Properties loadProperties(Element overrides) {
