@@ -1,15 +1,19 @@
 package jeeves.server;
 
 import jeeves.server.sources.http.JeevesServlet;
+import jeeves.utils.IO;
 import jeeves.utils.Log;
 import jeeves.utils.XPath;
 import jeeves.utils.Xml;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.spi.Configurator;
+import org.apache.log4j.spi.LoggerRepository;
 import org.jdom.*;
 import org.jdom.filter.Filter;
+import sun.util.logging.resources.logging;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -37,71 +41,82 @@ import java.util.regex.Pattern;
  * The override configuration structure is an XML file as follows:
  * <pre><[[CDATA[
  * <overrides>
- * <!-- properties allow some properties to be defined that will be substituted -->
- * <!-- into text or attributes where ${property} is the substitution pattern -->
- * <!-- The properties can reference other properties -->
- * <properties>
- * <fr>fr</fr>
- * <lang>${fr}</lang>
- * <host>localhost</host>
- * <enabled>true</enabled>
- * <dir>xml</dir>
- * </properties>
- * <!-- In this version only the file name is considered not the path.  -->
- * <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
- * <file name="config.xml">
- * <!-- This example will update the file attribute of the xml element with the name attribute 'countries' -->
- * <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/europeanCountries.xml"/>
- * <!-- if there is no value then the attribute is removed -->
- * <replaceAtt xpath="default/gui" attName="removeAtt"/>
- * <!-- If the attribute does not exist it is added -->
- * <replaceAtt xpath="default/gui" attName="newAtt" value="newValue"/>
- * <p/>
- * <!-- This example will replace all the xml in resources with the contained xml -->
- * <replaceXML xpath="resources">
- * <resource enabled="${enabled}">
- * <name>main-db</name>
- * <provider>jeeves.resources.dbms.DbmsPool</provider>
- * <config>
- * <user>admin</user>
- * <password>admin</password>
- * <driver>oracle.jdbc.driver.OracleDriver</driver>
- * <!-- ${host} will be updated to be local host -->
- * <url>jdbc:oracle:thin:@${host}:1521:fs</url>
- * <poolSize>10</poolSize>
- * </config>
- * </resource>
- * </replaceXML>
- * <!-- This example simple replaces the text of an element -->
- * <replaceText xpath="default/language">${lang}</replaceText>
- * <!-- This examples shows how only the text is replaced not the nodes -->
- * <replaceText xpath="default/gui">ExtraText</replaceText>
- * <!-- append xml as a child to a section (If xpath == "" then that indicates the root of the document),
- * this case adds nodes to the root document -->
- * <addXML xpath=""><newNode/></addXML>
- * <!-- append xml as a child to a section, this case adds nodes to the root document -->
- * <addXML xpath="default/gui"><newNode2/></addXML>
- * <!-- remove a single node -->
- * <removeXML xpath="default/gui/xml[@name = countries2]"/>
- * <!-- remove all matching nodes -->
- * <removeXML xpath="default//toRemove"/>
- * </file>
- * <file name="config2.xml">
- * <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/other.xml"/>
- * <replaceText xpath="default/language">de</replaceText>
- * </file>
- * </overrides>
+    <!-- The logging section allows logging configuration files to be specified -->
+    <!-- At the moment only property based configuration files are supported -->
+    <!-- There may be multiple configuration files -->
+    <!-- The properties are loaded in order and subsequent files will override -->
+    <!-- properties previously loaded.  This allows one to have shared configuration in -->
+    <!-- one log file and more specific configuration in other files -->
+    <logging>
+        <logFile>logfile1.properties</logFile>
+        <logFile>logfile2.properties</logFile>
+    </logging>
+     <!-- properties allow some properties to be defined that will be substituted -->
+     <!-- into text or attributes where ${property} is the substitution pattern -->
+     <!-- The properties can reference other properties -->
+     <properties>
+         <fr>fr</fr>
+         <lang>${fr}</lang>
+         <host>localhost</host>
+         <enabled>true</enabled>
+         <dir>xml</dir>
+     </properties>
+     <!-- In this version only the file name is considered not the path.  -->
+     <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
+     <file name="config.xml">
+         <!-- This example will update the file attribute of the xml element with the name attribute 'countries' -->
+         <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/europeanCountries.xml"/>
+         <!-- if there is no value then the attribute is removed -->
+         <replaceAtt xpath="default/gui" attName="removeAtt"/>
+         <!-- If the attribute does not exist it is added -->
+         <replaceAtt xpath="default/gui" attName="newAtt" value="newValue"/>
+
+         <!-- This example will replace all the xml in resources with the contained xml -->
+         <replaceXML xpath="resources">
+           <resource enabled="${enabled}">
+             <name>main-db</name>
+             <provider>jeeves.resources.dbms.DbmsPool</provider>
+              <config>
+                  <user>admin</user>
+                  <password>admin</password>
+                  <driver>oracle.jdbc.driver.OracleDriver</driver>
+                  <!-- ${host} will be updated to be local host -->
+                  <url>jdbc:oracle:thin:@${host}:1521:fs</url>
+                  <poolSize>10</poolSize>
+              </config>
+           </resource>
+         </replaceXML>
+         <!-- This example simple replaces the text of an element -->
+         <replaceText xpath="default/language">${lang}</replaceText>
+         <!-- This examples shows how only the text is replaced not the nodes -->
+         <replaceText xpath="default/gui">ExtraText</replaceText>
+         <!-- append xml as a child to a section (If xpath == "" then that indicates the root of the document),
+              this case adds nodes to the root document -->
+         <addXML xpath=""><newNode/></addXML>
+         <!-- append xml as a child to a section, this case adds nodes to the root document -->
+         <addXML xpath="default/gui"><newNode2/></addXML>
+         <!-- remove a single node -->
+         <removeXML xpath="default/gui/xml[@name = countries2]"/>
+     </file>
+         <file name="config2.xml">
+         <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/other.xml"/>
+         <replaceText xpath="default/language">de</replaceText>
+     </file>
+ </overrides>
  * ]]></pre>
  */
 class ConfigurationOverrides {
+
+
     enum Updates {
         REPLACEATT,
         REPLACEXML,
         ADDXML,
         REMOVEXML,
-        REPLACETEXT
+        REPLACETEXT;
     }
 
+    static String LOGFILE_XPATH = "logging/logFile";
     private static String OVERRIDES_KEY = "jeeves.configuration.overrides.file";
     private static String ATTNAME_ATTR_NAME = "attName";
     private static String VALUE_ATTR_NAME = "value";
@@ -121,44 +136,46 @@ class ConfigurationOverrides {
     };
 
 
-    public static void updateWithOverrides(String configFile, JeevesServlet servlet, Element configRoot) throws JDOMException, IOException {
-        String overrides = System.getProperty(OVERRIDES_KEY);
-        if (overrides == null) {
-            overrides = servlet.getInitParameter(OVERRIDES_KEY);
-        }
-        if (overrides == null) {
-            overrides = servlet.getServletContext().getInitParameter(OVERRIDES_KEY);
-        }
+    public static void updateLoggingAsAccordingToOverrides(JeevesServlet servlet) throws JDOMException, IOException {
+        String resource = lookupOverrideParameter(servlet);
 
-        if (overrides != null) {
-            Element xml;
-            try {
-                xml = Xml.loadFile(new URL(overrides));
-            } catch (MalformedURLException e) {
-                URL url;
+        Element xml = loadXmlResource(resource, servlet);
+        if(xml!=null){
+            doUpdateLogging(xml, servlet);
+        }
+    }
+    /**
+     * This method is default visibility for testing
+     */
+    static void doUpdateLogging(Element overrides, JeevesServlet servlet) throws JDOMException, IOException {
+        List<?> logOverides = Xml.selectNodes(overrides, LOGFILE_XPATH);
+        Properties p = new Properties();
+        for (Object logOveride : logOverides) {
+            String value = ((Content)logOveride).getValue();
+            InputStream in = loadInputStream(value, servlet);
+            if(in != null) {
                 try {
-                    url = servlet.getServletContext().getResource(overrides);
-                } catch (MalformedURLException e2) {
-                    url = null;
+                    p.load(in);
+                } finally {
+                    in.close();
                 }
-                if (url == null) {
-                    File file = new File(overrides);
-                    if (file.isAbsolute() && file.exists()) {
-                        xml = Xml.loadFile(file);
-                    } else {
-                        throw new IllegalArgumentException("The overrides file " + overrides + " is not a file and not a web resource: " + url + ".  Perhaps a leading / was forgotten?");
-                    }
-                } else {
-                    InputStream is = url.openStream();
-                    try {
-                        xml = Xml.loadStream(is);
-                    } finally {
-                        is.close();
-                    }
-                }
+            } else {
+                throw new IllegalArgumentException("log configuration file "+value+" was not found");
             }
-            Log.info(Log.JEEVES, "Configuration override file: " + overrides + " loaded.");
+        }
+        if(logOverides.size() > 0) {
+            LoggerRepository loggerRepo = Logger.getRootLogger().getLoggerRepository();
+            loggerRepo.resetConfiguration();
+            PropertyConfigurator configurator = new PropertyConfigurator();
+            configurator.doConfigure(p,loggerRepo);
+        }
+    }
 
+    public static void updateWithOverrides(String configFile, JeevesServlet servlet, Element configRoot) throws JDOMException, IOException {
+        String resource = lookupOverrideParameter(servlet);
+
+        Element xml = loadXmlResource(resource, servlet);
+        if(xml!=null){
             updateConfig(xml, new File(configFile).getName(), configRoot);
         }
     }
@@ -438,12 +455,82 @@ class ConfigurationOverrides {
         return finishedResolving;
     }
 
-    public static void info(String msg) {
+    private static void info(String msg) {
         Log.info(Log.JEEVES, msg);
     }
 
-    public static void debug(String msg) {
+    private static void debug(String msg) {
         Log.debug(Log.JEEVES, msg);
+    }
+
+    private static String lookupOverrideParameter(JeevesServlet servlet) {
+        String resource = System.getProperty(OVERRIDES_KEY);
+        if (resource == null) {
+            resource = servlet.getInitParameter(OVERRIDES_KEY);
+        }
+        if (resource == null) {
+            resource = servlet.getServletContext().getInitParameter(OVERRIDES_KEY);
+        }
+        return resource;
+    }
+
+    private static String loadStringResource(String resource, JeevesServlet servlet) throws JDOMException, IOException {
+        InputStream in = loadInputStream(resource, servlet);
+        if(in != null) {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder data = new StringBuilder();
+                String line;
+                while((line = reader.readLine()) != null) {
+                    data.append(line);
+                }
+                return data.toString();
+            } finally {
+                in.close();
+            }
+        } else {
+            return null;
+        }
+    }
+    private static InputStream loadInputStream(String resource, JeevesServlet servlet) throws JDOMException, IOException {
+
+        if (resource != null) {
+            InputStream in;
+            try {
+                in = new URL(resource).openStream();
+            } catch (MalformedURLException e) {
+                URL url;
+                try {
+                    url = servlet.getServletContext().getResource(resource);
+                } catch (MalformedURLException e2) {
+                    url = null;
+                }
+                if (url == null) {
+                    File file = new File(resource);
+                    if (file.isAbsolute() && file.exists()) {
+                        in = new FileInputStream(file);
+                    } else {
+                        throw new IllegalArgumentException("The resource file " + resource + " is not a file and not a web resource: " + url + ".  Perhaps a leading / was forgotten?");
+                    }
+                } else {
+                    in = url.openStream();
+                }
+            }
+            return in;
+        }
+        return null;
+    }
+    private static Element loadXmlResource(String resource, JeevesServlet servlet) throws JDOMException, IOException {
+        InputStream in = loadInputStream(resource, servlet);
+        if(in != null) {
+            try {
+                return Xml.loadStream(in);
+            } finally {
+                in.close();
+            }
+        } else {
+            return null;
+        }
     }
 
 }

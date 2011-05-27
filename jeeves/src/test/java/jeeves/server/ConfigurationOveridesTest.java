@@ -2,22 +2,45 @@ package jeeves.server;
 
 
 import static org.junit.Assert.*;
+
+import jeeves.utils.XPath;
 import jeeves.utils.Xml;
+import org.apache.log4j.Level;
+import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 public class ConfigurationOveridesTest {
+    final ClassLoader classLoader = getClass().getClassLoader();
+    final Element overrides;
+
+    {
+        try {
+            overrides = Xml.loadFile(classLoader.getResource("config-overrides.xml"));
+            List<?> nodes = Xml.selectNodes(overrides, ConfigurationOverrides.LOGFILE_XPATH);
+            for (Object obj : nodes) {
+                Element node = (Element) obj; 
+                node.setText(classLoader.getResource(node.getValue()).toExternalForm());
+            }
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
 
     @Test
+    public void updateLoggingConfig() throws JDOMException, IOException {
+        ConfigurationOverrides.doUpdateLogging(overrides, null);
+        assertEquals(Level.DEBUG, org.apache.log4j.Logger.getRootLogger().getLevel());
+    }
+    @Test
     public void updateConfig() throws JDOMException, IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
         Element config = Xml.loadFile(classLoader.getResource("test-config.xml"));
         Element config2 = (Element) Xml.loadFile(classLoader.getResource("test-config.xml")).clone();
-        Element overrides = Xml.loadFile(classLoader.getResource("config-overrides.xml"));
         ConfigurationOverrides.updateConfig(overrides,"config.xml", config);
         ConfigurationOverrides.updateConfig(overrides,"config2.xml", config2);
 
@@ -45,8 +68,8 @@ public class ConfigurationOveridesTest {
     }
 
     private void assertLang(String expected, Element config) throws JDOMException {
-        List<Element> lang = Xml.selectNodes(config,"*//language");
+        List<?> lang = Xml.selectNodes(config,"*//language");
         assertEquals(1,lang.size());
-        assertEquals(expected, lang.get(0).getTextTrim());
+        assertEquals(expected, ((Element)lang.get(0)).getTextTrim());
     }
 }
