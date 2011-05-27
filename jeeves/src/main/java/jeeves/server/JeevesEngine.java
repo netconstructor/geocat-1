@@ -101,6 +101,8 @@ public class JeevesEngine
 	{
 		try
 		{
+            ConfigurationOverrides.updateLoggingAsAccordingToOverrides(servlet);
+
 			this.appPath = appPath;
 
 			long start   = System.currentTimeMillis();

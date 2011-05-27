@@ -1,4 +1,14 @@
 <overrides>
+    <!-- The logging section allows logging configuration files to be specified -->
+    <!-- At the moment only property based configuration files are supported -->
+    <!-- There may be multiple configuration files -->
+    <!-- The properties are loaded in order and subsequent files will override -->
+    <!-- properties previously loaded.  This allows one to have shared configuration in -->
+    <!-- one log file and more specific configuration in other files -->
+    <logging>
+        <logFile>logfile1.properties</logFile>
+        <logFile>logfile2.properties</logFile>
+    </logging>
      <!-- properties allow some properties to be defined that will be substituted -->
      <!-- into text or attributes where ${property} is the substitution pattern -->
      <!-- The properties can reference other properties -->
