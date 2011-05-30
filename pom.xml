@@ -663,9 +663,8 @@
     <module>oaipmh</module>
     <module>sde</module>
     <module>web</module>
-    <module>geoserver</module>
-    <module>gast</module>
     <module>web-itest</module>
+    <module>geocat-geoserver</module>
   </modules>
 
   <distributionManagement>
