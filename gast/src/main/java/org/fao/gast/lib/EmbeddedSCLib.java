@@ -27,25 +27,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.fao.gast.boot.Config;
-import org.fao.gast.boot.Util;
 import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.xml.sax.SAXException;
-
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.resource.Resource;
-import org.mortbay.xml.XmlConfiguration;
 
 
 //=============================================================================
