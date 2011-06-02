@@ -664,7 +664,6 @@
     <module>sde</module>
     <module>web</module>
     <module>web-itest</module>
-    <module>geocat-geoserver</module>
   </modules>
 
   <distributionManagement>
