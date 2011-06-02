@@ -425,7 +425,7 @@ public class DatabaseLib
 					if (cb != null)
 						cb.loadingData();
 
-					dbms.execute(sql);                   
+					dbms.execute(sql);					
 					sb = new StringBuffer();	
 				}
             }
@@ -447,6 +447,9 @@ public class DatabaseLib
 
 		if (url.indexOf("oracle") != -1)
 			file = "create-db-oracle.sql";
+		
+		if (url.indexOf("db2") != -1)
+			file = "create-db-db2.sql";
 
 		else if (url.indexOf("mysql") != -1)
 			file = "create-db-mysql.sql";
@@ -470,8 +473,9 @@ public class DatabaseLib
     private List<String> loadSqlDataFile(String url) throws FileNotFoundException, IOException
     {
         //--- find out which dbms data file to load
-		String file = "data-db-mckoi.sql";
+		String file = "data-db-default.sql";
 
+		/* all databases are loaded from  data-db-default.sql
 		if (url.indexOf("oracle") != -1)
 			file = "data-db-oracle.sql";
 
@@ -486,7 +490,8 @@ public class DatabaseLib
 
         else if (url.indexOf("sqlserver") != -1)
 			file = "data-db-sqlserver.sql";
-		
+		*/
+
         //--- load the sql data
         
         return Lib.text.load(Config.getConfig().getSetupConfig() + "/sql/data/"+ file, "UTF-8");
