@@ -132,3 +132,136 @@ the XSL processor to use in GeoNetwork. The allowed values are:
 #. ``net.sf.saxon.TransformerFactoryImpl`` to use Saxon
 
 GeoNetwork sets the XSLT processor configuration on the JVM system properties at startup time for an instant to obtain its TransformerFactory implementation, then resets it to original value, to minimize affect the XSL processor configuration for other applications.
+
+Database configuration
+----------------------
+
+Geonetwork uses the `H2 database engine <http://www.h2database.com/>`_ as default. The following additional database 
+backends are supported (listed in alphabetical order):
+
+* DB2
+* H2
+* Mckoi
+* MS SqlServer 2008
+* MySQL
+* Oracle
+* PostgreSQL (or PostGIS)
+
+
+Configure config.xml
+````````````````````
+
+The database backend used is configured in **GEONETWERK_INSTALL_DIR/WEB-INF/config.xml**. The following xml element is of interest::
+
+
+                <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                <!-- H2 database  http://www.h2database.com/ -->
+                <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                <resource enabled="true">
+                 <name>main-db</name>
+                 <provider>jeeves.resources.dbms.ApacheDBCPool</provider>
+                 <config>
+                   <user>admin</user>
+                   <password>gnos</password>
+                   <driver>org.h2.Driver</driver>
+                   <url>jdbc:h2:geonetwork;MVCC=TRUE</url>
+                   <poolSize>33</poolSize>
+                   <reconnectTime>3600</reconnectTime>
+                 </config>
+                </resource>
+
+The attribute enabled has to be changed from **true** to **false** ::
+
+                <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                <!-- H2 database  http://www.h2database.com/ -->
+                <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                <resource enabled="false">
+                    ...
+                </resource>
+
+
+The resource element for the required database must be enabled. If two resources are enabled, GeoNetwork will fail to start. 
+At a minimum, **<user>** , **<password>** and **<url>** have to be changed. (Showing DB2 as an example without loss of generality)::
+
+               <resource enabled="true">
+                        <name>main-db</name>
+                        <!-- <provider>jeeves.resources.dbms.DbmsPool</provider> -->
+                        <provider>jeeves.resources.dbms.ApacheDBCPool</provider>
+                        <config>
+                                <user>db2inst1</user>
+                                <password>mypassword</password>
+                                <driver>com.ibm.db2.jcc.DB2Driver</driver>
+                                <url>jdbc:db2:geonet</url>
+                                <poolSize>10</poolSize>
+                        </config>
+                </resource>
+
+
+
+Connection Pool
+```````````````
+
+GeoNetwork support two types of database connection pool:
+
+* Jeeves DbmsPool
+* `Apache DBCP pool <http://commons.apache.org/dbcp/>`_ (recommended for 2.7.x and later)
+
+The resource section allows to configure advanced parameters for the pool:
+
+* poolSize
+* maxTries
+* maxWait
+
+
+.. TODO Add more details about poolsize, maxWait, ...
+
+
+JDBC Drivers
+````````````
+The JDBC driver jar files should be in **GEONETWERK_INSTALL_DIR/WEB-INF/lib**. 
+For Open Source databases, like MySQL and PostgreSQL, the jar files are already installed. 
+For commercial databases the jar files must be downloaded and installed manually. This is due to licensing issues.
+
+* `DB2 JDBC driver download <https://www-304.ibm.com/support/docview.wss?rs=4020&uid=swg27016878>`_
+* `MS Sql Server JDBC driver download <http://msdn.microsoft.com/en-us/sqlserver/aa937724>`_
+* `Oracle JDBC driver download <http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html>`_
+
+
+Creating and initializing tables
+````````````````````````````````
+
+During the starting process geonetwork checks if the needed tables are present. 
+If not, the tables are created and filled with initial data. 
+
+For each start an additional check is made if the version of geonetwork matchtes the version of the tables. 
+In case of a version mismatch, a migration script is triggered.
+
+An alternative is to execute the scripts manually by the db admin. 
+
+* The scripts for initial setup are located in **GEONETWERK_INSTALL_DIR/WEB-INF/classes/setup/sql/create/**
+* The scripts for inserting initial data  are located in **GEONETWERK_INSTALL_DIR/WEB-INF/classes/setup/sql/data/**
+* The scripts for migrating are located in **GEONETWERK_INSTALL_DIR/WEB-INF/classes/setup/sql/migrate/**
+
+An example for a manual DB2 setup::
+
+        db2 create db geonet
+        db2 connect to geonet user db2inst1 using mypassword
+        db2 -tf GEONETWERK_INSTALL_DIR/WEB-INF/classes/setup/sql/create/create-db-db2.sql > res1.txt
+        db2 -tf GEONETWERK_INSTALL_DIR/WEB-INF/classes/setup/sql/data/data-db-default.sql > res2.txt
+        db2 connect reset
+
+After execution, check **res1.txt** and **res2.txt** if errors have occurred.
+
+.. note::
+
+    Known DB2 problem. DB2 may produce an exception during first time geonetwork start.
+
+        DB2 SQL error: SQLCODE: -805, SQLSTATE: 51002, SQLERRMC: NULLID.SYSLH203
+
+    Solution one is to setup the database manually a described in the previous chapter.
+    Solution two is to drop the database, recreate it,locate the file db2cli.lst in the db2 installation folder and execute
+
+        db2 bind @db2cli.lst CLIPKG 30
+
+
+
