@@ -40,13 +40,13 @@ import java.util.Hashtable;
 
 public class ThesaurusManager {
 
-	private Hashtable<String, Thesaurus> thesauriTable = null;
+    private Hashtable<String, Thesaurus> thesauriTable = null;
 
 	private LocalService service = null;
 
 	private String thesauriDirectory = null;
 
-	/**
+    /**
 	 * 
 	 * @param appPath
 	 * @param thesauriRepository

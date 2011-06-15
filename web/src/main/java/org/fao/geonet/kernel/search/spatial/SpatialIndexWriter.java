@@ -31,6 +31,7 @@ import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
@@ -77,9 +78,6 @@ import java.util.logging.Level;
 public class SpatialIndexWriter
 {
 
-    static final String                                          IDS_ATTRIBUTE_NAME        = "id";
-    static final String                                          GEOM_ATTRIBUTE_NAME       = "the_geom";
-    static final String                                          SPATIAL_INDEX_TYPENAME    = "spatialindex";
     private static final int                                     MAX_WRITES_IN_TRANSACTION = 5000;
 
     private final Parser                                         _parser;
@@ -180,7 +178,7 @@ public class SpatialIndexWriter
             FilterFactory2 factory = CommonFactoryFinder
                     .getFilterFactory2(GeoTools.getDefaultHints());
             Filter filter = factory.equals(
-                    factory.property(IDS_ATTRIBUTE_NAME), factory.literal(id));
+                    factory.property(Geocat.Spatial.IDS_ATTRIBUTE_NAME), factory.literal(id));
 
             _index = null;
 
@@ -357,7 +355,7 @@ public class SpatialIndexWriter
 	private FeatureStore createFeatureStore(DataStore datastore) throws Exception
     {
 
-        return (FeatureStore) datastore.getFeatureSource(SPATIAL_INDEX_TYPENAME);
+        return (FeatureStore) datastore.getFeatureSource(Geocat.Spatial.SPATIAL_INDEX_TYPENAME);
     }
 
 	public static MultiPolygon toMultiPolygon(Geometry geometry)

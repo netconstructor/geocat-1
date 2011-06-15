@@ -1,41 +1,128 @@
 package org.fao.geonet.util;
 
-import jeeves.utils.Log;
-import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.search.LuceneSearcher;
-
+import java.io.ByteArrayInputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import com.google.common.collect.Multimaps;
+import jeeves.utils.Log;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.search.LuceneSearcher;
+import org.fao.geonet.kernel.search.spatial.Pair;
+import org.fao.geonet.kernel.search.spatial.SpatialIndexWriter;
+import org.fao.geonet.services.extent.ExtentHelper;
+import org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode;
+import org.geotools.gml3.GMLConfiguration;
+import org.geotools.xml.Encoder;
+import org.geotools.xml.Parser;
+import org.jdom.Namespace;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.traversal.NodeIterator;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTWriter;
+
 /**
- * These are all extension methods for calling from xsl docs.  Note:  All
- * params are objects because it is hard to determine what is passed in from XSLT.
- * Most are converted to string by calling tostring.
+ * These are all extension methods for calling from xsl docs. Note: All params
+ * are objects because it is hard to determine what is passed in from XSLT. Most
+ * are converted to string by calling tostring.
  *
  * @author jesse
  */
-public final class XslUtil
-{
+public final class XslUtil {
+
+    private static final GMLConfiguration GML3_CONFIG = new org.geotools.gml3.GMLConfiguration();
+    private static final org.geotools.gml2.GMLConfiguration GML2_CONFIG = new org.geotools.gml2.GMLConfiguration();
+    private static final Random RANDOM = new Random();
+
+    public static final Namespace GMD_NAMESPACE = Namespace.getNamespace("gmd",
+            "http://www.isotc211.org/2005/gmd");
+    public static final Namespace SRV_NAMESPACE = Namespace.getNamespace("srv",
+            "http://www.isotc211.org/2005/srv");
+    public static final Namespace CHE_NAMESPACE = Namespace.getNamespace("gco",
+            "http://www.geocat.ch/2008/che");
+    public static final Namespace GCO_NAMESPACE = Namespace.getNamespace("gco",
+            "http://www.isotc211.org/2005/gco");
 
     private static final char TS_DEFAULT = ' ';
     private static final char CS_DEFAULT = ',';
     private static final char TS_WKT = ',';
     private static final char CS_WKT = ' ';
+
+    private static Parser gml3Parser() {
+        return new Parser(GML3_CONFIG);
+    }
+
+    private static Parser gml2Parser() {
+        return new Parser(GML2_CONFIG);
+    }
+
+
     /**
      * clean the src of ' and <>
      */
-    public static String clean(Object src)
-    {
-        String result = src.toString().replaceAll("'","\'").replaceAll("[><\n\r]", " ");
+    public static String clean(Object src) {
+        String result = src.toString().replaceAll("'", "\'").replaceAll("[><\n\r]", " ");
         return result;
     }
 
     /**
-     * Returns 'true' if the pattern matches the src
+     * Convert 1E3 to 1000 for example
      */
-    public static String countryMatch(Object src, Object pattern)
-    {
-        if( src.toString().trim().length()==0){
+    public static String expandScientific(Object src) {
+        try {
+            String original = src.toString().toUpperCase();
+            String result = original;
+            if (original.contains("E")) {
+                String[] parts = original.split("E");
+                double coefficient = Double.parseDouble(parts[0]);
+                double exponentRaw = Double.parseDouble(parts[1]);
+                double multiplier = Math.pow(10.0, exponentRaw);
+                double expanded = coefficient * multiplier;
+                result = String.valueOf(expanded);
+            }
+            return result;
+        } catch (NumberFormatException e) {
+            return src.toString();
+        }
+    }
+
+    /**
+     * Returns 'true' if the pattern matche the src
+     */
+    public static String countryMatch(Object src, Object pattern) {
+        if (src.toString().trim().length() == 0) {
             return "false";
         }
         boolean result = src.toString().toLowerCase().contains(pattern.toString().toLowerCase());
@@ -45,28 +132,145 @@ public final class XslUtil
     /**
      * Replace the pattern with the substitution
      */
-    public static String replace(Object src, Object pattern, Object substitution)
-    {
+    public static String replace(Object src, Object pattern, Object substitution) {
         String result = src.toString().replaceAll(pattern.toString(), substitution.toString());
         return result;
     }
+
     /**
      * Takes the characters until the pattern is matched
      */
-    public static String takeUntil(Object src, Object pattern)
-    {
+    public static String takeUntil(Object src, Object pattern) {
         String src2 = src.toString();
         Matcher matcher = Pattern.compile(pattern.toString()).matcher(src2);
 
-        if( !matcher.find() )
+        if (!matcher.find())
             return src2;
 
         int index = matcher.start();
 
-        if( index==-1 ){
+        if (index == -1) {
             return src2;
         }
-        return src2.substring(0,index);
+        return src2.substring(0, index);
+    }
+
+    /**
+     * Get field value for metadata identified by uuid. "" if uuid not found.
+     *
+     * @param appPath Application path to access Lucene index in static context
+     *                (could we make that better ?)
+     * @param uuid    Metadata uuid
+     * @param field   Field name
+     * @param lang    Language of the index to search in
+     * @return metadata title
+     */
+    public static String getIndexField(Object appPath, Object uuid, Object field, Object lang) {
+        String path = appPath.toString();
+        String id = uuid.toString();
+        String fieldname = field.toString();
+        String language = (lang.toString().equals("") ? Geonet.DEFAULT_LANGUAGE : lang.toString());
+        try {
+            return LuceneSearcher.getMetadataFromIndex(path, id, fieldname, language);
+        } catch (Exception e) {
+            Log.error(Geonet.GEONETWORK, "Failed to get index field value caused by " + e.getMessage());
+            return "";
+        }
+    }
+
+    /**
+     * convert gml geometry to WKT
+     */
+    public static String gmlToWKT(Node next) throws Exception {
+        String writeXml = writeXml(next).replace("&lt;", "<").replace("&gt;", ">");
+        if (writeXml.startsWith("<?xml")) {
+            writeXml = writeXml.substring(writeXml.indexOf('>') + 1);
+        }
+
+        // make sure gml namespace is present since it sometimes gets dropped
+        String firstTag = writeXml.substring(0, writeXml.indexOf('>'));
+        if (!firstTag.contains("xmlns:gml")) {
+            writeXml = firstTag + " xmlns:gml=\"http://www.opengis.net/gml\">" + writeXml.substring(firstTag.length() + 1);
+        }
+
+        Object value;
+        try {
+            value = gml3Parser().parse(new StringReader(writeXml));
+        } catch (Exception e) {
+            try {
+                value = gml2Parser().parse(new StringReader(writeXml));
+            } catch (Exception e2) {
+                Log.error(Log.WEBAPP, "Unable to parse gml:" + writeXml + " problem: " + e2.getMessage());
+                return "";
+            }
+        }
+        Geometry geom = null;
+        if (value instanceof HashMap) {
+
+            // This section is unlikely more likely is a single polygon or multipolygon but this is for completeness
+
+            @SuppressWarnings("rawtypes")
+            HashMap map = (HashMap) value;
+
+            List<Polygon> geoms = new ArrayList<Polygon>();
+            for (Object entry : map.values()) {
+                SpatialIndexWriter.addToList(geoms, entry);
+            }
+
+            if (geoms.isEmpty()) {
+                geom = null;
+            } else if (geoms.size() > 1) {
+                GeometryFactory fac = geoms.get(0).getFactory();
+                geom = fac.buildGeometry(geoms);
+            } else {
+                geom = geoms.get(0);
+            }
+
+        } else if (value == null) {
+            geom = null;
+        } else {
+            geom = (Geometry) value;
+        }
+
+        if (geom == null) {
+            return "";
+        } else {
+            return new WKTWriter().write(geom).replaceAll("\\s+", " "); // replace all is to work around bugs in open layers
+        }
+
+    }
+
+    public static String trimPosList(Object coords) {
+        String[] coordsString = coords.toString().split(" ");
+
+        StringBuilder results = new StringBuilder();
+
+        for (int i = 0; i < coordsString.length; i++) {
+            if (i > 0) {
+                results.append(' ');
+            }
+            results.append(reduceDecimals(coordsString[i]));
+        }
+
+        return results.toString();
+    }
+
+    private static String reduceDecimals(String number) {
+        int DECIMALS = 6;
+        try {
+            // verify this is a number
+            Double.parseDouble(number);
+
+            String[] parts = number.split("\\.");
+
+            if (parts.length > 1 && parts[1].length() > DECIMALS) {
+                return parts[0] + '.' + parts[1].substring(0, DECIMALS);
+            } else {
+                return number;
+            }
+        } catch (Exception e) {
+            return number;
+        }
     }
 
     /**
@@ -135,29 +339,456 @@ public final class XslUtil
 
         return results.toString();
     }
-    
+
+    public static Object posListToGM03Coords(Object coords, Object dim) {
+        String[] coordsString = coords.toString().split("\\s+");
+
+        if (coordsString.length % 2 != 0) {
+            return "Error following data is not correct:" + coords.toString();
+        }
+
+        int dimension;
+        if (dim == null) {
+            dimension = 2;
+        } else {
+            try {
+                dimension = Integer.parseInt(dim.toString());
+            } catch (NumberFormatException e) {
+                dimension = 2;
+            }
+        }
+        StringBuilder results = new StringBuilder("<POLYLINE>");
+
+        for (int i = 0; i < coordsString.length; i++) {
+            if (i % dimension == 0) {
+                results.append("<COORD><C1>");
+                results.append(coordsString[i]);
+                results.append("</C1>");
+            } else if (i > 0) {
+                results.append("<C2>");
+                results.append(coordsString[i]);
+                results.append("</C2></COORD>");
+            }
+        }
+
+        results.append("</POLYLINE>");
+        try {
+            Element e = loadXMLFromString(results.toString()).getDocumentElement();
+            return e;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    private static Document loadXMLFromString(String xml) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        return builder.parse(new ByteArrayInputStream(xml.getBytes()));
+    }
+
+    public static String randomId() {
+        return "N" + Math.abs(RANDOM.nextLong());
+    }
+
+    public static Object bbox(Object description, NodeIterator src) throws Exception {
+        return combineAndWriteGeom(description, src, new GeomWriter() {
+
+            public Object write(ExtentTypeCode code, MultiPolygon geometry) throws Exception {
+
+                Envelope bbox = geometry.getEnvelopeInternal();
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document doc = builder.newDocument();
+
+                Element wBL = doc.createElementNS(GCO_NAMESPACE.getURI(), "gco:Decimal");
+                wBL.setTextContent(String.valueOf(bbox.getMinX()));
+                Element eBL = doc.createElementNS(GCO_NAMESPACE.getURI(), "gco:Decimal");
+                eBL.setTextContent(String.valueOf(bbox.getMaxX()));
+                Element sBL = doc.createElementNS(GCO_NAMESPACE.getURI(), "gco:Decimal");
+                sBL.setTextContent(String.valueOf(bbox.getMinY()));
+                Element nBL = doc.createElementNS(GCO_NAMESPACE.getURI(), "gco:Decimal");
+                nBL.setTextContent(String.valueOf(bbox.getMaxY()));
+
+                Node bbox_El = doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:EX_GeographicBoundingBox");
+                bbox_El.appendChild(doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:westBoundLongitude")).appendChild(wBL);
+                bbox_El.appendChild(doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:eastBoundLongitude")).appendChild(eBL);
+                bbox_El.appendChild(doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:southBoundLatitude")).appendChild(sBL);
+                bbox_El.appendChild(doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:northBoundLatitude")).appendChild(nBL);
+
+                return bbox_El;
+            }
+        });
+    }
+
+    public static Object multipolygon(Object description, NodeIterator src) throws Exception {
+        return combineAndWriteGeom(description, src, new GeomWriter() {
+
+            public Object write(ExtentTypeCode code, MultiPolygon geometry) throws Exception {
+                final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                final Encoder encoder = new Encoder(GML3_CONFIG);
+                encoder.setIndenting(false);
+                ExtentHelper.addGmlId(geometry);
+                encoder.encode(geometry, org.geotools.gml3.GML.geometryMember, outputStream);
+
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+
+                Source xmlSource = new StreamSource(new ByteArrayInputStream(outputStream.toByteArray()));
+                DOMResult outputTarget = new DOMResult();
+                transformer.transform(xmlSource, outputTarget);
+                Document doc = (Document) outputTarget.getNode();
+
+                // create the extentTypeCode elements
+                Element codeElem = doc.createElementNS("http://www.isotc211.org/2005/gmd", "gmd:extentTypeCode");
+                Element boolElem = doc.createElementNS("http://www.isotc211.org/2005/gco", "gco:Boolean");
+                boolElem.setTextContent(code == ExtentTypeCode.EXCLUDE ? "false" : "true");
+                codeElem.appendChild(boolElem);
+
+                // create the extras for the geographic Element
+                Element bPolyElem = doc.createElementNS("http://www.isotc211.org/2005/gmd", "gmd:EX_BoundingPolygon");
+                Element polyElem = doc.createElementNS("http://www.isotc211.org/2005/gmd", "gmd:polygon");
+                Node geomMember = findElem(doc, "MultiSurface");
+
+                bPolyElem.appendChild(codeElem);
+                bPolyElem.appendChild(polyElem);
+                polyElem.appendChild(geomMember);
+
+                return bPolyElem;
+            }
+        });
+    }
+
+    private interface GeomWriter {
+        Object write(ExtentTypeCode code, MultiPolygon geometry) throws Exception;
+    }
+
+    public static Object combineAndWriteGeom(Object description, NodeIterator src, GeomWriter writer) throws Exception {
+
+        try {
+            Node next = src.nextNode();
+
+            Multimap<Boolean, Polygon> geoms = ArrayListMultimap.create();
+            while (next != null) {
+                if (!next.getLocalName().equalsIgnoreCase("geographicElement")) {
+                    NodeList childNodes = next.getChildNodes();
+                    for (int i = 0; i < childNodes.getLength(); i++) {
+                        Node node = childNodes.item(i);
+                        geoms.putAll(geometries(node));
+                    }
+                } else {
+                    geoms.putAll(geometries(next));
+                }
+                next = src.nextNode();
+            }
+
+            GeometryFactory fac = new GeometryFactory();
+
+            MultiPolygon inclusion = null;
+            if (!geoms.get(true).isEmpty()) {
+                inclusion = ExtentHelper.joinPolygons(fac, geoms.get(true));
+            }
+            MultiPolygon exclusion = null;
+            if (!geoms.get(false).isEmpty()) {
+                exclusion = ExtentHelper.joinPolygons(fac, geoms.get(false));
+            }
+
+            final Object result;
+
+            if (inclusion == null && exclusion == null) {
+                result = src;
+            } else if (inclusion == null && exclusion != null) {
+                result = writer.write(ExtentTypeCode.EXCLUDE, exclusion);
+            } else if (inclusion != null && exclusion == null) {
+                result = writer.write(ExtentTypeCode.INCLUDE, inclusion);
+            } else {
+                Pair<ExtentTypeCode, MultiPolygon> diff = ExtentHelper.diff(fac, inclusion, exclusion);
+                result = writer.write(diff.one(), diff.two());
+            }
+
+            return result;
+        } catch (Throwable t) {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            DOMImplementation impl = builder.getDOMImplementation();
+
+            Document ownerDocument = impl.createDocument(null, null, null);
+            Element root = ownerDocument.createElement("ERROR");
+            root.setAttribute("msg", t.toString().replaceAll("\"", "'"));
+            StackTraceElement[] trace = t.getStackTrace();
+            for (StackTraceElement stackTraceElement : trace) {
+                Element traceElem = ownerDocument.createElement("trace");
+                traceElem.setTextContent(stackTraceElement.toString());
+                root.appendChild(traceElem);
+            }
+            return root;
+        }
+    }
+
+    private static Multimap<Boolean, Polygon> geometries(Node next) throws Exception {
+        if (!next.getLocalName().equalsIgnoreCase("geographicElement"))
+            throw new AssertionError(next.getLocalName() + " is not a geographic element as expected");
+        Boolean inclusion = inclusion(next);
+        inclusion = inclusion == null ? true : inclusion;
+        Polygon geom = geom(next);
+        Multimap<Boolean, Polygon> geoms = ArrayListMultimap.create();
+        geoms.put(inclusion, geom);
+        return geoms;
+    }
+
+    private static Node findElem(Node next, String name) {
+        if (name.equals(next.getLocalName())) {
+            return next;
+        }
+        NodeList childNodes = next.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            Node result = findElem(node, name);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private static Polygon geom(Node next) throws Exception {
+
+        if ("Polygon".equals(next.getLocalName())) {
+            return parsePolygon(next);
+        }
+        NodeList childNodes = next.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            Polygon geom = geom(node);
+            if (geom != null) {
+                return geom;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static Polygon parsePolygon(Node next) throws Exception {
+        String writeXml = writeXml(next);
+
+        Object value = gml3Parser().parse(new StringReader(writeXml));
+        if (value instanceof HashMap) {
+            HashMap map = (HashMap) value;
+            List<Polygon> geoms = new ArrayList<Polygon>();
+            for (Object entry : map.values()) {
+                SpatialIndexWriter.addToList(geoms, entry);
+            }
+            if (geoms.isEmpty()) {
+                return null;
+            } else if (geoms.size() > 1) {
+                throw new AssertionError("Some how multiple polygons were parsed");
+            } else {
+                return geoms.get(0);
+            }
+
+        } else if (value == null) {
+            return null;
+        } else {
+            return (Polygon) value;
+        }
+    }
+
+    private static Boolean inclusion(Node next) {
+        if ("extentTypeCode".equals(next.getLocalName())) {
+            return booleanText(next);
+        }
+        NodeList childNodes = next.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            Boolean inclusion = inclusion(node);
+            if (inclusion != null) {
+                return inclusion;
+            }
+        }
+        return null;
+    }
+
+    private static Boolean booleanText(Node next) {
+        NodeList childNodes = next.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            if ("Boolean".equals(node.getLocalName())) {
+                if (node.getFirstChild() != null) {
+                    String textContent = node.getFirstChild().getTextContent();
+                    return "1".equals(textContent) || "true".equalsIgnoreCase(textContent);
+                }
+            }
+        }
+        return true;
+    }
+
+    public static String writeXml(Node doc) throws Exception {
+        // Prepare the DOM document for writing
+        Source source = new DOMSource(doc);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        // Prepare the output file
+        Result result = new StreamResult(out);
+
+        // Write the DOM document to the file
+        Transformer xformer = TransformerFactory.newInstance().newTransformer();
+        xformer.transform(source, result);
+        return out.toString("utf-8");
+    }
+
+    static Pattern LINK_PATTERN = Pattern.compile("(mailto:|https://|http://|ftp://|ftps://)[^\\s<>]*\\w");
+    static Pattern NODE_PATTERN = Pattern.compile("<.+?>");
 
     /**
-     * Get field value for metadata identified by uuid. Return "" if uuid not found.
-     * 
-     * @param appPath 	Application path to access Lucene index in a static context
-     * @param uuid 		Metadata uuid
-     * @param field 	Lucene field name
-     * @param lang 		Language of the index to search in
-     * 
-     * @return metadata title
+     * For all text split the lines to a specified size and add hyperlinks when appropriate
      */
-    public static String getIndexField(Object appPath, Object uuid, Object field, Object lang)
-    {
-    	String path = appPath.toString();
-    	String id = uuid.toString();
-    	String fieldname = field.toString();
-    	String language = (lang.toString().equals("")?Geonet.DEFAULT_LANGUAGE:lang.toString());
-    	try {
-    		return LuceneSearcher.getMetadataFromIndex(path, id, fieldname);
-    	} catch (Exception e) {
-			Log.debug(Geonet.GEONETWORK, "Failed to get index field value caused by " + e.getMessage());
-    		return "";
-		}
+    public static Object toHyperlinks(NodeIterator text) throws Exception {
+
+        String textString = writeXml(text.getRoot());
+
+        String linked = toHyperlinksSplitNodes(textString);
+
+        if (linked.equals(text)) {
+            return text;
+        }
+        NodeList nodes;
+        nodes = parse(linked, true);
+
+        if (nodes == null) {
+            return text;
+        } else {
+            return nodes;
+        }
     }
+
+    /**
+     * Sometimes nodes can have urls in their attributes (namespace declarations)
+     * So nodes themselves should not be processed.  Also if a node is a
+     * anchor node then the text within should not be processed.
+     */
+    public static String toHyperlinksSplitNodes(String textString) throws Exception {
+        Matcher nodes = NODE_PATTERN.matcher(textString);
+        if (nodes.find()) {
+            StringBuilder builder = new StringBuilder();
+            boolean inAnchor = false;
+            int i = 0;
+            do {
+                String beforeNode = textString.substring(i, nodes.start());
+                if (inAnchor) {
+                    // node is an anchor so just break lines
+                    builder.append(insertBR(beforeNode));
+                } else {
+                    builder.append(toHyperlinksFromText(beforeNode));
+                }
+
+                if (!nodes.group().startsWith("<?xml")) {
+                    builder.append(nodes.group());
+                }
+
+                if (nodes.group().startsWith("<a ")) {
+                    // entering an anchor
+
+                    inAnchor = true;
+                }
+                if (inAnchor && nodes.group().matches("</\\s*a\\s+.*")) {
+                    // exiting anchor
+                    inAnchor = false;
+                }
+
+                i = nodes.end();
+            } while (nodes.find());
+
+            builder.append(toHyperlinksFromText(textString.substring(i)));
+
+            return builder.toString();
+        } else {
+            return toHyperlinksFromText(textString);
+        }
+    }
+
+    /**
+     * Add hyperlinks and split long lines
+     */
+    private static String toHyperlinksFromText(String textString) throws Exception {
+        StringBuilder builder = new StringBuilder();
+
+        int i = 0;
+        Matcher matcher = LINK_PATTERN.matcher(textString);
+
+
+        if (!matcher.find()) return textString;
+
+        do {
+            builder.append(insertBR(textString.substring(i, matcher.start())));
+
+            String tag = "<a href=\"" + matcher.group() + "\" target=\"_newtab\">" + insertBR(matcher.group()) + "</a>";
+
+            // do a test to make sure the new text makes a valid document
+            if (parse(builder.toString() + tag + textString.substring(matcher.end()), false) != null) {
+                builder.append(tag);
+            } else {
+                builder.append(insertBR(textString.substring(matcher.start(), matcher.end())));
+            }
+            i = matcher.end();
+        } while (matcher.find());
+
+        builder.append(insertBR(textString.substring(i, textString.length())));
+
+        return builder.toString();
+    }
+
+    /**
+     * Insert line breaks
+     */
+    private static String insertBR(String word) {
+
+        Matcher nodes = NODE_PATTERN.matcher(word);
+
+        if (nodes.find()) {
+            StringBuilder b = new StringBuilder();
+            int i = 0;
+            do {
+                b.append(insertBR(word.substring(i, nodes.start())));
+                b.append(nodes.group());
+                i = nodes.end();
+            } while (nodes.find());
+            return b.toString();
+        }
+
+        return word;
+    }
+
+    public static NodeList parse(String string, boolean printError)
+            throws Exception {
+        String resultString = "<div>" + string + "</div>";
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            if (!printError) {
+                builder.setErrorHandler(new ErrorHandler() {
+                    public void warning(SAXParseException exception) throws SAXException {
+                        // do nothing
+                    }
+
+                    public void fatalError(SAXParseException exception) throws SAXException {
+                        // do nothing
+                    }
+
+                    public void error(SAXParseException exception) throws SAXException {
+                        // do nothing
+                    }
+                });
+            }
+            Document resultXML = builder.parse(new ByteArrayInputStream(resultString.getBytes("UTF-8")));
+            return resultXML.getChildNodes();
+        } catch (Exception e) {
+            if (printError) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
 }

@@ -306,7 +306,15 @@ public class Util
 		catch (NoSuchAlgorithmException e)     { return null; }
 	}
 
-	
+
+    public static String getParamText(Element params, String desired)
+    {
+        String value = getParam(params, desired, "");
+        if(value.length() == 0) {
+            return null;
+        }
+        return value;
+    }
 }
 
 //=============================================================================

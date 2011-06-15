@@ -66,7 +66,7 @@ public class GetEditableData implements Service
 		//-----------------------------------------------------------------------
 		//--- get metadata
 
-		Element elMd = dataMan.getMetadataEmbedded(context, id, true, showValidationErrors);
+		Element elMd = dataMan.getMetadataEmbedded(context, id, true, showValidationErrors,true,false);
 		if (elMd == null)
 			throw new IllegalArgumentException("Metadata not found --> " + id);
 

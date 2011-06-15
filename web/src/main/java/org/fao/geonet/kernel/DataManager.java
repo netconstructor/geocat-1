@@ -48,10 +48,12 @@ import org.fao.geonet.exceptions.SchematronValidationErrorEx;
 import org.fao.geonet.kernel.csw.domain.CswCapabilitiesInfo;
 import org.fao.geonet.kernel.csw.domain.CustomElementSet;
 import org.fao.geonet.kernel.harvest.HarvestManager;
+import org.fao.geonet.kernel.reusable.ReusableObjManager;
 import org.fao.geonet.kernel.schema.MetadataSchema;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
 import org.fao.geonet.lib.Lib;
+import org.fao.geonet.services.extent.ExtentManager;
 import org.fao.geonet.util.ISODate;
 import org.fao.geonet.util.spring.StringUtils;
 import org.jdom.Attribute;
@@ -92,12 +94,15 @@ public class DataManager
 	/** initializes the search manager and index not-indexed metadata
 	  */
 
-	public DataManager(ServiceContext context, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception
+	public DataManager(ServiceContext context, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, ReusableObjManager reusableObjMan, ExtentManager extentMan, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception
 	{
 		searchMan = sm;
 		accessMan = am;
 		settingMan= ss;
         servContext=context;
+        this.reusableObjMan = reusableObjMan;
+        this.extentMan = extentMan;
+
 
 		this.baseURL = baseURL;
         this.dataDir = dataDir;
@@ -1238,7 +1243,7 @@ public class DataManager
 	 */
 	public Element getMetadataNoInfo(ServiceContext srvContext, String id) throws Exception
 	{
-		Element md = getMetadata(srvContext, id, false, false);
+		Element md = getMetadata(srvContext, id, false, false, true, false);
 		md.removeChild(Edit.RootChild.INFO, Edit.NAMESPACE);
 		return md;
 	}
@@ -1249,13 +1254,14 @@ public class DataManager
 
 	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing) throws Exception
 	{
-		return getMetadata(srvContext, id, forEditing, false);
+		return getMetadata(srvContext, id, forEditing, false, true, false);
 	}
 
 	/** Retrieves a metadata (in xml) given its id; adds editing information 
 	 *  if requested and validation errors if requested
 	 */
-	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors) throws Exception
+	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean resolveXLink,
+	                           boolean elementsHide) throws Exception
 	{
 
 		Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
@@ -1380,9 +1386,10 @@ public class DataManager
 	//--------------------------------------------------------------------------
 	/** For Ajax Editing : gets Metadata from database and places it in session
 	  */
-	public Element getMetadataEmbedded(ServiceContext srvContext, String id, boolean forEditing, boolean withValidationErrors) throws Exception
+	public Element getMetadataEmbedded(ServiceContext srvContext, String id, boolean forEditing, boolean withValidationErrors, boolean resolveXLink,
+	                           boolean elementsHide) throws Exception
 	{
-		Element md = getMetadata(srvContext, id, forEditing, withValidationErrors);
+		Element md = getMetadata(srvContext, id, forEditing, withValidationErrors, resolveXLink, elementsHide);
 
 		UserSession session = srvContext.getUserSession();
 		setMetadataIntoSession(session, md, id);
@@ -3107,6 +3114,9 @@ public class DataManager
 	private SettingManager settingMan;
 	private HarvestManager harvestMan;
     private ServiceContext servContext;
+    private final ReusableObjManager reusableObjMan;
+    private final ExtentManager extentMan;
+
 
     private String dataDir;
 	private String appPath;

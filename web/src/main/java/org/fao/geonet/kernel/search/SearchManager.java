@@ -100,7 +100,7 @@ public class SearchManager
 	public static final int Z3950  = 2;
 	public static final int UNUSED = 3;
 
-	private static final String SEARCH_STYLESHEETS_DIR_PATH = "xml/search";
+	public static final String SEARCH_STYLESHEETS_DIR_PATH = "xml/search";
 	private static final String SCHEMA_STYLESHEETS_DIR_PATH = "xml/schemas";
     private static final String STOPWORDS_DIR_PATH = "resources/stopwords";
 
@@ -1061,7 +1061,14 @@ public class SearchManager
 		return doc;
 	}
 
-	//--------------------------------------------------------------------------------
+    public File getStylesheetsDir() {
+        return _stylesheetsDir;
+    }
+
+    public File getLuceneDir() {
+        return _luceneDir;
+    }
+    //--------------------------------------------------------------------------------
 
 	public Spatial getSpatial()
     {

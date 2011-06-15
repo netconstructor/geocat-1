@@ -31,6 +31,11 @@
   <dependencies>
     
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
     </dependency>
@@ -103,10 +108,14 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-postgis</artifactId>
-    </dependency>
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-postgis</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-wfs</artifactId>
+      </dependency>
 
 
     <dependency>
@@ -116,6 +125,10 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analyzers</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-misc</artifactId>
     </dependency>
     <dependency>
       <groupId>batik</groupId>

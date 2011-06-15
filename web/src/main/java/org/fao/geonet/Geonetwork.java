@@ -34,6 +34,7 @@ import jeeves.server.context.ServiceContext;
 import jeeves.utils.BinaryFile;
 import jeeves.utils.Util;
 import jeeves.xlink.Processor;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.kernel.AccessManager;
@@ -43,12 +44,14 @@ import org.fao.geonet.kernel.csw.CatalogConfiguration;
 import org.fao.geonet.kernel.csw.CatalogDispatcher;
 import org.fao.geonet.kernel.harvest.HarvestManager;
 import org.fao.geonet.kernel.oaipmh.OaiPmhDispatcher;
+import org.fao.geonet.kernel.reusable.ReusableObjManager;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
 import org.fao.geonet.lib.Lib;
 import org.fao.geonet.lib.ServerLib;
 import org.fao.geonet.notifier.MetadataNotifierControl;
 import org.fao.geonet.notifier.MetadataNotifierManager;
+import org.fao.geonet.services.extent.ExtentManager;
 import org.fao.geonet.services.util.z3950.Repositories;
 import org.fao.geonet.services.util.z3950.Server;
 import org.geotools.data.DataStore;
@@ -74,6 +77,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -150,6 +154,19 @@ public class Geonetwork implements ApplicationHandler
 
 		thesaurusMan = new ThesaurusManager(path, thesauriDir);
 
+        //--- Initialize Extent Dict
+
+        logger.info("  - Extent Dict...");
+
+        Iterator<Element> extentConfig = handlerConfig.getChildren(Geocat.Config.EXTENT_CONFIG);
+
+        ExtentManager extentMan = new ExtentManager(extentConfig);
+
+		//-------------------------------------------------------------------------
+		//--- ReusableObjectManager
+
+        Iterator<Element> reusableConfig = handlerConfig.getChildren(Geocat.Config.REUSABLE_OBJECT_CONFIG);
+		ReusableObjManager reusableObjMan = new ReusableObjManager(path, reusableConfig, context.getSerialFactory());
 
 		//------------------------------------------------------------------------
 		//--- initialize Z39.50
@@ -220,7 +237,7 @@ public class Geonetwork implements ApplicationHandler
 		if (!_htmlCacheDir.isAbsolute()) {
 			htmlCacheDir = path + htmlCacheDir;
 		}
-		DataManager dataMan = new DataManager(context, searchMan, accessMan, dbms, settingMan, baseURL, htmlCacheDir, dataDir, path);
+		DataManager dataMan = new DataManager(context, searchMan, accessMan, dbms, settingMan, reusableObjMan, extentMan, baseURL, htmlCacheDir, dataDir, path);
 
 		String schemasDir = path + Geonet.Path.SCHEMAS;
 		String saSchemas[] = new File(schemasDir).list();

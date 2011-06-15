@@ -43,26 +43,7 @@ import org.apache.lucene.document.MapFieldSelector;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.CachingWrapperFilter;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.FuzzyQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.NumericRangeQuery;
-import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TopFieldCollector;
-import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
@@ -1000,19 +981,27 @@ public class LuceneSearcher extends MetaSearcher
      */
     public static String getMetadataFromIndex(String appPath, String id, String fieldname) throws Exception
     {
+        return getMetadataFromIndex(appPath,id,fieldname,"eng");
+    }
+    public static String getMetadataFromIndex(String appPath, String id, String fieldname, String languageCode) throws Exception
+    {
 			List<String> fieldnames = new ArrayList<String>();
 			fieldnames.add(fieldname);
 			return getMetadataFromIndex(appPath, id, fieldnames).get(fieldname);
-		}
-
+    }
     public static Map<String,String> getMetadataFromIndex(String appPath, String id, List<String> fieldnames) throws Exception
+    {
+        return getMetadataFromIndex(appPath,id,fieldnames,"eng");
+    }
+    public static Map<String,String> getMetadataFromIndex(String appPath, String id, List<String> fieldnames, String languageCode) throws Exception
     {
 
 			MapFieldSelector selector = new MapFieldSelector(fieldnames); 
 
 			File luceneDir = new File(appPath + "WEB-INF/lucene/nonspatial");
-			IndexReader reader = IndexReader.open(luceneDir);
-      Searcher searcher = new IndexSearcher(reader);
+    	File styleSheetsDir = new File(appPath + SearchManager.SEARCH_STYLESHEETS_DIR_PATH);
+        MultiLingualIndexSupport support = new MultiLingualIndexSupport(styleSheetsDir, luceneDir);
+        MultiSearcher searcher = support.createMultiMetaSearcher(support.sortCurrentLocalFirst(languageCode));
 
 			Map<String,String> values = new HashMap<String,String>();
         
@@ -1021,7 +1010,7 @@ public class LuceneSearcher extends MetaSearcher
 		    TopDocs tdocs = searcher.search(query,1);
 	        
 	       for ( ScoreDoc sdoc : tdocs.scoreDocs ) {
-        		Document doc = reader.document(sdoc.doc, selector);
+        		Document doc = support.document(sdoc.doc, selector);
 
                for ( String fieldname :  fieldnames ) {
 							values.put(fieldname, doc.get(fieldname));
@@ -1029,7 +1018,6 @@ public class LuceneSearcher extends MetaSearcher
 	        }
 	        
 	        searcher.close();
-	        reader.close();
     	} catch (CorruptIndexException e) {
 			// TODO: handle exception
             Log.error(Geonet.SEARCH_ENGINE,"CorruptIndexException (not handled): " + e.getMessage());
@@ -1042,7 +1030,6 @@ public class LuceneSearcher extends MetaSearcher
 			//System.out.println (e.getMessage());
 		} finally {
 			searcher.close();
-			reader.close();
 		}
 	
     return values;
