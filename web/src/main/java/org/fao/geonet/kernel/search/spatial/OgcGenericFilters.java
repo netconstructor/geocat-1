@@ -6,6 +6,7 @@ import com.vividsolutions.jts.index.SpatialIndex;
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
 import org.apache.lucene.search.Query;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
@@ -53,7 +54,7 @@ class Reproject {
  			AttributeTypeBuilder attBuilder  = new AttributeTypeBuilder();
 			attBuilder.crs(DefaultGeographicCRS.WGS84);
 			attBuilder.binding(MultiPolygon.class);
-			GeometryDescriptor geomDescriptor = attBuilder.buildDescriptor(SpatialIndexWriter.GEOM_ATTRIBUTE_NAME, attBuilder.buildGeometryType());
+			GeometryDescriptor geomDescriptor = attBuilder.buildDescriptor(Geocat.Spatial.GEOM_ATTRIBUTE_NAME, attBuilder.buildGeometryType());
 			builder.setName("dummy");
 			builder.setCRS( DefaultGeographicCRS.WGS84 );
  			builder.add(geomDescriptor);
@@ -148,7 +149,7 @@ public class OgcGenericFilters
         @Override
         public Object visit(PropertyName expression, Object data)
         {
-            return getFactory(data).property(SpatialIndexWriter.GEOM_ATTRIBUTE_NAME);
+            return getFactory(data).property(Geocat.Spatial.GEOM_ATTRIBUTE_NAME);
         }
 
         @Override
@@ -161,7 +162,7 @@ public class OgcGenericFilters
             double maxy=filter.getMaxY();
             String srs=filter.getSRS();
             
-            return getFactory(extraData).bbox(SpatialIndexWriter.GEOM_ATTRIBUTE_NAME, minx, miny, maxx, maxy, srs);
+            return getFactory(extraData).bbox(Geocat.Spatial.GEOM_ATTRIBUTE_NAME, minx, miny, maxx, maxy, srs);
         }
     }
 

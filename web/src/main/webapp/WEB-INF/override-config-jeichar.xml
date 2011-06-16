@@ -1,7 +1,7 @@
 <overrides>
 	<logging>
-      <logFile>log4j.cfg</logFile>
-      <logFile>log4j-jeichar.cfg</logFile>
+      <logFile>/WEB-INF/log4j.cfg</logFile>
+      <logFile>/WEB-INF/log4j-jeichar.cfg</logFile>
   </logging>
 	  <!-- properties allow some properties to be defined that will be substituted -->
     <!-- into text or attributes where ${property} is the substitution pattern -->

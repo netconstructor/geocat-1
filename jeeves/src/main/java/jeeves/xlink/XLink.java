@@ -1,7 +1,12 @@
 package jeeves.xlink;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import org.jdom.Attribute;
+import org.jdom.Element;
 import org.jdom.Namespace;
 
 /**
@@ -131,7 +136,29 @@ public class XLink {
 	public void setActuate(String actuate) {
 		this.actuate = actuate;
 	}
+
+    public static boolean isXLink(Element elem)
+    {
+        if( elem==null ) return false;
+        return elem.getAttribute(HREF, NAMESPACE_XLINK) != null;
+    }
+
 	
-	
-	
+    public static void removeXLinkAttributes(Element mdWithXlinks) {
+        Iterator descendants = mdWithXlinks.getDescendants();
+
+        while(descendants.hasNext()) {
+            Object o = descendants.next();
+            if(o instanceof Element) {
+                Element e = (Element) o;
+                e.removeNamespaceDeclaration(NAMESPACE_XLINK);
+                List<Attribute> atts = new ArrayList<Attribute>(e.getAttributes());
+                for (Attribute att : atts) {
+                    if(NAMESPACE_XLINK.equals(att.getNamespace())) {
+                        e.removeAttribute(att);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -43,7 +43,7 @@ import java.util.Set;
  *
  * @author heikki doeleman
  */
-public final class GeoNetworkAnalyzer extends GeoNetworkReusableAnalyzerBase {
+public class GeoNetworkAnalyzer extends GeoNetworkReusableAnalyzerBase {
 
     private Set<String> stopwords = null;
     private boolean enablePositionIncrements = true;
@@ -91,5 +91,7 @@ public final class GeoNetworkAnalyzer extends GeoNetworkReusableAnalyzerBase {
             return new TokenStreamComponents(source, new ASCIIFoldingFilter(new LowerCaseFilter(new StandardFilter(source))));
         }
     }
+
+
 
 }

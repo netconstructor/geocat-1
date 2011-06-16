@@ -31,9 +31,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import jeeves.JeevesJCS;
 import jeeves.JeevesProxyInfo;
@@ -49,6 +47,7 @@ import jeeves.utils.ProxyInfo;
 import jeeves.utils.XmlResolver;
 import jeeves.xlink.Processor;
 
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.kernel.AccessManager;
@@ -60,6 +59,7 @@ import org.fao.geonet.kernel.csw.CatalogDispatcher;
 import org.fao.geonet.kernel.harvest.HarvestManager;
 import org.fao.geonet.kernel.oaipmh.OaiPmhDispatcher;
 import org.fao.geonet.kernel.search.LuceneConfig;
+import org.fao.geonet.kernel.reusable.ReusableObjManager;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingInfo;
 import org.fao.geonet.kernel.setting.SettingManager;
@@ -67,6 +67,7 @@ import org.fao.geonet.lib.Lib;
 import org.fao.geonet.lib.ServerLib;
 import org.fao.geonet.notifier.MetadataNotifierControl;
 import org.fao.geonet.notifier.MetadataNotifierManager;
+import org.fao.geonet.services.extent.ExtentManager;
 import org.fao.geonet.services.util.z3950.Repositories;
 import org.fao.geonet.services.util.z3950.Server;
 import org.fao.geonet.util.ThreadPool;
@@ -84,6 +85,17 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 //=============================================================================
@@ -214,6 +226,20 @@ public class Geonetwork implements ApplicationHandler
 
 		thesaurusMan = ThesaurusManager.getInstance(path, thesauriDir);
 
+        //--- Initialize Extent Dict
+
+        logger.info("  - Extent Dict...");
+
+        List<Element> extentConfig = handlerConfig.getChildren(Geocat.Config.EXTENT_CONFIG);
+
+        ExtentManager extentMan = new ExtentManager(extentConfig);
+
+		//-------------------------------------------------------------------------
+		//--- ReusableObjectManager
+
+        List<Element> reusableConfig = handlerConfig.getChildren(Geocat.Config.REUSABLE_OBJECT_CONFIG);
+		ReusableObjManager reusableObjMan = new ReusableObjManager(path, reusableConfig, context.getSerialFactory());
+
 		//------------------------------------------------------------------------
 		//--- initialize Z39.50
 
@@ -304,7 +330,7 @@ public class Geonetwork implements ApplicationHandler
 		if (!_htmlCacheDir.isAbsolute()) {
 			htmlCacheDir = path + htmlCacheDir;
 		}
-		DataManager dataMan = new DataManager(context, schemaMan, searchMan, accessMan, dbms, settingMan, baseURL, htmlCacheDir, dataDir, path);
+		DataManager dataMan = new DataManager(context, schemaMan, searchMan, accessMan, dbms, settingMan, reusableObjMan, extentMan, baseURL, htmlCacheDir, dataDir, path);
 
 		//------------------------------------------------------------------------
 		//--- initialize harvesting subsystem

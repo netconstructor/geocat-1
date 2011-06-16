@@ -32,6 +32,7 @@ import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Scorer;
+import org.fao.geonet.constants.Geocat;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -131,7 +132,7 @@ public class FullScanFilter extends SpatialFilter
                     SimpleFeature feature = iterator.next();
                     matches
                             .add((String) feature
-                                    .getAttribute(SpatialIndexWriter.IDS_ATTRIBUTE_NAME));
+                                    .getAttribute(Geocat.Spatial.IDS_ATTRIBUTE_NAME));
                 }
             } finally {
                 iterator.close();

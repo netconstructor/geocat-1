@@ -198,6 +198,11 @@
   <!-- =========================================================== -->
   <dependencyManagement>
     <dependencies>
+        <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>r08</version>
+        </dependency>
 
       <!-- XML -->
       <dependency>
@@ -362,6 +367,16 @@
         <version>3.0.2</version>
       </dependency>
       <dependency>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-misc</artifactId>
+          <version>3.0.2</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-queries</artifactId>
+          <version>3.0.2</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.jcs</groupId>
         <artifactId>jcs</artifactId>
         <version>1.3</version> <!-- TODO check version -->
@@ -445,11 +460,16 @@
         <artifactId>gt-epsg-hsql</artifactId>
         <version>2.6.2</version>
       </dependency>
-      <dependency>
-        <groupId>org.geotools</groupId>
-        <artifactId>gt-postgis</artifactId>
-        <version>2.6.2</version>
-      </dependency>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-postgis</artifactId>
+          <version>2.6.2</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-wfs</artifactId>
+          <version>2.6.2</version>
+        </dependency>
       <dependency>
         <groupId>lizard</groupId>
         <artifactId>lizard-tiff</artifactId>

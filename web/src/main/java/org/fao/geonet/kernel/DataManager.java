@@ -47,11 +47,13 @@ import org.fao.geonet.constants.Params;
 import org.fao.geonet.exceptions.SchematronValidationErrorEx;
 import org.fao.geonet.kernel.csw.domain.CswCapabilitiesInfo;
 import org.fao.geonet.kernel.harvest.HarvestManager;
+import org.fao.geonet.kernel.reusable.ReusableObjManager;
 import org.fao.geonet.kernel.schema.MetadataSchema;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.kernel.setting.SettingManager;
 import org.fao.geonet.lib.Lib;
+import org.fao.geonet.services.extent.ExtentManager;
 import org.fao.geonet.util.ISODate;
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -100,19 +102,25 @@ public class DataManager {
      * @param am
      * @param dbms
      * @param ss
+     * @param reusableObjMan
+     * @param extentMan
      * @param baseURL
      * @param htmlCacheDir
      * @param dataDir
      * @param appPath
      * @throws Exception
      */
-	public DataManager(ServiceContext context, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception {
+	public DataManager(ServiceContext context, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, ReusableObjManager reusableObjMan, ExtentManager extentMan, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception
+	{
 		searchMan = sm;
 		accessMan = am;
 		settingMan= ss;
 		schemaMan = scm;
 		editLib = new EditLib(schemaMan);
         servContext=context;
+        this.reusableObjMan = reusableObjMan;
+        this.extentMan = extentMan;
+
 
 		this.baseURL = baseURL;
         this.dataDir = dataDir;
@@ -1347,7 +1355,7 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getMetadataNoInfo(ServiceContext srvContext, String id) throws Exception {
-		Element md = getMetadata(srvContext, id, false, false);
+		Element md = getMetadata(srvContext, id, false, false, true, false);
 		md.removeChild(Edit.RootChild.INFO, Edit.NAMESPACE);
 		return md;
 	}
@@ -1362,7 +1370,11 @@ public class DataManager {
      * @return
      * @throws Exception
      */
-	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors) throws Exception {
+    public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors) throws Exception {
+        return getMetadata(srvContext,id,forEditing,withEditorValidationErrors,true,true);
+    }
+
+	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean resolveXLink, boolean elementsHide) throws Exception {
 		Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
 		boolean doXLinks = XmlSerializer.resolveXLinks();
 		Element md = XmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
@@ -2297,7 +2309,7 @@ public class DataManager {
 
 		// --- get parent metadata in read/only mode
         boolean forEditing = false, withValidationErrors = false;
-        Element parent = getMetadata(srvContext, parentId, forEditing, withValidationErrors);
+        Element parent = getMetadata(srvContext, parentId, forEditing, withValidationErrors,true,false);
 
 		Element env = new Element("update");
 		env.addContent(new Element("parentUuid").setText(parentUuid));
@@ -2318,7 +2330,7 @@ public class DataManager {
 				continue;
 			}
 
-            Element child = getMetadata(srvContext, childId, forEditing, withValidationErrors);
+            Element child = getMetadata(srvContext, childId, forEditing, withValidationErrors, true, false);
 
 			String childSchema = child.getChild(Edit.RootChild.INFO,
 					Edit.NAMESPACE).getChildText(Edit.Info.Elem.SCHEMA);
@@ -2739,6 +2751,8 @@ public class DataManager {
 	private SettingManager settingMan;
 	private SchemaManager  schemaMan;
 	private HarvestManager harvestMan;
+    private final ReusableObjManager reusableObjMan;
+    private final ExtentManager extentMan;
     private String dataDir;
     private ServiceContext servContext;
 	private String appPath;

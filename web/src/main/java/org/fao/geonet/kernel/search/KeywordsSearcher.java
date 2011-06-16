@@ -62,6 +62,9 @@ public class KeywordsSearcher {
 	public KeywordBean searchById(String id, String sThesaurusName, String lang)
 	throws Exception {
 
+        if (lang.length()>2)
+            lang=lang.substring(0, 2);
+
 		_query = "SELECT prefLab, note, id, lowc, uppc "
 			+ " FROM {id} rdf:type {skos:Concept}; "
 			+ " skos:prefLabel {prefLab};"
@@ -111,6 +114,17 @@ public class KeywordsSearcher {
 	
 	public void search(ServiceContext srvContext, Element params)
 			throws Exception {
+
+    }
+	public void search(String defaultLang, Element params)
+			throws Exception {
+        if (params.getChild("pLanguage") != null){                            // if param pLanguage here
+            defaultLang = Util.getParam(params, "pLanguage");
+        }
+        if( defaultLang!=null && defaultLang.length()>2 ){
+            defaultLang=defaultLang.substring(0, 2);
+        }
+
 		// Get params from request and set default
 		String sKeyword = Util.getParam(params, "pKeyword");
 		
@@ -178,7 +192,7 @@ public class KeywordsSearcher {
 			// This will cause multilingual metadata search quite complex !!
 			// Quid Lucene and thesaurus ?
 
-			String _lang = srvContext.getLanguage();
+			String _lang = defaultLang;
 			_query = "SELECT prefLab, note, id, lowc, uppc "
 				+ " FROM {id} rdf:type {skos:Concept}; "
 				+ " skos:prefLabel {prefLab};"
@@ -422,6 +436,29 @@ public class KeywordsSearcher {
 
 		return elDescKeys;
 	}
+
+    public Element getResults(Element params) throws Exception {
+
+        Element elDescKeys = new Element("descKeys");
+
+
+        // Return only the n first elements according to GUI.
+        int nbResults = 36000;
+        // FIXME
+        if (params.getChild("nbResults") != null)
+            nbResults = Util.getParam(params, "nbResults", this.getNbResults());
+
+        nbResults = (this.getNbResults()<=nbResults?this.getNbResults():nbResults);
+
+        //for (int i = from; i <= to; i++) {
+        for (int i = 0; i <= nbResults - 1; i++) {
+            KeywordBean kb = _results.get(i);
+
+            elDescKeys.addContent(kb.toElement("eng","fra","eng","ita"));
+        }
+
+        return elDescKeys;
+    }
 
 	public void selectUnselectKeywords(Element params) {
 		List listIdKeywordsSelected = params.getChildren("pIdKeyword");

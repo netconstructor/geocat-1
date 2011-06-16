@@ -22,12 +22,16 @@
 
 package org.fao.geonet.kernel.search.spatial;
 
+import static org.fao.geonet.constants.Geocat.Spatial.*;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.TopologyException;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.io.WKTReader;
+import jeeves.JeevesJCS;
 import jeeves.utils.Log;
+import org.apache.jcs.access.GroupCacheAccess;
+import org.apache.jcs.access.exception.CacheException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
@@ -39,6 +43,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.util.DocIdBitSet;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
@@ -46,6 +51,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -69,23 +75,13 @@ import java.util.Set;
 public abstract class SpatialFilter extends Filter
 {
     private static final long     serialVersionUID = -6221744013750827050L;
-    private static SimpleFeatureType FEATURE_TYPE;
 
-    static {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.add(SpatialIndexWriter.GEOM_ATTRIBUTE_NAME, Geometry.class,DefaultGeographicCRS.WGS84);
-        builder.setDefaultGeometry(SpatialIndexWriter.GEOM_ATTRIBUTE_NAME);
-        builder.setName(SpatialIndexWriter.SPATIAL_INDEX_TYPENAME);
-        FEATURE_TYPE = builder.buildFeatureType();
-    }
-    
-    
     protected final Geometry      _geom;
     protected final FeatureSource _featureSource;
     protected final SpatialIndex    _index;
 
     protected final FilterFactory2  _filterFactory;
-    protected final Query                 _query;
+    protected       Query                 _query;
     protected final FieldSelector _selector;
     private org.opengis.filter.Filter _spatialFilter;
     private Map<String, FeatureId> _unrefinedMatches;
@@ -164,6 +160,15 @@ public abstract class SpatialFilter extends Filter
 
     private BitSet applySpatialFilter(Set<FeatureId> matches, Map<FeatureId, Integer> docIndexLookup, BitSet bits) throws IOException
     {
+
+        JeevesJCS jcs;
+        try {
+            jcs = JeevesJCS.getInstance(SPATIAL_FILTER_JCS);
+        } catch (CacheException e) {
+            throw new Error(e);
+        }
+        processCachedFeatures(jcs, matches, docIndexLookup, bits);
+
         Id fidFilter = _filterFactory.id(matches);
         String ftn = _featureSource.getSchema().getName().getLocalPart();
         String[] geomAtt = {_featureSource.getSchema().getGeometryDescriptor().getLocalName()};
@@ -177,9 +182,12 @@ public abstract class SpatialFilter extends Filter
                 SimpleFeature feature = iterator.next();
                 if( evaluateFeature(feature) ){
                     FeatureId featureId = feature.getIdentifier();
+                    jcs.put(featureId.getID(), feature.getDefaultGeometry());
                     bits.set(docIndexLookup.get(featureId));
                 }
             }
+        } catch (CacheException e) {
+            throw new Error(e);
         } finally {
             iterator.close();
         }
@@ -197,6 +205,21 @@ public abstract class SpatialFilter extends Filter
             }
             Log.debug(Geonet.SPATIAL, e.getMessage()+": occurred during a search: "+getFilter()+" on feature: "+feature.getDefaultGeometry());
             return false;
+        }
+    }
+
+    private void processCachedFeatures(GroupCacheAccess jcs, Set<FeatureId> matches, Map<FeatureId, Integer> docIndexLookup, BitSet bits)
+    {
+        for(java.util.Iterator<FeatureId> iter=matches.iterator();iter.hasNext();){
+            FeatureId id = iter.next();
+          Geometry geom = (Geometry) jcs.get(id.getID());
+            if( geom!=null ){
+                iter.remove();
+                SimpleFeature feature = SimpleFeatureBuilder.build(FEATURE_TYPE, new Object[]{geom}, id.getID());
+                if( evaluateFeature(feature) ){
+                    bits.set(docIndexLookup.get(id));
+                }
+            }
         }
     }
 
@@ -264,4 +287,11 @@ public abstract class SpatialFilter extends Filter
                 "createGeomFilter must be overridden if createFilter is not overridden");
     }
 
+    public Query getQuery() {
+        return _query;
+    }
+
+    public void setQuery(Query query) {
+        _query = query;
+    }
 }

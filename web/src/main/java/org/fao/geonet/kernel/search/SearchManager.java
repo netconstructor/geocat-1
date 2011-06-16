@@ -107,7 +107,7 @@ public class SearchManager
 
     public static final String NON_SPATIAL_DIR = "/nonspatial";
     
-	private static final String SEARCH_STYLESHEETS_DIR_PATH = "xml/search";
+	public static final String SEARCH_STYLESHEETS_DIR_PATH = "xml/search";
     private static final String STOPWORDS_DIR_PATH = "resources/stopwords";
 
 	private static final Configuration FILTER_1_0_0 = new org.geotools.filter.v1_0.OGCConfiguration();
@@ -1169,14 +1169,13 @@ public class SearchManager
         }
 		return doc;
 	}
-
-	/**
+    /**
 	 * Create Lucene numeric field
-	 * 
+	 *
 	 * @param doc	The document to add the field
 	 * @param name	The field name
 	 * @param string	The value to be indexed. It is parsed to its numeric type. If exception occurs
-	 * field is not added to the index. 
+	 * field is not added to the index.
 	 * @param store
 	 * @param index
 	 * @return
@@ -1184,15 +1183,15 @@ public class SearchManager
 	private void addNumericField(Document doc, String name, String string, Store store,
 			boolean index) {
 		LuceneConfigNumericField fieldConfig = _luceneConfig.getNumericField(name);
-		
-		// string = cleanNumericField(string);	
+
+		// string = cleanNumericField(string);
 		NumericField field = new NumericField(name, fieldConfig.getPrecisionStep(), store, index);
 		// TODO : reuse the numeric field for better performance
-		
+
 		Log.debug(Geonet.INDEX_ENGINE,
 				"Indexing numeric field: " + name +
 						" with value: " + string );
-		
+
 		try {
 			String paramType = fieldConfig.getType();
 			if ("double".equals(paramType)) {
@@ -1208,7 +1207,7 @@ public class SearchManager
 				int i = Integer.valueOf(string);
 				field.setIntValue(i);
 			}
-			
+
 			doc.add(field);
 		} catch (Exception e) {
 			Log.warning(Geonet.INDEX_ENGINE,
@@ -1216,6 +1215,15 @@ public class SearchManager
 							" with value: " + string + ", error is:" + e.getMessage());
 		}
 	}
+
+    public File getStylesheetsDir() {
+        return _stylesheetsDir;
+    }
+
+    public File getLuceneDir() {
+        return _luceneDir;
+    }
+    //--------------------------------------------------------------------------------
 
 	public Spatial getSpatial()
     {
