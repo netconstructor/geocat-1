@@ -91,11 +91,33 @@
 	-->
   
 	<resources>
+	  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	    H2 database  http://www.h2database.com/
+	    When GeoNetwork don't use H2 database, the listener DBStarter
+	    section could be turned off (see web.xml).
+	    
+	    Database is created according to jdbc url.
+	    
+	    It may be relevant to turn on MVCC mode
+	    http://www.h2database.com/html/advanced.html#mvcc
+	    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	  <resource enabled="true">
+	    <name>main-db</name>
+	    <provider>jeeves.resources.dbms.ApacheDBCPool</provider>
+	    <config>
+	      <user>admin</user>
+	      <password>gnos</password>
+	      <driver>org.h2.Driver</driver>
+	      <url>jdbc:h2:geonetwork</url>
+	      <poolSize>33</poolSize>
+	      <reconnectTime>3600</reconnectTime>
+	    </config>
+	  </resource>
 	  
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<!-- mckoi standalone -->
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-		<resource enabled="true">
+		<resource enabled="false">
 			<name>main-db</name>
 			<!-- <provider>jeeves.resources.dbms.DbmsPool</provider> -->
 			<provider>jeeves.resources.dbms.ApacheDBCPool</provider>
@@ -144,6 +166,24 @@
 				<poolSize>10</poolSize>
 			</config>
 		</resource>
+
+		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+		<!-- db2 -->
+		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+		<resource enabled="false">
+			<name>main-db</name>
+			<!-- <provider>jeeves.resources.dbms.DbmsPool</provider> -->
+			<provider>jeeves.resources.dbms.ApacheDBCPool</provider>
+			<config>
+				<user>db2inst1</user>
+				<password>db2inst1</password>
+				<driver>com.ibm.db2.jcc.DB2Driver</driver>
+				<url>jdbc:db2:geonet</url>
+				<poolSize>10</poolSize>
+			</config>
+		</resource>
+
 	    
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<!-- postgresql -->
@@ -166,12 +206,12 @@
 					
 					jdbc:postgis://host:port/database
 				-->
-        <url>jdbc:postgresql://localhost:5432/geonetwork</url>
+                <url>jdbc:postgresql://localhost:5432/geonetwork</url>
 				<poolSize>10</poolSize>
 			</config>
 		</resource>
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<!-- sqlserver 2008 -->
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
@@ -183,7 +223,7 @@
 				<user>www-data</user>
 				<password>www-data</password>
 				<driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</driver>
-        <url>jdbc:sqlserver://SERVER;database=geonetwork;integratedSecurity=false;</url>
+                <url>jdbc:sqlserver://SERVER;database=geonetwork;integratedSecurity=false;</url>
 				<poolSize>10</poolSize>
 			</config>
 		</resource>

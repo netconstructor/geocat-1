@@ -667,7 +667,7 @@ The procedure to follow is:
 
 - From the Administration->System Configuration menu, enable the XLink Resolver and *Save* the configuration to the database.
 - Add an *OGC WFS GetFeature response* harvester from the Administration->Harvesting menu.
-- Give it a *Name* (eg. gboundaries) and enter the URL of the bundled geoserver (eg. http://localhost:8080/geoserver)  in the *Service URL* field.
+- Give it a *Name* (eg. gboundaries) and enter the URL of the wfs service from the bundled geoserver (eg. http://localhost:8080/geoserver/wfs)  in the *Service URL* field.
 - We'll use a simple GetFeature query to select all countries from the boundaries shapefile behind the WFS. The XML for such a query (which is to be entered in the *GetFeature Query* textarea) is:
 
 ::

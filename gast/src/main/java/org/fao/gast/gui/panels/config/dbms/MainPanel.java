@@ -152,6 +152,7 @@ public class MainPanel extends FormPanel
 		new MySQLPanel(),
 		new PostgresPanel(),
 		new PostgisPanel(),
+		new DB2Panel(),
 		new GenericPanel()  //--- this must be the last one
 	};
 
