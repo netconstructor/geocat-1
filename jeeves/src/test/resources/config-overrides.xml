@@ -1,4 +1,6 @@
 <overrides>
+    <!-- import values.  The imported values are put at top of sections -->
+    <import file="./imported-config-overrides.xml" />
     <!-- The logging section allows logging configuration files to be specified -->
     <!-- At the moment only property based configuration files are supported -->
     <!-- There may be multiple configuration files -->
@@ -13,9 +15,6 @@
      <!-- into text or attributes where ${property} is the substitution pattern -->
      <!-- The properties can reference other properties -->
      <properties>
-         <fr>fr</fr>
-         <lang>${fr}</lang>
-         <host>localhost</host>
          <enabled>true</enabled>
          <dir>xml</dir>
      </properties>
@@ -55,11 +54,8 @@
          <addXML xpath="default/gui"><newNode2/></addXML>
          <!-- remove a single node -->
          <removeXML xpath="default/gui/xml[@name = countries2]"/>
-         <!-- remove all matching nodes -->
-         <removeXML xpath="*//toRemove"/>
      </file>
-         <file name="config2.xml">
-         <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/other.xml"/>
+     <file name="config2.xml">
          <replaceText xpath="default/language">de</replaceText>
      </file>
  </overrides>

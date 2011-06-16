@@ -1,17 +1,15 @@
 package jeeves.server;
 
 import jeeves.server.sources.http.JeevesServlet;
-import jeeves.utils.IO;
 import jeeves.utils.Log;
 import jeeves.utils.XPath;
 import jeeves.utils.Xml;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.spi.Configurator;
 import org.apache.log4j.spi.LoggerRepository;
 import org.jdom.*;
 import org.jdom.filter.Filter;
-import sun.util.logging.resources.logging;
+import org.mortbay.util.Loader;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -41,68 +39,69 @@ import java.util.regex.Pattern;
  * The override configuration structure is an XML file as follows:
  * <pre><[[CDATA[
  * <overrides>
-    <!-- The logging section allows logging configuration files to be specified -->
-    <!-- At the moment only property based configuration files are supported -->
-    <!-- There may be multiple configuration files -->
-    <!-- The properties are loaded in order and subsequent files will override -->
-    <!-- properties previously loaded.  This allows one to have shared configuration in -->
-    <!-- one log file and more specific configuration in other files -->
-    <logging>
-        <logFile>logfile1.properties</logFile>
-        <logFile>logfile2.properties</logFile>
-    </logging>
-     <!-- properties allow some properties to be defined that will be substituted -->
-     <!-- into text or attributes where ${property} is the substitution pattern -->
-     <!-- The properties can reference other properties -->
-     <properties>
-         <fr>fr</fr>
-         <lang>${fr}</lang>
-         <host>localhost</host>
-         <enabled>true</enabled>
-         <dir>xml</dir>
-     </properties>
-     <!-- In this version only the file name is considered not the path.  -->
-     <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
-     <file name="config.xml">
-         <!-- This example will update the file attribute of the xml element with the name attribute 'countries' -->
-         <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/europeanCountries.xml"/>
-         <!-- if there is no value then the attribute is removed -->
-         <replaceAtt xpath="default/gui" attName="removeAtt"/>
-         <!-- If the attribute does not exist it is added -->
-         <replaceAtt xpath="default/gui" attName="newAtt" value="newValue"/>
-
-         <!-- This example will replace all the xml in resources with the contained xml -->
-         <replaceXML xpath="resources">
-           <resource enabled="${enabled}">
-             <name>main-db</name>
-             <provider>jeeves.resources.dbms.DbmsPool</provider>
-              <config>
-                  <user>admin</user>
-                  <password>admin</password>
-                  <driver>oracle.jdbc.driver.OracleDriver</driver>
-                  <!-- ${host} will be updated to be local host -->
-                  <url>jdbc:oracle:thin:@${host}:1521:fs</url>
-                  <poolSize>10</poolSize>
-              </config>
-           </resource>
-         </replaceXML>
-         <!-- This example simple replaces the text of an element -->
-         <replaceText xpath="default/language">${lang}</replaceText>
-         <!-- This examples shows how only the text is replaced not the nodes -->
-         <replaceText xpath="default/gui">ExtraText</replaceText>
-         <!-- append xml as a child to a section (If xpath == "" then that indicates the root of the document),
-              this case adds nodes to the root document -->
-         <addXML xpath=""><newNode/></addXML>
-         <!-- append xml as a child to a section, this case adds nodes to the root document -->
-         <addXML xpath="default/gui"><newNode2/></addXML>
-         <!-- remove a single node -->
-         <removeXML xpath="default/gui/xml[@name = countries2]"/>
-     </file>
-         <file name="config2.xml">
-         <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/other.xml"/>
-         <replaceText xpath="default/language">de</replaceText>
-     </file>
- </overrides>
+ *
+ * <!-- The logging section allows logging configuration files to be specified -->
+ * <!-- At the moment only property based configuration files are supported -->
+ * <!-- There may be multiple configuration files -->
+ * <!-- The properties are loaded in order and subsequent files will override -->
+ * <!-- properties previously loaded.  This allows one to have shared configuration in -->
+ * <!-- one log file and more specific configuration in other files -->
+ * <logging>
+ * <logFile>logfile1.properties</logFile>
+ * <logFile>logfile2.properties</logFile>
+ * </logging>
+ * <!-- properties allow some properties to be defined that will be substituted -->
+ * <!-- into text or attributes where ${property} is the substitution pattern -->
+ * <!-- The properties can reference other properties -->
+ * <properties>
+ * <fr>fr</fr>
+ * <lang>${fr}</lang>
+ * <host>localhost</host>
+ * <enabled>true</enabled>
+ * <dir>xml</dir>
+ * </properties>
+ * <!-- In this version only the file name is considered not the path.  -->
+ * <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
+ * <file name="config.xml">
+ * <!-- This example will update the file attribute of the xml element with the name attribute 'countries' -->
+ * <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/europeanCountries.xml"/>
+ * <!-- if there is no value then the attribute is removed -->
+ * <replaceAtt xpath="default/gui" attName="removeAtt"/>
+ * <!-- If the attribute does not exist it is added -->
+ * <replaceAtt xpath="default/gui" attName="newAtt" value="newValue"/>
+ * <p/>
+ * <!-- This example will replace all the xml in resources with the contained xml -->
+ * <replaceXML xpath="resources">
+ * <resource enabled="${enabled}">
+ * <name>main-db</name>
+ * <provider>jeeves.resources.dbms.DbmsPool</provider>
+ * <config>
+ * <user>admin</user>
+ * <password>admin</password>
+ * <driver>oracle.jdbc.driver.OracleDriver</driver>
+ * <!-- ${host} will be updated to be local host -->
+ * <url>jdbc:oracle:thin:@${host}:1521:fs</url>
+ * <poolSize>10</poolSize>
+ * </config>
+ * </resource>
+ * </replaceXML>
+ * <!-- This example simple replaces the text of an element -->
+ * <replaceText xpath="default/language">${lang}</replaceText>
+ * <!-- This examples shows how only the text is replaced not the nodes -->
+ * <replaceText xpath="default/gui">ExtraText</replaceText>
+ * <!-- append xml as a child to a section (If xpath == "" then that indicates the root of the document),
+ * this case adds nodes to the root document -->
+ * <addXML xpath=""><newNode/></addXML>
+ * <!-- append xml as a child to a section, this case adds nodes to the root document -->
+ * <addXML xpath="default/gui"><newNode2/></addXML>
+ * <!-- remove a single node -->
+ * <removeXML xpath="default/gui/xml[@name = countries2]"/>
+ * </file>
+ * <file name="config2.xml">
+ * <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/other.xml"/>
+ * <replaceText xpath="default/language">de</replaceText>
+ * </file>
+ * </overrides>
  * ]]></pre>
  */
 class ConfigurationOverrides {
@@ -139,51 +138,55 @@ class ConfigurationOverrides {
     public static void updateLoggingAsAccordingToOverrides(JeevesServlet servlet) throws JDOMException, IOException {
         String resource = lookupOverrideParameter(servlet);
 
-        Element xml = loadXmlResource(resource, servlet);
-        if(xml!=null){
-            doUpdateLogging(xml, servlet);
+        ServletFileLoader loader = new ServletFileLoader(servlet);
+        Element xml = loader.loadXmlResource(resource);
+        if (xml != null) {
+            doUpdateLogging(xml, loader);
         }
     }
+
     /**
      * This method is default visibility for testing
      */
-    static void doUpdateLogging(Element overrides, JeevesServlet servlet) throws JDOMException, IOException {
+    static void doUpdateLogging(Element overrides, ResourceLoader loader) throws JDOMException, IOException {
         List<?> logOverides = Xml.selectNodes(overrides, LOGFILE_XPATH);
         Properties p = new Properties();
         for (Object logOveride : logOverides) {
-            String value = ((Content)logOveride).getValue();
-            InputStream in = loadInputStream(value, servlet);
-            if(in != null) {
+            String value = ((Content) logOveride).getValue();
+            InputStream in = loader.loadInputStream(value);
+            if (in != null) {
                 try {
                     p.load(in);
                 } finally {
                     in.close();
                 }
             } else {
-                throw new IllegalArgumentException("log configuration file "+value+" was not found");
+                throw new IllegalArgumentException("log configuration file " + value + " was not found");
             }
         }
-        if(logOverides.size() > 0) {
+        if (logOverides.size() > 0) {
             LoggerRepository loggerRepo = Logger.getRootLogger().getLoggerRepository();
             loggerRepo.resetConfiguration();
             PropertyConfigurator configurator = new PropertyConfigurator();
-            configurator.doConfigure(p,loggerRepo);
+            configurator.doConfigure(p, loggerRepo);
         }
     }
 
     public static void updateWithOverrides(String configFile, JeevesServlet servlet, Element configRoot) throws JDOMException, IOException {
         String resource = lookupOverrideParameter(servlet);
 
-        Element xml = loadXmlResource(resource, servlet);
-        if(xml!=null){
-            updateConfig(xml, new File(configFile).getName(), configRoot);
-        }
+        ServletFileLoader loader = new ServletFileLoader(servlet);
+        updateConfig(loader,resource,new File(configFile).getName(), configRoot);
     }
 
     /**
      * default visibility so that unit tests can be written against it
      */
-    static void updateConfig(Element overrides, String fileName, Element configRoot) throws JDOMException {
+    static void updateConfig(ResourceLoader loader, String overridesResource, String fileName, Element configRoot) throws JDOMException, IOException {
+        Element overrides = loader.loadXmlResource(overridesResource);
+        if (overrides == null) {
+            return;
+        }
         Properties properties = loadProperties(overrides);
         List<Element> files = overrides.getChildren(FILE_NODE_NAME);
         for (Element file : files) {
@@ -474,61 +477,132 @@ class ConfigurationOverrides {
         return resource;
     }
 
-    private static String loadStringResource(String resource, JeevesServlet servlet) throws JDOMException, IOException {
-        InputStream in = loadInputStream(resource, servlet);
-        if(in != null) {
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                StringBuilder data = new StringBuilder();
-                String line;
-                while((line = reader.readLine()) != null) {
-                    data.append(line);
-                }
-                return data.toString();
-            } finally {
-                in.close();
+    public static abstract class ResourceLoader {
+        protected abstract InputStream loadInputStream(String resource) throws JDOMException, IOException;
+        protected String resolveImportFileName(String importResource, String baseResource) {
+            String resolved = resolveRelative(importResource, baseResource, File.separator);
+            if(resolved.equals(importResource)) {
+                return resolveRelative(importResource, baseResource, "/");
+            } else {
+                return resolved;
             }
-        } else {
-            return null;
         }
-    }
-    private static InputStream loadInputStream(String resource, JeevesServlet servlet) throws JDOMException, IOException {
 
-        if (resource != null) {
-            InputStream in;
-            try {
-                in = new URL(resource).openStream();
-            } catch (MalformedURLException e) {
-                URL url;
-                try {
-                    url = servlet.getServletContext().getResource(resource);
-                } catch (MalformedURLException e2) {
-                    url = null;
-                }
-                if (url == null) {
-                    File file = new File(resource);
-                    if (file.isAbsolute() && file.exists()) {
-                        in = new FileInputStream(file);
-                    } else {
-                        throw new IllegalArgumentException("The resource file " + resource + " is not a file and not a web resource: " + url + ".  Perhaps a leading / was forgotten?");
-                    }
-                } else {
-                    in = url.openStream();
-                }
+        protected String resolveRelative(String importResource, String baseResource, String sep) {
+            String back = ".." + sep;
+            if(importResource.startsWith(back)) {
+                return baseResource+sep+".."+sep+importResource;
+            } else if(importResource.startsWith(back.substring(1))){
+                return baseResource+sep+".."+sep+importResource;
+            } else {
+                return importResource;
             }
-            return in;
         }
-        return null;
-    }
-    private static Element loadXmlResource(String resource, JeevesServlet servlet) throws JDOMException, IOException {
-        InputStream in = loadInputStream(resource, servlet);
-        if(in != null) {
-            try {
-                return Xml.loadStream(in);
-            } finally {
-                in.close();
+
+        public final String loadStringResource(String resource) throws JDOMException, IOException {
+            InputStream in = loadInputStream(resource);
+            if (in != null) {
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder data = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        data.append(line);
+                    }
+                    return data.toString();
+                } finally {
+                    in.close();
+                }
+            } else {
+                return null;
             }
-        } else {
+        }
+
+        public final Element loadXmlResource(String resource) throws JDOMException, IOException {
+            InputStream in = loadInputStream(resource);
+            if (in != null) {
+                try {
+                    return resolveImports(Xml.loadStream(in), resource);
+                } finally {
+                    in.close();
+                }
+            } else {
+                return null;
+            }
+        }
+
+        private Element resolveImports(Element baseElement, String baseResource) throws JDOMException, IOException {
+            List<Element> imports = new ArrayList<Element>(baseElement.getChildren("import"));
+
+            for (Element anImport : imports) {
+                anImport.detach();
+                String file = anImport.getAttributeValue("file");
+
+                Element importedXml = loadXmlResource(resolveImportFileName(file, baseResource));
+                List<Element> children = importedXml.getChildren();
+                for (Element toMerge : children) {
+                    if(toMerge.getName().equalsIgnoreCase("file")) {
+                        String xpath = "file[@name = '" + toMerge.getAttributeValue("name") + "']";
+                        merge(baseElement, toMerge, xpath);
+                    } else {
+                        merge(baseElement, toMerge, toMerge.getName());
+                    }
+                }
+            }
+            return baseElement;
+        }
+
+        private void merge(Element baseElement, Element toMerge, String xpath) throws JDOMException {
+            Element mergeTarget = Xml.selectElement(baseElement, xpath);
+            if(mergeTarget != null) {
+                mergeTarget.addContent(0,detach(toMerge.getContent()));
+            } else {
+                baseElement.addContent(toMerge);
+            }
+        }
+
+        private Collection detach(List content) {
+            ArrayList<Content> al = new ArrayList<Content>(content);
+            for (Content o : al) {
+                o.detach();
+            }
+            return al;
+        }
+    }
+
+    static class ServletFileLoader extends ResourceLoader {
+        private final JeevesServlet servlet;
+
+        ServletFileLoader(JeevesServlet servlet) {
+            this.servlet = servlet;
+        }
+
+        protected InputStream loadInputStream(String resource) throws JDOMException, IOException {
+
+            if (resource != null) {
+                InputStream in;
+                try {
+                    in = new URL(resource).openStream();
+                } catch (MalformedURLException e) {
+                    URL url;
+                    try {
+                        url = servlet.getServletContext().getResource(resource);
+                    } catch (MalformedURLException e2) {
+                        url = null;
+                    }
+                    if (url == null) {
+                        File file = new File(resource);
+                        if (file.isAbsolute() && file.exists()) {
+                            in = new FileInputStream(file);
+                        } else {
+                            throw new IllegalArgumentException("The resource file " + resource + " is not a file and not a web resource: " + url + ".  Perhaps a leading / was forgotten?");
+                        }
+                    } else {
+                        in = url.openStream();
+                    }
+                }
+                return in;
+            }
             return null;
         }
     }
