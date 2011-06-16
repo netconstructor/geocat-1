@@ -6,6 +6,7 @@
          <fr>fr</fr>
          <lang>${fr}</lang>
          <host>localhost</host>
+         <aparam>default</aparam>
      </properties>
      <!-- In this version only the file name is considered not the path.  -->
      <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->

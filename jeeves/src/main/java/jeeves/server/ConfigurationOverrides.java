@@ -9,7 +9,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.spi.LoggerRepository;
 import org.jdom.*;
 import org.jdom.filter.Filter;
-import org.mortbay.util.Loader;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -39,69 +38,67 @@ import java.util.regex.Pattern;
  * The override configuration structure is an XML file as follows:
  * <pre><[[CDATA[
  * <overrides>
- *
- * <!-- The logging section allows logging configuration files to be specified -->
- * <!-- At the moment only property based configuration files are supported -->
- * <!-- There may be multiple configuration files -->
- * <!-- The properties are loaded in order and subsequent files will override -->
- * <!-- properties previously loaded.  This allows one to have shared configuration in -->
- * <!-- one log file and more specific configuration in other files -->
- * <logging>
- * <logFile>logfile1.properties</logFile>
- * <logFile>logfile2.properties</logFile>
- * </logging>
- * <!-- properties allow some properties to be defined that will be substituted -->
- * <!-- into text or attributes where ${property} is the substitution pattern -->
- * <!-- The properties can reference other properties -->
- * <properties>
- * <fr>fr</fr>
- * <lang>${fr}</lang>
- * <host>localhost</host>
- * <enabled>true</enabled>
- * <dir>xml</dir>
- * </properties>
- * <!-- In this version only the file name is considered not the path.  -->
- * <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
- * <file name="config.xml">
- * <!-- This example will update the file attribute of the xml element with the name attribute 'countries' -->
- * <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/europeanCountries.xml"/>
- * <!-- if there is no value then the attribute is removed -->
- * <replaceAtt xpath="default/gui" attName="removeAtt"/>
- * <!-- If the attribute does not exist it is added -->
- * <replaceAtt xpath="default/gui" attName="newAtt" value="newValue"/>
- * <p/>
- * <!-- This example will replace all the xml in resources with the contained xml -->
- * <replaceXML xpath="resources">
- * <resource enabled="${enabled}">
- * <name>main-db</name>
- * <provider>jeeves.resources.dbms.DbmsPool</provider>
- * <config>
- * <user>admin</user>
- * <password>admin</password>
- * <driver>oracle.jdbc.driver.OracleDriver</driver>
- * <!-- ${host} will be updated to be local host -->
- * <url>jdbc:oracle:thin:@${host}:1521:fs</url>
- * <poolSize>10</poolSize>
- * </config>
- * </resource>
- * </replaceXML>
- * <!-- This example simple replaces the text of an element -->
- * <replaceText xpath="default/language">${lang}</replaceText>
- * <!-- This examples shows how only the text is replaced not the nodes -->
- * <replaceText xpath="default/gui">ExtraText</replaceText>
- * <!-- append xml as a child to a section (If xpath == "" then that indicates the root of the document),
- * this case adds nodes to the root document -->
- * <addXML xpath=""><newNode/></addXML>
- * <!-- append xml as a child to a section, this case adds nodes to the root document -->
- * <addXML xpath="default/gui"><newNode2/></addXML>
- * <!-- remove a single node -->
- * <removeXML xpath="default/gui/xml[@name = countries2]"/>
- * </file>
- * <file name="config2.xml">
- * <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/other.xml"/>
- * <replaceText xpath="default/language">de</replaceText>
- * </file>
- * </overrides>
+    <!-- import values.  The imported values are put at top of sections -->
+    <import file="./imported-config-overrides.xml" />
+    <!-- The logging section allows logging configuration files to be specified -->
+    <!-- At the moment only property based configuration files are supported -->
+    <!-- There may be multiple configuration files -->
+    <!-- The properties are loaded in order and subsequent files will override -->
+    <!-- properties previously loaded.  This allows one to have shared configuration in -->
+    <!-- one log file and more specific configuration in other files -->
+    <logging>
+        <logFile>logfile1.properties</logFile>
+        <logFile>logfile2.properties</logFile>
+    </logging>
+     <!-- properties allow some properties to be defined that will be substituted -->
+     <!-- into text or attributes where ${property} is the substitution pattern -->
+     <!-- The properties can reference other properties -->
+     <properties>
+         <enabled>true</enabled>
+         <dir>xml</dir>
+         <aparam>overridden</aparam>
+     </properties>
+     <!-- In this version only the file name is considered not the path.  -->
+     <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
+     <file name="config.xml">
+         <!-- This example will update the file attribute of the xml element with the name attribute 'countries' -->
+         <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/europeanCountries.xml"/>
+         <!-- if there is no value then the attribute is removed -->
+         <replaceAtt xpath="default/gui" attName="removeAtt"/>
+         <!-- If the attribute does not exist it is added -->
+         <replaceAtt xpath="default/gui" attName="newAtt" value="newValue"/>
+
+         <!-- This example will replace all the xml in resources with the contained xml -->
+         <replaceXML xpath="resources">
+           <resource enabled="${enabled}">
+             <name>main-db</name>
+             <provider>jeeves.resources.dbms.DbmsPool</provider>
+              <config>
+                  <user>admin</user>
+                  <password>admin</password>
+                  <driver>oracle.jdbc.driver.OracleDriver</driver>
+                  <!-- ${host} will be updated to be local host -->
+                  <url>jdbc:oracle:thin:@${host}:1521:fs</url>
+                  <poolSize>10</poolSize>
+              </config>
+           </resource>
+         </replaceXML>
+         <!-- This example simple replaces the text of an element -->
+         <replaceText xpath="default/language">${lang}</replaceText>
+         <!-- This examples shows how only the text is replaced not the nodes -->
+         <replaceText xpath="default/gui">ExtraText</replaceText>
+         <!-- append xml as a child to a section (If xpath == "" then that indicates the root of the document),
+              this case adds nodes to the root document -->
+         <addXML xpath=""><newNode/></addXML>
+         <!-- append xml as a child to a section, this case adds nodes to the root document -->
+         <addXML xpath="default/gui"><newNode2/></addXML>
+         <!-- remove a single node -->
+         <removeXML xpath="default/gui/xml[@name = countries2]"/>
+     </file>
+     <file name="config2.xml">
+         <replaceText xpath="default/language">de</replaceText>
+     </file>
+ </overrides>
  * ]]></pre>
  */
 class ConfigurationOverrides {
@@ -138,7 +135,7 @@ class ConfigurationOverrides {
     public static void updateLoggingAsAccordingToOverrides(JeevesServlet servlet) throws JDOMException, IOException {
         String resource = lookupOverrideParameter(servlet);
 
-        ServletFileLoader loader = new ServletFileLoader(servlet);
+        ServletResourceLoader loader = new ServletResourceLoader(servlet);
         Element xml = loader.loadXmlResource(resource);
         if (xml != null) {
             doUpdateLogging(xml, loader);
@@ -175,7 +172,7 @@ class ConfigurationOverrides {
     public static void updateWithOverrides(String configFile, JeevesServlet servlet, Element configRoot) throws JDOMException, IOException {
         String resource = lookupOverrideParameter(servlet);
 
-        ServletFileLoader loader = new ServletFileLoader(servlet);
+        ServletResourceLoader loader = new ServletResourceLoader(servlet);
         updateConfig(loader,resource,new File(configFile).getName(), configRoot);
     }
 
@@ -543,25 +540,48 @@ class ConfigurationOverrides {
                 for (Element toMerge : children) {
                     if(toMerge.getName().equalsIgnoreCase("file")) {
                         String xpath = "file[@name = '" + toMerge.getAttributeValue("name") + "']";
-                        merge(baseElement, toMerge, xpath);
+                        merge(baseElement, toMerge, xpath, false);
+                    } else if(toMerge.getName().equalsIgnoreCase("properties")) {
+                        merge(baseElement, toMerge, toMerge.getName(), true);
                     } else {
-                        merge(baseElement, toMerge, toMerge.getName());
+                        merge(baseElement, toMerge, toMerge.getName(), false);
                     }
                 }
             }
             return baseElement;
         }
 
-        private void merge(Element baseElement, Element toMerge, String xpath) throws JDOMException {
+        private void merge(Element baseElement, Element toMerge, String xpath, boolean overrideImports ) throws JDOMException {
             Element mergeTarget = Xml.selectElement(baseElement, xpath);
             if(mergeTarget != null) {
-                mergeTarget.addContent(0,detach(toMerge.getContent()));
+                Collection<Content> contentToAdd = detach(toMerge.getContent());
+                if(overrideImports) {
+                    contentToAdd = filterOutExistingElements(mergeTarget, contentToAdd);
+                }
+                mergeTarget.addContent(0,contentToAdd);
             } else {
                 baseElement.addContent(toMerge);
             }
         }
 
-        private Collection detach(List content) {
+        private Collection<Content> filterOutExistingElements(Element mergeTarget, Collection<Content> contentToAdd) {
+            ArrayList<Content> toAdd = new ArrayList<Content>();
+            for (Content c : contentToAdd)
+            {
+                if(c instanceof Element) {
+                    Element e = (Element) c;
+                    if(mergeTarget.getChild(e.getName()) == null) {
+                        toAdd.add(e);
+                    }
+                } else {
+                    toAdd.add(c);
+                }
+            }
+            contentToAdd = toAdd;
+            return contentToAdd;
+        }
+
+        private Collection<Content> detach(List content) {
             ArrayList<Content> al = new ArrayList<Content>(content);
             for (Content o : al) {
                 o.detach();
@@ -570,10 +590,10 @@ class ConfigurationOverrides {
         }
     }
 
-    static class ServletFileLoader extends ResourceLoader {
+    static class ServletResourceLoader extends ResourceLoader {
         private final JeevesServlet servlet;
 
-        ServletFileLoader(JeevesServlet servlet) {
+        ServletResourceLoader(JeevesServlet servlet) {
             this.servlet = servlet;
         }
 

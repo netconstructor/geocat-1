@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<geonet>
+	<services package="org.fao.geonet">
+
+        <service name="geocat">
+            <output sheet="geocat.xsl">
+            	<call name="sources" class=".guiservices.util.Sources" />
+            	<call name="groups" class=".guiservices.groups.GetAll" />
+				<call name="latestUpdated" class=".guiservices.metadata.GetLatestUpdated">
+                    <param name="maxItems" value="10" />
+                    <param name="timeBetweenUpdates" value="10" />
+                </call>
+                <call name="featured" class=".guiservices.metadata.GetRandom">
+                    <param name="maxItems" value="1" />
+                    <param name="timeBetweenUpdates" value="10" />
+                </call>
+                <call name="mostPopular" class=".guiservices.metadata.GetMostPopular">
+                    <param name="maxItems" value="5" />
+                    <param name="timeBetweenUpdates" value="10" />
+                </call>
+            	<call name="formats" class="jeeves.services.db.Select">
+            		<param name="db" value="main-db" />
+            		<param name="query" value="select name,version from formats" />
+            	</call>
+                <!--<xml name="countries" file="xml/countries.xml" />                -->
+            </output>
+        </service>
+
+        <service name="xml.extent.get">
+            <class name=".services.extent.Get" />
+            <output sheet="trim-coords.xsl" contentType="text/xml; charset=UTF-8"/>
+        </service>
+
+        <service name="xml.extent.search">
+            <class name=".services.extent.Search" />
+            <output sheet="trim-coords.xsl" contentType="text/xml; charset=UTF-8"/>
+        </service>
+
+        <!-- returns the results as one <ul> long list -->
+        <service name="extent.search.list">
+            <class name=".services.extent.Search" />
+            <output sheet="extent-list.xsl" />
+        </service>
+
+        <!-- returns the results paginated and nice.  Has edit and view modes -->
+        <service name="extent.search.paging">
+            <class name=".services.extent.Search" />
+            <output sheet="extent-paging.xsl" />
+        </service>
+         <service name="extent.select">
+            <class name=".services.extent.Select" />
+        </service>
+
+        <service name="xml.extent.add">
+            <class name=".services.extent.Add" />
+        </service>
+
+        <service name="xml.extent.delete">
+            <class name=".services.extent.Delete" />
+            <call name="importStyleSheets" class=".guiservices.util.GetImportXSLs" />
+        </service>
+
+        <service name="xml.extent.update">
+            <class name=".services.extent.Update" />
+        </service>
+
+        <service name="extent.admin">
+            <class name=".services.extent.List">
+                <param name="typename">
+                    <typename>gn:xlinks</typename>
+                    <typename>gn:non_validated</typename>
+                </param>
+                <param name="max" value="1" />
+            </class>
+            <output sheet="extent-admin.xsl" />
+        </service>
+
+        <service name="extent.edit">
+            <class name=".services.extent.Get">
+                <param name="typename"/>
+            </class>
+            <output sheet="extent-edit.xsl" />
+        </service>
+
+        <service name="xml.extent.list">
+            <class name=".services.extent.List" />
+        </service>
+
+
+        <service name="gm03.xml" type="xml">
+          <class name=".services.gm03.Gm03Service">
+            <param name="xsl" value="xsl/conversion/import/ISO19139CHE-to-GM03.xsl" />
+            <param name="xsd" value="xml/schemas/iso19139.che/GM03_2.xsd" />
+          </class>
+        </service>
+
+        <service name="gm03small.xml" type="xml">
+          <class name=".services.gm03.Gm03smallService">
+            <param name="xsl" value="xsl/conversion/import/ISO19139CHE-to-GM03small.xsl" />
+            <param name="xsd" value="xml/validation/cgp-wsdl/xsd/gm03small.xsd" />
+          </class>
+        </service>
+
+        <service name="cgp" type="xml">
+          <class name=".services.cgp.CgpDispatcher">
+            <param name="xsl19139CHEtoGM03" value="xsl/conversion/import/ISO19139CHE-to-GM03small.xsl" />
+            <param name="xsdGM03" value="xml/validation/cgp-wsdl/xsd/gm03small.xsd" />
+            <param name="xsd19139CHE" value="xml/schemas/iso19139.che/schema.xsd" />
+          </class>
+        </service>
+
+        <service name="status" type="xml">
+          <class name=".services.main.ServerStatus" />
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+		<!-- Monitoring -->
+
+		<service name="monitoring.report">
+			<class name=".guiservices.monitoring.Get" />
+			<output sheet="monitoring.xsl" />
+
+			<error id="operation-not-allowed" sheet="error.xsl" statusCode="403">
+				<xml name="error" file="xml/privileges-error.xml" />
+			</error>
+		</service>
+
+        <service name="monitoring" type="xml">
+			<class name=".services.monitoring.Check" />
+
+            <error id="operation-not-allowed" sheet="error.xsl" statusCode="403">
+				<xml name="error" file="xml/privileges-error.xml" />
+			</error>
+		</service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!-- Search for shared objects in metadata and replace with XLINK  -->
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="metadata.reusable.replace">
+            <class name=".services.reusable.Replace" />
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!-- Admin services for managing reusable objects                  -->
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="reusable.non_validated.admin">
+           <output sheet="reusable_admin_non_validated_results.xsl"/>
+        </service>
+
+        <service name="reusable.non_validated.list">
+            <class name=".services.reusable.ViewNonValidated" />
+        </service>
+
+        <service name="xml.reusable.deleted">
+            <class name=".services.reusable.Deleted" />
+        </service>
+
+        <service name="reusable.validate">
+            <class name=".services.reusable.Validate" />
+        </service>
+
+        <service name="reusable.reject">
+            <class name=".services.reusable.Reject" />
+        </service>
+
+        <service name="reusable.delete">
+            <class name=".services.reusable.Delete" />
+        </service>
+
+        <service name="reusable.references">
+            <class name=".services.reusable.ReferencingMetadata" />
+        </service>
+
+        <service name="reusable.duplicates.find">
+            <class name=".services.reusable.FindDuplicates" />
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!-- Search for metadata that has not recently been updated        -->
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="metadata.expired.email" type="xml">
+           <class name=".services.metadata.DetectOld">
+               <param name="serviceType" value="email" />
+           </class>
+           <output sheet="metadata_expire_results.xsl"/>
+         </service>
+
+        <service name="metadata.expired.unpublish" type="xml">
+           <class name=".services.metadata.DetectOld">
+               <param name="serviceType" value="unpublish" />
+           </class>
+           <output sheet="metadata_expire_results.xsl"/>
+         </service>
+
+        <service name="metadata.expired.form" type="html">
+           <class name=".services.metadata.DetectOld">
+               <param name="email" value="3" />
+               <param name="unpublish" value="5" />
+               <param name="serviceType" value="form" />
+           </class>
+           <output sheet="metadata_expire_operations.xsl"/>
+         </service>
+
+        <service name="metadata.ext.edit" type="html">
+			<output sheet="ext/edit.xsl"/>
+         </service>
+
+        <service name="metadata.ext.edit.data" type="xml">
+			<class name=".services.metadata.GetEditableData"/>
+         </service>
+
+    </services>
+</geonet>

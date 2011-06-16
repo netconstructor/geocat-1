@@ -29,8 +29,11 @@ public class ConfigurationOveridesTest {
     @Test
     public void imports() throws JDOMException, IOException {
         Element config = loader.loadXmlResource("config-overrides.xml");
-        assertEquals(5, Xml.selectElement(config,"properties").getChildren().size());
+        assertEquals(6, Xml.selectElement(config,"properties").getChildren().size());
         assertEquals(10, Xml.selectElement(config,"file[@name = 'config.xml']").getChildren().size());
+        assertEquals("fr", Xml.selectElement(config,"properties/*[1]").getName());
+        assertEquals("removeXML", Xml.selectElement(config,"file[1]/*[1]").getName());
+        assertEquals("overridden", Xml.selectString(config,"properties/aparam"));
     }
     @Test
     public void updateConfig() throws JDOMException, IOException {

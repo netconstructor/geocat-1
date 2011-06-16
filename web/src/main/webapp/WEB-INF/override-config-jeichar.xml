@@ -1,4 +1,6 @@
 <overrides>
+    <import file="/WEB-INF/overrides-config-geocat.xml"/>
+
 	<logging>
       <logFile>/WEB-INF/log4j.cfg</logFile>
       <logFile>/WEB-INF/log4j-jeichar.cfg</logFile>
@@ -7,24 +9,6 @@
     <!-- into text or attributes where ${property} is the substitution pattern -->
     <!-- The properties can reference other properties -->
     <properties>
+        <postgis.db>geocat2_2.6.x</postgis.db>
     </properties>
-    <!-- In this version only the file name is considered not the path.  -->
-    <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
-    <file name="config.xml">
-        <!-- This example will replace all the xml in resources with the contained xml -->
-        <replaceXML xpath="resources">
-            <resource enabled="true">
-                <name>main-db</name>
-                <provider>jeeves.resources.dbms.DbmsPool</provider>
-                <config>
-                    <user>www-data</user>
-                    <password>www-data</password>
-                    <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgresql://localhost:5432/geocat2_2.6.x</url>
-                    <poolSize>10</poolSize>
-                    <reconnectTime>3600</reconnectTime>
-                </config>
-            </resource>
-        </replaceXML>
-    </file>
 </overrides>

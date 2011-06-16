@@ -151,7 +151,7 @@ public class JeevesEngine
 			loadConfigFile(servlet, configPath, Jeeves.CONFIG_FILE, serviceMan);
 
 			info("Initializing profiles...");
-			serviceMan.loadProfiles(profilesFile);
+			serviceMan.loadProfiles(servlet, profilesFile);
 
 			//--- handlers must be started here because they may need the context
 			//--- with the ProfileManager already loaded

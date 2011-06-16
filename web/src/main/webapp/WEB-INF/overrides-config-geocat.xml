@@ -1,0 +1,114 @@
+<overrides>
+    <properties>
+        <postgis.user>www-data</postgis.user>
+        <postgis.pass>www-data</postgis.pass>
+        <postgis.host>localhost</postgis.host>
+        <postgis.port>5432</postgis.port>
+        <postgis.db>geocat</postgis.db>
+        <wfs.host>localhost</wfs.host>
+        <wfs.port>8081</wfs.port>
+    </properties>
+    <file name="config.xml">
+        <replaceText xpath="default/language">eng</replaceText>
+        <replaceAtt xpath="appHandler/param[@name = 'preferredSchema']" attName="value" value="iso19139.che"/>
+        <addXML xpath="appHandler">
+            <param name="postgisConfig">
+                <database>${postgis.db}</database>
+                <user>${postgis.user}</user>
+                <password>${postgis.pass}</password>
+                <host>${postgis.host}</host>
+                <port>${postgis.port}</port>
+            </param>
+            <param name="reusable">
+                <param name="processOnInsert" value="true" />
+            </param>
+            <param name="extent">
+                <!--  If there is no id then the server is the default server and can be accessed with ExtentManager.DEFAULT_WFS_ID id -->
+                <!--  columns are case sensitive -->
+                <wfs url="http://${wfs.host}:${wfs.port}/geoserver/wfs?service=WFS&amp;request=GetCapabilities">
+                    <typename typename="gn:countries" idColumn="LAND" descColumn="LAND" searchColumn="SEARCH"
+                                        geoIdColumn="LAND" CRS="EPSG:21781" />
+                    <typename typename="gn:gemeindenBB" idColumn="OBJECTVAL" descColumn="GEMNAME" searchColumn="SEARCH"
+                                        geoIdColumn="GEMNAME" CRS="EPSG:21781" />
+                    <typename typename="gn:kantoneBB" idColumn="KANTONSNR" descColumn="NAME" searchColumn="SEARCH"
+                                        geoIdColumn="KUERZEL" CRS="EPSG:21781" />
+                    <typename typename="gn:xlinks" idColumn="ID" descColumn="DESC" geoIdColumn="GEO_ID"
+                                        searchColumn="SEARCH" modifiable="true" CRS="EPSG:21781" />
+                    <typename typename="gn:non_validated" idColumn="ID" descColumn="DESC" geoIdColumn="GEO_ID"
+                                        searchColumn="SEARCH" modifiable="true" CRS="EPSG:21781" />
+                </wfs>
+            </param>
+        </addXML>
+        <replaceXML xpath="resources">
+            <resource enabled="true">
+                <name>main-db</name>
+                <provider>jeeves.resources.dbms.DbmsPool</provider>
+                <config>
+                    <user>${postgis.user}</user>
+                    <password>${postgis.pass}</password>
+                    <driver>org.postgresql.Driver</driver>
+                    <url>jdbc:postgresql://${postgis.host}:${postgis.port}/${postgis.db}</url>
+                    <poolSize>10</poolSize>
+                    <reconnectTime>3600</reconnectTime>
+                </config>
+            </resource>
+        </replaceXML>
+        <addXML>
+            <include>config-geocat.xml</include>
+        </addXML>
+    </file>
+    <file name="user-profiles.xml">
+        <addXML xpath="profile[@name ='Administrator'">
+            <!-- Search for metadata that has not recently been updated -->
+            <allow service="metadata.expired.email"/>
+            <allow service="metadata.expired.unpublish"/>
+            <allow service="metadata.expired.form"/>
+
+            <!-- get the validation report for a metadata element -->
+            <allow service="metadata.validation.report"/>
+
+
+            <!-- Extent facilities -->
+            <allow service="xml.extent.add"/>
+            <allow service="xml.extent.delete"/>
+            <allow service="xml.extent.update"/>
+            <allow service="extent.admin"/>
+            <allow service="extent.edit"/>
+            <allow service="extent.select"/>
+
+            <!-- Reusable object admin facilities -->
+            <allow service="metadata.reusable.replace"/>
+            <allow service="reusable.non_validated.admin"/>
+            <allow service="reusable.non_validated.list"/>
+            <allow service="reusable.validate"/>
+            <allow service="reusable.reject"/>
+            <allow service="reusable.delete"/>
+            <allow service="reusable.references"/>
+            <allow service="reusable.duplicates.find"/>
+        </addXML>
+        <replaceAtt xpath="profile[@name = 'Guest'" attName="extends" value="Shared"/>
+        <addXML xpath="profile[@name = 'Guest'">
+            <allow service="mapfish"/>
+            <allow service="geocat"/>
+            <allow service="cgp"/>
+            <allow service="gm03.xml"/>
+            <allow service="gm03small.xml"/>
+            <allow service="monitoring.csv"/>
+
+            <!-- Extent services -->
+            <allow service="xml.extent.get"/>
+            <allow service="xml.extent.list"/>
+            <allow service="xml.extent.search"/>
+            <allow service="extent.search.list"/>
+            <allow service="extent.search.paging"/>
+
+            <!-- service for resolving xlinks that are pending deletion -->
+            <allow service="xml.reusable.deleted"/>
+
+            <allow service="status"/>
+        </addXML>
+        <addXML xpath="">
+            <profile name="Shared"/>
+        </addXML>
+    </file>
+</overrides>

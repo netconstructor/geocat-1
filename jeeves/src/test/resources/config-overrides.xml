@@ -17,6 +17,7 @@
      <properties>
          <enabled>true</enabled>
          <dir>xml</dir>
+         <aparam>overridden</aparam>
      </properties>
      <!-- In this version only the file name is considered not the path.  -->
      <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
