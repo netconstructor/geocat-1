@@ -21,30 +21,64 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.reusable;
+package org.fao.geonet.services.reusable;
 
 import jeeves.interfaces.Service;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
+import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
-
 import jeeves.utils.Util;
+
+import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.reusable.*;
 import org.jdom.Element;
 
 /**
- * Service for resolving an deleted reusable xlink reference
- * 
+ * Makes a list of all the non-validated elements
+ *
  * @author jeichar
  */
-public class Deleted implements Service
+public class ViewNonValidated implements Service
 {
 
     public Element exec(Element params, ServiceContext context) throws Exception
     {
-        String id = Util.getParamText(params, "id");
+        String type = Util.getParam(params, "type");
+
+        GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
-        return DeletedObjects.get(dbms, id);
+        UserSession session = context.getUserSession();
+        String appPath = context.getAppPath();
+        String baseUrl = Utils.mkBaseURL(context.getBaseUrl(), gc.getSettingManager());
+        String language = context.getLanguage();
+
+        if (type.equals("deleted")) {
+            return DeletedObjects.list(dbms);
+        }
+
+        ReplacementStrategy strategy;
+        switch (ReusableTypes.valueOf(type))
+        {
+        case contacts:
+            strategy = new ContactsStrategy(dbms, appPath, baseUrl, language, context.getSerialFactory());
+            break;
+        case extents:
+            strategy = new ExtentsStrategy(baseUrl, appPath, gc.getExtentManager(), language);
+            break;
+        case formats:
+            strategy = new FormatsStrategy(dbms, appPath, baseUrl, language, context.getSerialFactory());
+            break;
+        case keywords:
+            strategy = new KeywordsStrategy(gc.getThesaurusManager(), appPath, baseUrl, language);
+            break;
+
+        default:
+            throw new IllegalArgumentException(type + " is not a reusable object type");
+        }
+
+        return strategy.findNonValidated(session);
     }
 
     public void init(String appPath, ServiceConfig params) throws Exception

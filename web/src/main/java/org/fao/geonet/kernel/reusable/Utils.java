@@ -58,11 +58,11 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.MultiLingualIndexSupport;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
-import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
 import org.fao.geonet.services.util.Email;
 import org.fao.geonet.util.LangUtils;
 import org.jdom.Content;
@@ -79,7 +79,7 @@ import static java.lang.Double.parseDouble;
  */
 public final class Utils
 {
-    static Element updateXLink(ReplacementStrategy strategy, ServiceContext context,
+    public static Element updateXLink(ReplacementStrategy strategy, ServiceContext context,
                             Map<String, String> idMapping, String id, boolean validated) throws Exception {
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
@@ -436,10 +436,10 @@ public final class Utils
                 if (Email.isValidEmailAddress(emailService.feedbackAddress)) {
                     emailService.sendEmail(emailService.feedbackAddress, args.subject, emailBody);
                 }
-                Log.warning(ReusableObjectLogger.REUSABLE_LOGGER_ID, emailBody);
+                Log.warning(Geocat.Module.REUSABLE, emailBody);
             }
         } catch (Exception e) {
-            Log.error(ReusableObjectLogger.REUSABLE_LOGGER_ID,
+            Log.error(Geocat.Module.REUSABLE,
                     "The System Configuration is not correctly configured and there for emails cannot be sent.  "
                             + "Make sure the email/feedback settings are configured");
         }

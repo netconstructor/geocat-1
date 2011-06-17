@@ -21,63 +21,72 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.reusable;
+package org.fao.geonet.services.reusable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import jeeves.interfaces.Service;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
-import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
-import jeeves.utils.Util;
+import jeeves.utils.Log;
 
+import jeeves.utils.Util;
 import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.reusable.ReplacementStrategy;
+import org.fao.geonet.kernel.reusable.ReusableTypes;
+import org.fao.geonet.kernel.reusable.Utils;
 import org.jdom.Element;
 
 /**
  * Makes a list of all the non-validated elements
- *
+ * 
  * @author jeichar
  */
-public class ViewNonValidated implements Service
+public class Validate implements Service
 {
 
     public Element exec(Element params, ServiceContext context) throws Exception
     {
-        String type = Util.getParam(params, "type");
+        String page = Util.getParamText(params, "type");
+        String[] ids = Util.getParamText(params, "id").split(",");
+
+        Log.debug(Geocat.Module.REUSABLE, "Starting to validate following reusable objects: " + page
+                + " \n(" + Arrays.toString(ids) + ")");
 
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
-        UserSession session = context.getUserSession();
-        String appPath = context.getAppPath();
         String baseUrl = Utils.mkBaseURL(context.getBaseUrl(), gc.getSettingManager());
-        String language = context.getLanguage();
+        ReplacementStrategy strategy = Utils.strategy(ReusableTypes.valueOf(page), context);
 
-        if (type.equals("deleted")) {
-            return DeletedObjects.list(dbms);
+        Element results = new Element("results");
+        if (strategy != null) {
+            results.addContent(performValidation(ids, strategy, dbms, context, baseUrl));
         }
 
-        ReplacementStrategy strategy;
-        switch (ReusableTypes.valueOf(type))
-        {
-        case contacts:
-            strategy = new ContactsStrategy(dbms, appPath, baseUrl, language, context.getSerialFactory());
-            break;
-        case extents:
-            strategy = new ExtentsStrategy(baseUrl, appPath, gc.getExtentManager(), language);
-            break;
-        case formats:
-            strategy = new FormatsStrategy(dbms, appPath, baseUrl, language, context.getSerialFactory());
-            break;
-        case keywords:
-            strategy = new KeywordsStrategy(gc.getThesaurusManager(), appPath, baseUrl, language);
-            break;
+        Log.info(Geocat.Module.REUSABLE, "Successfully validated following reusable objects: " + page
+                + " \n(" + Arrays.toString(ids) + ")");
 
-        default:
-            throw new IllegalArgumentException(type + " is not a reusable object type");
+        return results;
+    }
+
+    private List<Element> performValidation(String[] ids, ReplacementStrategy strategy, Dbms dbms, ServiceContext context,
+            String baseUrl) throws Exception
+    {
+        Map<String, String> idMapping = strategy.markAsValidated(ids, dbms, context.getUserSession());
+
+        List<Element> result = new ArrayList<Element>();
+        for (String id : ids) {
+            Element e = Utils.updateXLink(strategy, context, idMapping, id, true);
+            result.add(e);
         }
 
-        return strategy.findNonValidated(session);
+        return result;
     }
 
     public void init(String appPath, ServiceConfig params) throws Exception

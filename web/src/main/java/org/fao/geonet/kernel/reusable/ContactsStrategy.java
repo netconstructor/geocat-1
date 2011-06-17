@@ -48,8 +48,8 @@ import jeeves.utils.Xml;
 import jeeves.xlink.Processor;
 import jeeves.xlink.XLink;
 
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.kernel.search.spatial.Pair;
-import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
 import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.LangUtils;
 import org.fao.geonet.util.XslUtil;
@@ -57,7 +57,7 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.filter.Filter;
 
-final class ContactsStrategy extends ReplacementStrategy
+public final class ContactsStrategy extends ReplacementStrategy
 {
 
     private final Dbms   _dbms;
@@ -98,7 +98,7 @@ final class ContactsStrategy extends ReplacementStrategy
             String role;
             if (roleElem == null) {
                 role = "";
-                Log.warning(ReusableObjectLogger.REUSABLE_LOGGER_ID,
+                Log.warning(Geocat.Module.REUSABLE,
                         "A contact does not have a role associated with it: " + Xml.getString(originalElem));
             } else {
                 role = roleElem.getAttributeValue("codeListValue");
@@ -332,7 +332,7 @@ final class ContactsStrategy extends ReplacementStrategy
                 finalId = parsedId;
 
             } catch (NumberFormatException e) {
-                Log.error(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Error parsing the id of the parentResponsibleParty: "
+                Log.error(Geocat.Module.REUSABLE, "Error parsing the id of the parentResponsibleParty: "
                         + Utils.extractUrlParam(xlinkedParent, "id"));
             }
         } else if( !ReusableObjManager.isValidated(toReplace)){

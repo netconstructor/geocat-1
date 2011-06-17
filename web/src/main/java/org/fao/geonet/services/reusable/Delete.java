@@ -21,7 +21,7 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.reusable;
+package org.fao.geonet.services.reusable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,8 +36,9 @@ import jeeves.utils.Log;
 
 import jeeves.utils.Util;
 import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
+import org.fao.geonet.kernel.reusable.*;
 import org.jdom.Element;
 
 import com.google.common.collect.HashMultimap;
@@ -56,7 +57,7 @@ public class Delete implements Service
     {
         String[] ids = Util.getParamText(params, "id").split(",");
 
-        Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Starting to delete following rejected objects: ("
+        Log.debug(Geocat.Module.REUSABLE, "Starting to delete following rejected objects: ("
                 + Arrays.toString(ids) + ")");
 
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
@@ -93,10 +94,10 @@ public class Delete implements Service
 
         DeletedObjects.delete(dbms, ids);
 
-        Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Successfully deleted following rejected objects: \n("
+        Log.debug(Geocat.Module.REUSABLE, "Successfully deleted following rejected objects: \n("
                 + Arrays.toString(ids) + ")");
 
-        Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID,
+        Log.debug(Geocat.Module.REUSABLE,
                 "Unpublished following metadata a result of deleting rejected objects: \n("
                         + Arrays.toString(metadataIds.toArray()) + ")");
 

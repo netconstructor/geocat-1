@@ -9,6 +9,6 @@
     <!-- into text or attributes where ${property} is the substitution pattern -->
     <!-- The properties can reference other properties -->
     <properties>
-        <postgis.db>geocat2_2.6.x</postgis.db>
+        <postgis.db>geocat2_trunk</postgis.db>
     </properties>
 </overrides>

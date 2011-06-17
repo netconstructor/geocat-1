@@ -21,7 +21,7 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.reusable;
+package org.fao.geonet.services.reusable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,11 +44,11 @@ import jeeves.xlink.Processor;
 import jeeves.xlink.XLink;
 
 import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.DataManager;
+import org.fao.geonet.kernel.reusable.*;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.reusable.Utils.FindXLinks;
-import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
 import org.jdom.Element;
 
 import com.google.common.collect.HashMultimap;
@@ -76,7 +76,7 @@ public class Reject implements Service
     public Element reject(ServiceContext context, ReusableTypes reusableType, String[] ids, String msg,
             String strategySpecificData) throws Exception
     {
-        Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Starting to reject following reusable objects: \n"
+        Log.debug(Geocat.Module.REUSABLE, "Starting to reject following reusable objects: \n"
                 + reusableType + " (" + Arrays.toString(ids) + ")\nRejection message is:\n" + msg);
         UserSession session = context.getUserSession();
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
@@ -89,7 +89,7 @@ public class Reject implements Service
             results.addContent(performReject(ids, strategy, context, gc, dbms, session, baseUrl, msg,
                     strategySpecificData));
         }
-        Log.info(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Successfully rejected following reusable objects: \n"
+        Log.info(Geocat.Module.REUSABLE, "Successfully rejected following reusable objects: \n"
                 + reusableType + " (" + Arrays.toString(ids) + ")\nRejection message is:\n" + msg);
 
         return results;

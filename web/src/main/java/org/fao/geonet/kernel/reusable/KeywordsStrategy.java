@@ -66,7 +66,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
     private final String           _baseURL;
     private final String           _currentLocale;
 
-    KeywordsStrategy(ThesaurusManager thesaurusMan, String appPath, String baseURL, String currentLocale)
+    public KeywordsStrategy(ThesaurusManager thesaurusMan, String appPath, String baseURL, String currentLocale)
     {
         this._baseURL = baseURL;
         this._thesaurusMan = thesaurusMan;

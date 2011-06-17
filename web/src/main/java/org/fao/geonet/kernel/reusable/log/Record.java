@@ -2,6 +2,7 @@ package org.fao.geonet.kernel.reusable.log;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.kernel.reusable.ReusableObjManager;
 
 public class Record
@@ -37,12 +38,12 @@ public class Record
 
         public Logger logger()
         {
-            return Logger.getLogger(ReusableObjectLogger.REUSABLE_LOGGER_ID + "." + desc);
+            return Logger.getLogger(Geocat.Module.REUSABLE + "." + desc);
         }
 
         public static Logger parentLogger()
         {
-            return Logger.getLogger(ReusableObjectLogger.REUSABLE_LOGGER_ID);
+            return Logger.getLogger(Geocat.Module.REUSABLE);
         }
 
     }

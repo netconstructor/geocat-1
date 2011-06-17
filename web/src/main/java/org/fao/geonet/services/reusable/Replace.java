@@ -21,7 +21,7 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.reusable;
+package org.fao.geonet.services.reusable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +36,7 @@ import jeeves.utils.Util;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.SelectionManager;
+import org.fao.geonet.kernel.reusable.ReusableObjManager;
 import org.fao.geonet.services.metadata.IndexRebuild;
 import org.fao.geonet.util.ISODate;
 import org.jdom.Element;

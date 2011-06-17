@@ -44,7 +44,7 @@ import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.services.extent.WFS.FeatureType;
-import org.fao.geonet.kernel.reusable.Reject;
+import org.fao.geonet.services.reusable.Reject;
 import org.fao.geonet.kernel.reusable.ReusableTypes;
 import org.geotools.data.FeatureStore;
 import org.geotools.factory.CommonFactoryFinder;

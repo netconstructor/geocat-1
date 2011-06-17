@@ -47,18 +47,21 @@
                     <user>${postgis.user}</user>
                     <password>${postgis.pass}</password>
                     <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgresql://${postgis.host}:${postgis.port}/${postgis.db}</url>
+                    <url>jdbc:postgis://${postgis.host}:${postgis.port}/${postgis.db}</url>
                     <poolSize>10</poolSize>
                     <reconnectTime>3600</reconnectTime>
                 </config>
             </resource>
         </replaceXML>
-        <addXML>
+        <addXML xpath="">
             <include>config-geocat.xml</include>
         </addXML>
     </file>
     <file name="user-profiles.xml">
-        <addXML xpath="profile[@name ='Administrator'">
+        <addXML xpath="profile[@name ='Editor']">
+            <allow service="metadata.xlink.add"/>
+        </addXML>
+        <addXML xpath="profile[@name ='Administrator']">
             <!-- Search for metadata that has not recently been updated -->
             <allow service="metadata.expired.email"/>
             <allow service="metadata.expired.unpublish"/>
@@ -85,9 +88,12 @@
             <allow service="reusable.delete"/>
             <allow service="reusable.references"/>
             <allow service="reusable.duplicates.find"/>
+
+            <!-- Allow a user to specify a XSL -->
+            <allow service="metadata.xsl.register"/>
         </addXML>
-        <replaceAtt xpath="profile[@name = 'Guest'" attName="extends" value="Shared"/>
-        <addXML xpath="profile[@name = 'Guest'">
+        <replaceAtt xpath="profile[@name = 'Guest']" attName="extends" value="Shared"/>
+        <addXML xpath="profile[@name = 'Guest']">
             <allow service="mapfish"/>
             <allow service="geocat"/>
             <allow service="cgp"/>
@@ -106,6 +112,11 @@
             <allow service="xml.reusable.deleted"/>
 
             <allow service="status"/>
+
+            <!-- Metadata formatter -->
+            <allow service="metadata.formatter.html"/>
+            <allow service="metadata.formatter.xml"/>
+
         </addXML>
         <addXML xpath="">
             <profile name="Shared"/>

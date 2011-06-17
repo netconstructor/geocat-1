@@ -536,8 +536,9 @@ class ConfigurationOverrides {
                 String file = anImport.getAttributeValue("file");
 
                 Element importedXml = loadXmlResource(resolveImportFileName(file, baseResource));
-                List<Element> children = importedXml.getChildren();
+                List<Element> children = new ArrayList<Element>(importedXml.getChildren());
                 for (Element toMerge : children) {
+                    toMerge.detach();
                     if(toMerge.getName().equalsIgnoreCase("file")) {
                         String xpath = "file[@name = '" + toMerge.getAttributeValue("name") + "']";
                         merge(baseElement, toMerge, xpath, false);

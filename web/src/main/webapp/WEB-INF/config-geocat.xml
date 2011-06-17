@@ -134,6 +134,24 @@
 			</error>
 		</service>
 
+        <service name="metadata.validation.report">
+            <class name=".services.metadata.GetValidationErrors"/>
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!-- Add an xlink to a metadata                                    -->
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="metadata.xlink.add">
+            <class name=".services.metadata.AddXLink"/>
+
+            <output forward="metadata.edit" />
+
+            <error id="concurrent-update" sheet="error-embedded.xsl">
+                <xml name="error" file="xml/concurrent-update-error.xml" />
+            </error>
+        </service>
+
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <!-- Search for shared objects in metadata and replace with XLINK  -->
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -174,10 +192,6 @@
             <class name=".services.reusable.ReferencingMetadata" />
         </service>
 
-        <service name="reusable.duplicates.find">
-            <class name=".services.reusable.FindDuplicates" />
-        </service>
-
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <!-- Search for metadata that has not recently been updated        -->
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -212,6 +226,25 @@
         <service name="metadata.ext.edit.data" type="xml">
 			<class name=".services.metadata.GetEditableData"/>
          </service>
+
+        <!-- - - - - - - - - - - - - - Format MD services - - - - - - - - - - - - - - - - -->
+
+        <service name="metadata.xsl.register">
+            <class name=".services.metadata.RegisterXsl"/>
+            <error id="illegal-params" sheet="metadata-error.xsl"/>
+        </service>
+
+        <service name="metadata.formatter.html">
+            <class name=".services.metadata.Format2"/>
+            <output sheet="identity.xsl"/>
+            <error id="illegal-params" sheet="metadata-error.xsl"/>
+        </service>
+
+        <service name="metadata.formatter.xml">
+            <class name=".services.metadata.Format2"/>
+            <error id="illegal-params" sheet="metadata-error.xsl"/>
+        </service>
+
 
     </services>
 </geonet>

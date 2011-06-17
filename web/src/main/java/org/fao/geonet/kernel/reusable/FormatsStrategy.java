@@ -48,7 +48,7 @@ import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.XslUtil;
 import org.jdom.Element;
 
-final class FormatsStrategy extends ReplacementStrategy
+public final class FormatsStrategy extends ReplacementStrategy
 {
     private static final String TABLE = "Formats";
     private static final String ID_COL = "id";

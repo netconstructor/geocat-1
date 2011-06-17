@@ -23,6 +23,7 @@ import jeeves.xlink.XLink;
 
 import org.apache.log4j.Level;
 import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.XmlSerializer;
@@ -72,7 +73,10 @@ public class ReusableObjManager
         this._appPath = appPath;
         this._styleSheet = appPath + "/xsl/reusable-objects-extractor.xsl";
         this._processOnInsert = false;
-        if (!reusableConfigIter.isEmpty()) {
+
+        if(reusableConfigIter == null) {
+            Log.warning(Geocat.Module.REUSABLE, "Reusable configuration not specified in config.xml");
+        } else if (!reusableConfigIter.isEmpty()) {
             Element config = reusableConfigIter.get(0);
             _processOnInsert = "true".equalsIgnoreCase(config.getAttributeValue("value"));
         }
@@ -147,7 +151,7 @@ public class ReusableObjManager
         return process != null;
     }
 
-    static String uuidToId(Dbms dbms, DataManager dm, String uuid, boolean idIsUUID)
+    public static String uuidToId(Dbms dbms, DataManager dm, String uuid, boolean idIsUUID)
     {
         String id = uuid;
 
@@ -171,7 +175,7 @@ public class ReusableObjManager
     {
 
         try {
-            Log.info(ReusableObjectLogger.REUSABLE_LOGGER_ID,
+            Log.info(Geocat.Module.REUSABLE,
                     "Beginning reusable object processing on metadata object id= " + parameterObject.metadataId);
 
             Element elementToProcess = parameterObject.elementToProcess;
@@ -186,16 +190,16 @@ public class ReusableObjManager
             Element xml = Xml.transform(elementToProcess, _styleSheet);
 
             boolean changed = false;
-            Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Replace formats with xlinks");
+            Log.debug(Geocat.Module.REUSABLE, "Replace formats with xlinks");
             changed |= replaceFormats(xml, defaultMetadataLang, parameterObject);
-            Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Replace contacts with xlinks");
+            Log.debug(Geocat.Module.REUSABLE, "Replace contacts with xlinks");
             changed |= replaceContacts(xml, defaultMetadataLang, parameterObject);
-            Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Replace keywords with xlinks");
+            Log.debug(Geocat.Module.REUSABLE, "Replace keywords with xlinks");
             changed |= replaceKeywords(xml, defaultMetadataLang, parameterObject);
-            Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Replace extents with xlinks");
+            Log.debug(Geocat.Module.REUSABLE, "Replace extents with xlinks");
             changed |= replaceExtents(xml, defaultMetadataLang, parameterObject);
 
-            Log.info(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Finished processing on id=" + parameterObject.metadataId
+            Log.info(Geocat.Module.REUSABLE, "Finished processing on id=" + parameterObject.metadataId
                     + ".  " + (changed ? "Metadata was modified" : "No change was made"));
 
             if (changed) {
@@ -215,7 +219,7 @@ public class ReusableObjManager
             StringWriter s = new StringWriter();
             x.printStackTrace(new PrintWriter(s));
 
-            Log.error(ReusableObjectLogger.REUSABLE_LOGGER_ID,
+            Log.error(Geocat.Module.REUSABLE,
                     "Exception occured while processing metadata object for reusable objects.  Exception is: "
                             + s.getBuffer().toString());
             s.close();
@@ -309,18 +313,18 @@ public class ReusableObjManager
         if (!addOnly) {
             updated = updatePlaceholder(placeholder, strategy.find(placeholder, originalElem, defaultMetadataLang));
             if (updated)
-                Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "An existing match was found for " + strategy);
+                Log.debug(Geocat.Module.REUSABLE, "An existing match was found for " + strategy);
         }
         if (!updated) {
             updated = updatePlaceholder(placeholder, strategy.add(placeholder, originalElem, dbms,
                     defaultMetadataLang));
             if (updated)
-                Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, "A new reusable element was added for "
+                Log.debug(Geocat.Module.REUSABLE, "A new reusable element was added for "
                         + strategy);
         }
         if (!updated) {
             updatePlaceholder(placeholder, originalElem);
-            Log.debug(ReusableObjectLogger.REUSABLE_LOGGER_ID, strategy + " object was not modified");
+            Log.debug(Geocat.Module.REUSABLE, strategy + " object was not modified");
         }
 
         if (updated) {
@@ -408,7 +412,7 @@ public class ReusableObjManager
                 strategy = new ExtentsStrategy(baseUrl, _appPath, params.extentManager, "unknown");
             }
 
-            Log.info(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Updating a " + strategy + " in metadata id="
+            Log.info(Geocat.Module.REUSABLE, "Updating a " + strategy + " in metadata id="
                     + params.metadataId);
 
             Processor.removeFromCache(xlink.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
@@ -420,8 +424,8 @@ public class ReusableObjManager
                 metadataLang = "EN";
             }
             Collection<Element> newElements = strategy.updateObject(xlink, params.dbms, metadataLang);
-            Log.info(ReusableObjectLogger.REUSABLE_LOGGER_ID, "New elements were created as a result of update");
-            Log.info(ReusableObjectLogger.REUSABLE_LOGGER_ID, "Done updating " + strategy + " in metadata id="
+            Log.info(Geocat.Module.REUSABLE, "New elements were created as a result of update");
+            Log.info(Geocat.Module.REUSABLE, "Done updating " + strategy + " in metadata id="
                     + params.metadataId);
 
             return newElements;

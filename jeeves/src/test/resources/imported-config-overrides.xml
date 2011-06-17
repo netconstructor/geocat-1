@@ -17,4 +17,7 @@
      <file name="config2.xml">
          <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/other.xml"/>
      </file>
+    <file name="config3.xml">
+         <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/other.xml"/>
+     </file>
  </overrides>

@@ -31,6 +31,7 @@ public class ConfigurationOveridesTest {
         Element config = loader.loadXmlResource("config-overrides.xml");
         assertEquals(6, Xml.selectElement(config,"properties").getChildren().size());
         assertEquals(10, Xml.selectElement(config,"file[@name = 'config.xml']").getChildren().size());
+        assertEquals(1, Xml.selectNodes(config,"file[@name = 'config3.xml']").size());
         assertEquals("fr", Xml.selectElement(config,"properties/*[1]").getName());
         assertEquals("removeXML", Xml.selectElement(config,"file[1]/*[1]").getName());
         assertEquals("overridden", Xml.selectString(config,"properties/aparam"));

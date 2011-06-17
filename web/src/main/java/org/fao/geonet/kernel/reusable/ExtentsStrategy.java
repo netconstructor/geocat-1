@@ -93,7 +93,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
-final class ExtentsStrategy extends ReplacementStrategy {
+public final class ExtentsStrategy extends ReplacementStrategy {
 
     public static final ElementFinder BBOX_FINDER = new ElementFinder("EX_GeographicBoundingBox",
             XslUtil.GMD_NAMESPACE, "geographicElement");
@@ -116,7 +116,7 @@ final class ExtentsStrategy extends ReplacementStrategy {
     private final String _appPath;
     private final String _flattenStyleSheet;
 
-    ExtentsStrategy(String baseURL, String appDir, ExtentManager extentMan, String currentLocale) {
+    public ExtentsStrategy(String baseURL, String appDir, ExtentManager extentMan, String currentLocale) {
         this(baseURL, appDir, extentMan, currentLocale, new GMLConfiguration(),
                 new org.geotools.gml2.GMLConfiguration());
     }

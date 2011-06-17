@@ -41,6 +41,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.XMLLayout;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.services.util.Email;
 
 /**
@@ -57,8 +58,6 @@ import org.fao.geonet.services.util.Email;
  */
 public class ReusableObjectLogger
 {
-
-    public static final String               REUSABLE_LOGGER_ID = "reusable";
 
     /**
      * A logger that does not keep the records and therefore cannot email the
@@ -188,7 +187,7 @@ public class ReusableObjectLogger
         try {
             email.sendEmail(email.feedbackAddress, emailSubject, emailBody.toString());
         } catch (Exception e) {
-            Log.error(ReusableObjectLogger.REUSABLE_LOGGER_ID,
+            Log.error(Geocat.Module.REUSABLE,
                     "Unable to send message to admin about new missed reusable objects");
         }
     }

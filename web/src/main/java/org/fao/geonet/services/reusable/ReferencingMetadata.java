@@ -21,7 +21,7 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.reusable;
+package org.fao.geonet.services.reusable;
 
 import static org.fao.geonet.kernel.reusable.Utils.addChild;
 import static org.fao.geonet.util.LangUtils.iso19139DefaultLang;
@@ -37,6 +37,7 @@ import jeeves.utils.Util;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.reusable.*;
 import org.fao.geonet.util.LangUtils;
 import org.fao.geonet.util.XslUtil;
 import org.jdom.Element;
@@ -60,7 +61,7 @@ public class ReferencingMetadata implements Service
         Function<String,String> idConverter;
         if (type.equalsIgnoreCase("deleted")) {
             fields = DeletedObjects.getLuceneIndexField();
-            idConverter=ReplacementStrategy.ID_FUNC;
+            idConverter= ReplacementStrategy.ID_FUNC;
         } else {
 
             final ReplacementStrategy replacementStrategy = Utils.strategy(ReusableTypes.valueOf(type), context);

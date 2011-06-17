@@ -38,4 +38,8 @@ public class Geocat {
         public static final String REUSABLE_OBJECT_CONFIG       = "reusable";
     }
 
+    public class Module {
+        public static final String EXTENT                = "extent";
+        public static final String REUSABLE              = "reusable";
+    }
 }
