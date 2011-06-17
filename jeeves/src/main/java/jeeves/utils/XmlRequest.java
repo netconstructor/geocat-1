@@ -64,7 +64,13 @@ import java.util.List;
 
 public class XmlRequest
 {
-	public enum Method { GET, POST }
+    private int statusCode;
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public enum Method { GET, POST }
 
 	//---------------------------------------------------------------------------
 	//---
@@ -329,7 +335,8 @@ public class XmlRequest
 		{
 			client.executeMethod(httpMethod);
 			data = httpMethod.getResponseBody();
-
+            statusCode = client.executeMethod(httpMethod);
+                    
 			return Xml.loadStream(new ByteArrayInputStream(data));
 		}
 

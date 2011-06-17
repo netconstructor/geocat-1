@@ -134,10 +134,6 @@
 			</error>
 		</service>
 
-        <service name="metadata.validation.report">
-            <class name=".services.metadata.GetValidationErrors"/>
-        </service>
-
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <!-- Add an xlink to a metadata                                    -->
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -243,6 +239,47 @@
         <service name="metadata.formatter.xml">
             <class name=".services.metadata.Format2"/>
             <error id="illegal-params" sheet="metadata-error.xsl"/>
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!-- Format services                                               -->
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="xml.format.list">
+            <class name=".services.format.List">
+                <param name="xml" />
+            </class>
+
+            <output sheet="format-list.xsl" />
+
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="xml.format.get">
+            <class name=".services.format.Get">
+                <param name="xml" />
+            </class>
+
+            <output sheet="format-xml.xsl" />
+
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="format.admin">
+            <output sheet="codelist/format/admin.xsl">
+                <call name="formats" class="jeeves.services.db.Select">
+                    <param name="db" value="main-db" />
+                    <param name="query" value="SELECT * FROM Formats" />
+                </call>
+            </output>
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="format">
+            <class name=".services.format.Manager" />
         </service>
 
 

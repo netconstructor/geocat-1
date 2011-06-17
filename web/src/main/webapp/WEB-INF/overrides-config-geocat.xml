@@ -60,6 +60,7 @@
     <file name="user-profiles.xml">
         <addXML xpath="profile[@name ='Editor']">
             <allow service="metadata.xlink.add"/>
+            <allow service="xml.format.list"/>
         </addXML>
         <addXML xpath="profile[@name ='Administrator']">
             <!-- Search for metadata that has not recently been updated -->
@@ -67,9 +68,9 @@
             <allow service="metadata.expired.unpublish"/>
             <allow service="metadata.expired.form"/>
 
-            <!-- get the validation report for a metadata element -->
-            <allow service="metadata.validation.report"/>
-
+            <!-- Format facilities -->
+            <allow service="format.admin"/>
+            <allow service="format"/>
 
             <!-- Extent facilities -->
             <allow service="xml.extent.add"/>
@@ -117,6 +118,7 @@
             <allow service="metadata.formatter.html"/>
             <allow service="metadata.formatter.xml"/>
 
+            <allow service="xml.format.get"/>
         </addXML>
         <addXML xpath="">
             <profile name="Shared"/>

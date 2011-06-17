@@ -68,6 +68,7 @@ import org.fao.geonet.lib.ServerLib;
 import org.fao.geonet.notifier.MetadataNotifierControl;
 import org.fao.geonet.notifier.MetadataNotifierManager;
 import org.fao.geonet.services.extent.ExtentManager;
+import org.fao.geonet.services.monitoring.services.ServiceMonitorManager;
 import org.fao.geonet.services.util.z3950.Repositories;
 import org.fao.geonet.services.util.z3950.Server;
 import org.fao.geonet.util.ThreadPool;
@@ -355,6 +356,9 @@ public class Geonetwork implements ApplicationHandler
 
 		OaiPmhDispatcher oaipmhDis = new OaiPmhDispatcher(settingMan, schemaMan);
 
+        logger.info("  - Service monitor manager...");
+        ServiceMonitorManager smm = new ServiceMonitorManager(dbms, context, settingMan);
+
 
         //------------------------------------------------------------------------
 		//--- initialize metadata notifier subsystem
@@ -378,8 +382,9 @@ public class Geonetwork implements ApplicationHandler
 		gnContext.thesaurusMan= thesaurusMan;
 		gnContext.oaipmhDis   = oaipmhDis;
 		gnContext.app_context = app_context;
-    gnContext.metadataNotifierMan = metadataNotifierMan;
+        gnContext.metadataNotifierMan = metadataNotifierMan;
 		gnContext.threadPool  = threadPool;
+        gnContext.monitorMan  = smm;
 
 		logger.info("Site ID is : " + gnContext.getSiteId());
 
