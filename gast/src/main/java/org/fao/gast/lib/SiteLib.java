@@ -57,13 +57,14 @@ public class SiteLib
 
 	public String getSiteURL(Dbms dbms) throws SQLException
 	{
+        String protocol = Lib.database.getSetting(dbms, "system/server/host");
 		String host    = Lib.database.getSetting(dbms, "system/server/host");
 		String port    = Lib.database.getSetting(dbms, "system/server/port");
 		String servlet = Lib.embeddedSC.getServlet();
 
 		String locService = "/"+ servlet +"/"+ Jeeves.Prefix.SERVICE +"/en";
 
-		return "http://" + host + (port.equals("80") ? "" : ":" + port) + locService;
+		return protocol + "://" + host + (port.equals("80") ? "" : ":" + port) + locService;
 	}
 
 	//---------------------------------------------------------------------------
