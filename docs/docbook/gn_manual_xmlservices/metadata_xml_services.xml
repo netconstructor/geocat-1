@@ -1130,10 +1130,10 @@ http://localhost:8080/geonetwork/srv/en/metadata.admin?id=6&amp;_1_2&amp;_1_1</p
       </section>
 
       <section>
-        <title>Massive update privilegies
-        (metadata.massive.update.privileges)</title>
+        <title>Batch update privilegies
+        (metadata.batch.update.privileges)</title>
 
-        <para>The <emphasis>metadata.massive.update.privileges</emphasis>
+        <para>The <emphasis>metadata.batch.update.privileges</emphasis>
         service updates the operations allowed for a selected metadata with
         the list of operations allowed send in the parameters, <emphasis
         role="bold">deleting all the operations allowed assigned
@@ -1233,7 +1233,7 @@ Post request:
         </section>
 
         <section>
-          <title>Request to metadata.massive.update.privileges</title>
+          <title>Request to metadata.batch.update.privileges</title>
 
           <para>Parameters:</para>
 
@@ -1284,14 +1284,14 @@ Post request:
 
           <para>Example:</para>
 
-          <para><figure id="metadataupdateops_massive_xml_request_example">
-              <title>Request metadata massive update privilegies
+          <para><figure id="metadataupdateops_batch_xml_request_example">
+              <title>Request metadata batch update privilegies
               example</title>
 
               <programlisting><?db-font-size 75% ?><emphasis role="bold">POST</emphasis>
 
 Url: 
-http://localhost:8080/geonetwork/srv/en/metadata.massive.update.privileges
+http://localhost:8080/geonetwork/srv/en/metadata.batch.update.privileges
 
 Mime-type: 
 application/xml
@@ -1307,12 +1307,12 @@ Post request:
 <emphasis role="bold">GET</emphasis>
 
 Url:
-http://localhost:8080/geonetwork/srv/en/metadata.massive.update.privileges?_1_2&amp;_1_1</programlisting>
+http://localhost:8080/geonetwork/srv/en/metadata.batch.update.privileges?_1_2&amp;_1_1</programlisting>
             </figure></para>
         </section>
 
         <section>
-          <title>Response to metadata.massive.update.privileges</title>
+          <title>Response to metadata.batch.update.privileges</title>
 
           <para>If request is executed succesfully HTTP 200 status code is
           returned. If request fails an HTTP status code error is returned and
@@ -1362,9 +1362,9 @@ http://localhost:8080/geonetwork/srv/en/metadata.massive.update.privileges?_1_2&
       profiles can execute these services.</para>
 
       <section>
-        <title>Massive new owner (metadata.massive.newowner)</title>
+        <title>Batch new owner (metadata.batch.newowner)</title>
 
-        <para>The <emphasis>metadata.massive.newowner</emphasis> service
+        <para>The <emphasis>metadata.batch.newowner</emphasis> service
         allows to change the owner of a group of metadata. This service
         requires a previous call to <emphasis>metadata.select</emphasis>
         service to select the metadata records to update.</para>
@@ -1426,10 +1426,10 @@ Post request:
         </section>
 
         <section>
-          <title>Request to metadata.massive.newowner</title>
+          <title>Request to metadata.batch.newowner</title>
 
           <para>Once the metadata records have been selected can be
-          <emphasis>metadata.massive.newowner</emphasis> invoked with the next
+          <emphasis>metadata.batch.newowner</emphasis> invoked with the next
           parameters:</para>
 
           <para><itemizedlist>
@@ -1444,12 +1444,12 @@ Post request:
               </listitem>
             </itemizedlist></para>
 
-          <para><figure id="massivenewowner_xml_request_example">
+          <para><figure id="batchnewowner_xml_request_example">
               <title>Transfer ownership request example</title>
 
               <programlisting><?db-font-size 75% ?>
 Url: 
-http://localhost:8080/geonetwork/srv/en/metadata.massive.newowner
+http://localhost:8080/geonetwork/srv/en/metadata.batch.newowner
 
 Mime-type: 
 application/xml
@@ -1464,7 +1464,7 @@ Post request:
         </section>
 
         <section>
-          <title>Response to metadata.massive.newowner</title>
+          <title>Response to metadata.batch.newowner</title>
 
           <para>If request is executed succesfully HTTP 200 status code is
           returned. If request fails an HTTP status code error is returned and
