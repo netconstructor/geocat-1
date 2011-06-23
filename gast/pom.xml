@@ -47,7 +47,7 @@
             </manifest>
             <!-- <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile> -->
           </archive>
-          <finalName>${artifactId}</finalName>
+          <finalName>${project.artifactId}</finalName>
         </configuration>
       </plugin>
       <plugin>
@@ -193,7 +193,7 @@
     <dependency>
       <groupId>org.geonetwork-opensource</groupId>
       <artifactId>geonetwork-main</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <!-- To map the geonetwork-main-classes.jar -->
       <classifier>classes</classifier>
     </dependency>    
