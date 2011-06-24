@@ -1,38 +1,34 @@
 .. _templates:
 
-Templates
-=========
+Templates (For Application Administrator only)
+==============================================
 
-The templates options allows to manage the metadata templates in the catalog. In order to use these 
-facilities, you have to be logged in as an administrator. After the login step, go to the administration 
-page.
+The *Templates* options allow to manage the metadata templates in the catalog. You have to be logged in as an administrator. 
 
 .. figure:: templates-where.png
 
 Sort templates
 --------------
 
-This option allows to set the order of the templates avalaible when creating a new metadata.
+You can define the order in which Templates are listed. This is the case when an Editor creates a new metadata record. 
 
 .. figure:: templates-newmetadata.png
 
-In the administration panel, select Sort Templates option:
+	*The listing as shown to Editors*
+
+Use drag and drop to re-order the templates.
 
 .. figure:: templates-sort.png
 
-The list of avalaible templates is shown with the current display order. To change the position of a 
-template click on it's name and drag it to move it to the new position. 
-
-Once the order of templates is configured, click on Save button to save the changes. To cancel the 
-changes and return to the administration form click on Back button.
+	*Sort Templates panel*
 
 Add templates
 -------------
 
-This option allows the user to select the metadata templates to add in the catalog to create new metadata
-records. 
+This option allows the user to select the metadata templates to add in the catalog to create new metadata records. 
+
+.. warning:: This will add the default templates available in the application folder <>/web/geonetwork/WEB-INF/classes/setup/templates and should be used with care by the Administrator.
 
 .. figure:: templates-add.png
 
-Mark the metadata templates to import and click Add templates button to import them in the catalog 
-and make them are avaliable when creating new metadata records.
+Mark the metadata templates to import and click *Add templates* button to import them in the catalog and make them are avaliable when creating new metadata records.

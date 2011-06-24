@@ -144,7 +144,7 @@ OGC service harvesting type
 
 #.  Every time the harvester runs, it will remove previously harvested information
     and create new ones. GeoNetwork will generate the id for all metadata (both service and datasets).
-    Therefore, for datasets, if the metadata is created using a remote XML document (ie.
+    Therefor, for datasets, if the metadata is created using a remote XML document (ie.
     if a MetadataUrl tag is in the GetCapability document), the UUID of
     the document is used.
 #.  Thumbnails are generated only for Web Map Service (WMS). The service should also support

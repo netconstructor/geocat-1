@@ -6,6 +6,9 @@
 Basic configuration
 ===================
 
+System configuration
+--------------------
+
 Most of the GeoNetwork system configuration parameters can be changed using the
 web interface. Those parameters that cannot be changed through the web interface can
 usually be changed using the GAST application.
@@ -16,7 +19,7 @@ usually be changed using the GAST application.
    expected. For example, downloads may fail to be correctly processed, or metadata
    harvesting from other servers may not work.
 
-To get to the System configuration, you must be logged on as administrator first. Open the Administration page and select System configuration (The link is highlighted with a red ellipse).
+To get to the System configuration, you must be logged on as administrator first. Open the Administration page and select System configuration (The link is surrounded with a red rectangle).
 
 .. important:: New installations of GeoNetwork use admin for both username
    and password. It is important to change this from the Administration page once
@@ -68,12 +71,19 @@ General Site parameters
 
 *Netmask* The network’s mask.
 
+Catalogue services (CSW, Z39.50)
+````````````````````````````````
+
+OGC CSW configuration
+~~~~~~~~~~~~~~~~~~~~~
+
+See :doc:`../cswserver/index`
+
 Z39.50 configuration
-````````````````````
+~~~~~~~~~~~~~~~~~~~~
 
 *Z39.50*: GeoNetwork can act as a Z39.50 server, which
-is a communication protocol to query and retrieve metadata described in
-ISO 23950.
+is an OGC communication protocol to query and retrieve metadata.
 
 *Enable*: Check this option to start the Z39.50
 submodule. Please, notice that GeoNetwork must be restarted in order to make
@@ -87,8 +97,9 @@ different nodes.
 
 XLink resolver
 ``````````````
-Enables/disables the XLink resolver. XLink resolver replaces content of the elements that have attribute @xlink:href (except for srv:operatesOn element) with the referenced content. The
+Enables/disables the XLink resolver. XLink resolver replaces content of the elements with attribute @xlink:href (except for srv:operatesOn element) with the referenced content. The 
 XLink resolver is used for example in Metadata fragments harvester to retrieve the metadata fragments referenced in the metadata and insert in it.
+
 
 Clickable hyperlinks
 ````````````````````
@@ -163,7 +174,7 @@ In this section you define the source against which GeoNetwork will authenticate
 
 By default, users are authenticated against info held in the GeoNetwork database. When the GeoNetwork database is used as the authentication source, the user self-registration function can be enabled. A later section discusses user self-registration and the configuration options it requires.
 
-You may choose to authenticate logins against either the GeoNetwork database tables or LDAP (the lightweight directory access protocol) but not both. The next section below describes how to authenticate against LDAP.
+You may choose to authenticate logins against either the GeoNetwork database tables or LDAP (the lightweight directory access protocol) but not both. The next section describes how to authenticate against LDAP.
 
 In addition to either of these options, you may also configure other authentication sources. At present, Shibboleth is the only additional authentication source that can be configured. Shibboleth is typically used for national access federations such as the Australian Access Federation. Configuring shibboleth authentication in GeoNetwork to use such a federation would allow not only users from a local database or LDAP directory to use your installation, but any user from such a federation.
 
