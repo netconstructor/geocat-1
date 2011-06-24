@@ -94,18 +94,6 @@
 			<replacefilter token="@javaVersion@" property="javaVersion"/>
 		</replace>
 
-	    <!-- Windows with JRE installer build -->
-	    <copy 	file="../installer/installer-config-win-jre.xml" 
-	    		tofile="${propsdir}/installer-config-win-jre.xml" 
-	    		filtering="on" overwrite="yes"/>
-
-		<replace 	file="${propsdir}/installer-config-win-jre.xml"
-			propertyFile="../web/src/main/webapp/WEB-INF/server.prop">
-			<replacefilter token="@version@" property="version"/>
-			<replacefilter token="@subVersion@" property="subVersion"/>
-			<replacefilter token="@javaVersion@" property="javaVersion"/>
-		</replace>
-
 		<!-- help file -->
 	    <copy 	file="../docs/readme.html" 
 	    		tofile="${propsdir}/readme.html" 
@@ -192,35 +180,5 @@
 	<checksum file="../geonetwork-${release}/geonetwork-install-${release}-${subVersion}.exe" forceOverwrite="yes"/>
 		
 	</target>
-
-	<!-- =================================================================================== -->
-
-	<target name="wininstall-jre">
-		<!-- create a Windows installer using launch4j -->
-
-		<property file="../web/src/main/webapp/WEB-INF/server.prop"/>
-
-		<izpack	input="${propsdir}/installer-config-win-jre.xml" 
-			output="../geonetwork-${release}/geonetwork-install-win-jre-${release}-${subVersion}.jar" 
-					installerType="standard" 
-					basedir="${basedir}"/> 
-
-		<checksum file="../geonetwork-${release}/geonetwork-install-win-jre-${release}-${subVersion}.jar" forceOverwrite="yes"/>
-		
-		<echo message="Building Windows installer with JRE on ${osys} using launch4j"/>
-
-		<launch4j configFile="${basedir}/launch4j/launch4jConfig-jre.xml"
-			jar="../geonetwork-${release}/geonetwork-install-win-jre-${release}-${subVersion}.jar"
-			outfile="../geonetwork-${release}/geonetwork-install-with-jre-${release}-${subVersion}.exe"
-			txtFileVersion="${version}-${subVersion}-${date}" 
-			txtProductVersion="${version}-${subVersion}" 
-			fileVersion="${version}.0" 
-			productVersion="${version}.0"/>
-
-	<checksum file="../geonetwork-${release}/geonetwork-install-with-jre-${release}-${subVersion}.exe" forceOverwrite="yes"/>
-		
-	</target>
-
-	<!-- =================================================================================== -->
 
 </project>
