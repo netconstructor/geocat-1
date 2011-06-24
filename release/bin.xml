@@ -14,7 +14,7 @@
    </includes>
   </fileSet>
   <fileSet>
-   <!-- the main webapp -->
+   <!-- the web client module -->
    <directory>web-client/src/main/resources</directory>
    <outputDirectory>geonetwork/web/geonetwork/apps</outputDirectory>
    <includes>
