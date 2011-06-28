@@ -250,7 +250,7 @@
                 <param name="xml" />
             </class>
 
-            <output sheet="format-list.xsl" />
+            <output sheet="format-list.xsl"/>
 
         </service>
 
@@ -261,14 +261,14 @@
                 <param name="xml" />
             </class>
 
-            <output sheet="format-xml.xsl" />
+            <output sheet="format-xml.xsl" contentType="text/xml; charset=UTF-8" />
 
         </service>
 
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
         <service name="format.admin">
-            <output sheet="codelist/format/admin.xsl">
+            <output sheet="format-admin.xsl">
                 <call name="formats" class="jeeves.services.db.Select">
                     <param name="db" value="main-db" />
                     <param name="query" value="SELECT * FROM Formats" />

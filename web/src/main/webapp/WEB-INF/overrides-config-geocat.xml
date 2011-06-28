@@ -46,8 +46,8 @@
                 <config>
                     <user>${postgis.user}</user>
                     <password>${postgis.pass}</password>
-                    <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgis://${postgis.host}:${postgis.port}/${postgis.db}</url>
+                    <driver>org.postgis.DriverWrapper</driver>
+                    <url>jdbc:postgresql_postGIS://${postgis.host}:${postgis.port}/${postgis.db}</url>
                     <poolSize>10</poolSize>
                     <reconnectTime>3600</reconnectTime>
                 </config>
