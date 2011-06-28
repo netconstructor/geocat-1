@@ -91,6 +91,7 @@
 							<input class="md" type="hidden" name="licenseurl"/>
 							<input class="md" type="hidden" name="type"/>
 							<input class="md" type="hidden" name="editing" value="{geonet:info/id}"/>
+                            <input class="md" type="hidden" name="minor" id="minor"/>
 							<input class="md" type="hidden" name="child"/>
 							<input class="md" type="hidden" name="fname"/>
 							<input class="md" type="hidden" name="access"/>
@@ -149,7 +150,7 @@
 		</table>
 	</xsl:template>
 	
-	<xsl:template name="editButtons" match="*">
+	<xsl:template name="editButtons">
 		<xsl:param name="top" select="true()"/>
 		
 		<!-- reset button -->
@@ -218,12 +219,14 @@
 		</button>
             </xsl:otherwise>
         </xsl:choose>
-
+        <!-- minor edit button -->
+        <input type="checkbox" id="minorEdit" name="minorEdit" onchange="$('minor').value = this.checked"></input>
+        <label for="minorEdit"><xsl:value-of select="/root/gui/strings/minor"/></label>
 		
 		
 	</xsl:template>
 	
-	<xsl:template name="templateChoice" match="*">
+	<xsl:template name="templateChoice">
 		
 		<b><xsl:value-of select="/root/gui/strings/type"/></b>
 		<xsl:text>&#160;</xsl:text>

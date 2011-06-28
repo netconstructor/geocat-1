@@ -3,11 +3,11 @@
 Adding new Data and Information
 ===============================
 
-This section guides you through the process of adding new records (new data with information) into the GeoNetwork catalogue using either the online metadata editor or the advanced metadata insert tool, based on XML documents. In both cases you will use the template system, add thumbnails, upload data, link to services and set access privileges to the metadata and data.
+This section guides you through the process of adding new metadata records with associated geographic data and/or services into the GeoNetwork catalog using either the online metadata editor or the advanced metadata services tool, based on XML documents. In both cases you will use the template system, add thumbnails, upload data, link to services and set access privileges to the metadata and data.
 
-To add or edit data and metadata, you must be **registered** as an **Editor** into the work group you want to add records to. Contact your administrator if you are not a registered editor for your work group.
+To add or edit data and metadata, you must be **registered** as a user with an **Editor** profile or higher. That user should be a member of the User Group you want to add information for. Contact your administrator if you are not a registered Editor for your Group.
 
-For the metadata creation using the online editor, GNos provides a set of simplified metadata templates based on the cited standards: ISO, FGDC and DC. The templates for vector and raster based on the ISO 19139 are the preferred ones since they are devised in a way that hides the complexity of the ISO19115 standard in the default view. At the same time those templates are extensible with new elements to fit specialized needs through the advanced view.
+For the metadata creation using the online editor, GeoNetwork provides a set of simplified metadata templates based on the cited standards: ISO, FGDC and DC. The templates for vector and raster based on the ISO 19139 are the preferred ones since they are devised in a way that hides the complexity of the ISO19115 standard in the default view. At the same time those templates are extensible with new elements to fit specialized needs through the advanced view.
 
 To produce a good metadata record, always try to gather as much details as possible on the resource that you want to describe taking into account the metadata elements that have been presented in the previous chapter. The next step is to fill out properly the fields provided by the metadata templates, while at the same time avoiding duplication of information throughout the form.
 

@@ -3,12 +3,15 @@
 User and Group Administration
 =============================
 
-GeoNetwork uses the concept of Users, Groups and User Profiles. A User can be part of several Groups.
-A User also has a User Profile
+GeoNetwork uses the concept of Users, Groups and User Profiles. 
 
-A User can only have one User Profile associated.
-The combination of User Profile and Group defines what tasks the User can perform on the system
-or on specific metadata records.
+- A User can be part of one or more Groups.
+
+- A User has a User Profile. 
+
+- A User can only have one User Profile associated.
+
+The combination of User Profile and Group defines what tasks the User can perform on the system or on specific metadata records.
 
 Creating new user Groups
 ------------------------
@@ -17,25 +20,15 @@ The administrator can create new groups of users. User groups can correspond
 to logical units within an organisation. For example groups for Fisheries, Agriculture, Land
 and Water, Health etcetera.
 
-To create new groups you should be logged on with an account that has administrative privileges.
-To log in, simply go to the home page and enter your username and password in the top
-right corner fields, then click on the login button.
+To create new groups you should be logged on with an account that has Administrative privileges.
 
-.. warning:: 
-    New installations of GeoNetwork use *admin* for both username and password.
-    It is important to change this from the Administration page once you logged on!
-
-.. figure:: login.png
-
-  *Login form*
+#. Select the *Administration* button in the menu. On the Administration page, select *Group management*.
     
-#. Select the Administration button in the menu. On the Administration page, select Group management.
+      .. figure:: admin-group-management.png
     
-      .. figure:: administration_panel.png
-    
-        *Administration page*
+        *Administration page - Group management*
 
-#. Select *Add a new group*. You may want to rename or remove the *Sample* group;
+#. Select *Add a new group*. You may want to remove the *Sample* group;
   
       .. figure:: GroupManag.png
     
@@ -43,22 +36,23 @@ right corner fields, then click on the login button.
 
 #. Fill out the details. The email address will be used to send feedback on data downloads when they occur for resources that are part of the Group.
     
+.. warning:: 
+    The Name should *NOT* contain spaces! You can use the Localization panel to provide localized names for groups.
+    
       .. figure:: addGroup.png
       
         *Group edit form*
 
 #. Click on *Save*
 
-.. warning:: 
-    The Name should *NOT* contain spaces! You can use the Localisation functions to provide localised names for groups.
-
 Access privileges can be set per metadata record. You can define privileges on a per Group basis.
+
 Privileges that can be set relate to visibility of the Metadata (*Publish*),
-data Download, Interactive Map access and display of the record in the Featured section of the home page.
+data *Download*, *Interactive Map* access and display of the record in the *Featured* section of the home page.
 
-Editing defines the groups for which editors can edit the metadata record.
+*Editing* defines the groups for which editors can edit the metadata record.
 
-Notify defines what groups are notified when a file managed by GeoNetwork is downloaded.
+*Notify* defines what Groups are notified when a file managed by GeoNetwork is downloaded.
 
 Below is an example of the privileges management table related to a dataset.
 
@@ -71,7 +65,11 @@ Creating new Users
 
 To add a new user to the GeoNetwork system you do the following:
 
-#. Select *User Management* from the Administration link in the toolbar;
+#. Select the *Administration* button in the menu. On the Administration page, select *User management*.
+
+      .. figure:: admin-user-management.png
+    
+        *Administration page - User management*
 
 #. Click the button *Add a new user*;
 
@@ -97,14 +95,14 @@ User Profiles
 Users can have different profiles depending on their role in the GeoNetwork system.
 A profile defines what tasks the user can perform.
 
-User profiles are hierarchical and based on inheritance. This means that a user with an Editor profile
-can create and modify new metadata records, but can also use all functions a Registered user can use.
+User profiles are hierarchical and based on inheritance. This means that a user with an Editor profile can create and modify new metadata records, but can also use all functions a Registered user can use.
 
 Rights associated with the profiles are illustrated in detail in the list below:
 
-#.  Administrator Profile
+#.  **Administrator Profile**
 
     The Administrator has special privileges that give access to all available functions.
+    
     These include:
     
     - Full rights for creating new groups and new users
@@ -112,7 +110,7 @@ Rights associated with the profiles are illustrated in detail in the list below:
     - Full rights for creating/editing/deleting new/old metadata
     - Perform system administration and configuration tasks.
 
-#.  User Administrator Profile
+#.  **User Administrator Profile**
 
     The User Administrator is the administrator of his/her own group with the
     following privileges:
@@ -121,20 +119,19 @@ Rights associated with the profiles are illustrated in detail in the list below:
     - Rights to change users profiles within the own group
     - Full rights on creating/editing/ deleting new/old data within the own group
 
-#.  Content Reviewer Profile
+#.  **Content Reviewer Profile**
 
-    The content reviewer is the only person allowed to give final clearance on
-    the metadata publication on the Intranet and/or on the Internet:
+    The content reviewer is the only person allowed to give final clearance on    the metadata publication on the Intranet and/or on the Internet:
     
     - Rights on reviewing metadata content within the own group and authorising its publication
 
-#.  Editor Profile
+#.  **Editor Profile**
 
     The editor works on metadata with following privileges:
     
     - Full rights on creating/editing/ deleting new/old data within the own group
 
-#.  Registered User Profile
+#.  **Registered User Profile**
 
     The Registered User has more access privileges than non-authenticated Guest users:
     

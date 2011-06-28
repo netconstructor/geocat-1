@@ -13,7 +13,9 @@
     <no>Norsk</no>  <!-- Do not translate! -->
 
 	<!-- new strings - 2.7 -->
-	<surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
+  <subtemplate.admin>Manage directories</subtemplate.admin>
+  <subtemplate.admin.desc>Add/modify/delete directories (eg. contact directories)</subtemplate.admin.desc>  
+  <surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
 	<firstnameMandatory>First name is Mandatory</firstnameMandatory>
 	<emailMandatory>email address is Mandatory</emailMandatory>
 	<forgottenPassword>Forgot your password?</forgottenPassword>
@@ -165,7 +167,7 @@
 	<updateChildren>Update children</updateChildren>
 	<updateChildrenOk>Children updated</updateChildrenOk>
 	<updateChildrenFailed>Children update failed</updateChildrenFailed>
-	<massiveUpdateChildrenTitle>Update children</massiveUpdateChildrenTitle>
+	<batchUpdateChildrenTitle>Update children</batchUpdateChildrenTitle>
 	<updateMode>Choose the strategy applied for children update from parent : </updateMode>
 	<addMode>Add sections</addMode>
 	<replaceMode>Replace sections</replaceMode>
@@ -372,7 +374,7 @@
 	<confirmCancel>¿Está seguro de que desea abandonar el editor? (Perderá todos los cambios no guardados)</confirmCancel>
     <confirmCancelCreate>¿Está seguro que desea cancelar la creación de estos metadatos?</confirmCancelCreate>
 	<confirmDelete>¿Está seguro de que desea borrar el Metadato de la Base de Datos?</confirmDelete>
-	<confirmMassiveDelete>¿Está seguro de que desea borrar todos los $1 Metadatos seleccionados de la Base de Datos?</confirmMassiveDelete>
+	<confirmBatchDelete>¿Está seguro de que desea borrar todos los $1 Metadatos seleccionados de la Base de Datos?</confirmBatchDelete>
 	<confirmNewPassword>Confirmar nueva contraseña</confirmNewPassword>
 	<confirmPassword>Confirmar la Contraseña</confirmPassword>
 	<constraintsTab>Restricciones</constraintsTab>
@@ -561,11 +563,11 @@
 	<mapViewerClose>Cerrar visualizador de mapas</mapViewerClose>
 	<mapViewerLoading>Cargando visualizador de mapas...</mapViewerLoading>
 	<mapViewerOpen>Abrir el visualizador de mapas</mapViewerOpen>
-	<massiveActions>Massive actions:</massiveActions>
-	<massiveDeleteTitle>Massive Delete Operation</massiveDeleteTitle>
-	<massiveNewOwnerTitle>Massive New Owner Operation</massiveNewOwnerTitle>
-	<massiveUpdateCategoriesTitle>Massive Update Categories Operation</massiveUpdateCategoriesTitle>
-	<massiveUpdatePrivilegesTitle>Massive Update Privileges Operation</massiveUpdatePrivilegesTitle>
+	<batchActions>Batch actions:</batchActions>
+	<batchDeleteTitle>Batch Delete Operation</batchDeleteTitle>
+	<batchNewOwnerTitle>Batch New Owner Operation</batchNewOwnerTitle>
+	<batchUpdateCategoriesTitle>Batch Update Categories Operation</batchUpdateCategoriesTitle>
+	<batchUpdatePrivilegesTitle>Batch Update Privileges Operation</batchUpdatePrivilegesTitle>
 	<max>Máximo</max>
 	<mdRating>Rating de metadatos</mdRating>
 	<mdUpdateError>Actualizar error</mdUpdateError>
@@ -592,7 +594,8 @@
     <metadata-samples-add>Añadir metadatos de ejemplo</metadata-samples-add>
     <metadata-samples-add-failed>Ocurrió un fallo al añadir los metadatos de ejemplo</metadata-samples-add-failed>
     <metadata-samples-add-success>Añadidos los metadatos de ejemplo</metadata-samples-add-success>
-	<metadata-template-order>Ordenar plantillas</metadata-template-order>
+  <metadata-template-add-success>Metadata template added.</metadata-template-add-success>
+  <metadata-template-order>Ordenar plantillas</metadata-template-order>
 	<metadata-template-order-desc>Ordenar sus plantillas</metadata-template-order-desc>
 	<metadata-template-add-default>Añadir plantillas</metadata-template-add-default>
 	<metadata>Metadatos</metadata>
@@ -604,6 +607,7 @@
   <failOnError>Fail on error</failOnError>
   <metadataRecordsProcessed>Total number of metadata records processed:</metadataRecordsProcessed>
   <min>Mínimo</min>
+    <minor>Minor edit</minor>
 	<missing>MISSING or EMPTY</missing>	
 	<missingSeeTab>MISSING - See the following group tab in sidebar: </missingSeeTab>
 	<more>más</more>

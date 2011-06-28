@@ -12,7 +12,9 @@
     <ca>Català</ca> <!-- Do not translate! -->
     <no>Norsk</no>  <!-- Do not translate! -->
 
-	<surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
+  <subtemplate.admin>Manage directories</subtemplate.admin>
+  <subtemplate.admin.desc>Add/modify/delete directories (eg. contact directories)</subtemplate.admin.desc>  
+  <surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
 	<firstnameMandatory>First name is Mandatory</firstnameMandatory>
 	<emailMandatory>email address is Mandatory</emailMandatory>
 	<forgottenPassword>Forgot your password?</forgottenPassword>
@@ -162,7 +164,7 @@
 	<updateChildren>Update children</updateChildren>
 	<updateChildrenOk>Children updated</updateChildrenOk>
 	<updateChildrenFailed>Children update failed</updateChildrenFailed>
-	<massiveUpdateChildrenTitle>Update children</massiveUpdateChildrenTitle>
+	<batchUpdateChildrenTitle>Update children</batchUpdateChildrenTitle>
 	<updateMode>Choose the strategy applied for children update from parent : </updateMode>
 	<addMode>Add sections</addMode>
 	<replaceMode>Replace sections</replaceMode>
@@ -299,7 +301,7 @@
 	<completeTabEditor>Avansert editor</completeTabEditor>
 	<confirmCancel>Er du sikker på at du vil gå ut av editoren? (Alt som ikke er lagret blir borte)</confirmCancel>
 	<confirmDelete>Er du sikker på at du vil slette metadataene fra databasen?</confirmDelete>
-	<confirmMassiveDelete>Er du sikker på at du vil slette alle valgte metadata fra databasen?</confirmMassiveDelete>
+	<confirmBatchDelete>Er du sikker på at du vil slette alle valgte metadata fra databasen?</confirmBatchDelete>
 	<confirmNewPassword>Bekreft nytt passord</confirmNewPassword>
 	<confirmPassword>Bekreft passord</confirmPassword>
 	<constraintsTab>Begrensninger</constraintsTab>
@@ -484,11 +486,11 @@
 	<mapViewerClose>Lukk kartvisning</mapViewerClose>
 	<mapViewerLoading>Laster kartvisning...</mapViewerLoading>
 	<mapViewerOpen>Åpne kartvisning</mapViewerOpen>
-	<massiveActions>Masseoperasjoner:</massiveActions>
-	<massiveDeleteTitle>Massivsletteoperasjon</massiveDeleteTitle>
-	<massiveNewOwnerTitle>Massive New Owner Operation</massiveNewOwnerTitle>
-	<massiveUpdateCategoriesTitle>Massive Update Categories Operation</massiveUpdateCategoriesTitle>
-	<massiveUpdatePrivilegesTitle>Massive Update Privileges Operation</massiveUpdatePrivilegesTitle>
+	<batchActions>Masseoperasjoner:</batchActions>
+	<batchDeleteTitle>Massivsletteoperasjon</batchDeleteTitle>
+	<batchNewOwnerTitle>Batch New Owner Operation</batchNewOwnerTitle>
+	<batchUpdateCategoriesTitle>Batch Update Categories Operation</batchUpdateCategoriesTitle>
+	<batchUpdatePrivilegesTitle>Batch Update Privileges Operation</batchUpdatePrivilegesTitle>
 	<max>Maksimum</max>
 	<mdRating>Data vurdering</mdRating>
 	<mdUpdateError>Oppdateringsfeil</mdUpdateError>
@@ -504,7 +506,8 @@
     <metadata-samples-add>Add sample metadata</metadata-samples-add>
     <metadata-samples-add-failed>Add sample metadata failed</metadata-samples-add-failed>
     <metadata-samples-add-success>Added sample metadata</metadata-samples-add-success>
-	<metadata-template-order>Sortér maler</metadata-template-order>	
+  <metadata-template-add-success>Metadata template added.</metadata-template-add-success>
+  <metadata-template-order>Sortér maler</metadata-template-order>	
 	<metadata-template-order-desc>Sortér dine maler</metadata-template-order-desc>	
 	<metadata-template-add-default>Legg til maler</metadata-template-add-default>	
 	<metadata.admin.index.desc>Lag ny søkeindeks</metadata.admin.index.desc>
@@ -526,6 +529,7 @@
 	<metadataJSForm>Metadata fra JS skjema</metadataJSForm>
 	<metadataRecordsAdded>Totalt antall metadata poster lagt til:</metadataRecordsAdded>
 	<min>Minimum</min>
+    <minor>Minor edit</minor>
 	<missing>MANGELER eller TOM</missing>
 	<missingSeeTab>MISSING - See the following group tab in sidebar: </missingSeeTab>
 	<more>mer</more>

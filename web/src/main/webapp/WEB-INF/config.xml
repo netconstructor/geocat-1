@@ -12,7 +12,7 @@
 	<!-- ====================================================================== -->
 
 	<default>
-		<service>main.home</service>
+		<service>home</service>
 		<!-- the following service is called if there is an exception raised
 		     during the initialization of resources or 
 				 the appHandler org.fao.geonet.Geonetwork
@@ -114,6 +114,7 @@
 	    </config>
 	  </resource>
 	  
+	  
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<!-- mckoi standalone -->
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -196,17 +197,21 @@
 			<config>
 				<user>www-data</user>
 				<password>www-data</password>
-				<driver>org.postgresql.Driver</driver>
+				<!-- we use org.postgis.DriverWrapper in place of
+				     org.postgresql.Driver to support both postgresql and postgis -->
+				<driver>org.postgis.DriverWrapper</driver>
 				<!-- 					
 					jdbc:postgresql:database
 					jdbc:postgresql://host/database
 					jdbc:postgresql://host:port/database
 					
-					or
+					or if you are using postgis and want the spatial index loaded
+					into postgis
+
+					jdbc:postgresql_postGIS://host:port/database
 					
-					jdbc:postgis://host:port/database
 				-->
-                <url>jdbc:postgresql://localhost:5432/geonetwork</url>
+        <url>jdbc:postgresql_postGIS://localhost:5432/geonetwork</url>
 				<poolSize>10</poolSize>
 			</config>
 		</resource>
@@ -276,7 +281,11 @@
 	<!-- ====================================================================== -->
 
 	<services package="org.fao.geonet">
-
+	  
+	  <service name="home">
+	    <output sheet="home.xsl"/>
+	  </service>
+	  
 		<service name="main.home">
 			<output sheet="main-page.xsl">
 				<call name="searchDefaults" class=".guiservices.search.GetDefaults" />
@@ -832,7 +841,7 @@
 		<service name="user.login">
 			<class name=".services.login.Login" />
 
-			<output forward="main.home" />
+			<output forward="home" />
 
 			<error id="user-login" sheet="error.xsl" statusCode="401">
 				<xml name="error" file="xml/login-error.xml" />
@@ -844,7 +853,7 @@
 		<service name="shib.user.login">
 			<class name=".services.login.ShibLogin" />
 
-			<output forward="main.home" />
+			<output forward="home" />
 
 			<error id="user-login" sheet="error.xsl" statusCode="401">
 				<xml name="error" file="xml/login-error.xml" />
@@ -855,7 +864,7 @@
 
 		<service name="user.logout">
 			<class name=".services.login.Logout" />
-			<output forward="main.home" />
+			<output forward="home" />
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -1076,6 +1085,8 @@
 			<class name=".services.main.XmlSearch" />
 
 			<output sheet="portal-present.xsl" contentType="application/xml; charset=UTF-8" />
+		  
+		  <error id="search-error" sheet="error-xml.xsl" statusCode="500"/>
 		</service>
 
     <service name="q">
@@ -1355,7 +1366,10 @@
 		  <class name=".services.thesaurus.Upload" />
 		  <output forward="thesaurus.admin" />
 		</service>
-		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	  <service name="xml.thesaurus.upload">
+	    <class name=".services.thesaurus.Upload" />
+	  </service>
+	  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<service name="thesaurus.download">
 		  <class name=".services.thesaurus.Download" />
 		  <error id="file-not-found" sheet="error.xsl" statusCode="404">
@@ -1437,7 +1451,9 @@
 	<!-- ====================================================================== -->
 
 	<include>config-metadata.xml</include>
-	<include>config-harvesting.xml</include>
+  <include>config-metadata-experimental.xml</include>
+  <include>config-subtemplate.xml</include>
+  <include>config-harvesting.xml</include>
 	<include>config-portal.xml</include>
 	<include>config-export.xml</include>
 	<include>config-statistics.xml</include>

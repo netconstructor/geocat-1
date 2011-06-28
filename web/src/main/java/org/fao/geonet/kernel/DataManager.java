@@ -325,7 +325,8 @@ public class DataManager {
 	public void indexMetadata(Dbms dbms, String id, boolean indexGroup) throws Exception {
         try {
             Vector<Element> moreFields = new Vector<Element>();
-
+            int id$ = new Integer(id);
+            
             // get metadata, extracting and indexing any xlinks
             Element md   = XmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
             if (XmlSerializer.resolveXLinks()) {
@@ -348,17 +349,17 @@ public class DataManager {
             }
 
             // get metadata table fields
-            String  root = md.getName();
+            String query = "SELECT schemaId, createDate, changeDate, source, isTemplate, root, " +
+                "title, uuid, isHarvested, owner, groupOwner, popularity, rating FROM Metadata WHERE id = ?";
 
-            String query ="SELECT schemaId, createDate, changeDate, source, isTemplate, title, uuid, isHarvested, owner, groupOwner, popularity, rating FROM Metadata WHERE id = " + id;
-
-            Element rec = dbms.select(query).getChild("record");
+            Element rec = dbms.select(query, id$).getChild("record");
 
             String  schema     = rec.getChildText("schemaid");
             String  createDate = rec.getChildText("createdate");
             String  changeDate = rec.getChildText("changedate");
             String  source     = rec.getChildText("source");
             String  isTemplate = rec.getChildText("istemplate");
+            String  root       = rec.getChildText("root");
             String  title      = rec.getChildText("title");
             String  uuid       = rec.getChildText("uuid");
             String  isHarvested= rec.getChildText("isharvested");
@@ -388,7 +389,9 @@ public class DataManager {
                 moreFields.add(makeField("_groupOwner", groupOwner, true, true, false));
 
             // get privileges
-            List operations = dbms.select("SELECT groupId, operationId FROM OperationAllowed WHERE metadataId = " + id + " ORDER BY operationId ASC").getChildren();
+            List operations = dbms
+                                .select("SELECT groupId, operationId FROM OperationAllowed WHERE metadataId = ? ORDER BY operationId ASC", id$)
+                                    .getChildren();
 
             for (Object operation1 : operations) {
                 Element operation = (Element) operation1;
@@ -397,7 +400,9 @@ public class DataManager {
                 moreFields.add(makeField("_op" + operationId, groupId, true, true, false));
             }
             // get categories
-            List categories = dbms.select("SELECT id, name FROM MetadataCateg, Categories WHERE metadataId = " + id + " AND categoryId = id ORDER BY id").getChildren();
+            List categories = dbms
+                                .select("SELECT id, name FROM MetadataCateg, Categories WHERE metadataId = ? AND categoryId = id ORDER BY id", id$)
+                                    .getChildren();
 
             for (Object category1 : categories) {
                 Element category = (Element) category1;
@@ -409,7 +414,9 @@ public class DataManager {
             // -1 : not evaluated
             // 0 : invalid
             // 1 : valid
-            List<Element> validationInfo = dbms.select("SELECT valType, status FROM Validation WHERE metadataId=?", new Integer(id)).getChildren();
+            List<Element> validationInfo = dbms
+                                             .select("SELECT valType, status FROM Validation WHERE metadataId = ?", id$)
+                                                 .getChildren();
             if (validationInfo.size() == 0) {
                 moreFields.add(makeField("_valid", "-1", true, true, false));
             }
@@ -434,7 +441,7 @@ public class DataManager {
             }
         }
 		catch (Exception x) {
-			Log.error(Geonet.DATA_MANAGER, "The metadata document index with id="+id+" is corrupt/invalid - ignoring it. Error: " + x.getMessage());
+			Log.error(Geonet.DATA_MANAGER, "The metadata document index with id=" + id + " is corrupt/invalid - ignoring it. Error: " + x.getMessage());
 			x.printStackTrace();
 		}
 	}
@@ -1132,11 +1139,12 @@ public class DataManager {
      * @return
      */
 	public String getSiteURL() {
+        String protocol = settingMan.getValue("system/server/protocol");
 		String host    = settingMan.getValue("system/server/host");
 		String port    = settingMan.getValue("system/server/port");
 		String locServ = baseURL +"/"+ Jeeves.Prefix.SERVICE +"/en";
 
-		return "http://" + host + (port.equals("80") ? "" : ":" + port) + locServ;
+		return protocol + "://" + host + (port.equals("80") ? "" : ":" + port) + locServ;
 	}
 
     /**
@@ -1236,12 +1244,13 @@ public class DataManager {
      * @param source
      * @param owner
      * @param parentUuid
+     * @param isTemplate TODO
      * @return
      * @throws Exception
      */
 	public String createMetadata(Dbms dbms, String templateId, String groupOwner,
 										  SerialFactory sf, String source, int owner,
-										  String parentUuid) throws Exception {
+										  String parentUuid, String isTemplate) throws Exception {
 		String query = "SELECT schemaId, data FROM Metadata WHERE id="+ templateId;
 		List listTempl = dbms.select(query).getChildren();
 
@@ -1256,10 +1265,15 @@ public class DataManager {
 
 		//--- generate a new metadata id
 		int serial = sf.getSerial(dbms, "Metadata");
-		Element xml = updateFixedInfo(schema, Integer.toString(serial), uuid, Xml.loadString(data, false), parentUuid, DataManager.UpdateDatestamp.yes, dbms);
-
+		
+		// Update fixed info for metadata record only
+		Element xml = Xml.loadString(data, false);
+		if (isTemplate.equals('n')) {
+		    xml = updateFixedInfo(schema, Integer.toString(serial), uuid, xml, parentUuid, DataManager.UpdateDatestamp.yes, dbms, null);
+		}
+		
 		//--- store metadata
-		String id = XmlSerializer.insert(dbms, schema, xml, serial, source, uuid, owner, groupOwner);
+		String id = XmlSerializer.insert(dbms, schema, xml, serial, source, uuid, null, null, isTemplate, null, owner, groupOwner, "");
 		copyDefaultPrivForGroup(dbms, id, groupOwner);
 
 		//--- store metadata categories copying them from the template
@@ -1306,11 +1320,11 @@ public class DataManager {
         String id$ = Integer.toString(id);
 
         //--- force namespace prefix for iso19139 metadata
-        setNamespacePrefixUsingSchemas(metadata);
+        setNamespacePrefixUsingSchemas(schema, metadata);
 
         if (ufo && isTemplate.equals("n")) {
             String parentUuid = null;
-            metadata = updateFixedInfo(schema, Integer.toString(id), null, metadata, parentUuid, DataManager.UpdateDatestamp.no, dbms);
+            metadata = updateFixedInfo(schema, Integer.toString(id), null, metadata, parentUuid, DataManager.UpdateDatestamp.no, dbms, null);
         }
 
          if (source == null) {
@@ -1488,10 +1502,13 @@ public class DataManager {
      * @param md
      * @param validate
      * @param lang
+     * @param changeDate
+     * @param minor
+     *
      * @return
      * @throws Exception
      */
-	public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate) throws Exception {
+	public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate, String minor) throws Exception {
 		// when invoked from harvesters, session is null
         if(session != null) {
             session.removeProperty(Geonet.Session.VALIDATION_REPORT + id);
@@ -1499,10 +1516,10 @@ public class DataManager {
 		String schema = getMetadataSchema(dbms, id);
         if(ufo) {
             String parentUuid = null;
-		    md = updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms);
+		    md = updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms, minor);
         }
 		//--- write metadata to dbms
-        XmlSerializer.update(dbms, id, md, changeDate);
+        XmlSerializer.update(dbms, id, md, changeDate, minor);
 
         String isTemplate = getMetadataTemplate(dbms, id);
         // Notifies the metadata change to metatada notifier service
@@ -1867,7 +1884,7 @@ public class DataManager {
      * @param styleSheet
      * @throws Exception
      */
-	void transformMd(Dbms dbms, String id, Element md, Element env, String schema, String styleSheet) throws Exception {
+	private void transformMd(Dbms dbms, String id, Element md, Element env, String schema, String styleSheet) throws Exception {
 		//--- setup root element
 		Element root = new Element("root");
 		root.addContent(md);
@@ -1878,7 +1895,7 @@ public class DataManager {
 
 		md = Xml.transform(root, styleSheet);
         String changeDate = null;
-		XmlSerializer.update(dbms, id, md, changeDate);
+		XmlSerializer.update(dbms, id, md, changeDate, null);
 
         // Notifies the metadata change to metatada notifier service
         notifyMetadataChange(dbms, md, id);
@@ -2110,10 +2127,11 @@ public class DataManager {
      * @param parentUuid
      * @param updateDatestamp
      * @param dbms
+     * @param minor
      * @return
      * @throws Exception
      */
-	public Element updateFixedInfo(String schema, String id, String uuid, Element md, String parentUuid, UpdateDatestamp updateDatestamp, Dbms dbms) throws Exception {
+	public Element updateFixedInfo(String schema, String id, String uuid, Element md, String parentUuid, UpdateDatestamp updateDatestamp, Dbms dbms, String minor) throws Exception {
         boolean autoFixing = settingMan.getValueAsBool("system/autofixing/enable", true);
         if(autoFixing) {
         	Log.debug(Geonet.DATA_MANAGER, "Autofixing is enabled, trying update-fixed-info");
@@ -2134,6 +2152,11 @@ public class DataManager {
                 Element env = new Element("env");
                 env.addContent(new Element("id").setText(id));
                 env.addContent(new Element("uuid").setText(uuid));
+                if (minor != null) {
+                    if (!minor.equals("")) {
+                        env.addContent(new Element("changeDate").setText(new ISODate().toString()));
+                    }
+                }
                 if(parentUuid != null) {
                     env.addContent(new Element("parentUuid").setText(parentUuid));
                 }
@@ -2144,7 +2167,6 @@ public class DataManager {
                 Element result = new Element("root");
                 result.addContent(md);
                 // add 'environment' to result
-                env.addContent(new Element("changeDate").setText(new ISODate().toString()));
                 env.addContent(new Element("siteURL")   .setText(getSiteURL()));
                 Element system = settingMan.get("system", -1);
                 env.addContent(Xml.transform(system, appPath + Geonet.Path.STYLESHEETS+ "/xml/config.xsl"));
@@ -2362,8 +2384,7 @@ public class DataManager {
 			Element childForUpdate = new Element("root");
 			childForUpdate = Xml.transform(rootEl, styleSheet, params);
 			
-			XmlSerializer.update(dbms, childId, childForUpdate, new ISODate()
-					.toString());
+			XmlSerializer.update(dbms, childId, childForUpdate, new ISODate().toString(), null);
 
 
             // Notifies the metadata change to metatada notifier service
@@ -2511,9 +2532,10 @@ public class DataManager {
         }
         
 		// add baseUrl of this site (from settings)
+        String protocol = settingMan.getValue("system/server/protocol");
 		String host    = settingMan.getValue("system/server/host");
 		String port    = settingMan.getValue("system/server/port");
-		addElement(info, Edit.Info.Elem.BASEURL, "http://" + host + (port == "80" ? "" : ":" + port) + baseURL);
+		addElement(info, Edit.Info.Elem.BASEURL, protocol + "://" + host + (port == "80" ? "" : ":" + port) + baseURL);
 		addElement(info, Edit.Info.Elem.LOCSERV, "/srv/en" );
 		return info;
 	}
@@ -2539,7 +2561,8 @@ public class DataManager {
 	
 	//---------------------------------------------------------------------------
 	//---
-	//--- Static methods - GAST is the only thing that should use these
+	//--- Static methods are for external modules like GAST to be able to use
+	//--- them.
 	//---
 	//---------------------------------------------------------------------------
 
@@ -2578,7 +2601,7 @@ public class DataManager {
      * @param md
      * @throws Exception
      */
-	private void setNamespacePrefixUsingSchemas(Element md) throws Exception {
+	private void setNamespacePrefixUsingSchemas(String schema, Element md) throws Exception {
 		//--- if the metadata has no namespace or already has a namespace prefix
 		//--- then we must skip this phase
 
@@ -2586,7 +2609,8 @@ public class DataManager {
     if (ns == Namespace.NO_NAMESPACE)  
       return;
 
-		MetadataSchema mds = findSchema(md, ns);
+		MetadataSchema mds = schemaMan.getSchema(schema);
+
 		//--- get the namespaces and add prefixes to any that are
 		//--- default ie. prefix is ''
 		
@@ -2609,26 +2633,6 @@ public class DataManager {
             }
         }
     }
-
-    /**
-     *
-     * @param md
-     * @param ns
-     * @return
-     * @throws Exception
-     */
-	private MetadataSchema findSchema(Element md, Namespace ns) throws Exception {
-		String nsUri = ns.getURI();
-		for (String schema : getSchemas()) {
-			MetadataSchema mds = getSchema(schema);
-			String nsSchema = mds.getPrimeNS();
-			if (nsSchema != null && nsUri.equals(nsSchema)) {
-				Log.debug(Geonet.DATA_MANAGER, "Found schema "+schema+" with NSURI "+nsSchema);
-				return mds;
-			}
-		}
-		throw new IllegalArgumentException("Cannot find a namespace to set for element "+md.getQualifiedName()+" with namespace URI "+nsUri);
-	}
 
     /**
      *

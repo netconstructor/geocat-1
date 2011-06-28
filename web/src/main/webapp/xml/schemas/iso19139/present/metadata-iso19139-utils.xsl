@@ -6,7 +6,8 @@
     xmlns:srv="http://www.isotc211.org/2005/srv"
     xmlns:geonet="http://www.fao.org/geonetwork"
     xmlns:java="java:org.fao.geonet.util.XslUtil"
-    version="2.0">
+    version="2.0"
+    exclude-result-prefixes="#all">
 
 
     <!-- Template used to return a gco:CharacterString element
@@ -243,7 +244,7 @@
 		        						alt="{/root/gui/strings/updateChildren}" title="{/root/gui/strings/updateChildren}" align="absmiddle"/>
 		        					<xsl:text> </xsl:text>
 		        					<a alt="{/root/gui/strings/updateChildren}" title="{/root/gui/strings/updateChildren}"
-		        						href="#" onclick="javascript:massiveUpdateChildren('metadata.massive.children.form?id={$metadata/geonet:info/id}&amp;schema={$metadata/geonet:info/schema}&amp;parentUuid={$metadata/geonet:info/uuid}&amp;childrenIds={$childrenIds}','{/root/gui/strings/massiveUpdateChildrenTitle}',800);">
+		        						href="#" onclick="javascript:batchUpdateChildren('metadata.batch.children.form?id={$metadata/geonet:info/id}&amp;schema={$metadata/geonet:info/schema}&amp;parentUuid={$metadata/geonet:info/uuid}&amp;childrenIds={$childrenIds}','{/root/gui/strings/batchUpdateChildrenTitle}',800);">
 		        						<xsl:value-of select="/root/gui/strings/updateChildren"/>
 		        					</a>
 		        				</xsl:if>

@@ -1,9 +1,9 @@
-//==============================================================================
+//=============================================================================
 //===
 //=== SchemaManager
 //===
-//==============================================================================
-//===	Copyright (C) GeoNetwork
+//=============================================================================
+//===	Copyright (C) Free Software Foundation
 //===
 //===	This program is free software; you can redistribute it and/or modify
 //===	it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@ public class SchemaManager
 {
 	private Map<String, Schema> hmSchemas = new HashMap<String, Schema>();
 	private String[] fnames = { "labels.xml", "codelists.xml", "strings.xml" };
+        private String[] xslUriSuffix = { "", "-edit"};
 	private String   schemaPluginsDir;
 	private String   schemaPluginsCat;
 	private String	 defaultLang;
@@ -81,7 +82,7 @@ public class SchemaManager
 	private static final int MODE_ROOT = 1;
 	private static final int MODE_NEEDLEWITHVALUE = 2;
 
-	private static final String GEONET_SCHEMA_URI = "http://www.osgeo.org/geonetwork/schemas/geonet_schema";
+	private static final String GEONET_SCHEMA_URI = "http://geonetwork-opensource.org/schemas/schema-ident";
 	private static final Namespace GEONET_SCHEMA_PREFIX_NS = Namespace.getNamespace("gns", GEONET_SCHEMA_URI);
 	private static final Namespace GEONET_SCHEMA_NS = Namespace.getNamespace(GEONET_SCHEMA_URI);
 
@@ -703,17 +704,17 @@ public class SchemaManager
 		Map<String, XmlFile> xfMap = new HashMap<String, XmlFile>();
 
 		for (String fname : fnames) {	
-			Log.info(Geonet.SCHEMA_MANAGER, "Searching for "+path+"/loc/"+defaultLang+"/"+fname);
+			Log.debug(Geonet.SCHEMA_MANAGER, "Searching for "+path+"/loc/"+defaultLang+"/"+fname);
 			if (new File(path+ FS +"loc"+ FS +defaultLang+ FS +fname).exists()) {
 				Element config = new Element("xml");
 				config.setAttribute("name",name);
 				config.setAttribute("base",base);
 				config.setAttribute("file",fname);
-				Log.info(Geonet.SCHEMA_MANAGER, "Adding XmlFile "+Xml.getString(config));
+				Log.debug(Geonet.SCHEMA_MANAGER, "Adding XmlFile "+Xml.getString(config));
 				XmlFile xf = new XmlFile(config, defaultLang, true);
 				xfMap.put(fname, xf);
 			} else {
-				Log.info(Geonet.SCHEMA_MANAGER, "Unable to load this file");
+				Log.debug(Geonet.SCHEMA_MANAGER, "Unable to load this file");
 			}
 		}
 
@@ -776,8 +777,8 @@ public class SchemaManager
 		* @param name the name of the schema to use
 		*/
 
-	private String buildSchemaPresentXslt(String name) {
-		return "../" + schemaPluginsDir + "/" + name + "/present/metadata-" + name + ".xsl";
+	private String buildSchemaPresentXslt(String name, String suffix) {
+		return "../" + schemaPluginsDir + "/" + name + "/present/metadata-" + name + suffix + ".xsl";
 	}
 
 	//--------------------------------------------------------------------------
@@ -790,25 +791,27 @@ public class SchemaManager
 	private Element deleteSchemaFromPluginCatalog(String name, Element root) throws Exception {
 		List<Content> contents = root.getContent();
 
-		String ourUri =  buildSchemaPresentXslt(name);
+		for (String suffix : xslUriSuffix) {
+        		String ourUri =  buildSchemaPresentXslt(name, suffix);
+        
+        		int index = -1;
+        		for (Content content : contents) {
+        			Element uri = null;
+        
+        			if (content instanceof Element) uri = (Element)content;
+        			else continue; // skip this
+        
+        		  if (!uri.getName().equals("uri") || !uri.getNamespace().equals(Geonet.OASIS_CATALOG_NAMESPACE)) {
+        				Log.debug(Geonet.SCHEMA_MANAGER, "Skipping element "+uri.getQualifiedName()+":"+uri.getNamespace());
+        				continue;
+        			}
+        
+        			// -- if already mapped then exit
+        			if (uri.getAttributeValue("uri").equals(ourUri)) index = root.indexOf(uri); 
+        		}
 
-		int index = -1;
-		for (Content content : contents) {
-			Element uri = null;
-
-			if (content instanceof Element) uri = (Element)content;
-			else continue; // skip this
-
-		  if (!uri.getName().equals("uri") || !uri.getNamespace().equals(Geonet.OASIS_CATALOG_NAMESPACE)) {
-				Log.debug(Geonet.SCHEMA_MANAGER, "Skipping element "+uri.getQualifiedName()+":"+uri.getNamespace());
-				continue;
-			}
-
-			// -- if already mapped then exit
-			if (uri.getAttributeValue("uri").equals(ourUri)) index = root.indexOf(uri); 
+        		if (index != -1) root.removeContent(index);
 		}
-
-		if (index != -1) root.removeContent(index);
 		return root;
 	}
 
@@ -826,7 +829,7 @@ public class SchemaManager
 		List<Content> contents = root.getContent();
 
 		String baseBlank = Geonet.File.METADATA_BASEBLANK;
-		String ourUri =  buildSchemaPresentXslt(name);
+		String ourUri =  buildSchemaPresentXslt(name, "");
 
 		for (Content content : contents) {
 			Element uri = null;
@@ -874,20 +877,23 @@ public class SchemaManager
 	private void createUriEntryInSchemaPluginCatalog(String name, int baseNrInt, Element root) throws Exception {
 
 		baseNrInt = baseNrInt + 1;
-		Element newBlank = new Element("uri", Geonet.OASIS_CATALOG_NAMESPACE);
-		if (baseNrInt <= Geonet.File.METADATA_MAX_BLANKS) {
-			String zero = "";
-			if (baseNrInt < 10) zero = "0";
-			newBlank.setAttribute("name", Geonet.File.METADATA_BLANK + zero + baseNrInt + ".xsl");
-			newBlank.setAttribute("uri",  buildSchemaPresentXslt(name)); // main presentation xslt
-		} else {
-			throw new IllegalArgumentException("Exceeded maximum number of plugin schemas "+Geonet.File.METADATA_MAX_BLANKS);
+		
+		for (String suffix : xslUriSuffix) {
+        		Element newBlank = new Element("uri", Geonet.OASIS_CATALOG_NAMESPACE);
+        		if (baseNrInt <= Geonet.File.METADATA_MAX_BLANKS) {
+        			String zero = "";
+        			if (baseNrInt < 10) zero = "0";
+        			newBlank.setAttribute("name", Geonet.File.METADATA_BLANK + zero + baseNrInt + suffix + ".xsl");
+        			newBlank.setAttribute("uri",  buildSchemaPresentXslt(name, suffix)); // main presentation xslt
+        		} else {
+        			throw new IllegalArgumentException("Exceeded maximum number of plugin schemas "+Geonet.File.METADATA_MAX_BLANKS);
+        		}
+        
+        		// -- write out new schemaPlugins catalog and re-init the resolvers that
+        		// -- use this catalog
+        
+        		root.addContent(newBlank);
 		}
-
-		// -- write out new schemaPlugins catalog and re-init the resolvers that
-		// -- use this catalog
-
-		root.addContent(newBlank);
 	}
 
 	//--------------------------------------------------------------------------
@@ -991,20 +997,28 @@ public class SchemaManager
     				String substitutesFile = schemasDir + saSchemas[i] +"/"+ Geonet.File.SCHEMA_SUBSTITUTES;
     				String idFile = schemasDir + saSchemas[i] +"/"+ Geonet.File.SCHEMA_ID;
     				String oasisCatFile = schemasDir + saSchemas[i] +"/"+ Geonet.File.SCHEMA_OASIS;
-    
+   
+	 					String stage = "";
     				try {
+							// validate the schema-ident file before reading it
+	 						stage = "reading schema-ident file "+idFile;
+							Element root = Xml.loadFile(idFile);
+	 						stage = "validating schema-ident file "+idFile;
+							Xml.validate(new Document(root));
+
     					if (hmSchemas.containsKey(saSchemas[i])) { // exists so ignore it
     						Log.error(Geonet.SCHEMA_MANAGER, "Schema "+saSchemas[i]+" already exists - cannot add!");
     					} else {
+	 							stage = "adding the schema information";
     						addSchema(fromAppPath, saSchemas[i], isPluginSchema, schemaPluginCatRoot, schemaFile, suggestFile, substitutesFile, idFile, oasisCatFile);
     						numberOfSchemasAdded++;
     					}
     				} catch (Exception e) {
-    					Log.error(Geonet.SCHEMA_MANAGER, "Failed. "+e.getMessage());
-    					Log.debug(Geonet.SCHEMA_MANAGER, e);
-    					continue; // skip this one
+    					Log.error(Geonet.SCHEMA_MANAGER, "Failed whilst "+stage+". Exception message if any is "+e.getMessage());
+							e.printStackTrace();
+    					continue; // skip this schema
     				}
-                }
+          }
 			}
 		}
 
@@ -1100,7 +1114,7 @@ public class SchemaManager
 									break;
 						}
 					// --- try and find the kid in the md (kid only, not value)
-					} else if (mode==MODE_NEEDLE && type != null  && "has".equals(type.getValue())) {
+					} else if (mode==MODE_NEEDLE && type != null  && "search".equals(type.getValue())) {
 						Log.debug(Geonet.SCHEMA_MANAGER, "Comparing "+Xml.getString(kid)+" with "+md.getName()+" with namespace "+md.getNamespace()+" : "+(kid.getName().equals(md.getName()) && kid.getNamespace().equals(md.getNamespace())));
 
 						if (isMatchingElementInMetadata(kid, md, false)) {
@@ -1142,7 +1156,8 @@ public class SchemaManager
 		
 		String needleName = needle.getName();
 		Namespace needleNS = needle.getNamespace();
-		
+		Log.debug(Geonet.SCHEMA_MANAGER, "Matching " + Xml.getString(needle));
+
 		while(haystackIterator.hasNext()){
 			Element tempElement = haystackIterator.next();
 			

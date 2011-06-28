@@ -86,8 +86,8 @@ public class PostgisPanel extends DbmsPanel
 	}
 
 	//---------------------------------------------------------------------------
-	//--- jdbc:postgresql:<//host>:<port>/<database>
-	//--- jdbc:postgresql:<database>
+	//--- jdbc:postgresql_postGIS:<//host>:<port>/<database>
+	//--- jdbc:postgresql_postGIS:<database>
 
 	public void retrieve()
 	{
@@ -143,7 +143,7 @@ public class PostgisPanel extends DbmsPanel
 
 		String url = PREFIX +"//"+ server +":"+ port +"/"+ database;
 
-		Lib.config.setDbmsDriver  ("org.postgresql.Driver");
+		Lib.config.setDbmsDriver  ("org.postgis.DriverWrapper");
 		Lib.config.setDbmsURL     (url);
 		Lib.config.setDbmsUser    (txtUser.getText());
 		Lib.config.setDbmsPassword(txtPass.getText());
@@ -165,7 +165,7 @@ public class PostgisPanel extends DbmsPanel
 
 	//---------------------------------------------------------------------------
 
-	private static final String PREFIX = "jdbc:postgis:";
+	private static final String PREFIX = "jdbc:postgresql_postGIS:";
 }
 
 //==============================================================================

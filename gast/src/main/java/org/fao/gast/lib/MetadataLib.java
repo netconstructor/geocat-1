@@ -29,17 +29,14 @@ import jeeves.utils.Xml;
 import org.fao.gast.boot.Config;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
-import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.XmlSerializer;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
 import org.jdom.Element;
-import org.jdom.Namespace;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -180,7 +177,7 @@ public class MetadataLib
 				Element md = updateFixedInfo(id, Xml.loadString(data, false),
 													  uuid, date, schema, siteURL, settings, sm);
 
-				XmlSerializer.update(dbms, id, md, date);
+				XmlSerializer.update(dbms, id, md, date, null);
 				dbms.commit();
 			}
 		}

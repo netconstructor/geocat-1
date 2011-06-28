@@ -13,7 +13,9 @@
 	<no>Norsk</no>  <!-- Do not translate! -->
 
 	<!-- new strings - 2.7 -->
-	<surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
+  <subtemplate.admin>Manage directories</subtemplate.admin>
+  <subtemplate.admin.desc>Add/modify/delete directories (eg. contact directories)</subtemplate.admin.desc>  
+  <surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
 	<firstnameMandatory>First name is Mandatory</firstnameMandatory>
 	<emailMandatory>email address is Mandatory</emailMandatory>
 	<forgottenPassword>Forgot your password?</forgottenPassword>
@@ -163,7 +165,7 @@
 	<updateChildren>Update children</updateChildren>
 	<updateChildrenOk>Children updated</updateChildrenOk>
 	<updateChildrenFailed>Children update failed</updateChildrenFailed>
-	<massiveUpdateChildrenTitle>Update children</massiveUpdateChildrenTitle>
+	<batchUpdateChildrenTitle>Update children</batchUpdateChildrenTitle>
 	<updateMode>Choose the strategy applied for children update from parent : </updateMode>
 	<addMode>Add sections</addMode>
 	<replaceMode>Replace sections</replaceMode>
@@ -371,7 +373,7 @@
 	<confirmCancel>Weet u zeker dat u de editor wilt sluiten? (Alle niet bewaarde aanpassingen gaan verloren)</confirmCancel>
     <confirmCancelCreate>Weet u zeker dat u wilt annuleren creëren van deze metadata?</confirmCancelCreate>
 	<confirmDelete>Weet u zeker dat u de metadata wilt verwijderen uit de database?</confirmDelete>
-	<confirmMassiveDelete>Weet u zeker dat u alle $1 geselecteerde metadata wild verwijderen uit de database?</confirmMassiveDelete>
+	<confirmBatchDelete>Weet u zeker dat u alle $1 geselecteerde metadata wild verwijderen uit de database?</confirmBatchDelete>
 	<confirmNewPassword>Bevestig nieuw wachtwoord</confirmNewPassword>
 	<confirmPassword>Bevestig wachtwoord</confirmPassword>
 	<constraintsTab>Beperkingen</constraintsTab>
@@ -568,11 +570,11 @@
 	<mapViewerClose>Sluiten van de viewer</mapViewerClose>
 	<mapViewerLoading>Laden van de viewer...</mapViewerLoading>
 	<mapViewerOpen>Start viewer</mapViewerOpen>
-	<massiveActions>Massieve acties : </massiveActions>
-	<massiveDeleteTitle>Massive Delete Operatie</massiveDeleteTitle>
-	<massiveNewOwnerTitle>Massive New Owner Operatie</massiveNewOwnerTitle>
-	<massiveUpdateCategoriesTitle>Massive Update Categories Operatie</massiveUpdateCategoriesTitle>
-	<massiveUpdatePrivilegesTitle>Massive Update Privileges Operatie</massiveUpdatePrivilegesTitle>
+	<batchActions>Massieve acties : </batchActions>
+	<batchDeleteTitle>Batch Delete Operatie</batchDeleteTitle>
+	<batchNewOwnerTitle>Batch New Owner Operatie</batchNewOwnerTitle>
+	<batchUpdateCategoriesTitle>Batch Update Categories Operatie</batchUpdateCategoriesTitle>
+	<batchUpdatePrivilegesTitle>Batch Update Privileges Operatie</batchUpdatePrivilegesTitle>
 	<max>Maximaal</max>
 	<mdRating>Metadata Waardering</mdRating>
 	<mdUpdateError>Fout tijdens bijwerken</mdUpdateError>
@@ -601,7 +603,8 @@
     <metadata-samples-add>Voorbeeld metadata toevoegen</metadata-samples-add>
     <metadata-samples-add-failed>Laden voorbeeld metadata is mislukt</metadata-samples-add-failed>
     <metadata-samples-add-success>Laden voorbeeld metadata is gelukt</metadata-samples-add-success>
-	<metadata-template-order>Templates sorteren</metadata-template-order>	
+  <metadata-template-add-success>Metadata template added.</metadata-template-add-success>
+  <metadata-template-order>Templates sorteren</metadata-template-order>	
 	<metadata-template-order-desc>Sorteer uw templates</metadata-template-order-desc>
 	<metadata-template-add-default>Add templates</metadata-template-add-default>
 	<metadata>Metadata</metadata>
@@ -613,6 +616,7 @@
   <failOnError>Fail on error</failOnError>
   <metadataRecordsProcessed>Total number of metadata records processed:</metadataRecordsProcessed>
   <min>Minimaal</min>
+    <minor>Minor edit</minor>
 	<missing>ONTBREEKT of LEEG</missing>
 	<missingSeeTab>ONTBREEKT - Zie de volgende groep tab in de zijkolom: </missingSeeTab>
 	<more>meer</more>

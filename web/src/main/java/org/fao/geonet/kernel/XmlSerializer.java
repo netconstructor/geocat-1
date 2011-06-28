@@ -117,7 +117,8 @@ public class XmlSerializer {
     /**
      * Retrieves the xml element which id matches the given one. The element is read from 'table' and the string read is
      * converted into xml, XLinks are NOT resolved even if they are config'd on - this is used when you want to do XLink
-     * processing yourself
+     * processing yourself.
+     *
      * @param dbms
      * @param table
      * @param id
@@ -129,45 +130,7 @@ public class XmlSerializer {
 	}
 
     /**
-     *
-     * @param dbms
-     * @param schema
-     * @param xml
-     * @param serial
-     * @param source
-     * @param uuid
-     * @param owner
-     * @param groupOwner
-     * @return
-     * @throws SQLException
-     */
-	public static String insert(Dbms dbms, String schema, Element xml, int serial,
-										 String source, String uuid, int owner, String groupOwner) throws SQLException {
-		return insert(dbms, schema, xml, serial, source, uuid, null, null, "n", null, owner, groupOwner, "");
-	}
-
-    /**
-     *
-     * @param dbms
-     * @param schema
-     * @param xml
-     * @param serial
-     * @param source
-     * @param uuid
-     * @param isTemplate
-     * @param title
-     * @param owner
-     * @param groupOwner
-     * @return
-     * @throws SQLException
-     */
-	public static String insert(Dbms dbms, String schema, Element xml, int serial,
-										 String source, String uuid, String isTemplate,
-										 String title, int owner, String groupOwner) throws SQLException {
-		return insert(dbms, schema, xml, serial, source, uuid, null, null, isTemplate, title, owner, groupOwner, "");
-	}
-
-    /**
+     * TODO javadoc.
      *
      * @param dbms
      * @param schema
@@ -246,25 +209,43 @@ public class XmlSerializer {
      * @param id
      * @param xml
      * @param changeDate
+     * @param minor
+     *
      * @throws SQLException
      */
-	public static void update(Dbms dbms, String id, Element xml, String changeDate) throws SQLException {
+	public static void update(Dbms dbms, String id, Element xml, String changeDate, String minor) throws SQLException {
 		if (resolveXLinks()) Processor.removeXLink(xml);
 
 		String query = "UPDATE Metadata SET data=?, changeDate=?, root=? WHERE id=?";
+        String queryMinor = "UPDATE Metadata SET data=?, root=? WHERE id=?";
+          if (minor == null) {
+              minor = "";
+          }
 
 		Vector<Serializable> args = new Vector<Serializable>();
 
 		fixCR(xml);
 		args.add(Xml.getString(xml));
 
-		if (changeDate == null)	args.add(new ISODate().toString());
-			else                 args.add(changeDate);
+        if (minor.equals("")) {
+            if (changeDate == null)	{
+                args.add(new ISODate().toString());
+            }
+            else {
+                args.add(changeDate);
+            }
+        }
+        System.out.println("valeur de mineur "+minor);
 
-		args.add(xml.getQualifiedName());
+ 		args.add(xml.getQualifiedName());
 		args.add(new Integer(id));
 
-		dbms.execute(query, args.toArray());
+        if (minor.equals(""))  {
+            dbms.execute(query, args.toArray());
+        }
+        else {
+            dbms.execute(queryMinor, args.toArray());
+        }
 	}
 
     /**

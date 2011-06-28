@@ -13,7 +13,9 @@
 	<no>Norsk</no>  <!-- Do not translate! -->
 
 	<!-- new strings - 2.7 -->
-	<surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
+  <subtemplate.admin>Manage directories</subtemplate.admin>
+  <subtemplate.admin.desc>Add/modify/delete directories (eg. contact directories)</subtemplate.admin.desc>  
+  <surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
 	<firstnameMandatory>First name is Mandatory</firstnameMandatory>
 	<emailMandatory>email address is Mandatory</emailMandatory>
 	<forgottenPassword>Forgot your password?</forgottenPassword>
@@ -163,7 +165,7 @@
 	<updateChildren>Изменить подчиненные</updateChildren>
 	<updateChildrenOk>Подчиненные обновлены</updateChildrenOk>
 	<updateChildrenFailed>Ошибка обновления подчиненных</updateChildrenFailed>
-	<massiveUpdateChildrenTitle>Обновление подчиненных</massiveUpdateChildrenTitle>
+	<batchUpdateChildrenTitle>Обновление подчиненных</batchUpdateChildrenTitle>
 	<updateMode>Выбор стратегии, применяемой для обновления подчиненных записей метаданных из родительских : </updateMode>
 	<addMode>Добавить разделы</addMode>
 	<replaceMode>Заменить разделы</replaceMode>
@@ -377,7 +379,7 @@ ISO 19115 не позволяет иметь более одного.
 	<confirmCancel>Вы уверены, что хотите выйти из редактора? (Вы потеряете все несохраненные изменения)</confirmCancel>
     <confirmCancelCreate>Вы уверены, что хотите отменить создание этих метаданных?</confirmCancelCreate>
 	<confirmDelete>Вы уверены, что хотите удалить метаданные из базы данных?</confirmDelete>
-	<confirmMassiveDelete>Вы уверены, что хотите удалить все выбранные метаданные из базы данных?</confirmMassiveDelete>
+	<confirmBatchDelete>Вы уверены, что хотите удалить все выбранные метаданные из базы данных?</confirmBatchDelete>
 	<confirmNewPassword>Подтверждение нового пароля</confirmNewPassword>
 	<confirmPassword>Подтверждение пароля</confirmPassword>
 	<constraintsTab>Ограничения</constraintsTab>
@@ -566,11 +568,11 @@ ISO 19115 не позволяет иметь более одного.
 	<mapViewerClose>Закрыть просмотр карт</mapViewerClose>
 	<mapViewerLoading>Загрузка просмотра...</mapViewerLoading>
 	<mapViewerOpen>Открыть просмотр карт</mapViewerOpen>
-	<massiveActions>Массовые действия:</massiveActions>
-	<massiveDeleteTitle>Массовая операция удаления</massiveDeleteTitle>
-	<massiveNewOwnerTitle>Массовая операция назначения нового собственника</massiveNewOwnerTitle>
-	<massiveUpdateCategoriesTitle>Массовая операция изменения категории</massiveUpdateCategoriesTitle>
-	<massiveUpdatePrivilegesTitle>Массовая операция изменения привилегий</massiveUpdatePrivilegesTitle>
+	<batchActions>Массовые действия:</batchActions>
+	<batchDeleteTitle>Массовая операция удаления</batchDeleteTitle>
+	<batchNewOwnerTitle>Массовая операция назначения нового собственника</batchNewOwnerTitle>
+	<batchUpdateCategoriesTitle>Массовая операция изменения категории</batchUpdateCategoriesTitle>
+	<batchUpdatePrivilegesTitle>Массовая операция изменения привилегий</batchUpdatePrivilegesTitle>
 	<max>Максимум</max>
 	<mdRating>Рейтинг метаданных</mdRating>
 	<mdUpdateError>Ошибка обновления</mdUpdateError>
@@ -597,7 +599,8 @@ ISO 19115 не позволяет иметь более одного.
     <metadata-samples-add>Добавить образец метаданных</metadata-samples-add>
     <metadata-samples-add-failed>Добавление образца метаданных не удалось</metadata-samples-add-failed>
     <metadata-samples-add-success>Образец метаданных добавлен</metadata-samples-add-success>
-	<metadata-template-order>Сортировать шаблоны</metadata-template-order>	
+  <metadata-template-add-success>Metadata template added.</metadata-template-add-success>
+  <metadata-template-order>Сортировать шаблоны</metadata-template-order>	
 	<metadata-template-order-desc>Сортировать Ваши шаблоны</metadata-template-order-desc>
 	<metadata-template-add-default>Добавить шаблоны</metadata-template-add-default>
 	<metadata>Метаданные</metadata>
@@ -609,6 +612,7 @@ ISO 19115 не позволяет иметь более одного.
   <failOnError>Fail on error</failOnError>
   <metadataRecordsProcessed>Total number of metadata records processed:</metadataRecordsProcessed>
   <min>Минимум</min>
+    <minor>Minor edit</minor>
 	<missing>MISSING or EMPTY</missing>
 	<missingSeeTab>MISSING - See the following group tab in sidebar:</missingSeeTab>
 	<more>больше</more>

@@ -140,22 +140,18 @@ public class ApacheDBCPool implements ResourceProvider {
 				GenericObjectPool.DEFAULT_TEST_WHILE_IDLE);
 
 		// create the connection factory with the url provided in the config
-		// hack the url for postgis to postgres
-		String actualUrl = url;
 		String validationQuery = "Select 1";
 		boolean defaultReadOnly = false;
 		boolean defaultAutoCommit = false;
 
-		if (actualUrl.contains("postgis"))
-			actualUrl = actualUrl.replaceFirst("postgis", "postgresql");
 		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
-				actualUrl, user, passwd);
+				url, user, passwd);
 
 		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
 				connectionFactory, connectionPool, keyConnectionPool,
 				validationQuery, defaultReadOnly, defaultAutoCommit);
 
-		if (actualUrl.toUpperCase().contains("MCKOI")) {
+		if (url.toUpperCase().contains("MCKOI")) {
       // McKoi doesn't work unless you use TRANSACTION_SERIALIZABLE
       poolableConnectionFactory.
         setDefaultTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);

@@ -11,7 +11,9 @@
     <pt>Рortuguês</pt> <!-- Do not translate! -->
 	<ca>Català</ca> <!-- Do not translate! -->
     <no>Norsk</no>  <!-- Do not translate! -->
-
+  
+  <subtemplate.admin>Manage directories</subtemplate.admin>
+  <subtemplate.admin.desc>Add/modify/delete directories (eg. contact directories)</subtemplate.admin.desc>  
 	<surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
 	<firstnameMandatory>First name is Mandatory</firstnameMandatory>
 	<emailMandatory>email address is Mandatory</emailMandatory>
@@ -163,7 +165,7 @@
 	<updateChildren>Update children</updateChildren>
 	<updateChildrenOk>Children updated</updateChildrenOk>
 	<updateChildrenFailed>Children update failed</updateChildrenFailed>
-	<massiveUpdateChildrenTitle>Update children</massiveUpdateChildrenTitle>
+	<batchUpdateChildrenTitle>Update children</batchUpdateChildrenTitle>
 	<updateMode>Choose the strategy applied for children update from parent : </updateMode>
 	<addMode>Add sections</addMode>
 	<replaceMode>Replace sections</replaceMode>
@@ -370,7 +372,7 @@
 	<confirmCancel>Are you sure you want to leave the editor? (You will lose any unsaved changes)</confirmCancel>
     <confirmCancelCreate>Are you sure you want to cancel creating this metadata?</confirmCancelCreate>
 	<confirmDelete>Are you sure you want to delete the metadata from the database?</confirmDelete>
-	<confirmMassiveDelete>Are you sure you want to delete all $1 selected metadata from the database?</confirmMassiveDelete>
+	<confirmBatchDelete>Are you sure you want to delete all $1 selected metadata from the database?</confirmBatchDelete>
 	<confirmNewPassword>Confirm new password</confirmNewPassword>
 	<confirmPassword>Confirm password</confirmPassword>
 	<constraintsTab>Constraints</constraintsTab>
@@ -561,11 +563,11 @@
 	<mapViewerClose>Close Map Viewer</mapViewerClose>
 	<mapViewerLoading>Loading Map Viewer...</mapViewerLoading>
 	<mapViewerOpen>Open Map Viewer</mapViewerOpen>
-	<massiveActions>Massive actions:</massiveActions>
-	<massiveDeleteTitle>Massive Delete Operation</massiveDeleteTitle>
-	<massiveNewOwnerTitle>Massive New Owner Operation</massiveNewOwnerTitle>
-	<massiveUpdateCategoriesTitle>Massive Update Categories Operation</massiveUpdateCategoriesTitle>
-	<massiveUpdatePrivilegesTitle>Massive Update Privileges Operation</massiveUpdatePrivilegesTitle>
+	<batchActions>Batch actions:</batchActions>
+	<batchDeleteTitle>Batch Delete Operation</batchDeleteTitle>
+	<batchNewOwnerTitle>Batch New Owner Operation</batchNewOwnerTitle>
+	<batchUpdateCategoriesTitle>Batch Update Categories Operation</batchUpdateCategoriesTitle>
+	<batchUpdatePrivilegesTitle>Batch Update Privileges Operation</batchUpdatePrivilegesTitle>
 	<max>Maximum</max>
 	<mdRating>Data Rating</mdRating>
 	<mdUpdateError>Update error</mdUpdateError>
@@ -590,9 +592,10 @@
 	<metadata.admin.index>Index manager</metadata.admin.index>
     <metadata-samples>Sample metadata</metadata-samples>
     <metadata-samples-add>Add sample metadata</metadata-samples-add>
-    <metadata-samples-add-failed>Add sample metadata failed</metadata-samples-add-failed>
-    <metadata-samples-add-success>Added sample metadata</metadata-samples-add-success>
-	<metadata-template-order>Sort templates</metadata-template-order>	
+    <metadata-samples-add-failed>Failed to add sample metadata.</metadata-samples-add-failed>
+    <metadata-samples-add-success>Sample metadata added.</metadata-samples-add-success>
+  <metadata-template-add-success>Metadata template added.</metadata-template-add-success>
+  <metadata-template-order>Sort templates</metadata-template-order>	
 	<metadata-template-order-desc>Sort your templates</metadata-template-order-desc>
 	<metadata-template-add-default>Add templates</metadata-template-add-default>
     <metadata>Metadata</metadata>
@@ -604,6 +607,7 @@
 	<metadataRecordsProcessed>Total number of metadata records processed:</metadataRecordsProcessed>
   <metadataRecordsAdded>Total number of metadata records added:</metadataRecordsAdded>
 	<min>Minimum</min>
+    <minor>Minor edit</minor>
 	<missing>MISSING or EMPTY</missing>
 	<missingSeeTab>MISSING - See the following group tab in sidebar: </missingSeeTab>
 	<more>more</more>

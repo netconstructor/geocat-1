@@ -65,6 +65,7 @@ import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.exceptions.UnAuthorizedException;
+import org.fao.geonet.kernel.MdInfo;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.SummaryComparator.SortOption;
 import org.fao.geonet.kernel.search.SummaryComparator.Type;
@@ -77,6 +78,7 @@ import org.jdom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
+import org.springframework.util.StringUtils;
 
 //==============================================================================
 // search metadata locally using lucene
@@ -601,15 +603,12 @@ public class LuceneSearcher extends MetaSearcher
 		if (name.equals("TermQuery"))
 		{
 			String fld = xmlQuery.getAttributeValue("fld");
-			String txt = analyzeQueryText(fld, xmlQuery.getAttributeValue("txt"), analyzer, tokenizedFieldSet);
-			returnValue = new TermQuery(new Term(fld, txt));
+            returnValue = textFieldToken(xmlQuery.getAttributeValue("txt"), fld, xmlQuery.getAttributeValue("sim"), analyzer, tokenizedFieldSet);
 		}
 		else if (name.equals("FuzzyQuery"))
 		{
 			String fld = xmlQuery.getAttributeValue("fld");
-			Float sim = Float.valueOf(xmlQuery.getAttributeValue("sim"));
-			String txt = analyzeQueryText(fld, xmlQuery.getAttributeValue("txt"), analyzer, tokenizedFieldSet);
-			returnValue = new FuzzyQuery(new Term(fld, txt), sim);
+            returnValue = textFieldToken(xmlQuery.getAttributeValue("txt"), fld, xmlQuery.getAttributeValue("sim"), analyzer, tokenizedFieldSet);
 		}
 		else if (name.equals("PrefixQuery"))
 		{
@@ -624,8 +623,7 @@ public class LuceneSearcher extends MetaSearcher
 		else if (name.equals("WildcardQuery"))
 		{
 			String fld = xmlQuery.getAttributeValue("fld");
-			String txt = analyzeQueryText(fld, xmlQuery.getAttributeValue("txt"), analyzer, tokenizedFieldSet);
-			returnValue = new WildcardQuery(new Term(fld, txt));
+            returnValue = textFieldToken(xmlQuery.getAttributeValue("txt"), fld, xmlQuery.getAttributeValue("sim"), analyzer, tokenizedFieldSet);
 		}
 		else if (name.equals("PhraseQuery"))
 		{
@@ -690,6 +688,75 @@ public class LuceneSearcher extends MetaSearcher
         Log.debug(Geonet.SEARCH_ENGINE, "Lucene Query: " + returnValue.toString());
 		return returnValue;
 	}
+
+    public static Query textFieldToken(String string, String luceneIndexField, String similarity,
+                                    PerFieldAnalyzerWrapper analyzer, HashSet<String> tokenizedFieldSet) {
+            if(string == null) {
+                throw new IllegalArgumentException("Cannot create Lucene query for null string");
+            }
+            Query query = null;
+
+            String analyzedString = "";
+            // wildcards - preserve them by analyzing the parts of the search string around them separately
+            // (this is because Lucene's StandardTokenizer would remove wildcards, but that's not what we want)
+            if(string.indexOf('*') >= 0 || string.indexOf('?') >= 0) {
+                String starsPreserved = "";
+                String[] starSeparatedList = string.split("\\*");
+                for(String starSeparatedPart : starSeparatedList) {
+                    String qPreserved = "";
+                    // ? present
+                    if(starSeparatedPart.indexOf('?') >= 0) {
+                        String[] qSeparatedList = starSeparatedPart.split("\\?");
+                        for(String qSeparatedPart : qSeparatedList) {
+                            String analyzedPart = LuceneSearcher.analyzeQueryText(luceneIndexField, qSeparatedPart, analyzer, tokenizedFieldSet);
+                            qPreserved += '?' + analyzedPart;
+                        }
+                        // remove leading ?
+                        qPreserved = qPreserved.substring(1);
+                        starsPreserved += '*' + qPreserved;
+                    }
+                    // no ? present
+                    else {
+                        starsPreserved += '*' + LuceneSearcher.analyzeQueryText(luceneIndexField, starSeparatedPart, analyzer, tokenizedFieldSet);
+                    }
+                }
+                // remove leading *
+                starsPreserved = starsPreserved.substring(1);
+
+                // restore ending wildcard
+                if (string.endsWith("*")) {
+                    starsPreserved += "*";
+                } else if (string.endsWith("?")) {
+                    starsPreserved += "?";
+                }
+
+                analyzedString = starsPreserved;
+            }
+            // no wildcards
+            else {
+                analyzedString = LuceneSearcher.analyzeQueryText(luceneIndexField, string, analyzer, tokenizedFieldSet);
+            }
+
+            if(StringUtils.hasLength(analyzedString)) {
+            // no wildcards
+            if(string.indexOf('*') < 0 && string.indexOf('?') < 0) {
+                // similarity is not set or is 1
+                if(similarity == null || similarity.equals("1")) {
+                        query = new TermQuery(new Term(luceneIndexField, analyzedString));
+                }
+                // similarity is not null and not 1
+                else {
+                    Float minimumSimilarity = Float.parseFloat(similarity);
+                        query = new FuzzyQuery(new Term(luceneIndexField, analyzedString), minimumSimilarity);
+                }
+            }
+            // wildcards
+            else {
+                    query = new WildcardQuery(new Term(luceneIndexField, analyzedString));
+                }
+            }
+            return query;
+        }
 
 	//--------------------------------------------------------------------------------
 
@@ -926,7 +993,7 @@ public class LuceneSearcher extends MetaSearcher
         
         // Root element is using root element name if not using only the index content (ie. dumpAllField)
         // probably because the XSL need that info later ?
-        Element md = new Element(dumpAllField?"metadata":root);
+        Element md = new Element("metadata");
         
         Element info = new Element(Edit.RootChild.INFO, Edit.NAMESPACE);
         
@@ -984,6 +1051,73 @@ public class LuceneSearcher extends MetaSearcher
 					if (uuid != null) response.add(uuid);
         }
         return response;
+    }
+
+	
+	/**
+	 * <p>
+	 * Gets all metadata info as a int HashMap in current searcher
+	 * </p>
+	 * 
+	 * 
+	 * @throws IOException 
+	 * @throws CorruptIndexException 
+	 */
+    public Map<Integer,MdInfo> getAllMdInfo(int maxHits) throws Exception {
+
+			FieldSelector mdInfoSelector = new FieldSelector() {
+				public final FieldSelectorResult accept(String name) {
+					if (name.equals("_id"))          return FieldSelectorResult.LOAD;
+					if (name.equals("_root"))        return FieldSelectorResult.LOAD;
+					if (name.equals("_schema"))      return FieldSelectorResult.LOAD;
+					if (name.equals("_createDate"))  return FieldSelectorResult.LOAD;
+					if (name.equals("_changeDate"))  return FieldSelectorResult.LOAD;
+					if (name.equals("_source"))      return FieldSelectorResult.LOAD;
+					if (name.equals("_isTemplate"))  return FieldSelectorResult.LOAD;
+					if (name.equals("_title"))       return FieldSelectorResult.LOAD;
+					if (name.equals("_uuid"))        return FieldSelectorResult.LOAD;
+					if (name.equals("_isHarvested")) return FieldSelectorResult.LOAD;
+					if (name.equals("_owner"))       return FieldSelectorResult.LOAD;
+					if (name.equals("_groupOwner"))  return FieldSelectorResult.LOAD;
+					else return FieldSelectorResult.NO_LOAD;
+				}
+			};
+
+      Map<Integer,MdInfo> response = new HashMap<Integer,MdInfo>();
+			TopDocs tdocs = performQuery(0, maxHits, false);
+
+      for ( ScoreDoc sdoc : tdocs.scoreDocs ) {
+        Document doc = _reader.document(sdoc.doc, mdInfoSelector);
+
+				MdInfo mdInfo = new MdInfo();
+				mdInfo.id           = doc.get("_id");
+        mdInfo.uuid         = doc.get("_uuid");
+        mdInfo.schemaId     = doc.get("_schema");
+				String isTemplate   = doc.get("_isTemplate");
+				if (isTemplate.equals("y")) {
+					mdInfo.template = MdInfo.Template.TEMPLATE;
+				} else if (isTemplate.equals("s")) {
+					mdInfo.template = MdInfo.Template.SUBTEMPLATE;
+				} else {
+					mdInfo.template = MdInfo.Template.METADATA;
+				}
+				String isHarvested  = doc.get("_isHarvested");
+				if (isHarvested != null) {
+        	mdInfo.isHarvested  = doc.get("_isHarvested").equals("y");
+				} else {
+					mdInfo.isHarvested  = false;
+				}
+        mdInfo.createDate   = doc.get("_createDate");
+        mdInfo.changeDate   = doc.get("_changeDate");
+        mdInfo.source       = doc.get("_source");
+        mdInfo.title        = doc.get("_title");
+        mdInfo.root         = doc.get("_root");
+        mdInfo.owner        = doc.get("_owner");
+        mdInfo.groupOwner   = doc.get("_groupOwner");
+
+				response.put(Integer.parseInt(mdInfo.id), mdInfo);
+      }
+      return response;
     }
 
 	//--------------------------------------------------------------------------------

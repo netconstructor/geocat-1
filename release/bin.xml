@@ -14,6 +14,14 @@
    </includes>
   </fileSet>
   <fileSet>
+   <!-- the web client module -->
+   <directory>web-client/src/main/resources</directory>
+   <outputDirectory>geonetwork/web/geonetwork/apps</outputDirectory>
+   <includes>
+    <include>**/*</include>
+   </includes>
+  </fileSet>
+  <fileSet>
    <!-- the geoserver webapp -->
    <directory>geoserver/target</directory>
    <outputDirectory>geonetwork/web</outputDirectory>

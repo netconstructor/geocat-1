@@ -3,7 +3,7 @@
 User Manual v\ |release|
 ==========================
 
-Welcome to the GeoNetwork User Manual v\ |release|. The manual is a comprehensive guide to all aspects of using GeoNetwork opensource.
+Welcome to the GeoNetwork User Manual v\ |release|. The manual is a guide describing how to use the metadata catalog.
 
 Other documents:
 

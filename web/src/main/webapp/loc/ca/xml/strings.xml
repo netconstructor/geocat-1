@@ -12,7 +12,9 @@
 	<ca>Català</ca> <!-- Do not translate! -->
 	<no>Norsk</no>  <!-- Do not translate! -->
 
-	<surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
+  <subtemplate.admin>Manage directories</subtemplate.admin>
+  <subtemplate.admin.desc>Add/modify/delete directories (eg. contact directories)</subtemplate.admin.desc>  
+  <surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
 	<firstnameMandatory>First name is Mandatory</firstnameMandatory>
 	<emailMandatory>email address is Mandatory</emailMandatory>
 	<forgottenPassword>Forgot your password?</forgottenPassword>
@@ -26,7 +28,7 @@
 	<updateChildren>Actualitzar fills</updateChildren>
 	<updateChildrenOk>Fills actualitzats</updateChildrenOk>
 	<updateChildrenFailed>L'actualització dels fills ha fallat</updateChildrenFailed>
-	<massiveUpdateChildrenTitle>Actualització dels fills</massiveUpdateChildrenTitle>
+	<batchUpdateChildrenTitle>Actualització dels fills</batchUpdateChildrenTitle>
 	<updateMode>Esculliu una estratègia per actualitzar els fills: </updateMode>
 	<addMode>Afegir seccions</addMode>
 	<replaceMode>Reemplaçar seccions</replaceMode>
@@ -225,7 +227,7 @@
 	<confirmCancel>Esteu segurs que voleu sortir del mòdul editor? (Perdreu tots els canvis no guardats anteriorment)</confirmCancel>
 	<confirmCancelCreate>Esteu segurs que voleu desestimar la creació de les metadades?</confirmCancelCreate>
 	<confirmDelete>Esteu segurs que voleu esborrar la metadada de la base de dades?</confirmDelete>
-	<confirmMassiveDelete>Esteu segurs que voleu esborrar totes les $1 Metadades seleccionades de la base de dades?</confirmMassiveDelete>
+	<confirmBatchDelete>Esteu segurs que voleu esborrar totes les $1 Metadades seleccionades de la base de dades?</confirmBatchDelete>
 	<confirmNewPassword>Confirmar la nova contrasenya</confirmNewPassword>
 	<confirmPassword>Confirmar la contrasenya</confirmPassword>
 	<constraintsTab>Restriccions</constraintsTab>
@@ -414,11 +416,11 @@
 	<mapViewerClose>Tancar visualitzador de mapes</mapViewerClose>
 	<mapViewerLoading>Carregant visualitzador de mapes...</mapViewerLoading>
 	<mapViewerOpen>Obrir el visualitzador de mapes</mapViewerOpen>
-	<massiveActions>Accions massives:</massiveActions>
-	<massiveDeleteTitle>Operació d'esborrat massiu</massiveDeleteTitle>
-	<massiveNewOwnerTitle>Operació d'assignació de propietari massiva</massiveNewOwnerTitle>
-	<massiveUpdateCategoriesTitle>Operació d'actualització de categories massiva</massiveUpdateCategoriesTitle>
-	<massiveUpdatePrivilegesTitle>Operació d'actualització de privilegis massiva</massiveUpdatePrivilegesTitle>
+	<batchActions>Accions batchs:</batchActions>
+	<batchDeleteTitle>Operació d'esborrat massiu</batchDeleteTitle>
+	<batchNewOwnerTitle>Operació d'assignació de propietari massiva</batchNewOwnerTitle>
+	<batchUpdateCategoriesTitle>Operació d'actualització de categories massiva</batchUpdateCategoriesTitle>
+	<batchUpdatePrivilegesTitle>Operació d'actualització de privilegis massiva</batchUpdatePrivilegesTitle>
 	<max>Màxim</max>
 	<mdRating>Rànquing de metadades</mdRating>
 	<mdUpdateError>Actualitzar error</mdUpdateError>
@@ -443,7 +445,8 @@
     <metadata-samples-add>Afegir metadades d'exemple</metadata-samples-add>
     <metadata-samples-add-failed>Error a l'afegir les metadades d'exemple</metadata-samples-add-failed>
     <metadata-samples-add-success>S'ha afegit les metadades d'exemple</metadata-samples-add-success>
-	<metadata-template-order>Ordenar plantilles</metadata-template-order>
+  <metadata-template-add-success>Metadata template added.</metadata-template-add-success>
+  <metadata-template-order>Ordenar plantilles</metadata-template-order>
 	<metadata-template-order-desc>Ordenar les vostres plantilles</metadata-template-order-desc>
 	<metadata-template-add-default>Afegir plantilles</metadata-template-add-default>	
 	<metadata-template-add-default-desc>Afegir plantilles per defecte</metadata-template-add-default-desc>
@@ -455,6 +458,7 @@
 	<metadataJSForm>Metadades des d'un formulari JS</metadataJSForm>
 	<metadataRecordsAdded>Número total de metadades afegides:</metadataRecordsAdded>
 	<min>Mínim</min>
+    <minor>Minor edit</minor>
 	<missing>INEXISTENT o BUIT</missing>	
 	<missingSeeTab>INEXISTENT - Veure la pestanya de grups: </missingSeeTab>
 	<more>més</more>

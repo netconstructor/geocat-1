@@ -7,6 +7,7 @@
 	<server>Сервер</server>
 	<host>Хост</host>
 	<port>Порт</port>
+    <protocol>Protocol</protocol>
 
 	<searchStats>Search Statistics</searchStats>
 
@@ -140,6 +141,20 @@
 	<attributes>Shibboleth attribute mapping</attributes>
 	<surname>Фамилия</surname>
 	<firstname>Имя</firstname>
+
+    <metadataEnableInspireSearch>Enable search panel</metadataEnableInspireSearch>
+
+    <metadataViews>Metadata views</metadataViews>
+    <metadataEnableSimpleView>Enable simple view</metadataEnableSimpleView>
+    <metadataEnableIsoView>Enable ISO view</metadataEnableIsoView>
+    <metadataEnableInspireView>Enable INSPIRE view</metadataEnableInspireView>
+    <metadataEnableXmlView>Enable XML view</metadataEnableXmlView>
+    <metadataDefaultView>Default view</metadataDefaultView>
+    <metadataSimpleView>Simple view</metadataSimpleView>
+    <metadataIsoView>ISO view</metadataIsoView>
+    <metadataInspireView>INSPIRE view</metadataInspireView>
+    <metadataXmlView>XML view</metadataXmlView>
+    <metadataAdvancedView>Advanced view</metadataAdvancedView>
 
 	<!-- Buttons -->
 

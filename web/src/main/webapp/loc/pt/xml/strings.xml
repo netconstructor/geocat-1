@@ -12,7 +12,9 @@
 	<ca>Català</ca> <!-- Do not translate! -->
     <no>Norsk</no>  <!-- Do not translate! -->
 
-	<surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
+  <subtemplate.admin>Manage directories</subtemplate.admin>
+  <subtemplate.admin.desc>Add/modify/delete directories (eg. contact directories)</subtemplate.admin.desc>  
+  <surnameMandatory>Last name/surname is Mandatory</surnameMandatory>
 	<firstnameMandatory>First name is Mandatory</firstnameMandatory>
 	<emailMandatory>email address is Mandatory</emailMandatory>
 	<forgottenPassword>Forgot your password?</forgottenPassword>
@@ -163,7 +165,7 @@
 	<updateChildren>Update children</updateChildren>
 	<updateChildrenOk>Children updated</updateChildrenOk>
 	<updateChildrenFailed>Children update failed</updateChildrenFailed>
-	<massiveUpdateChildrenTitle>Update children</massiveUpdateChildrenTitle>
+	<batchUpdateChildrenTitle>Update children</batchUpdateChildrenTitle>
 	<updateMode>Choose the strategy applied for children update from parent : </updateMode>
 	<addMode>Add sections</addMode>
 	<replaceMode>Replace sections</replaceMode>
@@ -371,7 +373,7 @@
 	<confirmCancel>Tem certeza que quer sair do editor? (Todas as alterações não gravadas perderiam-se)</confirmCancel>
     <confirmCancelCreate>Tem certeza que quer cancelar a criação de metadados?</confirmCancelCreate>
 	<confirmDelete>Tem certeza que quer realmente apagar os metadados do banco de dados?</confirmDelete>
-	<confirmMassiveDelete>Tem certeza que quer realmente apagar todos os $1 metadados seleccionados do banco de dados?</confirmMassiveDelete>
+	<confirmBatchDelete>Tem certeza que quer realmente apagar todos os $1 metadados seleccionados do banco de dados?</confirmBatchDelete>
 	<confirmNewPassword>Confirmar palavra-passe nova</confirmNewPassword>
 	<confirmPassword>Confirmar palavra-passe</confirmPassword>
 	<constraintsTab>Restrição</constraintsTab>
@@ -560,11 +562,11 @@
 	<mapViewerClose>Fechar viewer de mapa</mapViewerClose>
 	<mapViewerLoading>A carregar viewer de mapa...</mapViewerLoading>
 	<mapViewerOpen>Abrir viewer de mapa</mapViewerOpen>
-	<massiveActions>Multi acções:</massiveActions>
-	<massiveDeleteTitle>Operação de multi-apagar</massiveDeleteTitle>
-	<massiveNewOwnerTitle>Operação de multi-dono novo</massiveNewOwnerTitle>
-	<massiveUpdateCategoriesTitle>Operação de multi-actualização de categorias</massiveUpdateCategoriesTitle>
-	<massiveUpdatePrivilegesTitle>Operação de multi-actualização de privilégios</massiveUpdatePrivilegesTitle>
+	<batchActions>Multi acções:</batchActions>
+	<batchDeleteTitle>Operação de multi-apagar</batchDeleteTitle>
+	<batchNewOwnerTitle>Operação de multi-dono novo</batchNewOwnerTitle>
+	<batchUpdateCategoriesTitle>Operação de multi-actualização de categorias</batchUpdateCategoriesTitle>
+	<batchUpdatePrivilegesTitle>Operação de multi-actualização de privilégios</batchUpdatePrivilegesTitle>
 	<max>Máximo</max>
 	<mdRating>Avaliação de dados</mdRating>
 	<mdUpdateError>Erro de actualização</mdUpdateError>
@@ -591,7 +593,8 @@
     <metadata-samples-add>Add sample metadata</metadata-samples-add>
     <metadata-samples-add-failed>Add sample metadata failed</metadata-samples-add-failed>
     <metadata-samples-add-success>Added sample metadata</metadata-samples-add-success>
-	<metadata-template-order>Sort templates</metadata-template-order>	
+  <metadata-template-add-success>Metadata template added.</metadata-template-add-success>
+  <metadata-template-order>Sort templates</metadata-template-order>	
 	<metadata-template-order-desc>Sort your templates</metadata-template-order-desc>
 	<metadata-template-add-default>Add templates</metadata-template-add-default>
 	<metadata>Metadados</metadata>
@@ -603,6 +606,7 @@
   <failOnError>Fail on error</failOnError>
   <metadataRecordsProcessed>Total number of metadata records processed:</metadataRecordsProcessed>
   <min>Mínimo</min>
+    <minor>Minor edit</minor>
 	<missing>DESAPARECIDO ou VAZIO</missing>	
 	<missingSeeTab>DESAPARECIDO - Veja o tabulador de grupo seguinte no sidebar: </missingSeeTab>
 	<more>Mais</more>

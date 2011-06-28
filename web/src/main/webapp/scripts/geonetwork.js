@@ -249,10 +249,10 @@ function get_cookie ( cookie_name )
 
 
 /**********************************************************
- * Massive Operations are called through this routine
+ * Batch Operations are called through this routine
  **********************************************************/
 
-	function massiveOperation(service, title, width, message)
+	function batchOperation(service, title, width, message)
 	{
 
 		if (message != null) {
@@ -319,10 +319,10 @@ function get_cookie ( cookie_name )
 	}
 
 /**********************************************************************
- * Massive Ownership Transfer stuff
+ * Batch Ownership Transfer stuff
  **********************************************************************/
 
-	function checkMassiveNewOwner(action,title) {
+	function checkBatchNewOwner(action,title) {
 		if ($('user').value == '') {
 			alert(translate("selectNewOwner"));
 			return false;
@@ -331,7 +331,7 @@ function get_cookie ( cookie_name )
 			alert(translate("selectOwnerGroup"));
 			return false;
 		}
-		Modalbox.show(getGNServiceURL(action),{title: title, params: $('massivenewowner').serialize(true), afterHide: function() {
+		Modalbox.show(getGNServiceURL(action),{title: title, params: $('batchnewowner').serialize(true), afterHide: function() {
                 if ($("simple_search_pnl").visible()) {
 
                     runSimpleSearch();
@@ -593,7 +593,7 @@ function toggleFieldset(btn, elem) {
  *
  */
 
-function addTemplate(msgSelectSomething) {
+function addTemplate(msgSelectSomething, successMsg) {
                           
 	var url = "metadata.templates.add.default?schema=";
 	var selectedSchemas = $('metadata.schemas.select');
@@ -632,13 +632,13 @@ function addTemplate(msgSelectSomething) {
 							$(btn).style.display = 'block';
 
 							if (resp == "true")
-								alert ("ok");
+                                alert (successMsg);
 							else
 								alert(translate('error'));
 
 							var selectedSchemas = $('metadata.schemas.select');
 							for (i = 0;i < selectedSchemas.length;i++) {
-								selectedSchemas.options[i].selected = false 
+								selectedSchemas.options[i].selected = false;
 							}
 						},
 						onFailure: function(originalRequest){

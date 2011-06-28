@@ -94,7 +94,7 @@
 				<call name="isoLang"       class =".guiservices.isolanguages.Get"/>
 				<call name="subtemplates"  class ="jeeves.services.db.Select">
 					<param name="db"    value="main-db"/>
-					<param name="query" value="SELECT id, schemaId, root, title FROM Metadata WHERE isTemplate='s' ORDER BY root, title"/>
+					<param name="query" value="SELECT distinct(root) AS type FROM metadata WHERE isTemplate = 's'"/>
 				</call>
 			</output>
 		</service>
@@ -113,7 +113,7 @@
 				<call name="isoLang"       class =".guiservices.isolanguages.Get"/>
 				<call name="subtemplates"  class ="jeeves.services.db.Select">
 					<param name="db"    value="main-db"/>
-					<param name="query" value="SELECT id, schemaId, root, title FROM Metadata WHERE isTemplate='s' ORDER BY root, title"/>
+					<param name="query" value="SELECT distinct(root) AS type FROM metadata WHERE isTemplate = 's'"/>
 				</call>
 			</output>
 
@@ -133,7 +133,7 @@
 				<call name="isoLang"       class =".guiservices.isolanguages.Get"/>
 				<call name="subtemplates"  class ="jeeves.services.db.Select">
 					<param name="db"    value="main-db"/>
-					<param name="query" value="SELECT id, schemaId, root, title FROM Metadata WHERE isTemplate='s' ORDER BY root, title"/>
+					<param name="query" value="SELECT distinct(root) AS type FROM metadata WHERE isTemplate = 's'"/>
 				</call>
 			</output>
 
@@ -204,7 +204,7 @@
 
 		<service name="xml.metadata.validate">
 			<class name=".services.metadata.Validate"/>
-		  <output sheet="validate.xsl" contentType="text/xml; charset=UTF-8">
+		  <output sheet="metadata/validate.xsl" contentType="text/xml; charset=UTF-8">
 		    <xml name="validation" file="xml/metadata-validate.xml" />
 		  </output>
 		</service>
@@ -215,7 +215,7 @@
 		
 	  <service name="xml.relation">
 	    <class name=".guiservices.metadata.GetRelated"/>
-	    <output sheet="relation.xsl" contentType="text/xml; charset=UTF-8"/>
+	    <output sheet="metadata/relation.xsl" contentType="text/xml; charset=UTF-8"/>
 	  </service>
 	  
 
@@ -271,88 +271,88 @@
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-		<service name="metadata.massive.delete">
-			<class name=".services.metadata.MassiveDelete"/>
+		<service name="metadata.batch.delete">
+			<class name=".services.metadata.BatchDelete"/>
 
-			<output sheet="metadata-massive-results.xsl">
-				<xml name="info" file="xml/metadata-massiveDelete.xml" />
+			<output sheet="metadata-batch-results.xsl">
+				<xml name="info" file="xml/metadata-batchDelete.xml" />
 			</output>
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-		<service name="metadata.massive.newowner">
-			<class name=".services.metadata.MassiveNewOwner"/>
+		<service name="metadata.batch.newowner">
+			<class name=".services.metadata.BatchNewOwner"/>
 
-			<output sheet="metadata-massive-results.xsl">
-				<xml name="info" file="xml/metadata-massiveNewOwner.xml" />
+			<output sheet="metadata-batch-results.xsl">
+				<xml name="info" file="xml/metadata-batchNewOwner.xml" />
 			</output>
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-		<service name="metadata.massive.newowner.form">
-			<class name=".services.metadata.PrepareMassiveNewOwner"/>
+		<service name="metadata.batch.newowner.form">
+			<class name=".services.metadata.PrepareBatchNewOwner"/>
 
-			<output sheet="metadata-massiveownership.xsl">
-				<xml name="info" file="xml/metadata-massiveNewOwner.xml" />
+			<output sheet="metadata-batchownership.xsl">
+				<xml name="info" file="xml/metadata-batchNewOwner.xml" />
 			</output>
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-		<service name="metadata.massive.category.form">
-			<class name=".services.metadata.PrepareMassiveUpdateCategories"/>
+		<service name="metadata.batch.category.form">
+			<class name=".services.metadata.PrepareBatchUpdateCategories"/>
 
 			<output sheet="metadata-category.xsl"/>
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-		<service name="metadata.massive.update.categories">
-			<class name=".services.metadata.MassiveUpdateCategories"/>
+		<service name="metadata.batch.update.categories">
+			<class name=".services.metadata.BatchUpdateCategories"/>
 
-			<output sheet="metadata-massive-results.xsl">
-				<xml name="info" file="xml/metadata-massiveUpdateCategories.xml" />
+			<output sheet="metadata-batch-results.xsl">
+				<xml name="info" file="xml/metadata-batchUpdateCategories.xml" />
 			</output>
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-		<service name="metadata.massive.admin.form">
-			<class name=".services.metadata.PrepareMassiveUpdatePrivileges"/>
+		<service name="metadata.batch.admin.form">
+			<class name=".services.metadata.PrepareBatchUpdatePrivileges"/>
 			
 			<output sheet="metadata-admin.xsl"/>
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-		<service name="metadata.massive.update.privileges">
-			<class name=".services.metadata.MassiveUpdatePrivileges"/>
+		<service name="metadata.batch.update.privileges">
+			<class name=".services.metadata.BatchUpdatePrivileges"/>
 
-			<output sheet="metadata-massive-results.xsl">
-				<xml name="info" file="xml/metadata-massiveUpdatePrivileges.xml" />
+			<output sheet="metadata-batch-results.xsl">
+				<xml name="info" file="xml/metadata-batchUpdatePrivileges.xml" />
 			</output>
 		</service>
 		
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<!-- Update child -->
 		
-		<service name="metadata.massive.children.form">
+		<service name="metadata.batch.children.form">
 			<output sheet="metadata-children.xsl"/>
 		</service>
 		
-		<service name="metadata.massive.update.children">
+		<service name="metadata.batch.update.children">
 			<class name=".services.metadata.UpdateChildren"/>
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-		<service name="metadata.massive.processing">
-			<class name=".services.metadata.MassiveXslProcessing"/>
+		<service name="metadata.batch.processing">
+			<class name=".services.metadata.BatchXslProcessing"/>
 			
-			<output sheet="metadata-massive-results.xsl">
-				<xml name="info" file="xml/metadata-massiveXslProcessing.xml" />
+			<output sheet="metadata-batch-results.xsl">
+				<xml name="info" file="xml/metadata-batchXslProcessing.xml" />
 			</output>
 		</service>
 		

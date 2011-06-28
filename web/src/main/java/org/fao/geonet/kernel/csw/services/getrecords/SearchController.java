@@ -103,16 +103,25 @@ public class SearchController
 	session.setProperty(Geonet.Session.SEARCH_REQUEST_ID, requestId);
 	
 	List<ResultItem> resultsList = summaryAndSearchResults.two();
-	int counter = Math.min(maxRecords,resultsList.size());
-	if ((resultType == ResultType.RESULTS || resultType == ResultType.RESULTS_WITH_SUMMARY) && resultsList.size() > 0) {
-		for (int i=0; (i<maxRecords) && (i<resultsList.size()); i++) {
-		    String  id = resultsList.get(i).getID();
-		    Element md = retrieveMetadata(context, id, setName, outSchema, elemNames, resultType);
+	int counter = 0;
+    for (int i=0; (i<maxRecords) && (i<resultsList.size()); i++) {
+        ResultItem resultItem = resultsList.get(i);
+        String  id = resultItem.getID();
+        Element md = retrieveMetadata(context, id, setName, outSchema, elemNames, resultType);
+        // metadata cannot be retrieved
+        if (md == null) {
+            context.warning("SearchController : Metadata not found or invalid schema : "+ id);
+        }
+        // metadata can be retrieved
+        else {
+            // metadata must be included in response
+            if((resultType == ResultType.RESULTS || resultType == ResultType.RESULTS_WITH_SUMMARY)) {
+                results.addContent(md);
+            }
+            counter++;
+        }
+    }
 
-		    if (md == null) context.warning("SearchController : Metadata not found or invalid schema : "+ id);
-		    else results.addContent(md);
-		}
-	}
 
 	Element summary = summaryAndSearchResults.one();
 
@@ -130,35 +139,31 @@ public class SearchController
 	return Pair.read(summary, results);
     }
 
-    //---------------------------------------------------------------------------
     /**
-     * Retrieve metadata from the database.
-     * Conversion between metadata record and output schema are defined
-     * in xml/csw/schemas/ directory.
-     * 
-     * @return	The XML metadata record if the record could be converted to 
-     * the required output schema. Null if no conversion available for 
-     * the schema (eg. fgdc record could not be converted to ISO).
+     * Retrieves metadata from the database. Conversion between metadata record and output schema are defined in xml/csw/schemas/ directory.
+     *
+     * @param context
+     * @param id
+     * @param setName
+     * @param outSchema
+     * @param elemNames
+     * @param resultType
+     * @return	The XML metadata record if the record could be converted to the required output schema. Null if no conversion available for
+     *          the schema (eg. fgdc record could not be converted to ISO).
+     * @throws CatalogException
      */
-    public static Element retrieveMetadata(ServiceContext context, String id,  ElementSetName setName,
-				     OutputSchema outSchema, Set<String> elemNames, ResultType resultType)
-	throws CatalogException
-    {
-	try
-	    {
+    public static Element retrieveMetadata(ServiceContext context, String id,  ElementSetName setName, OutputSchema outSchema, Set<String> elemNames, ResultType resultType) throws CatalogException {
+	try	{
 		//--- get metadata from DB
 		GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         boolean forEditing = false, withValidationErrors = false;
         Element res = gc.getDataManager().getMetadata(context, id, forEditing, withValidationErrors);
-
 		SchemaManager scm = gc.getSchemamanager();
-		
-		if (res==null) return null;
-
-		String schema = res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE)
-					.getChildText(Edit.Info.Elem.SCHEMA);
-
-		String FS         = File.separator;
+		if (res==null) {
+            return null;
+        }
+		String schema = res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE).getChildText(Edit.Info.Elem.SCHEMA);
+		String FS = File.separator;
 		
 		// --- transform iso19115 record to iso19139
 		// --- If this occur user should probably migrate the catalogue from iso19115 to iso19139.
@@ -170,13 +175,11 @@ public class SearchController
 		}
 		
 		//--- skip metadata with wrong schemas
-
 		if (schema.equals("fgdc-std") || schema.equals("dublin-core") || schema.equals("iso19110"))
-		    if (outSchema != OutputSchema.OGC_CORE)
+		    if(outSchema != OutputSchema.OGC_CORE)
 		    	return null;
 
 		//--- apply stylesheet according to setName and schema
-
 		String prefix ; 
 		if (outSchema == OutputSchema.OGC_CORE)
 			prefix = "ogc";
@@ -194,12 +197,17 @@ public class SearchController
 		params.put("displayInfo", 
 				resultType == ResultType.RESULTS_WITH_SUMMARY ? "true" : "false");
 		
-		res = Xml.transform(res, styleSheet, params);
-
+		try {
+		    res = Xml.transform(res, styleSheet, params);
+		}
+        catch (Exception e) {
+		    context.error("Error while transforming metadata with id : " + id + " using " + styleSheet);
+	            context.error("  (C) StackTrace:\n" + Util.getStackTrace(e));
+		    return null;
+		}
 		//--- if the client has specified some ElementNames, then we search for them
 		//--- if they are in anything else other that csw:Record, if csw:Record 
 		//--- remove only the unwanted ones
-
 		if (elemNames != null) {
 		    if (outSchema != OutputSchema.OGC_CORE) {
 						Element frags = (Element)res.clone();
@@ -219,7 +227,8 @@ public class SearchController
 				}
 		}
 		return res;
-	} catch (Exception e) {
+	}
+    catch (Exception e) {
 		context.error("Error while getting metadata with id : "+ id);
 		context.error("  (C) StackTrace:\n"+ Util.getStackTrace(e));
 
@@ -227,10 +236,14 @@ public class SearchController
   }
 	}
 
-    //---------------------------------------------------------------------------
 
-    private static void removeElements(Element md, Set<String> elemNames)
-    {
+    /**
+     * TODO javadoc.
+     *
+     * @param md
+     * @param elemNames
+     */
+    private static void removeElements(Element md, Set<String> elemNames) {
 	Iterator i=md.getChildren().iterator();
 
 	while (i.hasNext())

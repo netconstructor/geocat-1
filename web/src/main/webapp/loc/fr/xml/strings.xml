@@ -13,6 +13,8 @@
     <no>Norsk</no>  <!-- Do not translate! -->
 
 	<!-- new strings - 2.7 -->
+  <subtemplate.admin>Gestion des annuaires</subtemplate.admin>
+  <subtemplate.admin.desc>Ajouter/modifier/supprimer les annuaires (eg. annuaire de contact)</subtemplate.admin.desc>
 	<surnameMandatory>Le nom est obligatoire</surnameMandatory>
 	<firstnameMandatory>Le prénom est obligatoire</firstnameMandatory>
 	<emailMandatory>Le mail est obligatoire</emailMandatory>
@@ -167,7 +169,7 @@
 	<updateChildren>Mettre à jour les enfants</updateChildren>
 	<updateChildrenOk>Enfants mis à jour</updateChildrenOk>
 	<updateChildrenFailed>Echec de la mise à jour</updateChildrenFailed>
-	<massiveUpdateChildrenTitle>Mettre à jour les enfants</massiveUpdateChildrenTitle>
+	<batchUpdateChildrenTitle>Mettre à jour les enfants</batchUpdateChildrenTitle>
 	<updateMode>Choisir la stratégie de mise à jour : </updateMode>
 	<addMode>Ajouter les sections</addMode>
 	<replaceMode>Remplacer les sections</replaceMode>
@@ -377,7 +379,7 @@
 	<confirmCancel>Êtes-vous sûr de vouloir quitter l\'éditeur? (vous allez perdre les changements non sauvegardés)</confirmCancel>
     <confirmCancelCreate>Etes-vous sûr de vouloir annuler la création de ces métadonnées?</confirmCancelCreate>
 	<confirmDelete js="true">Êtes-vous sûr de vouloir supprimer cette métadonnée ?</confirmDelete> <!-- Check if js=true is required -->
-	<confirmMassiveDelete>Êtes-vous sûr de vouloir supprimer toutes les $1 métadonnées sélectionnées ?</confirmMassiveDelete>
+	<confirmBatchDelete>Êtes-vous sûr de vouloir supprimer toutes les $1 métadonnées sélectionnées ?</confirmBatchDelete>
 	<confirmNewPassword>Confirmer le nouveau mot de passe</confirmNewPassword>
 	<confirmPassword>Confirmer le mot de passe</confirmPassword>
 	<constraintsTab>Contraintes</constraintsTab>
@@ -569,11 +571,11 @@
 	<mapViewerClose>Fermer la carte</mapViewerClose>
 	<mapViewerLoading>Chargement en cours ...</mapViewerLoading>
 	<mapViewerOpen>Afficher la carte</mapViewerOpen>
-	<massiveActions>Autre actions :</massiveActions>
-	<massiveDeleteTitle>Opération de suppression</massiveDeleteTitle>
-	<massiveNewOwnerTitle>Opération de changement d\'auteur</massiveNewOwnerTitle>
-	<massiveUpdateCategoriesTitle>Opération de changement de catégories</massiveUpdateCategoriesTitle>
-	<massiveUpdatePrivilegesTitle>Opération de changement de privilèges</massiveUpdatePrivilegesTitle>
+	<batchActions>Autre actions :</batchActions>
+	<batchDeleteTitle>Opération de suppression</batchDeleteTitle>
+	<batchNewOwnerTitle>Opération de changement d\'auteur</batchNewOwnerTitle>
+	<batchUpdateCategoriesTitle>Opération de changement de catégories</batchUpdateCategoriesTitle>
+	<batchUpdatePrivilegesTitle>Opération de changement de privilèges</batchUpdatePrivilegesTitle>
 	<max>Maximum</max>
 	<mdRating>Note de la métadonnée</mdRating>
 	<mdUpdateError>Erreur de mise à jour</mdUpdateError>
@@ -600,7 +602,8 @@
     <metadata-samples-add>Ajouter les exemples</metadata-samples-add>
     <metadata-samples-add-failed>Echec de l\'ajout des exemples</metadata-samples-add-failed>
     <metadata-samples-add-success>Exemples ajoutés</metadata-samples-add-success>
-	<metadata-template-order>Ordonner les modèles</metadata-template-order>	
+  <metadata-template-add-success>Modèles ajoutés.</metadata-template-add-success>
+  <metadata-template-order>Ordonner les modèles</metadata-template-order>	
 	<metadata-template-order-desc>Ordonner les modèles de saisie</metadata-template-order-desc>
 	<metadata-template-add-default>Ajouter les modèles</metadata-template-add-default>
 	<metadata>Métadonnées</metadata>
@@ -612,6 +615,7 @@
   <failOnError>Arrêt en cas d'erreur</failOnError>
   <metadataRecordsProcessed>Nombre de métadonnées traitées :</metadataRecordsProcessed>
 	<min>Minimum</min>
+    <minor>Modification mineure</minor>
 	<missing>Vide ou manquant</missing>
 	<missingSeeTab>Manquant - Voir l'onglet correspondant au groupe </missingSeeTab>
 	<more>Plus</more>

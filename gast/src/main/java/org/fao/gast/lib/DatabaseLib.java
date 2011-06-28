@@ -443,25 +443,21 @@ public class DatabaseLib
 	{
 		//--- find out which dbms schema to load
 
-		String file = "create-db-mckoi.sql";
+		String file = "create-db-default.sql";
 
-		if (url.indexOf("oracle") != -1)
+		if (url.startsWith("jdbc:oracle:")) {
 			file = "create-db-oracle.sql";
-		
-		if (url.indexOf("db2") != -1)
+		} else if (url.startsWith("jdbc:db2:")) {
 			file = "create-db-db2.sql";
-
-		else if (url.indexOf("mysql") != -1)
+		} else if (url.startsWith("jdbc:mysql:")) {
 			file = "create-db-mysql.sql";
-
-		else if (url.indexOf("postgresql") != -1)
+		} else if (url.startsWith("jdbc:postgresql:")) {
 			file = "create-db-postgres.sql";
-
-		else if (url.indexOf("postgis") != -1)
+		} else if (url.startsWith("jdbc:postgresql_postGIS:")) {
 			file = "create-db-postgis.sql";
-
-        else if (url.indexOf("sqlserver") != -1)
+    } else if (url.startsWith("jdbc:sqlserver:")) {
 			file = "create-db-sqlserver.sql";
+		}
 
 		//--- load the dbms schema
 
