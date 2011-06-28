@@ -60,7 +60,6 @@
     <file name="user-profiles.xml">
         <addXML xpath="profile[@name ='Editor']">
             <allow service="metadata.xlink.add"/>
-            <allow service="xml.format.list"/>
         </addXML>
         <addXML xpath="profile[@name ='Administrator']">
             <!-- Search for metadata that has not recently been updated -->
@@ -119,6 +118,7 @@
             <allow service="metadata.formatter.xml"/>
 
             <allow service="xml.format.get"/>
+            <allow service="xml.format.list"/>
         </addXML>
         <addXML xpath="">
             <profile name="Shared"/>

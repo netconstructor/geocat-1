@@ -284,8 +284,14 @@ public class DbLib {
 		
 		Log.debug(Geonet.DB, "Database creation script is:" + file);
 
+        String gcFile = checkFilePath(appPath, "create/create-db-geocat-", getDBType(dbms));
+        Log.debug(Geonet.DB, "Geocat Database creation script is:" + gcFile);
+
 		// --- load the dbms schema
-		return Lib.text.load(file);
+        List<String> basicSchema = new ArrayList<String>(Lib.text.load(file));
+        basicSchema.addAll(Lib.text.load(gcFile));
+
+		return basicSchema;
 	}
 
 	/**
