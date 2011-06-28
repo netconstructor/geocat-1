@@ -61,6 +61,9 @@
         <addXML xpath="profile[@name ='Editor']">
             <allow service="metadata.xlink.add"/>
         </addXML>
+        <addXML xpath="profile[@name ='RegisteredUser']">
+            <allow service="xml.user.list"/>
+        </addXML>
         <addXML xpath="profile[@name ='Administrator']">
             <!-- Search for metadata that has not recently been updated -->
             <allow service="metadata.expired.email"/>
@@ -119,6 +122,8 @@
 
             <allow service="xml.format.get"/>
             <allow service="xml.format.list"/>
+
+            <allow service="xml.user.get"/>
         </addXML>
         <addXML xpath="">
             <profile name="Shared"/>

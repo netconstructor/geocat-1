@@ -27,6 +27,23 @@
             </output>
         </service>
 
+        <service name="xml.user.get">
+            <class name=".services.user.Get">
+                <param name="xml" />
+            </class>
+
+            <output sheet="user-xml.xsl" contentType="text/xml; charset=UTF-8" />
+        </service>
+
+        <service name="xml.user.list">
+            <class name=".services.user.ListAll">
+                <param name="xml" />
+            </class>
+
+            <output sheet="user-list-xml.xsl" contentType="text/xml; charset=UTF-8" />
+
+        </service>
+
         <service name="xml.extent.get">
             <class name=".services.extent.Get" />
             <output sheet="trim-coords.xsl" contentType="text/xml; charset=UTF-8"/>

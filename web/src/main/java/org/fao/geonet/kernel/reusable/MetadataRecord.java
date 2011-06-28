@@ -58,7 +58,7 @@ public class MetadataRecord
 
     public void commit(Dbms dbms) throws SQLException
     {
-        XmlSerializer.update(dbms, id, xml, new ISODate() .toString());
+        XmlSerializer.update(dbms, id, xml, new ISODate() .toString(),null);
     }
 
     public String email(Dbms dbms) throws SQLException {
