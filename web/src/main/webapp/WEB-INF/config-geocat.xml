@@ -35,12 +35,12 @@
             <output sheet="user-xml.xsl" contentType="text/xml; charset=UTF-8" />
         </service>
 
-        <service name="xml.user.list">
-            <class name=".services.user.ListAll">
+        <service name="shared.user.list">
+            <class name=".services.user.List">
                 <param name="xml" />
             </class>
 
-            <output sheet="user-list-xml.xsl" contentType="text/xml; charset=UTF-8" />
+            <output sheet="user-list-xml.xsl" />
 
         </service>
 

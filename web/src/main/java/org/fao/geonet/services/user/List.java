@@ -29,13 +29,14 @@ import jeeves.server.ProfileManager;
 import jeeves.server.ServiceConfig;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
+import jeeves.utils.Util;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.constants.Params;
+import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 //=============================================================================
 
@@ -66,13 +67,45 @@ public class List implements Service
 
 		Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
 
-		HashSet hsMyGroups = getGroups(dbms, session.getUserId(), session.getProfile());
+		String userProfile = session.getProfile();
+		HashSet hsMyGroups = getGroups(dbms, session.getUserId(), userProfile);
 
-		Set profileSet = context.getProfileManager().getProfilesSet(session.getProfile());
+		Set profileSet = (userProfile == null) ?
+							null:context.getProfileManager().getProfilesSet(userProfile);
 
-		//--- retrieve all users
+        boolean sortByValidated = "true".equalsIgnoreCase(Util.getParam(params, "sortByValidated", "false"));
+        String sortBy;
+        String sortVals;
+        if(sortByValidated) {
+            sortBy = "validAsInt, lname ASC";
+            sortVals = "case when TRIM(name||surname) = '' then 'zz' else LOWER(name||surname) end as lname,case when validated = 'n' then 2 else 1 end as validAsInt,";
+        } else {
+            sortVals = "";
+            sortBy = "username";
+        }
 
-		Element elUsers = dbms.select ("SELECT * FROM Users ORDER BY username");
+		String profilesParam = params.getChildText(Params.PROFILE);
+		if( profilesParam!=null && profileSet.contains(profilesParam)){
+		    profileSet.retainAll(Collections.singleton(profilesParam));
+		}
+
+        String name = params.getChildText(Params.NAME);
+		Element elUsers = null;
+
+		if (name == null)
+    		//--- retrieve all users
+			elUsers = dbms.select ("SELECT "+sortVals+"* FROM Users ORDER BY " + sortBy);
+		else {
+			// TODO : Add organisation
+			elUsers = dbms.select ("SELECT "+sortVals+"* FROM Users WHERE "
+					+ "(username ilike '%" + name + "%' "
+                    + "or surname ilike '%" + name + "%' "
+                    + "or email ilike '%" + name + "%' "
+                    + "or organisation ilike '%" + name + "%' "
+                    + "or orgacronym ilike '%" + name + "%' "
+					+ "or name ilike '%" + name + "%') and publicaccess = 'y' "
+					+ "ORDER BY "+sortBy);
+		}
 
 		//--- now filter them
 
@@ -88,7 +121,7 @@ public class List implements Service
 			if (!hsMyGroups.containsAll(getGroups(dbms, userId, profile)))
 				alToRemove.add(elRec);
 
-			if (!profileSet.contains(profile))
+			if (profileSet != null && !profileSet.contains(profile))
 				alToRemove.add(elRec);
 		}
 
@@ -96,6 +129,15 @@ public class List implements Service
 
 		for(int i=0; i<alToRemove.size(); i++)
 			((Element) alToRemove.get(i)).detach();
+
+		ArrayList<Element> toResolve = new ArrayList(elUsers.getChildren());
+
+		for (Element e : toResolve) {
+
+            String[] elementsToResolve = { "organisation", "positionname", "orgacronym","onlinename","onlinedescription" };
+            LangUtils.resolveMultiLingualElements(e, elementsToResolve);
+        }
+
 
 		//--- return result
 
@@ -110,22 +152,27 @@ public class List implements Service
 
 	private HashSet getGroups(Dbms dbms, String id, String profile) throws Exception
 	{
+		HashSet hs = new HashSet();
+
+		if (profile == null) {
+			hs.add("1");	// Only Internet
+            return hs;
+        }
+
 		String query = (profile.equals(ProfileManager.ADMIN))
 							? "SELECT id FROM Groups"
 							: "SELECT groupId AS id FROM UserGroups WHERE userId=" + id;
 
 		java.util.List list = dbms.select(query).getChildren();
 
-		HashSet hs = new HashSet();
-
 		for(int i=0; i<list.size(); i++)
 		{
 			Element el = (Element) list.get(i);
 			hs.add(el.getChildText("id"));
 		}
+        return hs;
+    }
 
-		return hs;
-	}
 }
 
 //=============================================================================

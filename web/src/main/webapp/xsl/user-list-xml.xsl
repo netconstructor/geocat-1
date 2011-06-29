@@ -8,7 +8,7 @@
     
 
     <xsl:variable name="langCode" select="translate(substring(string(/root/gui/language),1,2),$LOWER,$UPPER)"/>
-    
+
 	<!-- Return a list of user to be use
 		for search and select user actions
 	-->
@@ -54,6 +54,7 @@
                 <xsl:variable name="valid">
                     <xsl:call-template name="validIndicator">
                         <xsl:with-param name="indicator" select="normalize-space(translate(validated,$LOWER,$UPPER)) = 'N'" />
+                        <xsl:with-param name="class" select="Bt" />
                     </xsl:call-template>
                 </xsl:variable>
 
