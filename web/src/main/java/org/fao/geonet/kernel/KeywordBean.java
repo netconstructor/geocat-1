@@ -22,6 +22,7 @@
 
 package org.fao.geonet.kernel;
 
+import org.fao.geonet.util.LangUtils;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -74,7 +75,7 @@ public class KeywordBean {
 		this.id = id;
 		this.value = value;
 		this.lang = lang;
-		this.labels.put(lang, value);
+		this.labels.put(LangUtils.to2CharLang(lang.toLowerCase()), value);
 		this.definition = definition;
 		this.code = code;
 		this.coordEast = coordEast;
@@ -375,11 +376,11 @@ public class KeywordBean {
     }
 
     public String getLabel(String lang) {
-        return labels.get(lang);
+        return labels.get(lang.toLowerCase());
     }
 
 	public void setLabel(String value, String lang) {
-		this.labels.put(lang, value);
+		this.labels.put(LangUtils.to2CharLang(lang.toLowerCase()), value);
 	}
 
 	/**
@@ -389,8 +390,8 @@ public class KeywordBean {
 	 * @return
 	 */
 	public String getDefaultPrefLabel () {
-		if (labels.containsKey(lang))
-			return labels.get(lang);
+		if (labels.containsKey(lang.toLowerCase()))
+			return labels.get(lang.toLowerCase());
 		else {
 			Iterator iter = labels.entrySet().iterator();
 			Map.Entry<String, String> e = (Map.Entry<String, String>) iter.next();
@@ -404,7 +405,7 @@ public class KeywordBean {
      * @return
      */
     public String getDefaultLocale () {
-        if (labels.containsKey(lang))
+        if (labels.containsKey(lang.toLowerCase()))
             return lang;
         else {
             Iterator iter = labels.entrySet().iterator();
@@ -420,11 +421,19 @@ public class KeywordBean {
      *
      * @return
      */
-    public Element toElement(String... langs) {
-        List<String> prioritizedList = Arrays.asList(langs);
-        TreeSet<String> languages = new TreeSet<String>(new PrioritizedLangComparator(lang, prioritizedList));
+    public Element toElement(String defaultLang, String... langs) {
+        List<String> prioritizedList = new ArrayList<String>();
+        for (String s : langs) {
+            s = LangUtils.to2CharLang(s);
+            prioritizedList.add(s.toLowerCase());
+        }
+        TreeSet<String> languages = new TreeSet<String>(new PrioritizedLangComparator(defaultLang, prioritizedList));
 
-        languages.addAll(labels.keySet());
+        for(String l : labels.keySet()) {
+            l = LangUtils.to2CharLang(l);
+            languages.add(l.toLowerCase());
+        }
+
         Element elKeyword = new Element("keyword");
 
         Element elId = new Element("id");
@@ -444,6 +453,10 @@ public class KeywordBean {
         elKeyword.addContent(elCode);
 
         for (String language : languages) {
+            if(!prioritizedList.isEmpty() && ! prioritizedList.contains(language)) {
+                continue;
+            }
+
             Element elValue = new Element("value");
             elValue.addContent(labels.get(language));
             elValue.setAttribute("lang", language.toUpperCase());
@@ -487,4 +500,5 @@ public class KeywordBean {
         elKeyword.addContent(elUri);
         return elKeyword;
     }
+
 }

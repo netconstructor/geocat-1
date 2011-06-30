@@ -299,6 +299,12 @@
             <class name=".services.format.Manager" />
         </service>
 
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <service name="che.keyword.get" type="xml">
+            <class name=".services.thesaurus.GetCHEKeywordById" />
+            <output sheet="skos-to-iso.xsl" contentType="text/xml; charset=UTF-8"/>
+        </service>
 
     </services>
 </geonet>

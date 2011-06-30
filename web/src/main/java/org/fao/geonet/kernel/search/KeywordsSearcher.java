@@ -28,18 +28,13 @@ import jeeves.utils.Util;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
+import org.fao.geonet.util.LangUtils;
+import org.hibernate.lucene.Keyword;
 import org.jdom.Element;
 import org.openrdf.model.Value;
 import org.openrdf.sesame.query.QueryResultsTable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class KeywordsSearcher {
 	private ThesaurusManager _tm;
@@ -59,13 +54,16 @@ public class KeywordsSearcher {
 	}
 
 	// --------------------------------------------------------------------------------
-	public KeywordBean searchById(String id, String sThesaurusName, String lang)
+	public KeywordBean searchById(String id, String sThesaurusName, String lang) throws Exception {
+        return searchById(id,sThesaurusName,lang,false);
+    }
+	public KeywordBean searchById(String id, String sThesaurusName, String lang, boolean localized)
 	throws Exception {
 
         if (lang.length()>2)
             lang=lang.substring(0, 2);
 
-		_query = "SELECT prefLab, note, id, lowc, uppc "
+		_query = "SELECT prefLab, note, id, lowc, uppc, lang(prefLab) "
 			+ " FROM {id} rdf:type {skos:Concept}; "
 			+ " skos:prefLabel {prefLab};"
 			+ " [skos:scopeNote {note} WHERE lang(note) LIKE \""+lang+"\"]; "
@@ -88,6 +86,19 @@ public class KeywordsSearcher {
 			}else{
 				// MUST be one because search by ID
 
+                if(localized) {
+                    KeywordBean kb = null;
+                    for (int row = 0; row < rowCount; row++) {
+                        KeywordBean newKb = createKeywordBean(lang, 0, sThesaurusName, thesaurus, resultsTable, row);
+                        if(kb==null){
+                            kb = newKb;
+                        } else {
+                            kb.setLabel(newKb.getDefaultPrefLabel(), newKb.getDefaultLocale());
+                        }
+                    }
+                    return kb;
+
+                } else {
 				// preflab
 				Value value = resultsTable.getValue(0, 0);
 				String sValue = "";
@@ -108,13 +119,14 @@ public class KeywordsSearcher {
 				idKeyword++;
 
 				return kb;
+                }
 			}
 
 	}
 	
 	public void search(ServiceContext srvContext, Element params)
 			throws Exception {
-
+        search(srvContext.getLanguage(),params);
     }
 	public void search(String defaultLang, Element params)
 			throws Exception {
@@ -193,7 +205,7 @@ public class KeywordsSearcher {
 			// Quid Lucene and thesaurus ?
 
 			String _lang = defaultLang;
-			_query = "SELECT prefLab, note, id, lowc, uppc "
+			_query = "SELECT prefLab, note, id, lowc, uppc, lang(prefLab)"
 				+ " FROM {id} rdf:type {skos:Concept}; "
 				+ " skos:prefLabel {prefLab};"
 				+ " [skos:scopeNote {note} WHERE lang(note) LIKE \""+_lang+"\"]; "
@@ -225,6 +237,7 @@ public class KeywordsSearcher {
 		// For each thesaurus, search for keywords in _results
 		_results = new ArrayList<KeywordBean>();
 		int idKeyword = 0;
+            Map<String/*Code*/, KeywordBean> bag = new HashMap<String, KeywordBean>();
 
             for (Object aListThesauri : listThesauri) {             // Search in all Thesaurus if none selected
                 Element el = (Element) aListThesauri;
@@ -238,56 +251,14 @@ public class KeywordsSearcher {
                 int rowCount = resultsTable.getRowCount();
 
                 for (int row = 0; row < rowCount; row++) {
-                    // preflab
-                    Value value = resultsTable.getValue(row, 0);
-                    String sValue = "";
-                    if (value != null) {
-                        sValue = value.toString();
+                    KeywordBean kb = createKeywordBean(defaultLang, idKeyword, sThesaurusName, thesaurus, resultsTable, row);
+
+                    if( bag.containsKey(kb.getCode()) ){
+                        bag.get(kb.getCode()).setLabel(kb.getDefaultPrefLabel(), kb.getDefaultLocale());
+                    }else{
+                        bag.put(kb.getCode(), kb);
+                        _results.add(kb);
                     }
-                    // definition
-                    Value definition = resultsTable.getValue(row, 1);
-                    String sDefinition = "";
-                    if (definition != null) {
-                        sDefinition = definition.toString();
-                    }
-                    // uri (= id in RDF file != id in list)
-                    Value uri = resultsTable.getValue(row, 2);
-                    String sUri = "";
-                    if (uri != null) {
-                        sUri = uri.toString();
-                    }
-
-
-                    Value lowCorner = resultsTable.getValue(row, 3);
-                    Value upperCorner = resultsTable.getValue(row, 4);
-
-                    String sUpperCorner;
-                    String sLowCorner;
-
-                    String sEast = "";
-                    String sSouth = "";
-                    String sWest = "";
-                    String sNorth = "";
-
-                    // lowcorner
-                    if (lowCorner != null) {
-                        sLowCorner = lowCorner.toString();
-                        sWest = sLowCorner.substring(0, sLowCorner.indexOf(' ')).trim();
-                        sSouth = sLowCorner.substring(sLowCorner.indexOf(' ')).trim();
-                    }
-
-                    // uppercorner
-                    if (upperCorner != null) {
-                        sUpperCorner = upperCorner.toString();
-                        sEast = sUpperCorner.substring(0, sUpperCorner.indexOf(' ')).trim();
-                        sNorth = sUpperCorner.substring(sUpperCorner.indexOf(' '))
-                                .trim();
-                    }
-
-                    KeywordBean kb = new KeywordBean(idKeyword, sValue,
-                            sDefinition, sUri, sEast, sWest, sSouth, sNorth,
-                            sThesaurusName, false, _lang, thesaurus.getTitle());
-                    _results.add(kb);
                     idKeyword++;
                 }
             }
@@ -649,5 +620,69 @@ public class KeywordsSearcher {
 			}
 		return keyword;
 	}
+
+    private KeywordBean createKeywordBean(String defaultLangCode, int idKeyword, String sThesaurusName, Thesaurus thesaurus,
+                                          QueryResultsTable resultsTable, int row)
+    {
+        // preflab
+        Value value = resultsTable.getValue(row, 0);
+        String sValue = "";
+        if (value != null) {
+        	sValue = value.toString();
+        }
+        // definition
+        Value definition = resultsTable.getValue(row, 1);
+        String sDefinition = "";
+        if (definition != null) {
+        	sDefinition = definition.toString();
+        }
+        // uri (= id in RDF file != id in list)
+        Value uri = resultsTable.getValue(row, 2);
+        String sUri = "";
+        if (uri != null) {
+            sUri = uri.toString();
+        }
+
+        // language of the result
+        Value lang = resultsTable.getValue(row, 5);
+        String sLang = defaultLangCode;
+        if (lang != null) {
+            sLang = lang.toString();
+        }
+
+        sLang = LangUtils.two2ThreeLangCode(sLang);
+
+
+        Value lowCorner = resultsTable.getValue(row, 3);
+        Value upperCorner = resultsTable.getValue(row, 4);
+
+        String sUpperCorner = "";
+        String sLowCorner = "";
+
+        String sEast = "";
+        String sSouth = "";
+        String sWest = "";
+        String sNorth = "";
+
+        // lowcorner
+        if (lowCorner != null) {
+        	sLowCorner = lowCorner.toString();
+        	sWest = sLowCorner.substring(0, sLowCorner.indexOf(' ')).trim();
+        	sSouth = sLowCorner.substring(sLowCorner.indexOf(' ')).trim();
+        }
+
+        // uppercorner
+        if (upperCorner != null) {
+        	sUpperCorner = upperCorner.toString();
+        	sEast = sUpperCorner.substring(0,sUpperCorner.indexOf(' ')).trim();
+        	sNorth = sUpperCorner.substring(sUpperCorner.indexOf(' '))
+        			.trim();
+        }
+
+        KeywordBean kb = new KeywordBean(idKeyword, sValue,
+        		sDefinition, sUri, sEast, sWest, sSouth, sNorth,
+        		sThesaurusName, false, sLang, thesaurus.getTitle() );
+        return kb;
+    }
 
 }

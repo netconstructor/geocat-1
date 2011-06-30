@@ -124,6 +124,8 @@
 
             <allow service="xml.user.get"/>
             <allow service="shared.user.list"/>
+
+            <allow service="che.keyword.get"/>
         </addXML>
         <addXML xpath="">
             <profile name="Shared"/>

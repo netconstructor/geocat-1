@@ -302,6 +302,13 @@ public final class LangUtils
         return strings;
     }
 
+    public static String to2CharLang(String s) {
+        if(s.length() > 2) {
+            s = s.substring(0,2);
+        }
+        return s;
+    }
+
     public enum FieldType { URL, STRING }
     public static String toInternalMultilingual(String metadataLang, String appPath, Element descElem2, FieldType fieldType) throws Exception
     {
