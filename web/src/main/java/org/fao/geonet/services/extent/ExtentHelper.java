@@ -67,10 +67,10 @@ public class ExtentHelper
     public static final String FORMAT                  = "format";
     public static final String SELECTION               = "extent.selection";
     public static final String SELECTED                = "selected";
-    public static final String NUM_RESULTS             = "numResults";
-    public static final String CLEAR_SELECTION         = "clearSelection";
+    public static final String NUM_RESULTS             = "numresults";
+    public static final String CLEAR_SELECTION         = "clearselection";
     public static final String CRS_PARAM = "crs";
-    public static final String EXTENT_TYPE_CODE        = "extentTypeCode";
+    public static final String EXTENT_TYPE_CODE        = "extenttypecode";
     public static final int COORD_DIGITS = 3;
     public static final CoordinateReferenceSystem WGS84 = DefaultGeographicCRS.WGS84;
     public static final CoordinateReferenceSystem CH03;
@@ -218,7 +218,20 @@ public class ExtentHelper
     public static void addGmlId(Geometry geometry)
     {
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put("srs", (String) geometry.getUserData());
+        Object userData = geometry.getUserData();
+        String srs = "4326";
+        if (userData instanceof String) {
+            srs = (String) userData;
+
+        } else if (userData instanceof CoordinateReferenceSystem) {
+            try {
+            srs = ""+CRS.lookupEpsgCode((CoordinateReferenceSystem)userData, false);
+            } catch (Exception e) {
+                //Assume latlong
+            }
+
+        }
+        map.put("srs", (String) userData);
         map.put("gml:id", 'N' + UUID.randomUUID().toString().replaceAll("-", ""));
         geometry.setUserData(map);
         if (geometry instanceof GeometryCollection && geometry.getNumGeometries() > 0) {

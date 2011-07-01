@@ -177,11 +177,12 @@ public class Get implements Service
 
     public Element exec(Element params, ServiceContext context) throws Exception
     {
+        Util.toLowerCase(params);
         final GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         final ExtentManager extentMan = gc.getExtentManager();
 
         final String id = Util.getParamText(params, ExtentHelper.ID);
-        final String formatParam = Util.getParamText(params, ExtentHelper.FORMAT.toUpperCase());
+        final String formatParam = Util.getParamText(params, ExtentHelper.FORMAT);
         final String wfsId = Util.getParamText(params, ExtentHelper.WFS);
         final String typename = Util.getParamText(params, ExtentHelper.TYPENAME);
         final String extentTypeCode = Util.getParamText(params, ExtentHelper.EXTENT_TYPE_CODE);

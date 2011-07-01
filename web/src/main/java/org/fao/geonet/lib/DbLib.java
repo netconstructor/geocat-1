@@ -323,9 +323,17 @@ public class DbLib {
 			throws FileNotFoundException, IOException {
 		// --- find out which dbms data file to load
 		String file = checkFilePath(appPath, "data/data-db-", getDBType(dbms));
-		
+
+        ArrayList<String> sql = new ArrayList<String>(Lib.text.load(file, "UTF-8"));
+        File extrasDir = new File(new File(file).getParentFile(), "extras-" + getDBType(dbms));
+        if(extrasDir.exists()) {
+            File[] extras = extrasDir.listFiles();
+            for(File f: extras) {
+                sql.addAll(Lib.text.load(f.getPath(), "UTF-8"));
+            }
+        }
 		// --- load the sql data
-		return Lib.text.load(file, "UTF-8");
+		return sql;
 	}
 
 	private String getObjectName(String createStatem) {

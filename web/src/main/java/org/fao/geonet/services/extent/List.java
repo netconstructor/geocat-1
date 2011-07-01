@@ -142,6 +142,7 @@ public class List implements Service
 
     public Element exec(Element params, ServiceContext context) throws Exception
     {
+        Util.toLowerCase(params);
         final String paramError = validateParams(params);
         if (paramError != null) {
             return error(paramError);
@@ -152,7 +153,7 @@ public class List implements Service
         final String wfsParam = Util.getParamText(params, WFS);
         final String typenameParam = Util.getParamText(params, TYPENAME);
 
-        final Format format = Format.lookup(Util.getParamText(params, "FORMAT"));
+        Format format = Format.lookup(Util.getParamText(params, "format"));
 
         Collection<String> wfssToShow = extentMan.getWFSs().keySet();
         if (wfsParam != null) {

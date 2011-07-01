@@ -379,7 +379,9 @@ public class Geonetwork implements ApplicationHandler
 		gnContext.catalogDis  = catalogDis;
 		gnContext.settingMan  = settingMan;
 		gnContext.harvestMan  = harvestMan;
-		gnContext.thesaurusMan= thesaurusMan;
+        gnContext.thesaurusMan= thesaurusMan;
+        gnContext.extentMan   = extentMan;
+        gnContext.reusableObjMan = reusableObjMan;
 		gnContext.oaipmhDis   = oaipmhDis;
 		gnContext.app_context = app_context;
         gnContext.metadataNotifierMan = metadataNotifierMan;

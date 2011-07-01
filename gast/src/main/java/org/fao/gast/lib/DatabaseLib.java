@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.String;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -489,7 +490,11 @@ public class DatabaseLib
 		*/
 
         //--- load the sql data
-        
+        ArrayList<String> sql = new ArrayList<String>();
+        for(File f : new File(Config.getConfig().getSetupConfig() + "/sql/data/").listFiles) {
+            sql.addAll(Lib.text.load(Config.getConfig().getSetupConfig() + "/sql/data/"+ f, "UTF-8"));
+        }
+
         return Lib.text.load(Config.getConfig().getSetupConfig() + "/sql/data/"+ file, "UTF-8");
     }
 
