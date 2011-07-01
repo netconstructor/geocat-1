@@ -231,7 +231,7 @@ public class ExtentHelper
             }
 
         }
-        map.put("srs", (String) userData);
+        map.put("srs", srs);
         map.put("gml:id", 'N' + UUID.randomUUID().toString().replaceAll("-", ""));
         geometry.setUserData(map);
         if (geometry instanceof GeometryCollection && geometry.getNumGeometries() > 0) {
