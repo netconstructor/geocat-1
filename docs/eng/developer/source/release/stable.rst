@@ -74,7 +74,8 @@ Update changes.txt file
 
 1. Add an entry to ``docs/changes.txt`` describing the changes in this new release, using the following template. 
 
-Comments from the SVN commits are used to extract the most important changes (e.g. use ``svn log -r 7219:HEAD > ~/changes264.txt`` to obtain these. Some cleanup is required before adding them in the changes.txt document) ::
+Comments from the SVN commits are used to extract the most important changes (e.g. use ``svn log -r 7219:HEAD > ~/changes264.txt`` to obtain these. Some cleanup is required before adding them in the changes.txt document) 
+::
 	================================================================================
 	===
 	=== GeoNetwork [VERSION]: List of changes
@@ -230,8 +231,8 @@ Send an email to both the developers list and users list announcing the release.
 ``TODO``: Template mail?
 
 SourceForge
-
 ```````````
+
 ``TODO``: Do we create SourceForge notifications?
 
 Close the tag
