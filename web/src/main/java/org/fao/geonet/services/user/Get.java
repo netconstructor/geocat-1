@@ -29,9 +29,12 @@ import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
 import org.jdom.Element;
+
+import java.sql.SQLException;
 
 //=============================================================================
 
@@ -70,13 +73,13 @@ public class Get implements Service
 
 			Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
 
-			Element elUser = dbms.select ("SELECT * FROM Users WHERE id=" + id);
+			Element elUser = dbms.select ("SELECT * FROM Users WHERE id=?", Integer.valueOf(id));
 
 		//--- retrieve user groups
 
 			Element elGroups = new Element(Geonet.Elem.GROUPS);
 
-			java.util.List list =dbms.select("SELECT groupId FROM UserGroups WHERE userId=" + id).getChildren();
+			java.util.List list =dbms.select("SELECT groupId FROM UserGroups WHERE userId=?",Integer.valueOf(id)).getChildren();
 
 			for(int i=0; i<list.size(); i++)
 			{
@@ -90,7 +93,7 @@ public class Get implements Service
 		//--- retrieve session user groups and check to see whether this user is 
 		//--- allowed to get this info
 
-				java.util.List adminlist = dbms.select("SELECT groupId FROM UserGroups WHERE userId="+myUserId+" or userId = "+id+" group by groupId having count(*) > 1").getChildren();
+				java.util.List adminlist = dbms.select("SELECT groupId FROM UserGroups WHERE userId=? or userId=? group by groupId having count(*) > 1",Integer.valueOf(myUserId),Integer.valueOf(id)).getChildren();
 				if (adminlist.size() == 0) {
 					throw new IllegalArgumentException("You don't have rights to do this because the user you want to edit is not part of your group");
 				}
@@ -101,10 +104,29 @@ public class Get implements Service
 			elUser.addContent(elGroups);
 			return elUser;
 		} else {
-			throw new IllegalArgumentException("You don't have rights to do this");
+            Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
+			return loadSharedUser(dbms,id);
 		}
 
 	}
+
+    private Element loadSharedUser(Dbms dbms, String id) throws SQLException {
+
+        Element elUser = dbms.select ("SELECT * FROM Users WHERE id=? and profile=?", Integer.valueOf(id),Geocat.Profile.SHARED);
+
+        Element elGroups = new Element(Geonet.Elem.GROUPS);
+
+        java.util.List list =dbms.select("SELECT groupId FROM UserGroups WHERE userId=?", Integer.valueOf(id)).getChildren();
+
+        for(int i=0; i<list.size(); i++)
+        {
+            String grpId = ((Element)list.get(i)).getChildText("groupid");
+
+            elGroups.addContent(new Element(Geonet.Elem.ID).setText(grpId));
+        }
+        elUser.addContent(elGroups);
+        return elUser;
+    }
 }
 
 //=============================================================================

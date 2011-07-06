@@ -43,6 +43,7 @@ import jeeves.utils.Util;
 import jeeves.utils.Xml;
 
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
 import org.fao.geonet.constants.Geonet;
@@ -296,10 +297,21 @@ public final class LangUtils
             Iterator<AttributeImpl> iterator = stream.getAttributeImplsIterator();
             while (iterator.hasNext()) {
                 AttributeImpl next = iterator.next();
-                strings.add(next.toString());
+                if(next instanceof TermAttribute) {
+                    String term = ((TermAttribute) next).term();
+                    if(term.length() > 0)
+                        strings.add(term);
+                }
             }
         } while (stream.incrementToken());
         return strings;
+    }
+
+    public static String to2CharLang(String s) {
+        if(s.length() > 2) {
+            s = s.substring(0,2);
+        }
+        return s;
     }
 
     public enum FieldType { URL, STRING }

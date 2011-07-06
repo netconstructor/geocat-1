@@ -321,6 +321,15 @@ public final class Util
         }
         return value;
     }
+
+    public static void toLowerCase(Element params) {
+        for (Object o : params.getChildren()) {
+            if (o instanceof Element) {
+                Element element = (Element) o;
+                element.setName(element.getName().toLowerCase());
+            }
+        }
+    }
 }
 
 //=============================================================================
