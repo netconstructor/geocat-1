@@ -8,7 +8,7 @@ descriptions (XSDs) and other information necessary for GeoNetwork to index,
 view and possibly edit content from XML metadata records. 
 
 To be used in GeoNetwork, a schema 
-directory can be placed in 'INSTALL_DIR/web/geonetwork/xml/schemas'. Schemas 
+directory can be placed in `INSTALL_DIR/web/geonetwork/xml/schemas`. Schemas 
 in this directory are built-in schemas. The contents of these schemas are 
 parsed during GeoNetwork initialization. If valid, they will be available for 
 use when GeoNetwork starts up.
@@ -21,9 +21,12 @@ ways using functions in the Administration menu:
 #. HTTP URL (eg. http://somehost/somedirectory/iso19139.mcp.zip)
 #. As an online resource attached to an iso19139 metadata record
 
+When schemas are added to GeoNetwork dynamically, they are stored in the directory specified in `INSTALL_DIR/web/geonetwork/WEB-INF/config.xml`. By default, this is `INSTALL_DIR/web/geonetwork/schemaPlugins`.
 
-Directory Structure
-```````````````````
+Contents of a GeoNetwork schema
+```````````````````````````````
+
+When installed, a GeoNetwork schema is a directory.
 
 The following directories can be present:
 
@@ -54,7 +57,7 @@ The following configuration files can be present:
 
 - **oasis-catalog.xml**: (*Optional*) An oasis catalog describing any mappings that should be used for this schema eg. mapping URLs to local copies such as schemaLocations eg. http://www.isotc211.org/2005/gmd/gmd.xsd is mapped to ``schema/gmd/gmd.xsd``. Path names used in the oasis catalog are relative to the location of this file which is the schema directory.
 - **schema.xsd**: (*Optional*) XML schema directory file that includes the XSDs used by this metadata schema. If the schema uses a DTD then this file should not be present. Metadata records from schemas that use DTDs cannot be edited in GeoNetwork.
-- **schema-ident.xml**: (*Mandatory*) XML file that contains the schema name, identifier, version number and details on how to recognise metadata records that belong to this schema. This file has an XML schema definition in 'INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd' which is used to validate it when the schema is loaded.
+- **schema-ident.xml**: (*Mandatory*) XML file that contains the schema name, identifier, version number and details on how to recognise metadata records that belong to this schema. This file has an XML schema definition in `INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd` which is used to validate it when the schema is loaded.
 - **schema-substitutes.xml**: (*Mandatory*) XML file that redefines the set of elements that can be used as substitutes for a specific element.
 - **schema-suggestions.xml**: (*Mandatory*) XML file that tells the editor which child elements of a complex element to automatically expand in the editor. 
 
@@ -71,7 +74,7 @@ In order to create a schema plugin for GeoNetwork, you should check out the sche
   svn co https://geonetwork.svn.sourceforge.net/svnroot/geonetwork/schemaPlugins/trunk schemaPlugins
 
 
-This will create a directory called schemaPlugins with the latest GeoNetwork schemaPlugins in it. To work with the example shown here, you should create your new schema plugin directory inside this directory.
+This will create a directory called schemaPlugins with some GeoNetwork schema plugins in it. To work with the example shown here, you should create your new schema plugin in a subdirectory of this directory.
 
 
 Example - ISO19115/19139 Marine Community Profile (MCP)
@@ -131,7 +134,7 @@ Each of the elements is as follows:
 - **schemaLocation** - a set of pairs, where the first member of the pair is a namespace URI and the second member is the official URL of the XSD. The contents of this element will be added to the root element of any metadata record displayed by GeoNetwork as a schemaLocation/noNamespaceSchemaLocation attribute, if such as attribute does not already exist. It will also be used whenever an official schemaLocation/noNamespaceSchemaLocation is required (eg. in response to a ListMetadataFormats OAI request). 
 - **autodetect** - contains elements (with content) that must be present in any metadata record that belongs to this schema. This is used during schema detection whenever GeoNetwork receives a metadata record of unknown schema.
 
-After creating this file you can validate it manually using the XML schema definition (XSD) in 'INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd'. This is the schema which is used to validate it when the schema is loaded.
+After creating this file you can validate it manually using the XML schema definition (XSD) in `INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd`. This is the schema which is used to validate it when the schema is loaded.
 
 At this stage, our new GeoNetwork plugin schema for MCP contains:
 
@@ -331,7 +334,49 @@ At this stage, our new GeoNetwork plugin schema for MCP contains:
 Creating the index-fields.xsl to index content from the metadata record
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This XSLT indexes the content of elements (or fields) in the metadata record. 
+This XSLT indexes the content of elements in the metadata record. The essence of this XSLT is to select elements from the metadata record and map them to lucene index field names. The lucene index field names used in GeoNetwork are as follows:
+
+===========================  ===========================================================================
+Lucene Index Field Name      Description
+===========================  ===========================================================================
+abstract                     Metadata abstract                                                          
+any                          Content from all metadata elements (for free text)                         
+changeDate                   Date that the metadata record was modified                             
+createDate                   Date that the metadata record was created                              
+denominator                  Scale denominator in data resolution                                                   
+download                     Does the metadata record have a downloadable resource attached?  (0 or 1)
+digital                      Is the metadata record distributed/available in a digital format?  (0 or 1)
+eastBL                       East bounding box longitude                                       
+keyword                      Metadata keywords                                                 
+metadataStandardName         Metadata standard name                                            
+northBL                      North bounding box latitude                                       
+operatesOn                   Uuid of metadata record describing dataset that is operated on by a service            
+orgName                      Name of organisation listed in point-of-contact information                            
+parentUuid                   Uuid of parent metadata record                                                         
+paper                        Is the metadata record distributed/available in a paper format?  (0 or 1)
+protocol                     On line resource access protocol                                  
+publicationDate              Date resource was published                                  
+southBL                      South bounding box latitude                                       
+spatialRepresentationType    vector, raster, etc                                               
+tempExtentBegin              Beginning of temporal extent range                                                     
+tempExtentEnd                End of temporal extent range                                                     
+title                        Metadata title                                                    
+topicCat                     Metadata topic category                                           
+type                         Metadata hierarchy level (should be dataset if unknown)                           
+westBL                       West bounding box longitude                                                       
+===========================  ===========================================================================
+
+For example, here is the mapping created between the metadata element mcp:revisionDate and the lucene index field changeDate:
+
+::
+
+   <xsl:for-each select="mcp:revisionDate/*">
+     <Field name="changeDate" string="{string(.)}" store="true" index="true"/>
+   </xsl:for-each>
+
+Notice that we are creating a new XML document. The Field elements in this document are used by GeoNetwork to create a Lucene document object for indexing (see the SearchManager class in the GeoNetwork source).
+
+Once again, because the MCP is a profile of ISO19115/19139, it is probably best to modify index-fields.xsl from the schema iso19139 to handle the namespaces and additional elements of the MCP.
 
 At this stage, our new GeoNetwork plugin schema for MCP contains:
 
@@ -344,7 +389,9 @@ At this stage, our new GeoNetwork plugin schema for MCP contains:
 Creating the sample-data directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is a simple directory. Put MEF files with sample metadata in this directory. A MEF file is a zip archive with the metadata, thumbnails, file based online resources and an info file describing the contents. Creation of MEF files is covered in other sections of this manual. 
+This is a simple directory. Put MEF files with sample metadata in this directory. Make sure they have a `.mef` suffix. 
+
+A MEF file is a zip archive with the metadata, thumbnails, file based online resources and an info file describing the contents. The contents of a MEF file are discussed in more detail in the next section of this manual. 
 
 Sample data in this directory can be added to the catalog using the Administration menu.
 
@@ -448,16 +495,46 @@ Because the MCP is a profile of ISO19115/19139, the easiest path to creating the
 Creating the update-... XSLTs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- **update-child-from-parent-info.xsl** - this XSLT is run when a child record needs to have content copied into it from a parent record.
-- **update-fixed-info.xsl** - this XSLT is run after editing to fix certain elements and content in the metadata record. For example, in the MCP, the gmd:metadataStandardName and gmd:metadataStandardVersion elements are required to have certain values in order to be recognized as MCP records. This is a good place to make sure that this takes place.
+- **update-child-from-parent-info.xsl** - this XSLT is run when a child record needs to have content copied into it from a parent record. It is an XSLT that changes the content of a few elements and leaves the remaining elements untouched. The behaviour of this XSLT would depend on which elements of the parent record will be used to update elements of the child record.
+- **update-fixed-info.xsl** - this XSLT is run after editing to fix certain elements and content in the metadata record. For the MCP there are a number of actions we would like to take to 'hard-wire' certain elements and content. To do this the XSLT the following processing logic: 
 
-Because the MCP is a profile of ISO19115/19139, the easiest path to creating these XSLTs is to copy them from the iso19139 schema and modify them for the changes in namespace required by the MCP.
+::
+   
+  if the element is one that we want to process then 
+    add a template with a match condition for that element and process it
+  else copy the element to output
+
+Because the MCP is a profile of ISO19115/19139, the easiest path to creating this XSLT is to copy update-fixed-info.xsl from the iso19139 schema and modify it for the changes in namespace required by the MCP and then to include the processing we want.
+
+A simple example of MCP processing is to make sure that the gmd:metadataStandardName and gmd:metadataStandardVersion elements have the content needed to ensure that the record is recognized as MCP. To do this we can add two templates as follows:
+
+::
+
+  <xsl:template match="gmd:metadataStandardName" priority="10">
+    <xsl:copy>
+      <gco:CharacterString>Australian Marine Community Profile of ISO 19115:2005/19139</gco:CharacterString>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="gmd:metadataStandardVersion" priority="10">
+    <xsl:copy>
+      <gco:CharacterString>MCP:BlueNet V1.5</gco:CharacterString>
+    </xsl:copy>
+  </xsl:template>
+
+Processing by update-fixed-info.xsl can be enabled/disabled using the `Automatic Fixes` check box in the System Configuration menu. By default, it is enabled.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Creating the templates directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is a simple directory. Put XML metadata files to be used as templates in this directory. Templates in this directory can be added to the catalog using the Administration menu.
+This is a simple directory. Put XML metadata files to be used as templates in this directory. Make sure they have a `.xml` suffix. Templates in this directory can be added to the catalog using the Administration menu.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Editor behaviour: Adding schema-suggestions.xml and schema-substitutes.xml
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 
 Adding components to support conversion of metadata records to other schemas
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -472,5 +549,15 @@ If the new GeoNetwork plugin schema is to support on the fly translation of meta
 Supporting OAIPMH conversions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The OAIPMH server in GeoNetwork searches the convert directory for an appropriately named XSLT to determine whether a metadata record can be delivered in a requested metadata format.
+The OAIPMH server in GeoNetwork can deliver metadata records from any of the schemas known to GeoNetwork. It can also be configured to deliver schemas not known to GeoNetwork if an XSLT exists to convert a metadata record to that schema. The file `INSTALL_DIR/web/geonetwork/WEB-INF/config-oai-prefixes.xml` describes the schemas (known as prefixes in OAI speak) that can be produced by an XSLT.A simple example of the content of this file is shown below:
 
+::
+
+  <schemas>
+    <schema prefix="oai_dc" nsUrl="http://www.openarchives.org/OAI/2.0/" 
+            schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc.xsd"/>
+  </schemas> 
+
+In the case of the prefix oai_dc shown above, if an XSLT called oai_dc.xsl exists in the convert directory of a GeoNetwork schema, then records that belong to this schema will be transformed and included in OAIPMH requests for the oai_dc prefix.
+
+To add oai_dc support for the MCP, the easiest method is to copy oai_dc.xsl from the convert directory of the iso19139 schema and modify it to cope with the different namespaces and additional elements of the MCP.
