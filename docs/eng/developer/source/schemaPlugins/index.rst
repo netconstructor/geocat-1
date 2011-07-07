@@ -28,7 +28,7 @@ Contents of a GeoNetwork schema
 
 When installed, a GeoNetwork schema is a directory.
 
-The following directories can be present:
+The following subdirectories can be present:
 
 - **convert**: (*Mandatory*) Directory of XSLTs to convert metadata from or to this schema. This could be to convert metadata to other schemas or to convert metadata from other schemas and formats to this schema. Eg. ``convert/oai_dc.xsl``
 - **loc**: (*Optional*) Directory of localized information: labels, codelists or schema specific strings. Eg. ``loc/en/codelists.xml``
@@ -58,8 +58,8 @@ The following configuration files can be present:
 - **oasis-catalog.xml**: (*Optional*) An oasis catalog describing any mappings that should be used for this schema eg. mapping URLs to local copies such as schemaLocations eg. http://www.isotc211.org/2005/gmd/gmd.xsd is mapped to ``schema/gmd/gmd.xsd``. Path names used in the oasis catalog are relative to the location of this file which is the schema directory.
 - **schema.xsd**: (*Optional*) XML schema directory file that includes the XSDs used by this metadata schema. If the schema uses a DTD then this file should not be present. Metadata records from schemas that use DTDs cannot be edited in GeoNetwork.
 - **schema-ident.xml**: (*Mandatory*) XML file that contains the schema name, identifier, version number and details on how to recognise metadata records that belong to this schema. This file has an XML schema definition in `INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd` which is used to validate it when the schema is loaded.
-- **schema-substitutes.xml**: (*Mandatory*) XML file that redefines the set of elements that can be used as substitutes for a specific element.
-- **schema-suggestions.xml**: (*Mandatory*) XML file that tells the editor which child elements of a complex element to automatically expand in the editor. 
+- **schema-substitutes.xml**: (*Optional*) XML file that redefines the set of elements that can be used as substitutes for a specific element.
+- **schema-suggestions.xml**: (*Optional*) XML file that tells the editor which child elements of a complex element to automatically expand in the editor. 
 
 To help in understanding what each of these components is and what is required, we will now give a step-by-step example of how to build a schemaPlugin for GeoNetwork.
 
@@ -134,7 +134,7 @@ Each of the elements is as follows:
 - **schemaLocation** - a set of pairs, where the first member of the pair is a namespace URI and the second member is the official URL of the XSD. The contents of this element will be added to the root element of any metadata record displayed by GeoNetwork as a schemaLocation/noNamespaceSchemaLocation attribute, if such as attribute does not already exist. It will also be used whenever an official schemaLocation/noNamespaceSchemaLocation is required (eg. in response to a ListMetadataFormats OAI request). 
 - **autodetect** - contains elements (with content) that must be present in any metadata record that belongs to this schema. This is used during schema detection whenever GeoNetwork receives a metadata record of unknown schema.
 
-After creating this file you can validate it manually using the XML schema definition (XSD) in `INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd`. This is the schema which is used to validate it when the schema is loaded.
+After creating this file you can validate it manually using the XML schema definition (XSD) in `INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd`. This XSD is also used to validate this file when the schema is loaded.
 
 At this stage, our new GeoNetwork plugin schema for MCP contains:
 
@@ -524,6 +524,20 @@ A simple example of MCP processing is to make sure that the gmd:metadataStandard
 
 Processing by update-fixed-info.xsl can be enabled/disabled using the `Automatic Fixes` check box in the System Configuration menu. By default, it is enabled.
 
+Some important tasks handled in upgrade-fixed-info.xsl: 
+
+- creating URLs for metadata with attached files (eg. onlineResources with 'File for download' in iso19139)
+- setting date stamp/revision date
+- setting codelist URLs to point to online ISO codelist catalogs
+- adding default spatial reference system attributes to spatial extents
+
+A specific task required for the MCP update-fixed-info.xsl was to automatically create an online resource with a URL pointing to the metadata.show service with parameter set to the metadata uuid. This required some changes to the update-fixed-info.xsl supplied with iso19139. In particular:
+
+- the parent elements may not be present in the metadata record
+- processing of the online resource elements for the metadata point of truth URL should not interfere with other processing of online resource elements
+
+Rather than describe the individual steps required to implement this and the decisions required in the XSLT language, take a look at the update-fixed-info.xsl already present for the MCP schema in the iso19139.mcp directory and refer to the dot points above.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Creating the templates directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -534,6 +548,70 @@ This is a simple directory. Put XML metadata files to be used as templates in th
 Editor behaviour: Adding schema-suggestions.xml and schema-substitutes.xml
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+- **schema-suggestions.xml** - The default behaviour of the GeoNetwork advanced editor when building the editor forms is to show elements that are not in the metadata record as unexpanded elements. To add these elements to the record, the user will have to click on the '+' icon next to the element name. This can be tedious especially as some metadata standards have elements nested in others (ie. complex elements). The schema-suggestions.xml file allows you to specify elements that should be automatically expanded by the editor. An example of this is the online resource information in the ISO19115/19139 standard. If the following XML was added to the schema-suggestions.xml file:
+
+::
+
+  <field name="gmd:CI_OnlineResource">
+    <suggest name="gmd:protocol"/>
+    <suggest name="gmd:name"/>
+    <suggest name="gmd:description"/>
+  </field>
+
+The effect of this would be that when an online resource element was expanded, then input fields for the protocol (a drop down/select list), name and description would automatically appear in the editor.
+
+Once again, a good place to start when building a schema-suggestions.xml file for the MCP is the schema-suggestions.xml file for the iso19139 schema.
+
+- **schema-substitutes.xml** - Recall from the 'Schema and schema.xsd' section above, that the method we used to extend the base ISO19115/19139 schemas is to extend the base type, define a new element with the extended base type and allow the new element to substitute for the base element. So for example, in the MCP, we want to add a new resource constraint element that holds Creative Commons and other commons type licensing information. This requires that the MD_Constraints type be extended and a new mcp:MD_Commons element be defined which can substitute for gmd:MD_Constraints. This is shown in the following snippet of XSD:
+
+::
+
+  <xs:complexType name="MD_CommonsConstraints_Type">
+    <xs:annotation>
+      <xs:documentation>
+        Add MD_Commons as an extension of gmd:MD_Constraints_Type
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gmd:MD_Constraints_Type">
+        <xs:sequence minOccurs="0">
+          <xs:element name="jurisdictionLink" type="gmd:URL_PropertyType" minOccurs="1"/>
+          <xs:element name="licenseLink" type="gmd:URL_PropertyType" minOccurs="1"/>
+          <xs:element name="imageLink" type="gmd:URL_PropertyType" minOccurs="1"/>
+          <xs:element name="licenseName" type="gco:CharacterString_PropertyType" minOccurs="1"/>
+          <xs:element name="attributionConstraints" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="derivativeConstraints" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="commercialUseConstraints" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="collectiveWorksConstraints" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="otherConstraints" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute ref="mcp:commonsType" use="required"/>
+        <xs:attribute ref="gco:isoType" use="required" fixed="gmd:MD_Constraints"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="MD_Commons" substitutionGroup="gmd:MD_Constraints" type="mcp:MD_CommonsConstraints_Type"/>
+
+For MCP records, the GeoNetwork editor will show a choice of elements from the substitution group for gmd:MD_Constraints when adding 'Resource Constraints' to the metadata document. This will now include mcp:MD_Commons. 
+
+.. figure:: Editor-Constraints-Choices.png
+
+Note that by similar process, two other elements, now deprecated in favour of MD_Commons, were also added as substitutes for MD_Constraints. If it was necessary to constrain the choices shown in this menu, say to remove the deprecated elements and limit the choices to just legal, security and commons, then this can be done by the following piece of XML in the schema-substitutes.xml file:
+
+::
+
+  <field name="gmd:MD_Constraints">
+    <substitute name="gmd:MD_LegalConstraints"/>
+    <substitute name="gmd:MD_SecurityConstraints"/>
+    <substitute name="mcp:MD_Commons"/>
+  </field>
+  
+The result of this change is shown below.
+
+.. figure:: Editor-Constraints-Choices-Modified.png
+
+Once again, a good place to start when building a schema-substitutes.xml file for the MCP is the schema-substitutes.xml file for the iso19139 schema.
 
 
 Adding components to support conversion of metadata records to other schemas
@@ -549,7 +627,8 @@ If the new GeoNetwork plugin schema is to support on the fly translation of meta
 Supporting OAIPMH conversions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The OAIPMH server in GeoNetwork can deliver metadata records from any of the schemas known to GeoNetwork. It can also be configured to deliver schemas not known to GeoNetwork if an XSLT exists to convert a metadata record to that schema. The file `INSTALL_DIR/web/geonetwork/WEB-INF/config-oai-prefixes.xml` describes the schemas (known as prefixes in OAI speak) that can be produced by an XSLT.A simple example of the content of this file is shown below:
+The OAIPMH server in GeoNetwork can deliver metadata records from any of the schemas known to GeoNetwork. It can also be configured to deliver schemas not known to GeoNetwork if an XSLT exists to convert a metadata record to that schema. The file `INSTALL_DIR/web/geonetwork/WEB-INF/config-oai-prefixes.xml` describes the schemas (known as prefixes in OAI speak) that can be produced by an XSLT.
+A simple example of the content of this file is shown below:
 
 ::
 
