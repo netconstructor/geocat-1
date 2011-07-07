@@ -139,7 +139,7 @@ public class ReusableObjManager
         Element metadata = dm.getMetadata(context, id, false, false, true, false);
 
         ProcessParams searchParams = new ProcessParams(dbms, logger, id, metadata, metadata, gc.getThesaurusManager(),
-                gc.getExtentManager(), context.getBaseUrl(), gc.getSettingManager(), false);
+                gc.getExtentManager(), context.getBaseUrl(), gc.getSettingManager(), false,null);
         List<Element> process = process(searchParams);
         if (process != null) {
             Element changed = process.get(0);
@@ -175,16 +175,23 @@ public class ReusableObjManager
     {
 
         try {
+            String metadataId = parameterObject.metadataId;
+            if(metadataId == null) {
+                metadataId = "anonymous";
+            }
+
             Log.info(Geocat.Module.REUSABLE,
-                    "Beginning reusable object processing on metadata object id= " + parameterObject.metadataId);
+                    "Beginning reusable object processing on metadata object id= " + metadataId);
+                Element elementToProcess = parameterObject.elementToProcess;
 
-            Element elementToProcess = parameterObject.elementToProcess;
-
-            String defaultMetadataLang = LangUtils.iso19139DefaultLang(parameterObject.metadata);
-            if (defaultMetadataLang != null) {
-                defaultMetadataLang = defaultMetadataLang.substring(0, 2).toUpperCase();
-            } else {
-                defaultMetadataLang = "EN";
+            String defaultMetadataLang = parameterObject.defaultLang;
+            if(defaultMetadataLang == null) {
+                defaultMetadataLang = LangUtils.iso19139DefaultLang(parameterObject.metadata);
+                if (defaultMetadataLang != null) {
+                    defaultMetadataLang = defaultMetadataLang.substring(0, 2).toUpperCase();
+                } else {
+                    defaultMetadataLang = "EN";
+                }
             }
 
             Element xml = Xml.transform(elementToProcess, _styleSheet);

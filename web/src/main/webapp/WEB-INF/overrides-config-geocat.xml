@@ -90,6 +90,7 @@
             <allow service="reusable.delete"/>
             <allow service="reusable.references"/>
             <allow service="reusable.duplicates.find"/>
+            <allow service="reusable.object.process"/>
 
             <!-- Allow a user to specify a XSL -->
             <allow service="metadata.xsl.register"/>

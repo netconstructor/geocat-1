@@ -19,10 +19,11 @@ public class ProcessParams
     public final String               baseURL;
     public final String               metadataId;
     public final boolean              addOnly;
+    public final String defaultLang;
 
     public ProcessParams(Dbms dbms, ReusableObjectLogger logger, String metadataId, Element elementToProcess,
             Element metadata, ThesaurusManager thesaurusManager, ExtentManager extentManager, String baseURL,
-            SettingManager settingMan, boolean addOnly)
+            SettingManager settingMan, boolean addOnly, String defaultLang)
     {
         this.dbms = dbms;
         this.logger = logger;
@@ -33,6 +34,7 @@ public class ProcessParams
         this.baseURL = Utils.mkBaseURL(baseURL, settingMan);
         this.addOnly = addOnly;
         this.metadataId = metadataId;
+        this.defaultLang = defaultLang;
     }
 
     public ProcessParams(Dbms dbms, String metadataId, Element elementToProcess, Element metadata,
@@ -40,13 +42,13 @@ public class ProcessParams
             boolean addOnly)
     {
         this(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, metadataId, elementToProcess, metadata, thesaurusManager,
-                extentManager, baseURL, settingMan, addOnly);
+                extentManager, baseURL, settingMan, addOnly,null);
     }
 
     public ProcessParams(Dbms dbms, String metadataId, Element elementToProcess, Element metadata,
             ThesaurusManager thesaurusManager, ExtentManager extentManager, SettingManager settingMan, String baseURL)
     {
         this(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, metadataId, elementToProcess, metadata, thesaurusManager,
-                extentManager, baseURL, settingMan, false);
+                extentManager, baseURL, settingMan, false,null);
     }
 }

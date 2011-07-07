@@ -35,6 +35,10 @@
             <output sheet="user-xml.xsl" contentType="text/xml; charset=UTF-8" />
         </service>
 
+        <service name="reusable.object.process">
+            <class name=".services.reusable.Process"/>
+        </service>
+
         <service name="shared.user.list">
             <class name=".services.user.List">
                 <param name="xml" />
