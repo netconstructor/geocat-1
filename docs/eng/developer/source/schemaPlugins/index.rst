@@ -306,9 +306,26 @@ You should provide localized strings in whatever languages you expect your schem
 Localized strings for this schema can be used in the presentation xslts and
 schematron error messages. For the presentation xslts:
 
- - general localized strings should be in loc/<language_abbreviation>/strings.xml eg. loc/en/strings.xml
  - codelists for controlled vocabulary fields should be in loc/<language_abbreviation>/codelists.xml eg. loc/en/codelists.xml
- - label strings that replace XML element names with more intelligible/alternative phrases and rollover help strings should be in loc/<language_abbreviation>/labels.xml eg. loc/en/labels.xml. Note that because the MCP is a profile of ISO19115/19139 and we have followed the GeoNetwork naming convention for profiles, we need only include the labels that are specific to the MCP in the labels.xml file. Other labels will be retrieved from the base schema iso19139.
+ - label strings that replace XML element names with more intelligible/alternative phrases and rollover help strings should be in loc/<language_abbreviation>/labels.xml eg. loc/en/labels.xml. Note that because the MCP is a profile of ISO19115/19139 and we have followed the GeoNetwork naming convention for profiles, we need only include the labels that are specific to the MCP or that we want to override. Other labels will be retrieved from the base schema iso19139.
+ - all other localized strings should be in loc/<language_abbreviation>/strings.xml eg. loc/en/strings.xml
+
+The labels.xml file can also be used to provide helper values in the form of a drop down/select list for free text fields. As an example:
+
+::
+
+  <element name="gmd:credit" id="27.0">
+    <label>Credit</label>
+    <description>Recognition of those who contributed to the resource(s)</description>
+    <helper>
+      <option value="University of Tasmania">UTAS</option>
+      <option value="University of Queensland">UQ</option>
+    </helper>
+  </element>
+ 
+This would result in the Editor displaying the credit field with these helper options listed beside it in a drop down/select menu something like the following:
+
+.. figure:: Editor-Helpers.png
 
 At this stage, our new GeoNetwork plugin schema for MCP contains:
 
