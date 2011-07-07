@@ -31,7 +31,7 @@ import jeeves.server.context.ServiceContext;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.spatial.Pair;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source.FeatureType;
 import org.jdom.Content;
 import org.jdom.Element;
 
@@ -63,13 +63,13 @@ public class Select implements Service
                         String typename = elem.getAttributeValue("typename");
                         String wfs = elem.getAttributeValue("wfs");
                         String id = elem.getAttributeValue("id");
-                        FeatureType ft = extentMan.getWFS(wfs).getFeatureType(typename);
+                        FeatureType ft = extentMan.getSource(wfs).getFeatureType(typename);
                         selection.ids.add(Pair.read(ft, id));
                     } else if (elem.getName().equalsIgnoreCase("remove")) {
                         String typename = elem.getAttributeValue("typename");
                         String wfs = elem.getAttributeValue("wfs");
                         String id = elem.getAttributeValue("id");
-                        FeatureType ft = extentMan.getWFS(wfs).getFeatureType(typename);
+                        FeatureType ft = extentMan.getSource(wfs).getFeatureType(typename);
                         selection.ids.remove(Pair.read(ft, id));
                     }
                 }

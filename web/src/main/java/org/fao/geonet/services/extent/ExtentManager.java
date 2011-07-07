@@ -1,16 +1,16 @@
 package org.fao.geonet.services.extent;
 
 import jeeves.utils.Log;
+import jeeves.utils.Util;
 import org.apache.log4j.Logger;
 import org.fao.geonet.constants.Geocat;
 import org.geotools.data.DataStore;
-import org.geotools.data.wfs.WFSDataStoreFactory;
+import org.geotools.data.postgis.PostgisDataStoreFactory;
 import org.geotools.util.logging.Logging;
 import org.jdom.Element;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
@@ -31,7 +31,7 @@ public class ExtentManager {
         return instance;
     }
 
-    private final class WfsLogHandler extends Handler {
+    private final class SourcesLogHandler extends Handler {
 
         @Override
         public void publish(LogRecord record) {
@@ -50,40 +50,36 @@ public class ExtentManager {
         }
     }
 
-    private final Map<String, WFS> wfss = new HashMap<String, WFS>();
+    private final Map<String, Source> sources = new HashMap<String, Source>();
 
-    public ExtentManager(java.util.List<Element> extentConfig) throws Exception {
+    public ExtentManager(DataStore dataStore, java.util.List<Element> extentConfig) throws Exception {
         instance = this;
         if (Logger.getLogger(GEOTOOLS_LOG_NAME).isDebugEnabled()) {
-            Logging.getLogger("org.geotools.data.wfs").setLevel(java.util.logging.Level.FINE);
-            Logging.getLogger("org.geotools.data.wfs").addHandler(new WfsLogHandler());
+            Logging.getLogger("org.geotools.data").setLevel(java.util.logging.Level.FINE);
+            Logging.getLogger("org.geotools.data").addHandler(new SourcesLogHandler());
         }
         if (extentConfig == null) {
             Log.error(Geocat.Module.EXTENT, "No Extent configuration found.");
         } else {
-            for (Element wfsElem : extentConfig) {
-                final String url = wfsElem.getAttributeValue("url");
-                String id = wfsElem.getAttributeValue(ID);
-                if (url == null) {
-                    throw new Exception("the url attribute for extent wfs configuration id=" + id + "is missing");
-                }
+            Element sourceElem = extentConfig.get(0);
+
+                String id = sourceElem.getAttributeValue(ID);
                 if (id == null) {
-                    id = DEFAULT_WFS_ID;
+                    id = DEFAULT_SOURCE_ID;
                 }
 
-                final WFS wfs = new WFS(id);
+                final Source source = new Source(id);
 
-                wfs.wfsDataStoreParams.put(WFSDataStoreFactory.URL.key, url);
-                wfs.wfsDataStoreParams.put(WFSDataStoreFactory.ENCODING.key, "UTF-8");
-                wfss.put(id, wfs);
+                sources.put(id, source);
 
-                for (final Object obj : wfsElem.getChildren(TYPENAME)) {
+                source.datastore = dataStore;
+
+                for (final Object obj : sourceElem.getChildren(TYPENAME)) {
                     final Element elem = (Element) obj;
                     final String typename = elem.getAttributeValue(TYPENAME);
                     final String idColumn = elem.getAttributeValue(ID_COLUMN);
                     if (idColumn == null) {
-                        throw new Exception("the idColumn attribute for extent wfs configuration " + id + ":" + url
-                                + "is missing");
+                        throw new Exception("the idColumn attribute for extent source configuration " + typename +"is missing");
                     }
 
                     final String projection = elem.getAttributeValue("CRS");
@@ -92,37 +88,36 @@ public class ExtentManager {
                     final String searchColumn = elem.getAttributeValue("searchColumn");
                     final String modifiable = elem.getAttributeValue(MODIFIABLE_FEATURE_TYPE);
 
-                    wfs.addFeatureType(typename, idColumn, geoIdColumn, descColumn, searchColumn, projection, "true"
+                    source.addFeatureType(typename, idColumn, geoIdColumn, descColumn, searchColumn, projection, "true"
                             .equalsIgnoreCase(modifiable));
                 }
-            }
 
         }
 
     }
 
     public DataStore getDataStore() throws IOException {
-        return wfss.get(DEFAULT_WFS_ID).getDataStore();
+        return sources.get(DEFAULT_SOURCE_ID).getDataStore();
     }
 
     public DataStore getDataStore(String id) throws IOException {
-        final String concId = id == null ? DEFAULT_WFS_ID : id;
-        return wfss.get(concId).getDataStore();
+        final String concId = id == null ? DEFAULT_SOURCE_ID : id;
+        return sources.get(concId).getDataStore();
     }
 
-    public Map<String, WFS> getWFSs() {
-        return wfss;
+    public Map<String, Source> getSources() {
+        return sources;
     }
 
-    public WFS getWFS(String wfs) {
-        if (wfs == null) {
-            return wfss.get(DEFAULT_WFS_ID);
+    public Source getSource(String source) {
+        if (source == null) {
+            return sources.get(DEFAULT_SOURCE_ID);
         }
-        return wfss.get(wfs);
+        return sources.get(source);
     }
 
-    public WFS getWFS() {
-        return wfss.get(DEFAULT_WFS_ID);
+    public Source getSource() {
+        return sources.get(DEFAULT_SOURCE_ID);
     }
 
 }

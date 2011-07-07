@@ -51,8 +51,8 @@ import org.fao.geonet.services.extent.ExtentHelper;
 import org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode;
 import org.fao.geonet.services.extent.ExtentManager;
 import org.fao.geonet.services.extent.Get.Format;
-import org.fao.geonet.services.extent.WFS;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source;
+import org.fao.geonet.services.extent.Source.FeatureType;
 import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.LangUtils;
 import org.fao.geonet.util.XslUtil;
@@ -156,8 +156,8 @@ public final class ExtentsStrategy extends ReplacementStrategy {
                 }
 
                 FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
-                Collection<WFS> wfss = _extentMan.getWFSs().values();
-                SEARCH: for (WFS wfs : wfss) {
+                Collection<Source> wfss = _extentMan.getSources().values();
+                SEARCH: for (Source wfs : wfss) {
                     Collection<FeatureType> types = wfs.getFeatureTypes();
                     for (FeatureType featureType : types) {
                         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = featureType.getFeatureSource();
@@ -381,7 +381,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
 
         boolean extentTypeCode = e.inclusion == ExtentTypeCode.INCLUDE;
 
-        WFS wfs = _extentMan.getWFS();
+        Source wfs = _extentMan.getSource();
         FeatureType featureType = wfs.getFeatureType(NON_VALIDATED_TYPE);
         FeatureStore<SimpleFeatureType, SimpleFeature> store = (FeatureStore<SimpleFeatureType, SimpleFeature>) featureType
                 .getFeatureSource();
@@ -493,11 +493,11 @@ public final class ExtentsStrategy extends ReplacementStrategy {
     }
 
     public Element findNonValidated(UserSession session) throws Exception {
-        FeatureType featureType = _extentMan.getWFS().getFeatureType(NON_VALIDATED_TYPE);
+        FeatureType featureType = _extentMan.getSource().getFeatureType(NON_VALIDATED_TYPE);
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = featureType.getFeatureSource();
 
         String[] properties = { featureType.idColumn, featureType.descColumn, featureType.geoIdColumn };
-        Query query = new DefaultQuery(featureType.typename, org.opengis.filter.Filter.INCLUDE, properties);
+        Query query = new DefaultQuery(featureType.pgTypeName, org.opengis.filter.Filter.INCLUDE, properties);
         FeatureIterator<SimpleFeature> features = featureSource.getFeatures(query).features();
 
         try {
@@ -552,15 +552,15 @@ public final class ExtentsStrategy extends ReplacementStrategy {
     private FeatureType findFeatureType(String featureTypeName) {
         FeatureType from;
         if (featureTypeName == null) {
-            from = _extentMan.getWFS().getFeatureType(NON_VALIDATED_TYPE);
+            from = _extentMan.getSource().getFeatureType(NON_VALIDATED_TYPE);
         } else {
-            from = _extentMan.getWFS().getFeatureType(featureTypeName);
+            from = _extentMan.getSource().getFeatureType(featureTypeName);
         }
         return from;
     }
 
     public String createXlinkHref(String id, UserSession session, String featureTypeName) {
-        WFS wfs = _extentMan.getWFS();
+        Source wfs = _extentMan.getSource();
         FeatureType featureType = findFeatureType(featureTypeName);
 
         return _baseURL + "/srv/___/xml.extent.get?wfs=" + wfs.wfsId + "&typename=" + featureType.typename + "&id="
@@ -574,16 +574,16 @@ public final class ExtentsStrategy extends ReplacementStrategy {
     }
 
     public Map<String, String> markAsValidated(String[] ids, Dbms dbms, UserSession session) throws Exception {
-        FeatureType dest = _extentMan.getWFS().getFeatureType(XLINK_TYPE);
+        FeatureType dest = _extentMan.getSource().getFeatureType(XLINK_TYPE);
 
-        FeatureType from = _extentMan.getWFS().getFeatureType(NON_VALIDATED_TYPE);
+        FeatureType from = _extentMan.getSource().getFeatureType(NON_VALIDATED_TYPE);
         FeatureStore<SimpleFeatureType, SimpleFeature> fromSource = (FeatureStore<SimpleFeatureType, SimpleFeature>) from
                 .getFeatureSource();
         FeatureStore<SimpleFeatureType, SimpleFeature> destSource = (FeatureStore<SimpleFeatureType, SimpleFeature>) dest
                 .getFeatureSource();
 
         org.opengis.filter.Filter filter = createFilter(ids, from);
-        Query query = new DefaultQuery(from.typename, filter);
+        Query query = new DefaultQuery(from.pgTypeName, filter);
         FeatureIterator<SimpleFeature> features = fromSource.getFeatures(query).features();
         Map<String, String> idMap = new HashMap<String, String>();
 
@@ -649,7 +649,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
         return filter;
     }
 
-    private Element xlinkIt(Format format, WFS wfs, FeatureType featureType, String id, boolean validated,
+    private Element xlinkIt(Format format, Source wfs, FeatureType featureType, String id, boolean validated,
             boolean include, Namespace prefix) {
 
         Element originalElem = new Element("extent", prefix);
@@ -905,7 +905,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
         href = href.substring(0, href.indexOf("extentTypeCode=")) + "extentTypeCode=" + extentTypeCode;
         xlink.setAttribute(XLink.HREF, href, XLink.NAMESPACE_XLINK);
 
-        WFS wfs = _extentMan.getWFS();
+        Source wfs = _extentMan.getSource();
         FeatureType featureType = wfs.getFeatureType(typename);
         FeatureStore<SimpleFeatureType, SimpleFeature> store = (FeatureStore<SimpleFeatureType, SimpleFeature>) featureType
                 .getFeatureSource();
@@ -1085,7 +1085,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
             // assume id exists
             return href;
         } catch (NumberFormatException e) {
-            WFS wfs = _extentMan.getWFS();
+            Source wfs = _extentMan.getSource();
             FeatureType featureType = wfs.getFeatureType(NON_VALIDATED_TYPE);
             FeatureStore<SimpleFeatureType, SimpleFeature> store = (FeatureStore<SimpleFeatureType, SimpleFeature>) featureType
                     .getFeatureSource();

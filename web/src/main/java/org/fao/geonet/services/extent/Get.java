@@ -42,7 +42,7 @@ import jeeves.utils.Xml;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source.FeatureType;
 import org.fao.geonet.util.LangUtils;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
@@ -86,7 +86,7 @@ public class Get implements Service
         {
             @SuppressWarnings("unchecked")
             @Override
-            public Element format(Get get, SimpleFeature feature, FeatureType featureType, WFS wfs,
+            public Element format(Get get, SimpleFeature feature, FeatureType featureType, Source wfs,
                     String extentTypeCode, CoordinateReferenceSystem crs) throws Exception
             {
                 Element fullObject = get.gmdFormat(feature, GMD_POLYGON, featureType, extentTypeCode, crs);
@@ -120,7 +120,7 @@ public class Get implements Service
         GMD_BBOX
         {
             @Override
-            public Element format(Get get, SimpleFeature feature, FeatureType featureType, WFS wfs,
+            public Element format(Get get, SimpleFeature feature, FeatureType featureType, Source wfs,
                     String extentTypeCode, CoordinateReferenceSystem crs) throws Exception
             {
                 return get.gmdFormat(feature, this, featureType, extentTypeCode, crs);
@@ -129,7 +129,7 @@ public class Get implements Service
         GMD_POLYGON
         {
             @Override
-            public Element format(Get get, SimpleFeature feature, FeatureType featureType, WFS wfs,
+            public Element format(Get get, SimpleFeature feature, FeatureType featureType, Source wfs,
                     String extentTypeCode, CoordinateReferenceSystem crs) throws Exception
             {
                 return get.gmdFormat(feature, this, featureType, extentTypeCode, crs);
@@ -138,7 +138,7 @@ public class Get implements Service
         GMD_COMPLETE
         {
             @Override
-            public Element format(Get get, SimpleFeature feature, FeatureType featureType, WFS wfs,
+            public Element format(Get get, SimpleFeature feature, FeatureType featureType, Source wfs,
                     String extentTypeCode, CoordinateReferenceSystem crs) throws Exception
             {
                 return get.gmdFormat(feature, this, featureType, extentTypeCode, crs);
@@ -147,14 +147,14 @@ public class Get implements Service
         WKT
         {
             @Override
-            public Element format(Get get, SimpleFeature feature, FeatureType featureType, WFS wfs,
+            public Element format(Get get, SimpleFeature feature, FeatureType featureType, Source wfs,
                     String extentTypeCode, CoordinateReferenceSystem crs) throws Exception
             {
                 return get.formatWKT(feature, featureType, wfs, crs);
             }
         };
 
-        public abstract Element format(Get get, SimpleFeature feature, FeatureType featureType, WFS wfs,
+        public abstract Element format(Get get, SimpleFeature feature, FeatureType featureType, Source wfs,
                 String extentTypeCode, CoordinateReferenceSystem crs) throws Exception;
 
         public static Format lookup(String formatParam)
@@ -183,7 +183,7 @@ public class Get implements Service
 
         final String id = Util.getParamText(params, ExtentHelper.ID);
         final String formatParam = Util.getParamText(params, ExtentHelper.FORMAT);
-        final String wfsId = Util.getParamText(params, ExtentHelper.WFS);
+        final String wfsId = Util.getParamText(params, ExtentHelper.SOURCE);
         final String typename = Util.getParamText(params, ExtentHelper.TYPENAME);
         final String extentTypeCode = Util.getParamText(params, ExtentHelper.EXTENT_TYPE_CODE);
         final String epsgCode = Util.getParamText(params, ExtentHelper.CRS_PARAM);
@@ -201,7 +201,7 @@ public class Get implements Service
         if (typename == null) {
             ExtentHelper.error("typename parameter is required");
         }
-        final WFS wfs = extentMan.getWFS(wfsId);
+        final Source wfs = extentMan.getSource(wfsId);
         final FeatureType featureType = wfs.getFeatureType(typename);
         if (featureType == null) {
             return errorTypename(extentMan, typename);
@@ -233,7 +233,7 @@ public class Get implements Service
         return xml;
     }
 
-    protected Element formatWKT(SimpleFeature next, FeatureType featureType, WFS wfs, CoordinateReferenceSystem crs) throws Exception
+    protected Element formatWKT(SimpleFeature next, FeatureType featureType, Source wfs, CoordinateReferenceSystem crs) throws Exception
     {
         final Element response = new Element("response");
 
@@ -270,7 +270,7 @@ public class Get implements Service
 
     }
 
-    private Element formatFeatureType(FeatureType featureType, WFS wfs, Element response)
+    private Element formatFeatureType(FeatureType featureType, Source wfs, Element response)
     {
         final Element wfsElem = new Element("wfs");
         wfsElem.setAttribute(ExtentHelper.ID, wfs.wfsId);
@@ -287,7 +287,7 @@ public class Get implements Service
     }
 
     private Element resolve(Format format, String id, FeatureSource<SimpleFeatureType, SimpleFeature> featureSource,
-            Query q, FeatureType featureType, WFS wfs, String extentTypeCode, CoordinateReferenceSystem crs) throws Exception, Exception
+            Query q, FeatureType featureType, Source wfs, String extentTypeCode, CoordinateReferenceSystem crs) throws Exception, Exception
     {
         final FeatureIterator<SimpleFeature> features = featureSource.getFeatures(q).features();
         try {

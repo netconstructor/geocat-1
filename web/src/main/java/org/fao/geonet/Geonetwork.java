@@ -228,12 +228,13 @@ public class Geonetwork implements ApplicationHandler
 		thesaurusMan = ThesaurusManager.getInstance(path, thesauriDir);
 
         //--- Initialize Extent Dict
+        DataStore dataStore = createDataStore(context.getResourceManager().getProps(Geonet.Res.MAIN_DB), luceneDir);
 
-        logger.info("  - Extent Dict...");
+        logger.info("  - ExtentManager");
 
         List<Element> extentConfig = handlerConfig.getChildren(Geocat.Config.EXTENT_CONFIG);
 
-        ExtentManager extentMan = new ExtentManager(extentConfig);
+        ExtentManager extentMan = new ExtentManager(dataStore, extentConfig);
 
 		//-------------------------------------------------------------------------
 		//--- ReusableObjectManager
@@ -308,9 +309,7 @@ public class Geonetwork implements ApplicationHandler
 		LuceneConfig lc = new LuceneConfig(path, luceneConfigXmlFile);
         logger.info("  - Lucene configuration is:");
         logger.info(lc.toString());
-        
-		DataStore dataStore = createDataStore(context.getResourceManager().getProps(Geonet.Res.MAIN_DB), luceneDir);
-	
+
 		searchMan = new SearchManager(path, luceneDir, htmlCacheDir, dataDir, summaryConfigXmlFile, lc, 
 				logAsynch, logSpatialObject, luceneTermsToExclude, 
 				dataStore, new SettingInfo(settingMan), schemaMan);

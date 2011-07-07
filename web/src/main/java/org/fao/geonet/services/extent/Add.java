@@ -38,7 +38,7 @@ import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source.FeatureType;
 import org.fao.geonet.util.LangUtils;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.FeatureCollection;
@@ -150,7 +150,7 @@ public class Add implements Service
         final ExtentManager extentMan = gc.getExtentManager();
 
         String id = Util.getParamText(params, ID);
-        final String wfsParam = Util.getParamText(params, WFS);
+        final String wfsParam = Util.getParamText(params, SOURCE);
         final String typename = Util.getParamText(params, TYPENAME);
         final String geomParam = Util.getParamText(params, GEOM);
         final String geomId = LangUtils.createDescFromParams(params, GEO_ID);
@@ -158,7 +158,7 @@ public class Add implements Service
         final Format format = Format.lookup(Util.getParamText(params, FORMAT));
         final String requestCrsCode = Util.getParamText(params, ExtentHelper.CRS_PARAM);
 
-        final WFS wfs = extentMan.getWFS(wfsParam);
+        final Source wfs = extentMan.getSource(wfsParam);
         final FeatureType featureType = wfs.getFeatureType(typename);
 
         if (featureType == null) {

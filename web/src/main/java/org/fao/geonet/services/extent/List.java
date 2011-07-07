@@ -36,7 +36,7 @@ import static org.fao.geonet.services.extent.ExtentHelper.NUM_RESULTS;
 import static org.fao.geonet.services.extent.ExtentHelper.RESPONSE;
 import static org.fao.geonet.services.extent.ExtentHelper.SELECTED;
 import static org.fao.geonet.services.extent.ExtentHelper.TYPENAME;
-import static org.fao.geonet.services.extent.ExtentHelper.WFS;
+import static org.fao.geonet.services.extent.ExtentHelper.SOURCE;
 import static org.fao.geonet.services.extent.ExtentHelper.error;
 import static org.fao.geonet.services.extent.ExtentHelper.getSelection;
 
@@ -59,7 +59,7 @@ import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.services.extent.Get.Format;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source.FeatureType;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
@@ -150,12 +150,12 @@ public class List implements Service
         final GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         final ExtentManager extentMan = gc.getExtentManager();
 
-        final String wfsParam = Util.getParamText(params, WFS);
+        final String wfsParam = Util.getParamText(params, SOURCE);
         final String typenameParam = Util.getParamText(params, TYPENAME);
 
         Format format = Format.lookup(Util.getParamText(params, "format"));
 
-        Collection<String> wfssToShow = extentMan.getWFSs().keySet();
+        Collection<String> wfssToShow = extentMan.getSources().keySet();
         if (wfsParam != null) {
             wfssToShow = Arrays.asList(wfsParam.split(","));
         }
@@ -170,10 +170,10 @@ public class List implements Service
 
         Page page = new Page(params);
 
-        final Map<String, WFS> wfss = extentMan.getWFSs();
+        final Map<String, Source> wfss = extentMan.getSources();
         for (final String wfsId : wfssToShow) {
-            final WFS wfs = wfss.get(wfsId);
-            final Element wfsElem = new Element(WFS);
+            final Source wfs = wfss.get(wfsId);
+            final Element wfsElem = new Element(SOURCE);
             wfsElem.setAttribute(ID, wfsId);
 
             boolean hasMore = false;
@@ -198,7 +198,7 @@ public class List implements Service
         return result;
     }
 
-    private final boolean listFeatureType(Element params, ServiceContext context, WFS wfs, Element wfsElem,
+    private final boolean listFeatureType(Element params, ServiceContext context, Source wfs, Element wfsElem,
             DataStore ds, FeatureType featureType, Page page, Format format) throws Exception
     {
         final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = featureType.getFeatureSource();
@@ -245,7 +245,7 @@ public class List implements Service
 
     }
 
-    private void createFeatureElem(WFS wfs, FeatureType featureType, final String baseURL, final String langCode,
+    private void createFeatureElem(Source wfs, FeatureType featureType, final String baseURL, final String langCode,
             final Element typeElem, final ExtentSelection selection, final SimpleFeature next, Format format)
             throws IOException, JDOMException
     {
@@ -284,7 +284,7 @@ public class List implements Service
     protected Query createQuery(Element params, FeatureType featureType, String[] properties, int maxFeatures)
             throws Exception
     {
-        final DefaultQuery defaultQuery = new DefaultQuery(featureType.typename, Filter.INCLUDE, properties);
+        final DefaultQuery defaultQuery = new DefaultQuery(featureType.pgTypeName, Filter.INCLUDE, properties);
         defaultQuery.setMaxFeatures(maxFeatures);
         return defaultQuery;
     }

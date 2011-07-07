@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.fao.geonet.kernel.search.spatial.Pair;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source.FeatureType;
 
 class ExtentSelection
 {

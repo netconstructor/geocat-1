@@ -2,23 +2,15 @@ package org.fao.geonet.services.extent;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.sql.ResultSet;
 import java.util.*;
-import java.util.List;
 
 import com.vividsolutions.jts.geom.*;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Xml;
 
-import org.apache.lucene.analysis.*;
-import org.apache.lucene.analysis.standard.StandardFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.util.Version;
-import org.fao.geonet.kernel.search.GeoNetworkAnalyzer;
-import org.fao.geonet.kernel.search.GeoNetworkReusableAnalyzerBase;
 import org.fao.geonet.kernel.search.spatial.Pair;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source.FeatureType;
 import org.fao.geonet.util.LangUtils;
 import org.fao.geonet.util.XslUtil;
 import org.geotools.data.DefaultQuery;
@@ -52,7 +44,7 @@ public class ExtentHelper
     public static final String GEO_ID                  = "geoId";
     public static final String ID                      = "id";
     public static final String FEATURE                 = "feature";
-    public static final String WFS                     = "wfs";
+    public static final String SOURCE                  = "wfs";
     public static final String DESC_COLUMN             = "descColumn";
     public static final String GEO_ID_COLUMN           = "geoIdColumn";
     public static final String ID_COLUMN               = "idColumn";
@@ -60,7 +52,7 @@ public class ExtentHelper
     public static final String FEATURE_TYPE            = "featureType";
     public static final String RESPONSE                = "response";
 
-    public static final String DEFAULT_WFS_ID          = "default";
+    public static final String DEFAULT_SOURCE_ID = "default";
     public static final String DEFAULT_ID_COLUMN       = "id";
     public static final String MODIFIABLE_FEATURE_TYPE = "modifiable";
     public static final String GEOM                    = "geom";
@@ -158,7 +150,7 @@ public class ExtentHelper
     public static String findNextId(FeatureStore<SimpleFeatureType, SimpleFeature> store, FeatureType featureType)
             throws IOException
     {
-        final DefaultQuery query = new DefaultQuery(featureType.typename, Filter.INCLUDE,
+        final DefaultQuery query = new DefaultQuery(featureType.pgTypeName, Filter.INCLUDE,
                 new String[] { featureType.idColumn });
         final FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
         final SortBy[] sortBy = { new SortByImpl(filterFactory.property(featureType.idColumn), SortOrder.ASCENDING) };

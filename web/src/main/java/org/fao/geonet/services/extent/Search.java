@@ -33,14 +33,7 @@ import java.util.ArrayList;
 import jeeves.server.context.ServiceContext;
 
 import jeeves.utils.Util;
-import org.apache.lucene.analysis.ISOLatin1AccentFilter;
-import org.apache.lucene.analysis.LowerCaseFilter;
-import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.fao.geonet.kernel.search.GeoNetworkAnalyzer;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source.FeatureType;
 import org.fao.geonet.util.LangUtils;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.Query;
@@ -176,7 +169,7 @@ public class Search extends List
         } else {
             filter = (Filter) filter11Parser.parse(new StringReader(xml));
         }
-        return new DefaultQuery(featureType.typename, filter, properties);
+        return new DefaultQuery(featureType.pgTypeName, filter, properties);
     }
 
     private DefaultQuery likeQuery(Element params, FeatureType featureType, String[] properties) throws IOException
@@ -208,11 +201,11 @@ public class Search extends List
         }
 
         if (filters.isEmpty()) {
-            return new DefaultQuery(featureType.typename, Filter.INCLUDE, properties);
+            return new DefaultQuery(featureType.pgTypeName, Filter.INCLUDE, properties);
         } else if (filters.size() == 1) {
-            return new DefaultQuery(featureType.typename, filters.get(0), properties);
+            return new DefaultQuery(featureType.pgTypeName, filters.get(0), properties);
         } else {
-            return new DefaultQuery(featureType.typename, filterFactory.and(filters), properties);
+            return new DefaultQuery(featureType.pgTypeName, filterFactory.and(filters), properties);
         }
     }
 

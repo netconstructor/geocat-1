@@ -277,7 +277,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
         String encoded = URLEncoder.encode(id, "UTF-8");
         Element descriptiveKeywords = new Element("descriptiveKeywords", XslUtil.GMD_NAMESPACE);
 
-        descriptiveKeywords.setAttribute(XLink.HREF, _baseURL + "/srv/eng/xml.keyword.get?thesaurus=" + thesaurus
+        descriptiveKeywords.setAttribute(XLink.HREF, _baseURL + "/srv/eng/che.keyword.get?thesaurus=" + thesaurus
                 + "&id=" + encoded + "&locales=en,it,de,fr", XLink.NAMESPACE_XLINK);
 
         if (!validated) {
@@ -330,9 +330,9 @@ public final class KeywordsStrategy extends ReplacementStrategy
         final String namespace = "http://custom.shared.obj.ch/concept";
         for (Pair<String, String> pair : words) {
             if (update) {
-                thesaurus.updateElement(namespace, code, pair.one(), null, pair.two());
+                thesaurus.updateElement(namespace, code, pair.one(), pair.one(), pair.two());
             } else {
-                uri = thesaurus.addElement(namespace+"#"+code, pair.one(), null, pair.two());
+                uri = thesaurus.addElement(namespace+"#"+code, pair.one(), pair.one(), pair.two());
             }
         }
         return uri;

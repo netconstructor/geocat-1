@@ -26,7 +26,7 @@ package org.fao.geonet.services.extent;
 import static org.fao.geonet.services.extent.ExtentHelper.ID;
 import static org.fao.geonet.services.extent.ExtentHelper.SELECTION;
 import static org.fao.geonet.services.extent.ExtentHelper.TYPENAME;
-import static org.fao.geonet.services.extent.ExtentHelper.WFS;
+import static org.fao.geonet.services.extent.ExtentHelper.SOURCE;
 import static org.fao.geonet.services.extent.ExtentHelper.getSelection;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ import jeeves.utils.Util;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.spatial.Pair;
-import org.fao.geonet.services.extent.WFS.FeatureType;
+import org.fao.geonet.services.extent.Source.FeatureType;
 import org.fao.geonet.services.reusable.Reject;
 import org.fao.geonet.kernel.reusable.ReusableTypes;
 import org.geotools.data.FeatureStore;
@@ -83,10 +83,10 @@ public class Delete implements Service
     private Element deleteSingle(Element params, final ExtentManager extentMan) throws IOException
     {
         final String id = Util.getParamText(params, ID);
-        final String wfsParam = Util.getParamText(params, WFS);
+        final String wfsParam = Util.getParamText(params, SOURCE);
         final String typename = Util.getParamText(params, TYPENAME);
 
-        final WFS wfs = extentMan.getWFS(wfsParam);
+        final Source wfs = extentMan.getSource(wfsParam);
         final FeatureType featureType = wfs.getFeatureType(typename);
         if (featureType == null) {
             return ExtentHelper.error(typename + " does not exist, acceptable types are: " + wfs.listModifiable());

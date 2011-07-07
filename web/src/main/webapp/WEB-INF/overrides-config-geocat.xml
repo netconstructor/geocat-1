@@ -23,9 +23,14 @@
                 <param name="processOnInsert" value="true" />
             </param>
             <param name="extent">
-                <!--  If there is no id then the server is the default server and can be accessed with ExtentManager.DEFAULT_WFS_ID id -->
+                <!--  If there is no id then the server is the default server and can be accessed with ExtentManager.DEFAULT_SOURCE_ID id -->
                 <!--  columns are case sensitive -->
-                <wfs url="http://${wfs.host}:${wfs.port}/geoserver/wfs?service=WFS&amp;request=GetCapabilities">
+                <source database="${postgis.db}"
+                        user="${postgis.user}"
+                        password="${postgis.pass}"
+                        host="${postgis.host}"
+                        port="${postgis.port}"
+                        schema="public">
                     <typename typename="gn:countries" idColumn="LAND" descColumn="LAND" searchColumn="SEARCH"
                                         geoIdColumn="LAND" CRS="EPSG:21781" />
                     <typename typename="gn:gemeindenBB" idColumn="OBJECTVAL" descColumn="DESC" searchColumn="SEARCH"
@@ -36,7 +41,7 @@
                                         searchColumn="SEARCH" modifiable="true" CRS="EPSG:21781" />
                     <typename typename="gn:non_validated" idColumn="ID" descColumn="DESC" geoIdColumn="GEO_ID"
                                         searchColumn="SEARCH" modifiable="true" CRS="EPSG:21781" />
-                </wfs>
+                </source>
             </param>
         </addXML>
         <replaceXML xpath="resources">

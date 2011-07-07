@@ -35,10 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.geotools.data.DataStore;
-import org.geotools.data.DefaultQuery;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
+import org.geotools.data.*;
+import org.geotools.data.postgis.PostgisDataStore;
 import org.geotools.data.postgis.PostgisDataStoreFactory;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.CommonFactoryFinder;
@@ -55,11 +53,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class Source
 {
-    final Map<String, Serializable> dataStoreParams = new HashMap<String, Serializable>();
     final Set<FeatureType>          modifiable         = new LinkedHashSet<FeatureType>();
     final Map<String, FeatureType>  types              = new LinkedHashMap<String, FeatureType>();
     public final String             wfsId;
-    private DataStore            datastore;
+    DataStore                       datastore;
 
     public Source(String id)
     {
@@ -68,10 +65,6 @@ public class Source
 
     public synchronized DataStore getDataStore() throws IOException
     {
-        if (datastore == null) {
-            final PostgisDataStoreFactory factory = new PostgisDataStoreFactory();
-            this.datastore = factory.createDataStore(dataStoreParams);
-        }
         return datastore;
     }
 
@@ -90,7 +83,7 @@ public class Source
     @Override
     public String toString()
     {
-        return dataStoreParams.get(WFSDataStoreFactory.URL.key).toString();
+        return wfsId;
     }
 
     public class FeatureType
@@ -104,6 +97,7 @@ public class Source
         public final String               descColumn;
         public final String               searchColumn;
         public final String               showNativeColumn;
+        public final String pgTypeName;
         private CoordinateReferenceSystem projection;
         private String                    srs;
 
@@ -111,6 +105,7 @@ public class Source
                 final String descColumn, final String searchColumn, String projection)
         {
             this.typename = typename;
+            this.pgTypeName = typename.substring(3);
             this.idColumn = idColumn;
             this.descColumn = descColumn;
             this.srs = projection;
@@ -123,8 +118,8 @@ public class Source
         public FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource() throws IOException
         {
             final DataStore datastore = getDataStore();
-            if (Arrays.asList(datastore.getTypeNames()).contains(typename)) {
-                return datastore.getFeatureSource(typename);
+            if (Arrays.asList(datastore.getTypeNames()).contains(pgTypeName)) {
+                return datastore.getFeatureSource(pgTypeName);
             } else {
                 return null;
             }
@@ -149,7 +144,7 @@ public class Source
         public Query createQuery(String id, String[] properties)
         {
             final Filter filter = createFilter(id);
-            final DefaultQuery query = new DefaultQuery(typename, filter, properties);
+            final DefaultQuery query = new DefaultQuery(pgTypeName, filter, properties);
             return query;
         }
 
