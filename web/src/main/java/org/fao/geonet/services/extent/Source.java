@@ -39,7 +39,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.geotools.data.wfs.WFSDataStore;
+import org.geotools.data.postgis.PostgisDataStoreFactory;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
@@ -53,15 +53,15 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-public class WFS
+public class Source
 {
-    final Map<String, Serializable> wfsDataStoreParams = new HashMap<String, Serializable>();
+    final Map<String, Serializable> dataStoreParams = new HashMap<String, Serializable>();
     final Set<FeatureType>          modifiable         = new LinkedHashSet<FeatureType>();
     final Map<String, FeatureType>  types              = new LinkedHashMap<String, FeatureType>();
     public final String             wfsId;
     private DataStore            datastore;
 
-    public WFS(String id)
+    public Source(String id)
     {
         this.wfsId = id;
     }
@@ -69,8 +69,8 @@ public class WFS
     public synchronized DataStore getDataStore() throws IOException
     {
         if (datastore == null) {
-            final WFSDataStoreFactory factory = new WFSDataStoreFactory();
-            this.datastore = factory.createDataStore(wfsDataStoreParams);
+            final PostgisDataStoreFactory factory = new PostgisDataStoreFactory();
+            this.datastore = factory.createDataStore(dataStoreParams);
         }
         return datastore;
     }
@@ -90,7 +90,7 @@ public class WFS
     @Override
     public String toString()
     {
-        return wfsDataStoreParams.get(WFSDataStoreFactory.URL.key).toString();
+        return dataStoreParams.get(WFSDataStoreFactory.URL.key).toString();
     }
 
     public class FeatureType
@@ -139,7 +139,7 @@ public class WFS
         public String toString()
         {
 
-            String string = WFS.this.toString() + ": typename (" + idColumn + "," + descColumn + ")";
+            String string = Source.this.toString() + ": typename (" + idColumn + "," + descColumn + ")";
             if (isModifiable()) {
                 string += "modifiable";
             }
@@ -167,9 +167,9 @@ public class WFS
             return wfsId;
         }
 
-        public WFS wfs()
+        public Source wfs()
         {
-            return WFS.this;
+            return Source.this;
         }
 
         public synchronized CoordinateReferenceSystem projection()
