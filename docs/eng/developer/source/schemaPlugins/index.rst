@@ -338,9 +338,213 @@ At this stage, our new GeoNetwork plugin schema for MCP contains:
 Creating the presentations xslts in the present directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Each metadata schema should contain XSLTs that display and possibly edit metadata records that belong to the schema. These XSLTs are held in the `present` directory.
+
+To be be used in the XSLT include/import hierarchy these XSLTs must follow a naming convention: metadata-<schema-name>.xsl. So for example, the presentation xslt for the iso19139 schema is `metadata-iso19139.xsl`. For the MCP, since our schema name is iso19139.mcp, the presentation XSLT would be called `metadata-iso19193.mcp.xsl`.
+
+Any XSLTs included by the presentation XSLT should also be in the present directory (this is a convention for clarity - it is not mandatory as include/import URLs can be mapped in the oasis-catalog.xml for the schema to other locations).
+
+There are certain XSLT templates that the presentation XSLT must have:
+
+- the **main** template, which must be called: metadata-<schema-name>. Here is an example for the eml-gbif schema:
+
+::
+
+  <!-- main template - the way into processing eml-gbif -->
+  <xsl:template name="metadata-eml-gbif">
+    <xsl:param name="schema"/>
+    <xsl:param name="edit" select="false()"/>
+    <xsl:param name="embedded"/>
+
+    <xsl:apply-templates mode="eml-gbif" select="." >
+      <xsl:with-param name="schema" select="$schema"/>
+      <xsl:with-param name="edit"   select="$edit"/>
+      <xsl:with-param name="embedded" select="$embedded" />
+    </xsl:apply-templates>
+  </xsl:template>
+
+Analyzing this template:
+
+#. The name="metadata-eml-gbif" is used by the main element processing template in metadata.xsl: elementEP. The main metadata services, show and edit, end up calling metadata-show.xsl and metadata-edit.xsl respectively with the metadata record passed from the Java service. Both these XSLTs, process the metadata record by applying the elementEP template from metadata.xsl to the root element. elementEP calls the appropriate main schema template using the schema name.
+
+#. The job of this main template is set to process all the elements of the metadata record using templates declared with a mode name that matches the schema name. This modal processing is to ensure that only templates intended to process metadata elements from this schema are applied.
+
+If creating a presentation XSLT for a profile such as MCP, then the main template is slightly different. Here is an example for the MCP from metadata-iso19139.mcp.xsl:
+
+::
+
+  <xsl:template name="metadata-iso19139.mcp">
+    <xsl:param name="schema"/>
+    <xsl:param name="edit" select="false()"/>
+    <xsl:param name="embedded"/>
+
+    <xsl:apply-templates mode="iso19139" select="." >
+      <xsl:with-param name="schema" select="$schema"/>
+      <xsl:with-param name="edit"   select="$edit"/>
+      <xsl:with-param name="embedded" select="$embedded" />
+    </xsl:apply-templates>
+  </xsl:template>
+
+Notice that main template is processing in the mode of the base iso19139 schema? The reason for this is that almost all profiles change or add a small number of elements to those in the base schema. So most of the metadata elements in a profile can be processed in the mode of the base schema. We'll see later in this section how to override processing of an element in the base schema.
+
+- a **completeTab** template, which must be called: <schema-name>CompleteTab. This template should display the tabs used by the advanced editor. Here is an example for the MCP:
+
+::
+
+  <xsl:template match="iso19139.mcpCompleteTab">
+    <xsl:param name="tabLink"/>
+
+    <xsl:call-template name="displayTab"> <!-- non existent tab - by profile -->
+      <xsl:with-param name="tab"     select="''"/>
+      <xsl:with-param name="text"    select="/root/gui/strings/byGroup"/>
+      <xsl:with-param name="tabLink" select="''"/>
+    </xsl:call-template>
+
+    <xsl:call-template name="displayTab">
+      <xsl:with-param name="tab"     select="'mcpMinimum'"/>
+      <xsl:with-param name="text"    select="/root/gui/strings/iso19139.mcp/mcpMinimum"/>
+      <xsl:with-param name="indent"  select="'&#xA0;&#xA0;&#xA0;'"/>
+      <xsl:with-param name="tabLink" select="$tabLink"/>
+    </xsl:call-template>
+
+    <xsl:call-template name="displayTab">
+      <xsl:with-param name="tab"     select="'mcpCore'"/>
+      <xsl:with-param name="text"    select="/root/gui/strings/iso19139.mcp/mcpCore"/>
+      <xsl:with-param name="indent"  select="'&#xA0;&#xA0;&#xA0;'"/>
+      <xsl:with-param name="tabLink" select="$tabLink"/>
+    </xsl:call-template>
+
+    <xsl:call-template name="displayTab">
+      <xsl:with-param name="tab"     select="'complete'"/>
+      <xsl:with-param name="text"    select="/root/gui/strings/iso19139.mcp/mcpAll"/>
+      <xsl:with-param name="indent"  select="'&#xA0;&#xA0;&#xA0;'"/>
+      <xsl:with-param name="tabLink" select="$tabLink"/>
+    </xsl:call-template>
+
+    ...... (same as for metadata-iso19139.xsl) ......
+
+  </xsl:template>  
+
+- a **brief** template, which must be called: <schema-name>Brief. This template processes the metadata record and extracts from it a format neutral summary of the metadata for purposes such as displaying the search results. Here is an example for the eml-gbif schema (because it is fairly short!):
+
+::
+
+  <xsl:template match="eml-gbifBrief">
+   <xsl:for-each select="/metadata/*[1]">
+    <metadata>
+      <title><xsl:value-of select="normalize-space(dataset/title[1])"/></title>
+      <abstract><xsl:value-of select="dataset/abstract"/></abstract>
+
+      <xsl:for-each select="dataset/keywordSet/keyword">
+        <xsl:copy-of select="."/>
+      </xsl:for-each>
+
+      <geoBox>
+          <westBL><xsl:value-of select="dataset/coverage/geographicCoverage/boundingCoordinates/westBoundingCoordinate"/></westBL>
+          <eastBL><xsl:value-of select="dataset/coverage/geographicCoverage/boundingCoordinates/eastBoundingCoordinate"/></eastBL>
+          <southBL><xsl:value-of select="dataset/coverage/geographicCoverage/boundingCoordinates/southBoundingCoordinate"/></southBL>
+          <northBL><xsl:value-of select="dataset/coverage/geographicCoverage/boundingCoordinates/northBoundingCoordinate"/></northBL>
+      </geoBox>
+      <xsl:copy-of select="geonet:info"/>
+    </metadata>
+   </xsl:for-each>
+  </xsl:template>
+ 
+Analyzing this template:
+
+#. The template matches on an element eml-gbifBrief, created by the mode="brief" template in metadata-utils.xsl. The metadata record will be the first child in the /metadata XPath.
+#. Then process metadata elements to produce a flat XML structure that is used by search-results-xhtml.xsl to display a summary of the metadata record found by a search.
+
+Once again, for profiles of an existing schema, it makes sense to use a slighlty different approach so that the profile need not duplicate templates. Here is an example from metadata-iso19139.mcp.xsl:
+
+::
+
+  <xsl:template match="iso19139.mcpBrief">
+    <metadata>
+      <xsl:for-each select="/metadata/*[1]">
+        <!-- call iso19139 brief -->
+        <xsl:call-template name="iso19139-brief"/>
+        <!-- now brief elements for mcp specific elements -->
+        <xsl:call-template name="iso19139.mcp-brief"/>
+      </xsl:for-each>
+    </metadata>
+  </xsl:template> 
+
+This template splits the processing between the base iso19139 schema and a brief template that handles elements specific to the profile. This assumes that:
+
+#. The base schema has separated the <metadata> element from the remainder of its brief processing so that it can be called by profiles
+#. The profile includes links to equivalent elements that can be used by the base schema to process common elements eg. for ISO19139, elements in the profile have gco:isoType attributes that give the name of the base element and can be used in XPath matches such as "gmd:MD_DataIdentification|*[@gco:isoType='gmd:MD_DataIdentification']".
+
+- templates that match on elements specific to the schema. Here is an example from the eml-gbif schema:
+
+::
+
+  <!-- keywords are processed to add thesaurus name in brackets afterwards -->
+
+  <xsl:template mode="eml-gbif" match="keywordSet">
+    <xsl:param name="schema"/>
+    <xsl:param name="edit"/>
+
+    <xsl:choose>
+      <xsl:when test="$edit=false()">
+        <xsl:variable name="keyword">
+          <xsl:for-each select="keyword">
+            <xsl:if test="position() &gt; 1">,  </xsl:if>
+            <xsl:value-of select="."/>
+          </xsl:for-each>
+          <xsl:if test="keywordThesaurus">
+            <xsl:text> (</xsl:text>
+            <xsl:value-of select="keywordThesaurus"/>
+            <xsl:text>)</xsl:text>
+          </xsl:if>
+        </xsl:variable>
+        <xsl:apply-templates mode="simpleElement" select=".">
+          <xsl:with-param name="schema" select="$schema"/>
+          <xsl:with-param name="edit"   select="$edit"/>
+          <xsl:with-param name="text"    select="$keyword"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates mode="complexElement" select=".">
+          <xsl:with-param name="schema" select="$schema"/>
+          <xsl:with-param name="edit"   select="$edit"/>
+        </xsl:apply-templates>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+Analyzing this template:
+
+#. View mode and edit mode are handled differently
+#. In view mode the individual keywords from the set are concatenated into a comma separated string with the name of the thesaurus in brackets at the end.
+#. In edit mode, the keywordSet is handled as a complex element ie. the user ca add individual keyword elements with content and a single thesaurus name.
+
+For profiles these are the same except the template will process in the mode of the base schema. Here is an example showing the first few lines of a template for processing the mcp:revisionDate element:
+
+::
+
+ <xsl:template mode="iso19139" match="mcp:revisionDate">
+    <xsl:param name="schema"/>
+    <xsl:param name="edit"/>
+
+    <xsl:choose>
+      <xsl:when test="$edit=true()">
+        <xsl:apply-templates mode="simpleElement" select=".">
+          <xsl:with-param name="schema"  select="$schema"/>
+          <xsl:with-param name="edit"   select="$edit"/>
+    
+    ......
+
+If a template for a profile is intended to override a template in the base schema, then the template can be defined in the presentation XSLT for the profile with a priority attribute set to a high number. For example in the MCP:
+
+::
+ 
+   <xsl:template mode="iso19139" match="gmd:credit" priority="100"> 
+     
+   ......
+
 
 At this stage, our new GeoNetwork plugin schema for MCP contains:
-
 
 ::
 
@@ -391,7 +595,8 @@ For example, here is the mapping created between the metadata element mcp:revisi
      <Field name="changeDate" string="{string(.)}" store="true" index="true"/>
    </xsl:for-each>
 
-Notice that we are creating a new XML document. The Field elements in this document are used by GeoNetwork to create a Lucene document object for indexing (see the SearchManager class in the GeoNetwork source).
+
+Notice that we are creating a new XML document. The Field elements in this document are read by GeoNetwork to create a Lucene document object for indexing (see the SearchManager class in the GeoNetwork source).
 
 Once again, because the MCP is a profile of ISO19115/19139, it is probably best to modify index-fields.xsl from the schema iso19139 to handle the namespaces and additional elements of the MCP.
 
