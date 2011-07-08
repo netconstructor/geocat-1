@@ -649,6 +649,21 @@ Templates for handling these elements are in the iso19139 presentation XSLT `INS
 - use the schema name in the codelists XPath
 - fall back to the base iso19139 schema if the profile codelist doesn't have the required codelist
 
+~~~~~~~~~~~~~~~~~~~~~~
+CSW Presentation XSLTs
+~~~~~~~~~~~~~~~~~~~~~~
+
+The CSW server can be asked to provide records in a number of output schemas. The two supported by GeoNetwork are:
+
+- **ogc** - http://www.opengis.net/cat/csw/2.0.2 - a dublin core derivative
+- **iso** - http://www.isotc211.org/2005/gmd - ISO19115/19139
+
+From each of these output schemas, a **brief**, **summary** or **full** element set can be requested.
+
+These output schemas and element sets are implemented in GeoNetwork as XSLTs and they are stored in the 'csw' subdirectory of the 'present' directory. The ogc output schema XSLTs are implemented as ogc-brief.xsl, ogc-summary and ogc-full.xsl. The iso output schema XSLTs are implemented as iso-brief.xsl, iso-summary.xsl and iso-full.xsl.
+
+To create these XSLTs for the MCP, the best option is to copy and modify the csw presentation XSLTs from the base schema iso19139.
+
 After creating the presentation XSLTs, our new GeoNetwork plugin schema for MCP contains:
 
 ::
@@ -738,13 +753,66 @@ Schematrons are rules that are used to check conditions and content in the metad
 
 Schematron rules are created in the schematrons directory that you checked out earlier - see `Preparation` above.
 
+An example rule is:
+
+::
+
+  <!-- anzlic/trunk/gml/3.2.0/gmd/spatialRepresentation.xsd-->
+  <!-- TEST 12 -->
+  <sch:pattern>
+    <sch:title>$loc/strings/M30</sch:title>
+    <sch:rule context="//gmd:MD_Georectified">
+      <sch:let name="cpd" value="(gmd:checkPointAvailability/gco:Boolean='1' or gmd:checkPointAvailability/gco:Boolean='true') and 
+        (not(gmd:checkPointDescription) or count(gmd:checkPointDescription[@gco:nilReason='missing'])>0)"/>
+      <sch:assert
+        test="$cpd = false()"
+        >$loc/strings/alert.M30</sch:assert>
+      <sch:report
+        test="$cpd = false()"
+        >$loc/strings/report.M30</sch:report>
+    </sch:rule>
+  </sch:pattern>   
+
+As for most of GeoNetwork, the output of this rule can be localized to different languages. The corresponding localized strings are:
+
+::
+
+  <strings>
+
+    .....
+
+    <M30>[ISOFTDS19139:2005-TableA1-Row15] - Check point description required if available</M30>
+
+    .....
+
+    <alert.M30><div>'checkPointDescription' is mandatory if 'checkPointAvailability' = 1 or true.</div></alert.M30>
+
+    .....
+
+    <report.M30>Check point description documented.</report.M30>
+
+    .....
+
+  </strings>
+ 
+ 
+Procedure for adding schematron rules, working within the schematrons directory:
+
+#. Place your schematron rules in 'rules'. Naming convetion is 'schematron-rules-<suffix>.sch' eg. 'schematron-rules-iso-mcp.sch'. Place localized strings for the rule assertions into 'rules/loc/<language_prefix>'.
+#. Edit 'build.xml'
+#. Add a "clean-schema-dir" target for your plugin schema directory. This target will remove the schematron rules from plugin schema directory (basically removes all files with pattern schematron-rules-*.xsl).
+#. Add a "compile-schematron" target for your rules - value attribute is the suffix used in the rules name. eg. for 'schematron-rules-iso-mcp.sch' the value attribute should be "iso-mcp". This target will turn the .sch schematron rules into an XSLT using the saxon XSLT engine and 'resources/iso_svrl_for_xslt2.xsl'.
+#. Add a "publish-schematron" target. This target copies the compiled rules (in XSLT form) into the plugin schema directory.
+#. Run 'ant' to create the schematron XSLTs.
+
+
 At this stage, our new GeoNetwork plugin schema for MCP contains:
 
 ::
 
    extract-date-modified.xsl  extract-gml.xsd  extract-uuid.xsl  
    index-fields.xsl  loc  present  sample-data schema-ident.xml  schema.xsd
-   schema
+   schema  schematron-rules-iso-mcp.xsl
 
 
 Adding the components necessary to create and edit MCP metadata
