@@ -384,7 +384,7 @@ A localized copy of codelists.xml is made available on an XPath to the presentat
 
 The XSLT metadata.xsl which contains templates used by all metadata schema presentation XSLTs, handles the creation of a select list/drop down menu in the editor and display of the code and description in the metadata viewer.
 
-The iso19139 schema has additional codelists that are managed external to the XSDs in catalog/vocabulary files such as http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml These have also been added to the codelists.xml file so that they can be localized and include an extended description to provide more useful information when viewing the metadata record.
+The iso19139 schema has additional codelists that are managed external to the XSDs in catalog/vocabulary files such as http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml These have also been added to the codelists.xml file so that they can be localized, overridden in profiles and include an extended description to provide more useful information when viewing the metadata record.
 
 The iso19139 schema has additional templates in its presentation xslts to handlese codelists because they are specific to that schema. These are discussed in the section on presentation XSLTs later in this manual.
 
@@ -458,7 +458,6 @@ There are certain XSLT templates that the presentation XSLT must have:
 Analyzing this template:
 
 #. The name="metadata-eml-gbif" is used by the main element processing template in metadata.xsl: elementEP. The main metadata services, show and edit, end up calling metadata-show.xsl and metadata-edit.xsl respectively with the metadata record passed from the Java service. Both these XSLTs, process the metadata record by applying the elementEP template from metadata.xsl to the root element. elementEP calls the appropriate main schema template using the schema name.
-
 #. The job of this main template is set to process all the elements of the metadata record using templates declared with a mode name that matches the schema name. This modal processing is to ensure that only templates intended to process metadata elements from this schema are applied.
 
 If creating a presentation XSLT for a profile such as MCP, then the main template is slightly different. Here is an example for the MCP from metadata-iso19139.mcp.xsl:
@@ -627,15 +626,15 @@ For profiles these templates can be defined in the same way except that the temp
     
     ......
 
-If a template for a profile is intended to override a template in the base schema, then the template can be defined in the presentation XSLT for the profile with a priority attribute set to a high number. For example in the MCP:
+If a template for a profile is intended to override a template in the base schema, then the template can be defined in the presentation XSLT for the profile with a priority attribute set to a high number and an XPath condition that ensures the template is processed for the profile only. For example in the MCP, we can override the handling of gmd:EX_GeographicBoundingBox in metadata-iso19139.xsl by defining a template in metadata-iso19139.mcp.xsl as follows:
 
 ::
  
-   <xsl:template mode="iso19139" match="gmd:credit" priority="100"> 
+   <xsl:template mode="iso19139" match="gmd:EX_GeographicBoundingBox[starts-with(//geonet:info/schema,'iso19139.mcp')]" priority="3">
      
    ......
 
-Finally, the MCP also extends some of the existing codelists in the base iso19139 schema. As for the iso19139 schema, these codelists are external to the XSD and should be held in a localized codelists.xml. As for iso19139, these codelists are attached to elements like the following:
+Finally, a profile may also extend some of the existing codelists in the base schema. These extended codelists should be held in a localized codelists.xml. As an example, in iso19139 these codelists are often attached to elements like the following:
 
 ::
 
@@ -643,11 +642,20 @@ Finally, the MCP also extends some of the existing codelists in the base iso1913
     <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="custodian">custodian</gmd:CI_RoleCode>
   </gmd:role>
 
-Templates for handling these elements are in the iso19139 presentation XSLT `INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/present/metadata-iso19139.xsl`. These templates use the name of the element (eg. gmd:CI_RoleCode) and the codelist XPath (eg. /root/gui/schemas/iso19139/codelists) to build select list/drop down menus when editing and to display a full description when viewing. See templates near the template named 'iso19139Codelist'. These templates can handle the extended codelists for the MCP because they:
+Templates for handling these elements are in the iso19139 presentation XSLT `INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/present/metadata-iso19139.xsl`. These templates use the name of the element (eg. gmd:CI_RoleCode) and the codelist XPath (eg. /root/gui/schemas/iso19139/codelists) to build select list/drop down menus when editing and to display a full description when viewing. See templates near the template named 'iso19139Codelist'. These templates can handle the extended codelists for any profile because they:
 
 - match on any element that has a child element with attribute codeList
 - use the schema name in the codelists XPath
 - fall back to the base iso19139 schema if the profile codelist doesn't have the required codelist
+
+However, if you don't need localized codelists, it is often easier and more direct to extract codelists directly from the gmxCodelists.xml file. This is in fact the solution that has been adopted for the MCP. The gmxCodelists.xml file is included in the presentatuion xslt for the MCP using a statement like:
+
+::
+
+	<xsl:variable name="codelistsmcp" 
+	              select="document('../schema/resources/Codelist/gmxCodelists.xml')"/>
+
+Check the codelists handling templates in metadata-iso19139.mcp.xsl to see how this works.
 
 ~~~~~~~~~~~~~~~~~~~~~~
 CSW Presentation XSLTs
