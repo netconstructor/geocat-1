@@ -306,9 +306,93 @@ You should provide localized strings in whatever languages you expect your schem
 Localized strings for this schema can be used in the presentation xslts and
 schematron error messages. For the presentation xslts:
 
- - codelists for controlled vocabulary fields should be in loc/<language_abbreviation>/codelists.xml eg. loc/en/codelists.xml
- - label strings that replace XML element names with more intelligible/alternative phrases and rollover help strings should be in loc/<language_abbreviation>/labels.xml eg. loc/en/labels.xml. Note that because the MCP is a profile of ISO19115/19139 and we have followed the GeoNetwork naming convention for profiles, we need only include the labels that are specific to the MCP or that we want to override. Other labels will be retrieved from the base schema iso19139.
- - all other localized strings should be in loc/<language_abbreviation>/strings.xml eg. loc/en/strings.xml
+- codelists for controlled vocabulary fields should be in loc/<language_abbreviation>/codelists.xml eg. loc/en/codelists.xml
+- label strings that replace XML element names with more intelligible/alternative phrases and rollover help strings should be in loc/<language_abbreviation>/labels.xml eg. loc/en/labels.xml. 
+- all other localized strings should be in loc/<language_abbreviation>/strings.xml eg. loc/en/strings.xml
+
+Note that because the MCP is a profile of ISO19115/19139 and we have followed the GeoNetwork naming convention for profiles, we need only include the labels and codelists that are specific to the MCP or that we want to override. Other labels and codelists will be retrieved from the base schema iso19139.
+
+~~~~~~~~~~~~~~~~~~~~~
+More on codelists.xml
+~~~~~~~~~~~~~~~~~~~~~
+
+Typically codelists are generated from enumerated lists in the metadata schema XSDs such as the following from http://www.isotc211.org/2005/gmd/identification.xsd for gmd:MD_TopicCategoryCode in the iso19139 schema:
+
+::
+
+ <xs:element name="MD_TopicCategoryCode" type="gmd:MD_TopicCategoryCode_Type"/>
+
+ <xs:simpleType name="MD_TopicCategoryCode_Type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="farming"/>
+      <xs:enumeration value="biota"/>
+      <xs:enumeration value="boundaries"/>
+      <xs:enumeration value="climatologyMeteorologyAtmosphere"/>
+      <xs:enumeration value="economy"/>
+      <xs:enumeration value="elevation"/>
+      <xs:enumeration value="environment"/>
+      <xs:enumeration value="geoscientificInformation"/>
+      <xs:enumeration value="health"/>
+      <xs:enumeration value="imageryBaseMapsEarthCover"/>
+      <xs:enumeration value="intelligenceMilitary"/>
+      <xs:enumeration value="inlandWaters"/>
+      <xs:enumeration value="location"/>
+      <xs:enumeration value="oceans"/>
+      <xs:enumeration value="planningCadastre"/>
+      <xs:enumeration value="society"/>
+      <xs:enumeration value="structure"/>
+      <xs:enumeration value="transportation"/>
+      <xs:enumeration value="utilitiesCommunication"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+ 
+The following is part of the codelists.xml entry manually created for this element:
+
+::
+
+  <codelist name="gmd:MD_TopicCategoryCode">
+    <entry>
+      <code>farming</code>
+      <label>Farming</label>
+      <description>Rearing of animals and/or cultivation of plants. Examples: agriculture,
+        irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and
+        livestock</description>
+    </entry>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <entry>
+      <code>biota</code>
+      <label>Biota</label>
+      <description>Flora and/or fauna in natural environment. Examples: wildlife, vegetation,
+        biological sciences, ecology, wilderness, sealife, wetlands, habitat</description>
+    </entry>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <entry>
+      <code>boundaries</code>
+      <label>Boundaries</label>
+      <description>Legal land descriptions. Examples: political and administrative
+      boundaries</description>
+    </entry>   
+
+    .....
+
+  </codelist>
+
+The codelists.xml file maps the enumerated values from the XSD to a localized label and a description via the code element.
+
+A localized copy of codelists.xml is made available on an XPath to the presentation XSLTs eg. /root/gui/schemas/iso19139/codelist for the iso19139 schema.
+
+The XSLT metadata.xsl which contains templates used by all metadata schema presentation XSLTs, handles the creation of a select list/drop down menu in the editor and display of the code and description in the metadata viewer.
+
+The iso19139 schema has additional codelists that are managed external to the XSDs in catalog/vocabulary files such as http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml These have also been added to the codelists.xml file so that they can be localized and include an extended description to provide more useful information when viewing the metadata record.
+
+The iso19139 schema has additional templates in its presentation xslts to handlese codelists because they are specific to that schema. These are discussed in the section on presentation XSLTs later in this manual.
+
+~~~~~~~~~~~~~~~~~~
+More on labels.xml
+~~~~~~~~~~~~~~~~~~
+
+A localized copy of labels.xml is made available on an XPath to the presentation XSLTs eg. /root/gui/schemas/iso19139/labels for the iso19139 schema.
 
 The labels.xml file can also be used to provide helper values in the form of a drop down/select list for free text fields. As an example:
 
@@ -323,11 +407,19 @@ The labels.xml file can also be used to provide helper values in the form of a d
     </helper>
   </element>
  
-This would result in the Editor displaying the credit field with these helper options listed beside it in a drop down/select menu something like the following:
+This would result in the Editor (through the XSLT metadata.xsl) displaying the credit field with these helper options listed beside it in a drop down/select menu something like the following:
 
 .. figure:: Editor-Helpers.png
 
-At this stage, our new GeoNetwork plugin schema for MCP contains:
+~~~~~~~~~~~~~~~~~~~
+More on strings.xml
+~~~~~~~~~~~~~~~~~~~
+
+A localized copy of strings.xml is made available on an XPath to the presentation XSLTs eg. /root/gui/schemas/iso19139/strings for the iso19139 schema.
+
+
+
+After adding the localized strings, our new GeoNetwork plugin schema for MCP contains:
 
 ::
 
@@ -517,9 +609,9 @@ Analyzing this template:
 
 #. View mode and edit mode are handled differently
 #. In view mode the individual keywords from the set are concatenated into a comma separated string with the name of the thesaurus in brackets at the end.
-#. In edit mode, the keywordSet is handled as a complex element ie. the user ca add individual keyword elements with content and a single thesaurus name.
+#. In edit mode, the keywordSet is handled as a complex element ie. the user can add individual keyword elements with content and a single thesaurus name.
 
-For profiles these are the same except the template will process in the mode of the base schema. Here is an example showing the first few lines of a template for processing the mcp:revisionDate element:
+For profiles these templates can be defined in the same way except that the template will process in the mode of the base schema. Here is an example showing the first few lines of a template for processing the mcp:revisionDate element:
 
 ::
 
@@ -543,8 +635,17 @@ If a template for a profile is intended to override a template in the base schem
      
    ......
 
+Finally, in the context of creating the MCP, it is worth noting that the iso19139 schema has codelists external to the XSD which are held in the localized codelists.xml (see previous section). These codelists are attached to elements like the following:
 
-At this stage, our new GeoNetwork plugin schema for MCP contains:
+::
+
+  <gmd:role>
+    <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="custodian">custodian</gmd:CI_RoleCode>
+  </gmd:role>
+
+Templates for handling these elements are in the iso19139 presentation XSLT `INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/present/metadata-iso19139.xsl`. These templates use the name of the element (eg. gmd:CI_RoleCode) and the codelist XPath (eg. /root/gui/schemas/iso19139/codelists) to build select list/drop down menus when editing and to display a full description when viewing. See templates near the template named 'iso19139Codelist'.
+
+After creating the presentation XSLTs, our new GeoNetwork plugin schema for MCP contains:
 
 ::
 
