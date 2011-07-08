@@ -635,7 +635,7 @@ If a template for a profile is intended to override a template in the base schem
      
    ......
 
-Finally, in the context of creating the MCP, it is worth noting that the iso19139 schema has codelists external to the XSD which are held in the localized codelists.xml (see previous section). These codelists are attached to elements like the following:
+Finally, the MCP also extends some of the existing codelists in the base iso19139 schema. As for the iso19139 schema, these codelists are external to the XSD and should be held in a localized codelists.xml. As for iso19139, these codelists are attached to elements like the following:
 
 ::
 
@@ -643,7 +643,11 @@ Finally, in the context of creating the MCP, it is worth noting that the iso1913
     <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="custodian">custodian</gmd:CI_RoleCode>
   </gmd:role>
 
-Templates for handling these elements are in the iso19139 presentation XSLT `INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/present/metadata-iso19139.xsl`. These templates use the name of the element (eg. gmd:CI_RoleCode) and the codelist XPath (eg. /root/gui/schemas/iso19139/codelists) to build select list/drop down menus when editing and to display a full description when viewing. See templates near the template named 'iso19139Codelist'.
+Templates for handling these elements are in the iso19139 presentation XSLT `INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/present/metadata-iso19139.xsl`. These templates use the name of the element (eg. gmd:CI_RoleCode) and the codelist XPath (eg. /root/gui/schemas/iso19139/codelists) to build select list/drop down menus when editing and to display a full description when viewing. See templates near the template named 'iso19139Codelist'. These templates can handle the extended codelists for the MCP because they:
+
+- match on any element that has a child element with attribute codeList
+- use the schema name in the codelists XPath
+- fall back to the base iso19139 schema if the profile codelist doesn't have the required codelist
 
 After creating the presentation XSLTs, our new GeoNetwork plugin schema for MCP contains:
 
