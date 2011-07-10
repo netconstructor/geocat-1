@@ -570,7 +570,8 @@ This template splits the processing between the base iso19139 schema and a brief
 
 ::
 
-  <!-- keywords are processed to add thesaurus name in brackets afterwards -->
+  <!-- keywords are processed to add thesaurus name in brackets afterwards 
+       in view mode -->
 
   <xsl:template mode="eml-gbif" match="keywordSet">
     <xsl:param name="schema"/>
@@ -606,11 +607,11 @@ This template splits the processing between the base iso19139 schema and a brief
 
 Analyzing this template:
 
-#. View mode and edit mode are handled differently
 #. In view mode the individual keywords from the set are concatenated into a comma separated string with the name of the thesaurus in brackets at the end.
 #. In edit mode, the keywordSet is handled as a complex element ie. the user can add individual keyword elements with content and a single thesaurus name.
+#. This is an example of the type of processing that can be done on an element in a metadata record.
 
-For profiles these templates can be defined in the same way except that the template will process in the mode of the base schema. Here is an example showing the first few lines of a template for processing the mcp:revisionDate element:
+For profiles, templates for elements can be defined in the same way except that the template will process in the mode of the base schema. Here is an example showing the first few lines of a template for processing the mcp:revisionDate element:
 
 ::
 
@@ -656,6 +657,97 @@ However, if you don't need localized codelists, it is often easier and more dire
 	              select="document('../schema/resources/Codelist/gmxCodelists.xml')"/>
 
 Check the codelists handling templates in metadata-iso19139.mcp.xsl to see how this works.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+An alternative XSLT design for profiles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+In all powerful languages there will be more than one way to achieve a particular goal. This alternative XSLT design is for processing profiles. The idea behind the alternative is based on the following observations about the GeoNetwork XSLTs: 
+
+#. All elements are initially processed by apply-templates in mode "elementEP".
+#. The template "elementEP" template (see `INSTALL_DIR/web/geonetwork/xsl/metadata.xsl`) eventually calls the **main** template of the schema/profile.
+#. The main template can initially process the element in a mode particular to the profile and if this is not successful (ie. no template matches and thus no HTML elements are returned), process the element in the mode of the base schema. 
+
+The advantage of this design is that overriding a template for an element in the base schema does not need the priority attribute or an XPath condition check on the schema name.
+
+Here is an example for the MCP (iso19139.mcp) with base schema iso19139:
+
+- the **main** template, which must be called: metadata-iso19139.mcp.xsl:
+
+::
+  
+  <!-- main template - the way into processing iso19139.mcp -->
+  <xsl:template match="metadata-iso19139.mcp" name="metadata-iso19139.mcp">
+    <xsl:param name="schema"/>
+    <xsl:param name="edit" select="false()"/>
+    <xsl:param name="embedded"/>
+
+      <!-- process in profile mode first -->
+      <xsl:variable name="mcpElements">
+        <xsl:apply-templates mode="iso19139.mcp" select="." >
+          <xsl:with-param name="schema" select="$schema"/>
+          <xsl:with-param name="edit"   select="$edit"/>
+          <xsl:with-param name="embedded" select="$embedded" />
+        </xsl:apply-templates>
+      </xsl:variable>
+
+      <xsl:choose>
+
+        <!-- if we got a match in profile mode then show it -->
+        <xsl:when test="count($mcpElements/*)>0">
+          <xsl:copy-of select="$mcpElements"/>
+        </xsl:when>
+
+        <!-- otherwise process in base iso19139 mode -->
+        <xsl:otherwise>
+          <xsl:apply-templates mode="iso19139" select="." >
+            <xsl:with-param name="schema" select="$schema"/>
+            <xsl:with-param name="edit"   select="$edit"/>
+            <xsl:with-param name="embedded" select="$embedded" />
+          </xsl:apply-templates>
+        </xsl:otherwise>
+      </xsl:choose>
+  </xsl:template>
+	
+Analyzing this template:
+
+#. The name="metadata-iso19139.mcp" is used by the main element processing template in metadata.xsl: elementEP. The main metadata services, show and edit, end up calling metadata-show.xsl and metadata-edit.xsl respectively with the metadata record passed from the Java service. Both these XSLTs, process the metadata record by applying the elementEP template from metadata.xsl to the root element. elementEP calls the appropriate main schema template using the schema name.
+#. The job of this main template is set to process all the elements of the metadata profile. The processing takes place in one of two modes. Firstly, the element is processed in the profile mode (iso19139.mcp). If a match is found then HTML elements will be returned and copied to the output document. If no HTML elements are returned then the element is processed in the base schema mode, iso19139.
+
+- templates that match on elements specific to the profile have mode iso19139.mcp:
+
+::
+
+  <xsl:template mode="iso19139.mcp" match="mcp:taxonomicElement">
+    <xsl:param name="schema"/>
+    <xsl:param name="edit"/>
+
+    .....
+  </xsl:template> 
+ 
+- templates that override elements in the base schema are processed in the profile mode iso19139.mcp
+
+::
+
+  <xsl:template mode="iso19139.mcp" match="gmd:keyword">
+    <xsl:param name="schema"/>
+    <xsl:param name="edit"/>
+
+    .....
+  </xsl:template> 
+
+Notice that the template header of the profile has a simpler design than that used for the original design? Neither the priority attribute or the schema XPath condition is required because we are using a different mode to the base schema. 
+
+- To support processing in two modes we need to add a null template to the profile mode iso19139.mcp as follows:
+
+::
+  
+	<xsl:template mode="iso19139.mcp" match="*|@*"/> 
+
+
+This template will match all elements that we don't have a specific template for in the profile mode iso19139.mcp. These elements will be processed in the base schema mode iso19139 instead because the null template returns nothing (see the main template discussion above). 
+
+The remainder of the discussion in the original design relating to tabs etc applies to the alternative design and is not repeated here. 
 
 ~~~~~~~~~~~~~~~~~~~~~~
 CSW Presentation XSLTs
