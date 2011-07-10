@@ -665,7 +665,7 @@ An alternative XSLT design for profiles
 In all powerful languages there will be more than one way to achieve a particular goal. This alternative XSLT design is for processing profiles. The idea behind the alternative is based on the following observations about the GeoNetwork XSLTs: 
 
 #. All elements are initially processed by apply-templates in mode "elementEP".
-#. The template "elementEP" template (see `INSTALL_DIR/web/geonetwork/xsl/metadata.xsl`) eventually calls the **main** template of the schema/profile.
+#. The template "elementEP" (see `INSTALL_DIR/web/geonetwork/xsl/metadata.xsl`) eventually calls the **main** template of the schema/profile.
 #. The main template can initially process the element in a mode particular to the profile and if this is not successful (ie. no template matches and thus no HTML elements are returned), process the element in the mode of the base schema. 
 
 The advantage of this design is that overriding a template for an element in the base schema does not need the priority attribute or an XPath condition check on the schema name.
@@ -677,7 +677,7 @@ Here is an example for the MCP (iso19139.mcp) with base schema iso19139:
 ::
   
   <!-- main template - the way into processing iso19139.mcp -->
-  <xsl:template match="metadata-iso19139.mcp" name="metadata-iso19139.mcp">
+  <xsl:template name="metadata-iso19139.mcp">
     <xsl:param name="schema"/>
     <xsl:param name="edit" select="false()"/>
     <xsl:param name="embedded"/>
