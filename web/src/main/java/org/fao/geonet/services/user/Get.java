@@ -32,8 +32,11 @@ import jeeves.server.context.ServiceContext;
 import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
+import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 //=============================================================================
@@ -110,7 +113,7 @@ public class Get implements Service
 
 	}
 
-    private Element loadSharedUser(Dbms dbms, String id) throws SQLException {
+    private Element loadSharedUser(Dbms dbms, String id) throws SQLException, IOException, JDOMException {
 
         Element elUser = dbms.select ("SELECT * FROM Users WHERE id=? and profile=?", Integer.valueOf(id),Geocat.Profile.SHARED);
 
@@ -124,7 +127,30 @@ public class Get implements Service
 
             elGroups.addContent(new Element(Geonet.Elem.ID).setText(grpId));
         }
+        
         elUser.addContent(elGroups);
+        
+		//--- get the validity of the parent if it exists
+
+		Element parentInfoId = elUser.getChild("record").getChild("parentinfo");
+        if (parentInfoId.getTextTrim().length() > 0) {
+            Integer integer = Integer.parseInt(parentInfoId.getTextTrim());
+            Element validatedResults = dbms.select("SELECT validated FROM Users where id="+integer);
+
+            Element elValidated = validatedResults.getChild("record").getChild("validated");
+
+            if (elValidated != null){
+                elValidated.detach();
+                elValidated.setName("parentValidated");
+                elUser.addContent(elValidated);
+            }
+		}
+
+        //--- return data
+
+        String[] elementsToResolve = { "organisation", "positionname", "orgacronym","onlinename","onlinedescription", "onlineresource" };
+        LangUtils.resolveMultiLingualElements(elUser, elementsToResolve);
+
         return elUser;
     }
 }
