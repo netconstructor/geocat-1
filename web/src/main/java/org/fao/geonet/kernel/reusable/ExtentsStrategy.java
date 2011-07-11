@@ -176,8 +176,8 @@ public final class ExtentsStrategy extends ReplacementStrategy {
                         Literal literal = filterFactory.literal(transformedGeom.convexHull().buffer(1000));
                         Within filter = filterFactory.within(property, literal);
 
-                        Query query = new DefaultQuery(featureSource.getName().getLocalPart(), filter, new String[] {
-                                featureType.idColumn, featureType.descColumn, geomAtt.getLocalPart() });
+                        final String[] properties = {featureType.idColumn, featureType.descColumn, geomAtt.getLocalPart()};
+                        Query query = featureType.createQuery(filter, properties);
                         FeatureIterator<SimpleFeature> features = featureSource.getFeatures(query).features();
                         try {
                             while (features.hasNext()) {
@@ -433,17 +433,28 @@ public final class ExtentsStrategy extends ReplacementStrategy {
             Iterator polygonIter = originalElem.getDescendants(POLYGON_FINDER);
 
             ArrayList<Info> infos = new ArrayList<Info>();
-            
+
+            Iterator geoIdIter = exExtent.getDescendants(GEO_ID_FINDER);
+            Element geoId = null;
+            if(geoIdIter.hasNext()) {
+                geoId = (Element) geoIdIter.next();
+            }
             if(!polygonIter.hasNext() && bboxIter.hasNext()) {
                 // BBoxes are exploded into multiple reusable objects
                 while(bboxIter.hasNext()) {
                     Element toAdd = wrapWithExtentParentElems((Element) bboxIter.next());
+                    if(geoId != null) {
+                        toAdd.addContent((Content) geoId.clone());
+                    }
                     Info info = new Info(exExtent, toAdd);
                     infos.add(info);
                 }
             } else {
                 // Polygons are merged together into one reusable object
                 Element toAdd = wrapWithExtentParentElems(exExtent);
+                if(geoId != null && !toAdd.getDescendants(GEO_ID_FINDER).hasNext()) {
+                    toAdd.addContent((Content) geoId.clone());
+                }
                 Info info = new Info(exExtent, toAdd);
                 infos.add(info);
             }
@@ -467,6 +478,8 @@ public final class ExtentsStrategy extends ReplacementStrategy {
                 }
             }
         }
+
+
 
         result.removeDuplicates();
 
@@ -497,7 +510,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = featureType.getFeatureSource();
 
         String[] properties = { featureType.idColumn, featureType.descColumn, featureType.geoIdColumn };
-        Query query = new DefaultQuery(featureType.pgTypeName, org.opengis.filter.Filter.INCLUDE, properties);
+        Query query = featureType.createQuery(properties);
         FeatureIterator<SimpleFeature> features = featureSource.getFeatures(query).features();
 
         try {
@@ -851,7 +864,6 @@ public final class ExtentsStrategy extends ReplacementStrategy {
             desc = UUID.randomUUID().toString();
         }
 
-        desc = desc.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         return desc;
     }
 
@@ -974,7 +986,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
             } catch (NumberFormatException err) {
                 GeometryFactory fac = new GeometryFactory();
                 MultiPolygon result = fac.createMultiPolygon(new Polygon[]{(Polygon) fac.toGeometry(DEFAULT_BBOX)});
-                parseResult = new Extent(ExtentTypeCode.INCLUDE, (MultiPolygon) result, Format.GMD_BBOX, false);
+                parseResult = new Extent(ExtentTypeCode.INCLUDE, result, Format.GMD_BBOX, false);
             }
 
             geom = parseResult.geom;

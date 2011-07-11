@@ -284,7 +284,7 @@ public class List implements Service
     protected Query createQuery(Element params, FeatureType featureType, String[] properties, int maxFeatures)
             throws Exception
     {
-        final DefaultQuery defaultQuery = new DefaultQuery(featureType.pgTypeName, Filter.INCLUDE, properties);
+        final DefaultQuery defaultQuery = featureType.createQuery(properties);
         defaultQuery.setMaxFeatures(maxFeatures);
         return defaultQuery;
     }

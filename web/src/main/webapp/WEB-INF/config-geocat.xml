@@ -39,6 +39,10 @@
             <class name=".services.reusable.Process"/>
         </service>
 
+        <service name="reusable.object.update">
+            <class name=".services.reusable.Update"/>
+        </service>
+
         <service name="shared.user.list">
             <class name=".services.user.List">
                 <param name="xml" />

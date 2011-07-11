@@ -150,8 +150,7 @@ public class ExtentHelper
     public static String findNextId(FeatureStore<SimpleFeatureType, SimpleFeature> store, FeatureType featureType)
             throws IOException
     {
-        final DefaultQuery query = new DefaultQuery(featureType.pgTypeName, Filter.INCLUDE,
-                new String[] { featureType.idColumn });
+        final DefaultQuery query = featureType.createQuery(new String[] { featureType.idColumn });
         final FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
         final SortBy[] sortBy = { new SortByImpl(filterFactory.property(featureType.idColumn), SortOrder.ASCENDING) };
         query.setSortBy(sortBy);
@@ -238,20 +237,27 @@ public class ExtentHelper
         if (description == null) {
             return null;
         }
-        String cleaned = description.replaceAll("\\<", "&lt;").replaceAll("\\>", "&gt;").replaceAll("'", "@squot;")
-                .replaceAll("\"", "@dquot;");
-        return "\"" + cleaned + "\"";
+        final String cleaned;
+        if(description.trim().startsWith("<![CDATA[")) {
+            cleaned = description;
+        } else {
+            cleaned = "<![CDATA["+description+"]]>";
+        }
+        return cleaned;
     }
 
     public static String decodeDescription(String description)
     {
-        if (description == null) {
+        String decoded = description;
+        if (decoded == null) {
             return null;
         }
-        while (description.startsWith("\"") && description.endsWith("\"")) {
-            description = description.substring(1, description.length() - 1);
+        while (decoded.startsWith("\"") && decoded.endsWith("\"")) {
+            decoded = decoded.substring(1, decoded.length() - 1);
         }
-        return description.replaceAll("@dquot;", "\"").replaceAll("@squot;", "'");
+        decoded = decoded.replaceAll("@dquot;", "\"").replaceAll("@squot;", "'").replace("<![CDATA[","").replace("]]>","");
+
+        return decoded;
     }
 
     public static String reduceDesc(String desc) throws Exception

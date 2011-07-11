@@ -182,7 +182,7 @@ public class ReusableObjManager
 
             Log.info(Geocat.Module.REUSABLE,
                     "Beginning reusable object processing on metadata object id= " + metadataId);
-                Element elementToProcess = parameterObject.elementToProcess;
+            Element elementToProcess = parameterObject.elementToProcess;
 
             String defaultMetadataLang = parameterObject.defaultLang;
             if(defaultMetadataLang == null) {

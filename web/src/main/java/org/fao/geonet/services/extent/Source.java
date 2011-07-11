@@ -147,7 +147,12 @@ public class Source
             final DefaultQuery query = new DefaultQuery(pgTypeName, filter, properties);
             return query;
         }
-
+        public DefaultQuery createQuery(Filter filter, String[] properties) {
+            return new DefaultQuery(pgTypeName, filter, properties);
+        }
+        public DefaultQuery createQuery(String[] properties) {
+            return createQuery(Filter.INCLUDE,properties);
+        }
         public Filter createFilter(String id)
         {
             final FilterFactory2 factory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
@@ -186,7 +191,13 @@ public class Source
 
     public FeatureType getFeatureType(String typename)
     {
-        return types.get(typename);
+        if(types.containsKey(typename))
+            return types.get(typename);
+        else if(typename.startsWith("gn:") && types.containsKey(typename.substring(3))) {
+            return types.get(typename.substring(3));
+        } else {
+            return null;
+        }
     }
 
     public Collection<FeatureType> getFeatureTypes()

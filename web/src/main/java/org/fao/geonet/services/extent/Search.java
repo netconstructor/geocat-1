@@ -169,7 +169,7 @@ public class Search extends List
         } else {
             filter = (Filter) filter11Parser.parse(new StringReader(xml));
         }
-        return new DefaultQuery(featureType.pgTypeName, filter, properties);
+        return featureType.createQuery(filter, properties);
     }
 
     private DefaultQuery likeQuery(Element params, FeatureType featureType, String[] properties) throws IOException
@@ -201,11 +201,11 @@ public class Search extends List
         }
 
         if (filters.isEmpty()) {
-            return new DefaultQuery(featureType.pgTypeName, Filter.INCLUDE, properties);
+            return featureType.createQuery(properties);
         } else if (filters.size() == 1) {
-            return new DefaultQuery(featureType.pgTypeName, filters.get(0), properties);
+            return featureType.createQuery(filters.get(0), properties);
         } else {
-            return new DefaultQuery(featureType.pgTypeName, filterFactory.and(filters), properties);
+            return featureType.createQuery(filterFactory.and(filters), properties);
         }
     }
 

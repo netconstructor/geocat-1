@@ -23,6 +23,7 @@
 package org.fao.geonet.services.extent;
 
 import static java.lang.String.format;
+import static java.lang.String.valueOf;
 import static org.fao.geonet.services.extent.ExtentHelper.reducePrecision;
 
 import java.io.ByteArrayOutputStream;
@@ -227,7 +228,8 @@ public class Get implements Service
         final FilterFactory2 filterFactory2 = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
         final Filter filter = filterFactory2.equals(filterFactory2.property(featureType.idColumn), filterFactory2
                 .literal(id));
-        final DefaultQuery q = new DefaultQuery(typename, filter, properties);
+
+        final DefaultQuery q = featureType.createQuery(filter,properties);
 
         final Element xml = resolve(format, id, featureSource, q, featureType, wfs, extentTypeCode, crs);
         return xml;
@@ -393,8 +395,11 @@ public class Get implements Service
         if (extentTypeCode == null || extentTypeCode.trim().length() == 0) {
             extentTypeCode = "true";
         }
-        booleanEl.setText(extentTypeCode);
-
+        if(extentTypeCode.trim().equals("1")) {
+            extentTypeCode = "true";
+        }
+        Boolean value = Boolean.parseBoolean(extentTypeCode.trim());
+        booleanEl.setText(value?"1":"0");
     }
 
     @SuppressWarnings("unchecked")
