@@ -931,9 +931,9 @@ public final class ExtentsStrategy extends ReplacementStrategy {
         String search = ExtentHelper.encodeDescription(ExtentHelper.reduceDesc(desc) + ExtentHelper.reduceDesc(geoId));
         Object[] values = new Object[] { desc, search, geoId, showNative, null };
 
-        int srid = geom.getSRID() == 21781?21781:4326;
+        String srid = geom.getSRID() == 21781?"EPSG:21781":"WGS84(DD)";
 
-        values[4] = ExtentHelper.prepareGeometry("EPSG:"+srid, featureType, geom, store.getSchema());
+        values[4] = ExtentHelper.prepareGeometry(srid, featureType, geom, store.getSchema());
         org.opengis.filter.Filter filter = createFilter(new String[] { id }, featureType);
         store.modifyFeatures(attributes, values, filter);
 
