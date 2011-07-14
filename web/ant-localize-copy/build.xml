@@ -1,0 +1,67 @@
+<project name="geonetwork-schematron" default="copy_languages">
+
+	<property name="baseDir" value=".." description="base directory" />
+  <property name="uiLocalizations" value="../src/main/webapp/loc/"/>
+  <property name="schemasDir" value="../src/main/webapp/xml/schemas/"/>
+
+	<target name="clean">
+	  <ant target="operate_on_loc_dirs">
+	    <property name="taskName" value="clean_loc_dir"/>
+    </ant>
+	</target>
+
+	<target name="copy_languages">
+	  <ant target="operate_on_loc_dirs">
+	    <property name="taskName" value="copy_loc_dir"/>
+    </ant>
+	</target>
+
+  <target name="operate_on_loc_dirs" description="perform an operation on all localization dirs">
+      <ant target="${taskName}">
+        <property name="dir" value="${uiLocalizations}"/>
+      </ant>
+      <ant target="${taskName}">
+        <property name="dir" value="${schemasDir}/csw-record/loc"/>
+      </ant>
+      <ant target="${taskName}">
+        <property name="dir" value="${schemasDir}/dublin-core/loc"/>
+      </ant>
+      <ant target="${taskName}">
+        <property name="dir" value="${schemasDir}/fgdc-std/loc"/>
+      </ant>
+      <ant target="${taskName}">
+        <property name="dir" value="${schemasDir}/iso19110/loc"/>
+      </ant>
+      <ant target="${taskName}">
+        <property name="dir" value="${schemasDir}/iso19115/loc"/>
+      </ant>
+      <ant target="${taskName}">
+        <property name="dir" value="${schemasDir}/iso19139/loc"/>
+      </ant>
+      <ant target="${taskName}">
+        <property name="dir" value="${schemasDir}/iso19139.che/loc"/>
+      </ant>
+    </target>
+	<target name="copy_loc_dir">
+	  <copy todir="${dir}/eng" encoding="UTF-8">
+	    <fileset dir="${dir}/en"/>
+    </copy>
+	  <copy todir="${dir}/fra" encoding="UTF-8">
+	    <fileset dir="${dir}/fr"/>
+    </copy>
+	  <copy todir="${dir}/deu" encoding="UTF-8">
+	    <fileset dir="${dir}/de"/>
+    </copy>
+	  <copy todir="${dir}/ita" encoding="UTF-8" failOnError="false">
+	    <fileset dir="${dir}/it"/>
+    </copy>
+	</target>
+
+	<target name="clean_loc_dir">
+	  <delete dir="${dir}/eng"/>
+	  <delete dir="${dir}/fra"/>
+	  <delete dir="${dir}/deu"/>
+	  <delete dir="${dir}/ita"/>
+	</target>
+
+</project>

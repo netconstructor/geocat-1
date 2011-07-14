@@ -47,7 +47,9 @@ import org.fao.geonet.constants.Params;
 import org.fao.geonet.exceptions.SchematronValidationErrorEx;
 import org.fao.geonet.kernel.csw.domain.CswCapabilitiesInfo;
 import org.fao.geonet.kernel.harvest.HarvestManager;
+import org.fao.geonet.kernel.reusable.ProcessParams;
 import org.fao.geonet.kernel.reusable.ReusableObjManager;
+import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
 import org.fao.geonet.kernel.schema.MetadataSchema;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.search.spatial.Pair;
@@ -80,7 +82,8 @@ import java.util.Vector;
  *
  */
 public class DataManager {
-	//--------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------
 	//---
 	//--- Constructor
 	//---
@@ -104,13 +107,14 @@ public class DataManager {
      * @param ss
      * @param reusableObjMan
      * @param extentMan
+     * @param thesMan
      * @param baseURL
      * @param htmlCacheDir
      * @param dataDir
      * @param appPath
      * @throws Exception
      */
-	public DataManager(ServiceContext context, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, ReusableObjManager reusableObjMan, ExtentManager extentMan, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception
+	public DataManager(ServiceContext context, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, ThesaurusManager thesMan, ReusableObjManager reusableObjMan, ExtentManager extentMan, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception
 	{
 		searchMan = sm;
 		accessMan = am;
@@ -120,7 +124,7 @@ public class DataManager {
         servContext=context;
         this.reusableObjMan = reusableObjMan;
         this.extentMan = extentMan;
-
+        this.thesaurusMan = thesMan;
 
 		this.baseURL = baseURL;
         this.dataDir = dataDir;
@@ -329,6 +333,15 @@ public class DataManager {
             
             // get metadata, extracting and indexing any xlinks
             Element md   = XmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
+            
+            if(false) {
+                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, id, settingMan, false, null);
+                List<Element> modified = reusableObjMan.process(processParameters);
+                
+                if(!modified.isEmpty()) {
+                    XmlSerializer.update(dbms, id, md, new ISODate().toString(), null);
+                }
+            }
             if (XmlSerializer.resolveXLinks()) {
                 List<Attribute> xlinks = Processor.getXLinks(md);
                 if (xlinks.size() > 0) {
@@ -2757,6 +2770,7 @@ public class DataManager {
 	private HarvestManager harvestMan;
     private final ReusableObjManager reusableObjMan;
     private final ExtentManager extentMan;
+    private final ThesaurusManager thesaurusMan;
     private String dataDir;
     private ServiceContext servContext;
 	private String appPath;

@@ -1,20 +1,19 @@
 package org.fao.geonet.services.reusable;
 
+import java.util.List;
+
 import jeeves.interfaces.Service;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
-import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
+
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.reusable.ProcessParams;
 import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
-import org.jdom.Content;
 import org.jdom.Element;
-
-import java.util.List;
 
 /**
  * Process xml and create shared objects from it

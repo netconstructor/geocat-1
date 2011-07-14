@@ -603,7 +603,7 @@
           </execution>
           <execution>
             <id>ant-schematrons</id>
-            <phase>prepare-package</phase>
+            <phase>generate-sources</phase>
             <goals>
               <goal>exec</goal>
             </goals>
@@ -615,7 +615,43 @@
               <workingDirectory>${basedir}/../schematrons</workingDirectory>
             </configuration>
           </execution>
-        </executions>      
+        </executions>    
+        </plugin>  
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.1</version>
+          <executions>
+            <execution>
+              <id>ant-localize-copy-clean</id>
+              <phase>clean</phase>
+              <goals>
+                <goal>exec</goal>
+              </goals>
+              <configuration>
+                <executable>ant</executable>
+                <commandlineArgs>clean</commandlineArgs> 
+                <environmentVariables>
+                  <ANT_OPTS>-client</ANT_OPTS>
+                </environmentVariables>
+                <workingDirectory>${basedir}/ant-localize-copy</workingDirectory>
+              </configuration>
+            </execution>
+            <execution>
+              <id>ant-localize-copy</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>exec</goal>
+              </goals>
+              <configuration>
+                <executable>ant</executable>
+                <environmentVariables>
+                  <ANT_OPTS>-client</ANT_OPTS>
+                </environmentVariables>
+                <workingDirectory>${basedir}/ant-localize-copy</workingDirectory>
+              </configuration>
+            </execution>
+          </executions>      
       </plugin>
 
       <plugin>
