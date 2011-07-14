@@ -138,4 +138,9 @@
             <profile name="Shared"/>
         </addXML>
     </file>
+    <file name="config-csw.xml">
+    	<addXml xpath="*//operation[@name = 'GetRecords']/parameters">
+    		<parameter name="geonetworkId" field="_id" type="AdditionalQueryables" />
+    	</addXml>
+    </file>
 </overrides>

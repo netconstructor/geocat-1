@@ -180,13 +180,16 @@ public class Thesaurus {
 
 	public URI addElement(String code, String prefLab, String note, String lang)
 			throws GraphException, IOException, AccessDeniedException {
+		return addElement("#", code, prefLab, note,lang);
+	}
+
+	public URI addElement(String namespace, String code, String prefLab, String note, String lang)
+			throws GraphException, IOException, AccessDeniedException {
 
 		Graph myGraph = new org.openrdf.model.impl.GraphImpl();
 
 		ValueFactory myFactory = myGraph.getValueFactory();
 		String namespaceSkos = "http://www.w3.org/2004/02/skos/core#";
-		//String namespace = "http://geosource.org/keyword#";
-		String namespace = "#";
 
 		URI mySubject = myFactory.createURI(namespace, code);
 

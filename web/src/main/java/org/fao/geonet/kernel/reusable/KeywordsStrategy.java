@@ -27,6 +27,7 @@ import static org.fao.geonet.kernel.reusable.Utils.addChild;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -327,12 +328,12 @@ public final class KeywordsStrategy extends ReplacementStrategy
             words.add(Pair.read(keyword, locale));
         }
         URI uri = null;
-        final String namespace = "http://custom.shared.obj.ch/concept";
+        final String namespace = "http://custom.shared.obj.ch/concept#";
         for (Pair<String, String> pair : words) {
             if (update) {
                 thesaurus.updateElement(namespace, code, pair.one(), pair.one(), pair.two());
             } else {
-                uri = thesaurus.addElement(namespace+"#"+code, pair.one(), pair.one(), pair.two());
+                uri = thesaurus.addElement(namespace, code, pair.one(), pair.one(), pair.two());
             }
         }
         return uri;
@@ -345,11 +346,8 @@ public final class KeywordsStrategy extends ReplacementStrategy
             return Collections.emptySet();
         }
 
-        String code = Utils.extractUrlParam(xlink, "id");
-        int hashIndex = code.indexOf("&#35;") + 4;
-        if (hashIndex < 4) {
-            hashIndex = code.indexOf("%23") + 3;
-        }
+        String code = URLDecoder.decode(Utils.extractUrlParam(xlink, "id"),"UTF-8");
+        int hashIndex = code.indexOf("#",1)+1;
 
         if (hashIndex > 2) {
             code = code.substring(hashIndex);
