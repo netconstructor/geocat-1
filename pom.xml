@@ -706,7 +706,7 @@
     <module>sde</module>
     <module>web</module>
     <module>web-client</module>
-    <module>web-itest</module>
+<!--    <module>web-itest</module> -->
   </modules>
 
   <distributionManagement>
