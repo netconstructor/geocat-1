@@ -136,7 +136,7 @@ public class ReusableObjManager
 
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 
-        Element metadata = dm.getMetadata(context, id, false, false, true, false);
+        Element metadata = dm.getMetadata(context, id, false, false, false);
 
         ProcessParams searchParams = new ProcessParams(dbms, logger, id, metadata, metadata, gc.getThesaurusManager(),
                 gc.getExtentManager(), context.getBaseUrl(), gc.getSettingManager(), false,null);
@@ -214,9 +214,9 @@ public class ReusableObjManager
                 for (Element md : results) {
                     md.detach();
                     for (Object ns : elementToProcess.getAdditionalNamespaces()) {
-
                         md.addNamespaceDeclaration((Namespace) ns);
                     }
+                    
                 }
                 return results;
             }

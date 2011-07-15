@@ -333,13 +333,36 @@ public class DataManager {
             
             // get metadata, extracting and indexing any xlinks
             Element md   = XmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
+
+            // get metadata table fields
+            String query = "SELECT schemaId, createDate, changeDate, source, isTemplate, root, " +
+                "title, uuid, isHarvested, owner, groupOwner, popularity, rating FROM Metadata WHERE id = ?";
+
+            Element rec = dbms.select(query, id$).getChild("record");
+
+            String  schema     = rec.getChildText("schemaid");
+            String  createDate = rec.getChildText("createdate");
+            String  changeDate = rec.getChildText("changedate");
+            String  source     = rec.getChildText("source");
+            String  isTemplate = rec.getChildText("istemplate");
+            String  root       = rec.getChildText("root");
+            String  title      = rec.getChildText("title");
+            String  uuid       = rec.getChildText("uuid");
+            String  isHarvested= rec.getChildText("isharvested");
+            String  owner      = rec.getChildText("owner");
+            String  groupOwner = rec.getChildText("groupowner");
+            String  popularity = rec.getChildText("popularity");
+            String  rating     = rec.getChildText("rating");
             
-            if(false) {
-                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, id, settingMan, false, null);
+            
+            if("n".equalsIgnoreCase(isHarvested)) {
+                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null);
                 List<Element> modified = reusableObjMan.process(processParameters);
                 
                 if(!modified.isEmpty()) {
+                    md = modified.get(0);
                     XmlSerializer.update(dbms, id, md, new ISODate().toString(), null);
+                    dbms.commit();
                 }
             }
             if (XmlSerializer.resolveXLinks()) {
@@ -361,25 +384,7 @@ public class DataManager {
                 moreFields.add(makeField("_hasxlinks", "0", true, true, false));
             }
 
-            // get metadata table fields
-            String query = "SELECT schemaId, createDate, changeDate, source, isTemplate, root, " +
-                "title, uuid, isHarvested, owner, groupOwner, popularity, rating FROM Metadata WHERE id = ?";
-
-            Element rec = dbms.select(query, id$).getChild("record");
-
-            String  schema     = rec.getChildText("schemaid");
-            String  createDate = rec.getChildText("createdate");
-            String  changeDate = rec.getChildText("changedate");
-            String  source     = rec.getChildText("source");
-            String  isTemplate = rec.getChildText("istemplate");
-            String  root       = rec.getChildText("root");
-            String  title      = rec.getChildText("title");
-            String  uuid       = rec.getChildText("uuid");
-            String  isHarvested= rec.getChildText("isharvested");
-            String  owner      = rec.getChildText("owner");
-            String  groupOwner = rec.getChildText("groupowner");
-            String  popularity = rec.getChildText("popularity");
-            String  rating     = rec.getChildText("rating");
+            
 
             Log.debug(Geonet.DATA_MANAGER, "record schema (" + schema + ")"); //DEBUG
             Log.debug(Geonet.DATA_MANAGER, "record createDate (" + createDate + ")"); //DEBUG
@@ -1382,7 +1387,7 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getMetadataNoInfo(ServiceContext srvContext, String id) throws Exception {
-		Element md = getMetadata(srvContext, id, false, false, true, false);
+		Element md = getMetadata(srvContext, id, false, false, false);
 		md.removeChild(Edit.RootChild.INFO, Edit.NAMESPACE);
 		return md;
 	}
@@ -1398,10 +1403,10 @@ public class DataManager {
      * @throws Exception
      */
     public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors) throws Exception {
-        return getMetadata(srvContext,id,forEditing,withEditorValidationErrors,true,true);
+        return getMetadata(srvContext,id,forEditing,withEditorValidationErrors,true);
     }
 
-	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean resolveXLink, boolean elementsHide) throws Exception {
+	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean elementsHide) throws Exception {
 		Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
 		boolean doXLinks = XmlSerializer.resolveXLinks();
 		Element md = XmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
@@ -2344,7 +2349,7 @@ public class DataManager {
 
 		// --- get parent metadata in read/only mode
         boolean forEditing = false, withValidationErrors = false;
-        Element parent = getMetadata(srvContext, parentId, forEditing, withValidationErrors,true,false);
+        Element parent = getMetadata(srvContext, parentId, forEditing, withValidationErrors,false);
 
 		Element env = new Element("update");
 		env.addContent(new Element("parentUuid").setText(parentUuid));
@@ -2365,7 +2370,7 @@ public class DataManager {
 				continue;
 			}
 
-            Element child = getMetadata(srvContext, childId, forEditing, withValidationErrors, true, false);
+            Element child = getMetadata(srvContext, childId, forEditing, withValidationErrors, false);
 
 			String childSchema = child.getChild(Edit.RootChild.INFO,
 					Edit.NAMESPACE).getChildText(Edit.Info.Elem.SCHEMA);

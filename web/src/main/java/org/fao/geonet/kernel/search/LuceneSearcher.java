@@ -225,7 +225,7 @@ public class LuceneSearcher extends MetaSearcher
 					    md = getMetadataFromIndex(doc, id, true);
                     } else if (srvContext != null) {
                         boolean forEditing = false, withValidationErrors = false;
-                        md = gc.getDataManager().getMetadata(srvContext, id, forEditing, withValidationErrors, true, false);
+                        md = gc.getDataManager().getMetadata(srvContext, id, forEditing, withValidationErrors, false);
 					}
 	
 					//--- a metadata could have been deleted just before showing 

@@ -39,6 +39,10 @@
             <class name=".services.reusable.Process"/>
         </service>
 
+        <service name="reusable.xlink.delete">
+            <class name=".services.reusable.XLinkDelete"/>
+        </service>
+
         <service name="reusable.object.update">
             <class name=".services.reusable.Update"/>
         </service>

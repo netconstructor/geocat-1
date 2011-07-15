@@ -59,6 +59,7 @@ import org.openrdf.sesame.config.AccessDeniedException;
 
 public final class KeywordsStrategy extends ReplacementStrategy
 {
+    private static final String NAMESPACE = "http://custom.shared.obj.ch/concept#";
     private static final String    GEOCAT_THESAURUS_NAME = "local._none_.geocat.ch";
     public static final String NON_VALID_THESAURUS_NAME = "local._none_.non_validated";
 
@@ -218,8 +219,14 @@ public final class KeywordsStrategy extends ReplacementStrategy
         Thesaurus thesaurus = _thesaurusMan.getThesaurusByName(validateName(thesaurusName));
 
         for (String id : ids) {
-            KeywordBean concept = lookup(id, session);
-            thesaurus.removeElement(concept);
+            try {
+                // A test to see if id is from a previous search or 
+                Integer.parseInt(id);
+                KeywordBean concept = lookup(id, session);
+                thesaurus.removeElement(concept);
+            } catch (NumberFormatException e) {
+                thesaurus.removeElement(NAMESPACE, extractCode(id));
+            }
         }
 
     }
@@ -328,7 +335,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
             words.add(Pair.read(keyword, locale));
         }
         URI uri = null;
-        final String namespace = "http://custom.shared.obj.ch/concept#";
+        final String namespace = NAMESPACE;
         for (Pair<String, String> pair : words) {
             if (update) {
                 thesaurus.updateElement(namespace, code, pair.one(), pair.one(), pair.two());
@@ -345,17 +352,23 @@ public final class KeywordsStrategy extends ReplacementStrategy
         if (!NON_VALID_THESAURUS_NAME.equals(thesaurusName)) {
             return Collections.emptySet();
         }
+        String id = Utils.extractUrlParam(xlink, "id");
 
-        String code = URLDecoder.decode(Utils.extractUrlParam(xlink, "id"),"UTF-8");
+        String code = extractCode(id);
+
+        doUpdateKeyword(xlink, thesaurusName, code, metadataLang, true);
+
+        return Collections.emptySet();
+    }
+
+    private String extractCode(String code) throws UnsupportedEncodingException {
+        code = URLDecoder.decode(code,"UTF-8");
         int hashIndex = code.indexOf("#",1)+1;
 
         if (hashIndex > 2) {
             code = code.substring(hashIndex);
         }
-
-        doUpdateKeyword(xlink, thesaurusName, code, metadataLang, true);
-
-        return Collections.emptySet();
+        return code;
     }
 
     public boolean isValidated(Dbms dbms, String href) throws Exception
