@@ -65,7 +65,10 @@ public class Get implements Service
 		String id = params.getChildText(Params.ID);
 
 		UserSession usrSess = context.getUserSession();
-		if (!usrSess.isAuthenticated()) return new Element(Jeeves.Elem.RESPONSE);
+		if (!usrSess.isAuthenticated()){
+            Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
+            return loadSharedUser(dbms,id);
+		}
 
 		String      myProfile = usrSess.getProfile();
 		String      myUserId  = usrSess.getUserId();

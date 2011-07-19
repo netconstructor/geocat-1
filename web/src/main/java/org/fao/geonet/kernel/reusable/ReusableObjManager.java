@@ -422,7 +422,7 @@ public class ReusableObjManager
             Log.info(Geocat.Module.REUSABLE, "Updating a " + strategy + " in metadata id="
                     + params.metadataId);
 
-            Processor.removeFromCache(xlink.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
+            Processor.uncacheXLinkUri(xlink.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
 
             String metadataLang = LangUtils.iso19139DefaultLang(params.elementToProcess);
             if (metadataLang != null) {

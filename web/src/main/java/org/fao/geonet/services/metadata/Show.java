@@ -110,8 +110,8 @@ public class Show implements Service
 		//--- get metadata
 		
 		Element elMd;
-		boolean addEditing = false;
-		if (!skipInfo) {
+		boolean addEditing = "true".equalsIgnoreCase(Util.getParam(params, "addEditing","false"));;
+		if (!skipInfo || addEditing) {
             boolean withValidationErrors = false;
             elMd = gc.getDataManager().getMetadata(context, id, addEditing, withValidationErrors);
 		}

@@ -113,18 +113,6 @@ public final class Processor {
 
 	//--------------------------------------------------------------------------
   /**
-    * Remove an XLink from the cache.
-    */
-	public static void removeFromCache(String xlinkUri) throws CacheException {
-
-		JeevesJCS xlinkCache = JeevesJCS.getInstance(XLINK_JCS);
-		if (xlinkCache.get(xlinkUri)!=null) {
-			xlinkCache.remove(xlinkUri);
-		}
-	}
-
-	//--------------------------------------------------------------------------
-  /**
     * Clear the cache.
     */
 	public static void clearCache() throws CacheException {

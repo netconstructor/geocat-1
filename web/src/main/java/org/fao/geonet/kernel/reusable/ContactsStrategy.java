@@ -336,7 +336,7 @@ public final class ContactsStrategy extends ReplacementStrategy
                         + Utils.extractUrlParam(xlinkedParent, "id"));
             }
         } else if( !ReusableObjManager.isValidated(toReplace)){
-            Processor.removeFromCache(toReplace.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
+            Processor.uncacheXLinkUri(toReplace.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
 
             updateObject((Element)toReplace.clone(), dbms, metadataLang);
             int parsedId = Integer.parseInt(Utils.extractUrlParam(toReplace, "id"));
