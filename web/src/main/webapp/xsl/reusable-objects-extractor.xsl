@@ -68,12 +68,12 @@
         <xsl:copy-of select="." />
     </xsl:template>
 
-    <xsl:template match="srv:extent|gmd:extent"
+    <xsl:template match="srv:extent|gmd:extent|gmd:spatialExtent|gmd:sourceExtent"
         mode="metadata">
         <extentsPlaceholder/>
     </xsl:template>
 
-    <xsl:template match="srv:extent|gmd:extent"
+    <xsl:template match="srv:extent|gmd:extent|gmd:spatialExtent|gmd:sourceExtent"
         mode="extents">
         <xsl:copy-of select="." />
     </xsl:template>

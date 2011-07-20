@@ -356,14 +356,18 @@ public class DataManager {
             
             
             if("n".equalsIgnoreCase(isHarvested)) {
-                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null);
-                List<Element> modified = reusableObjMan.process(processParameters);
-                
-                if(!modified.isEmpty()) {
-                    md = modified.get(0);
-                    XmlSerializer.update(dbms, id, md, new ISODate().toString(), null);
-                    dbms.commit();
-                }
+            	try {
+	                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null);
+	                List<Element> modified = reusableObjMan.process(processParameters);
+	                
+	                if(!modified.isEmpty()) {
+	                    md = modified.get(0);
+	                    XmlSerializer.update(dbms, id, md, new ISODate().toString(), null);
+	                    dbms.commit();
+	                }
+            	} catch (Exception e) {
+            		Log.debug(Geonet.DATA_MANAGER, "error while trying to update shared objects of metadata, "+id+" "+e.getMessage()); //DEBUG
+            	}
             }
             if (XmlSerializer.resolveXLinks()) {
                 List<Attribute> xlinks = Processor.getXLinks(md);

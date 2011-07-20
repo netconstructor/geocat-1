@@ -205,7 +205,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
 
                                     Namespace prefix = prefix(placeholder, originalElem);
                                     results.add(xlinkIt(format, wfs, featureType, idString, validated, extentTypeCode,
-                                            prefix));
+                                    		new Element(originalElem.getName(),prefix)));
                                     break SEARCH;
                                 }
                             }
@@ -388,7 +388,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
 
         String id = new Add().add(null, geoId, desc, "WGS84(DD)", featureType, store, geom, e.showNative);
 
-        return Collections.singleton(xlinkIt(format, wfs, featureType, id, false, extentTypeCode, prefix));
+        return Collections.singleton(xlinkIt(format, wfs, featureType, id, false, extentTypeCode, new Element(e.original.getName(), prefix)));
     }
 
     private String findGeoId(Result extents, Info e, String metadataLang) throws Exception {
@@ -663,24 +663,23 @@ public final class ExtentsStrategy extends ReplacementStrategy {
     }
 
     private Element xlinkIt(Format format, Source wfs, FeatureType featureType, String id, boolean validated,
-            boolean include, Namespace prefix) {
+            boolean include, Element xlinkElement) {
 
-        Element originalElem = new Element("extent", prefix);
 
         String template = _baseURL
                 + "/srv/eng/xml.extent.get?wfs={0}&typename={1}&id={2}&format={3}&extentTypeCode={4}";
         String xlink = MessageFormat.format(template, wfs.wfsId, featureType.typename, id, format,
                 String.valueOf(include));
 
-        originalElem.removeContent();
-        originalElem.setAttribute(XLink.HREF, xlink, XLink.NAMESPACE_XLINK);
+        xlinkElement.removeContent();
+        xlinkElement.setAttribute(XLink.HREF, xlink, XLink.NAMESPACE_XLINK);
 
         if (!validated) {
-            originalElem.setAttribute(XLink.ROLE, ReusableObjManager.NON_VALID_ROLE, XLink.NAMESPACE_XLINK);
+        	xlinkElement.setAttribute(XLink.ROLE, ReusableObjManager.NON_VALID_ROLE, XLink.NAMESPACE_XLINK);
         }
-        originalElem.setAttribute(XLink.SHOW, XLink.SHOW_EMBED, XLink.NAMESPACE_XLINK);
+        xlinkElement.setAttribute(XLink.SHOW, XLink.SHOW_EMBED, XLink.NAMESPACE_XLINK);
 
-        return originalElem;
+        return xlinkElement;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

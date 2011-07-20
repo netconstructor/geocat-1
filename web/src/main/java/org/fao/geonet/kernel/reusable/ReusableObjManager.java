@@ -32,12 +32,15 @@ import org.fao.geonet.kernel.ThesaurusManager;
 import org.fao.geonet.services.extent.ExtentManager;
 import org.fao.geonet.kernel.reusable.log.Record;
 import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
+import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.ISODate;
 import org.fao.geonet.util.LangUtils;
+import org.fao.geonet.util.XslUtil;
 import org.geotools.gml3.GMLConfiguration;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.jdom.Parent;
 import org.jdom.filter.Filter;
 
 public class ReusableObjManager
@@ -279,6 +282,23 @@ public class ReusableObjManager
         ExtentManager extentMan = params.extentManager;
 
         ExtentsStrategy strategy = new ExtentsStrategy(baseURL, _appPath, extentMan, null, this.gml3Conf, this.gml2Conf);
+
+        Iterator iter = xml.getChild(EXTENTS).getChildren().iterator();
+        List<Content> originalElems = Utils.convertToList(iter, Content.class);
+
+        for (Content extent : originalElems) {
+        	Element extentAsElem = (Element) extent;
+			Element exExtent = extentAsElem.getChild("EX_Extent", XslUtil.GMD_NAMESPACE);
+			boolean needToProcessDescendants = exExtent != null && exExtent.getDescendants(new ElementFinder("EX_Extent", XslUtil.GMD_NAMESPACE, "*")).hasNext();
+        	if(needToProcessDescendants) {
+        		int index = extentAsElem.indexOf(exExtent);
+	            List<Element> changed = process(params.updateElementToProcess(exExtent));
+	            if(!changed.isEmpty()) {
+	            	extentAsElem.setContent(index, changed);
+	            }
+        	}
+		}
+        
         return performReplace(dbms, xml, defaultMetadataLang, EXTENTS_PLACEHOLDER, EXTENTS, logger, strategy,
                 params.addOnly);
     }
