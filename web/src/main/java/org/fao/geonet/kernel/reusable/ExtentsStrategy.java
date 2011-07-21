@@ -317,7 +317,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
         List<Geometry> distinctGeoms = new ArrayList<Geometry>();
 
         for (Info e : extents.geographic) {
-            results.addAll(parseAndCreateReusable(extents, e, dbms, metadataLang, description, prefix, distinctGeoms));
+            results.addAll(parseAndCreateReusable(extents, e, dbms, metadataLang, description, prefix, originalElem, distinctGeoms));
         }
 
         if (results.isEmpty()) {
@@ -332,7 +332,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
                     ((Content) bbox.next()).detach();
             }
             results.addAll(createReusable(extents, new Info(originalElem, (Element) originalElem.clone()),
-                    metadataLang, description, geom, format, prefix));
+                    metadataLang, description, geom, format, prefix, originalElem));
         }
 
         // if extent.other is not empty add originalElement so that
@@ -349,12 +349,13 @@ public final class ExtentsStrategy extends ReplacementStrategy {
      *            All extents being added
      * @param e
      *            the extent to be added by this call
+     * @param originalElem 
      * @param distinctGeoms
      *            collection that contains all geoms added before e. This method
      *            will add to this collection
      */
     private Collection<Element> parseAndCreateReusable(Result extents, Info e, Dbms dbms, String metadataLang,
-            String desc, Namespace prefix, List<Geometry> distinctGeoms) throws Exception {
+            String desc, Namespace prefix, Element originalElem, List<Geometry> distinctGeoms) throws Exception {
         Geometry geometries = e.geom;
         Format format = e.format;
 
@@ -370,11 +371,11 @@ public final class ExtentsStrategy extends ReplacementStrategy {
 
         distinctGeoms.add(geometries);
 
-        return createReusable(extents, e, metadataLang, desc, geometries, format, prefix);
+        return createReusable(extents, e, metadataLang, desc, geometries, format, prefix, originalElem);
     }
 
     private Collection<Element> createReusable(Result extents, Info e, String metadataLang, String desc, Geometry geom,
-            Format format, Namespace prefix) throws Exception {
+            Format format, Namespace prefix, Element originalElem) throws Exception {
 
         e.original.detach();
         String geoId = findGeoId(extents, e, metadataLang);
@@ -388,7 +389,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
 
         String id = new Add().add(null, geoId, desc, "WGS84(DD)", featureType, store, geom, e.showNative);
 
-        return Collections.singleton(xlinkIt(format, wfs, featureType, id, false, extentTypeCode, new Element(e.original.getName(), prefix)));
+        return Collections.singleton(xlinkIt(format, wfs, featureType, id, false, extentTypeCode, new Element(originalElem.getName(), prefix)));
     }
 
     private String findGeoId(Result extents, Info e, String metadataLang) throws Exception {
