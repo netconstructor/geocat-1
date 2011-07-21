@@ -321,7 +321,12 @@ public class ReusableObjManager
 
             if (XLink.isXLink(originalElem)) {
                 originalElem.detach();
-                updatePlaceholder(placeholder, originalElem);
+                Processor.uncacheXLinkUri(originalElem.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
+
+                Collection<Element> newElements = strategy.updateObject(originalElem, dbms, defaultMetadataLang);
+                
+                updatePlaceholder(placeholder, newElements);
+                changed = true;
                 continue;
             }
             changed |= replaceSingleElement(placeholder, originalElem, strategy, defaultMetadataLang, addOnly, dbms,

@@ -343,7 +343,7 @@ public class Importer {
 				}
                 else {
                     boolean indexGroup = false;
-                    dm.indexMetadata(dbms, id.get(index), indexGroup);
+                    dm.indexMetadata(dbms, id.get(index), indexGroup,true);
 				}
 			}
 

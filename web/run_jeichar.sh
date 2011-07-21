@@ -8,7 +8,7 @@ fi
 JREBEL_OPTS="-noverify -javaagent:$JREBEL_HOME/jrebel.jar"
 DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 OVERRIDES="-Djeeves.configuration.overrides.file=/WEB-INF/override-config-jeichar.xml"
-MEMORY="-XX:MaxPermSize=256m -Dmx1GM"
+MEMORY="-XX:MaxPermSize=256m -Xmx1GM"
 DIRS="-Dgeonetwork.lucene.dir=/tmp/gc_lucene -Dgeonetwork.data.dir=/tmp/gc_data"
 export MAVEN_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS"
 

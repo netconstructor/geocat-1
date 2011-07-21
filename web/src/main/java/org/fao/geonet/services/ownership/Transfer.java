@@ -106,7 +106,7 @@ public class Transfer implements Service {
 		//--- reindex metadata
 		for (int mdId : metadata) {
             boolean indexGroup = false;
-            dm.indexMetadata(dbms, Integer.toString(mdId), indexGroup);
+            dm.indexMetadata(dbms, Integer.toString(mdId), indexGroup,true);
         }
 
 		//--- return summary

@@ -230,19 +230,20 @@ public final class FormatsStrategy extends ReplacementStrategy
     {
         List<Element> xml = Xml.transform((Element) xlink.clone(), _styleSheet).getChildren("format");
 
-        Element element = xml.get(0);
-        String id = Utils.extractUrlParam(xlink, "id");
-
-        String name = element.getAttributeValue("name");
-        String version = element.getAttributeValue("version");
-        if (version == null) {
-            version = "";
+        if(!xml.isEmpty()) {
+	        Element element = xml.get(0);
+	        String id = Utils.extractUrlParam(xlink, "id");
+	
+	        String name = element.getAttributeValue("name");
+	        String version = element.getAttributeValue("version");
+	        if (version == null) {
+	            version = "";
+	        }
+	
+	        String query = "UPDATE "+TABLE+" SET "+NAME_COL+"=TRIM(?), "+VERSION_COL+"=TRIM(?) WHERE "+ID_COL+"=" + id;
+	        dbms.execute(query, name, version);
         }
-
-        String query = "UPDATE "+TABLE+" SET "+NAME_COL+"=TRIM(?), "+VERSION_COL+"=TRIM(?) WHERE "+ID_COL+"=" + id;
-        dbms.execute(query, name, version);
-
-        return Collections.emptySet();
+        return Collections.singleton(xlink);
 
     }
 

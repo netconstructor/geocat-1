@@ -213,7 +213,7 @@ public class XslProcessing implements Service {
     			}
                 else {
                     boolean indexGroup = false;
-                    dataMan.indexMetadata(dbms, id, indexGroup);
+                    dataMan.indexMetadata(dbms, id, indexGroup,true);
     			}
             }
 

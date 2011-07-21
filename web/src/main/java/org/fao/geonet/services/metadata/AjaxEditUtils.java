@@ -606,6 +606,9 @@ public class AjaxEditUtils extends EditUtils {
         editLib.contractElements(md);
         String parentUuid = null;
 		md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms, null);
+		
+		md = dataManager.processSharedObjects(dbms, id, md);
+		
         String changeDate = null;
 		XmlSerializer.update(dbms, id, md, changeDate, null);
 
@@ -614,7 +617,7 @@ public class AjaxEditUtils extends EditUtils {
 
 		//--- update search criteria
         boolean indexGroup = false;
-        dataManager.indexMetadata(dbms, id, indexGroup);
+        dataManager.indexMetadata(dbms, id, indexGroup,false);
 
 		return true;
 	}
@@ -662,6 +665,8 @@ public class AjaxEditUtils extends EditUtils {
         String parentUuid = null;
         md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms, null);
 
+        md = dataManager.processSharedObjects(dbms, id, md);
+        
         String changeDate = null;
 		XmlSerializer.update(dbms, id, md, changeDate, null);
 
@@ -670,7 +675,7 @@ public class AjaxEditUtils extends EditUtils {
 
 		//--- update search criteria
         boolean indexGroup = false;
-        dataManager.indexMetadata(dbms, id, indexGroup);
+        dataManager.indexMetadata(dbms, id, indexGroup, false);
 
 		return true;
 	}

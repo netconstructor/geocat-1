@@ -117,7 +117,7 @@ public class Reject implements Service
             for (MetadataRecord metadataRecord : results) {
                 final SearchManager searchmanager = gc.getSearchmanager();
                 final String metadataId = metadataRecord.id;
-                gc.getDataManager().indexMetadata(dbms, metadataId, true);
+                gc.getDataManager().indexMetadata(dbms, metadataId, true, false);
             }
 
             Element e = new Element("id");
