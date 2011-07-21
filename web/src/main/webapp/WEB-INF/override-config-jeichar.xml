@@ -11,4 +11,9 @@
     <properties>
         <postgis.db>geocat2_trunk</postgis.db>
     </properties>
+    <file name="config.xml">
+      <replaceText xpath="general/uploadDir">/tmp/gc_data/uploads</replaceText>
+      <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="/tmp/gc_data/schemaPluginsDir"/>
+      <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="/tmp/gc_data/htmlCacheDir"/>
+    </file>
 </overrides>
