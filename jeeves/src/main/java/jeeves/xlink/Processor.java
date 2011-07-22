@@ -160,8 +160,9 @@ public final class Processor {
 			try {
 				
 				if(uri.startsWith(XLink.LOCAL_PROTOCOL)) {
-					LocalServiceRequest request = LocalServiceRequest.create(uri.replaceAll("&amp;", "&"), null);
+					LocalServiceRequest request = LocalServiceRequest.create(uri.replaceAll("&amp;", "&"));
 					request.setDebug(false);
+					request.setLanguage("eng");
 					remoteFragment = srvContext.execute(request);
 				} else {
 					URL url = new URL(uri.replaceAll("&amp;", "&"));

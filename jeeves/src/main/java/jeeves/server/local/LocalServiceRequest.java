@@ -7,6 +7,8 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * Represents a Jeeves local XML request (within JVM).
@@ -170,7 +172,11 @@ public class LocalServiceRequest extends ServiceRequest
 		{
 			nvPair = nvPairs[i].split("\\=");
 			name = nvPair[0];
-			value = nvPair[1];
+			if(nvPair.length == 2) {
+				value = nvPair[1];
+			} else {
+				value = "";
+			}
 			if (name.startsWith("@"))
 			{
 				// Some params should become attrs (indicated with @)
@@ -179,7 +185,11 @@ public class LocalServiceRequest extends ServiceRequest
 			} else
 			{
 				param = new Element(name);
-				param.setText(value);
+				try {
+					param.setText(URLDecoder.decode(value, "UTF-8"));
+				} catch (UnsupportedEncodingException e) {
+					param.setText(value);
+				}
 				result.addContent(param);
 			}
 		}
