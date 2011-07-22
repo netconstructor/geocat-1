@@ -351,8 +351,7 @@ public class ReusableObjManager
 			ServiceContext srvContext) throws IOException,
 			JDOMException, CacheException, AssertionError, Exception {
 		
-		boolean notValidated = NON_VALID_ROLE.equals(originalElem.getAttributeValue(XLink.ROLE, XLink.NAMESPACE_XLINK));
-		if(notValidated) {
+		if(!isValidated(originalElem)) {
 			String href = XLink.getHRef(originalElem);
 			Element current = resolveXLink(currentXLinkElements, href,srvContext);
 			
@@ -584,7 +583,8 @@ public class ReusableObjManager
 
     public static boolean isValidated(Element xlinkParent)
     {
-        return NON_VALID_ROLE.equals(xlinkParent.getAttributeValue(XLink.ROLE, XLink.NAMESPACE_XLINK));
+        String attributeValue = xlinkParent.getAttributeValue(XLink.ROLE, XLink.NAMESPACE_XLINK);
+		return !NON_VALID_ROLE.equals(attributeValue);
     }
 
 }
