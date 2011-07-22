@@ -106,7 +106,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
     public static final String NON_VALIDATED_TYPE = "gn:non_validated";
     private static final String XLINK_TYPE = "gn:xlinks";
 
-    private final String _baseURL;
+    //private final String _baseURL;
     private final ExtentManager _extentMan;
 
     private final GMLConfiguration gml3Conf;
@@ -125,7 +125,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
             GMLConfiguration gml3Conf, org.geotools.gml2.GMLConfiguration gml2Conf) {
         this._gmlConvertStyleSheet = appDir + "xsl/reusable-object-gml-convert.xsl";
         this._flattenStyleSheet = appDir + "xsl/reusable-object-snippet-flatten.xsl";
-        this._baseURL = baseURL;
+//        this._baseURL = baseURL;
         this._appPath = appDir;
         this._extentMan = extentMan;
         _currentLocale = currentLocale;
@@ -521,7 +521,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
                 Element e = new Element(REPORT_ELEMENT);
 
                 String id = idAttributeToIdString(featureType, feature);
-                String url = _baseURL + "/srv/" + _currentLocale + "/extent.edit?crs=EPSG:21781&wfs=default&typename="
+                String url = XLink.LOCAL_PROTOCOL+"extent.edit?crs=EPSG:21781&wfs=default&typename="
                         + NON_VALIDATED_TYPE + "&id=" + id;
 
                 addChild(e, REPORT_URL, url);
@@ -577,7 +577,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
         Source wfs = _extentMan.getSource();
         FeatureType featureType = findFeatureType(featureTypeName);
 
-        return _baseURL + "/srv/___/xml.extent.get?wfs=" + wfs.wfsId + "&typename=" + featureType.typename + "&id="
+        return XLink.LOCAL_PROTOCOL+"xml.extent.get?wfs=" + wfs.wfsId + "&typename=" + featureType.typename + "&id="
                 + id + "&";
     }
 
@@ -667,8 +667,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
             boolean include, Element xlinkElement) {
 
 
-        String template = _baseURL
-                + "/srv/eng/xml.extent.get?wfs={0}&typename={1}&id={2}&format={3}&extentTypeCode={4}";
+        String template = XLink.LOCAL_PROTOCOL+"xml.extent.get?wfs={0}&typename={1}&id={2}&format={3}&extentTypeCode={4}";
         String xlink = MessageFormat.format(template, wfs.wfsId, featureType.typename, id, format,
                 String.valueOf(include));
 

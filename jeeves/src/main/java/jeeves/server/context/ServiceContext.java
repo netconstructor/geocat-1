@@ -26,6 +26,7 @@ package jeeves.server.context;
 import jeeves.interfaces.Logger;
 import jeeves.server.ProfileManager;
 import jeeves.server.UserSession;
+import jeeves.server.local.LocalServiceRequest;
 import jeeves.server.resources.ProviderManager;
 import jeeves.server.sources.ServiceRequest.InputMethod;
 import jeeves.server.sources.ServiceRequest.OutputMethod;
@@ -33,8 +34,12 @@ import jeeves.server.sources.http.JeevesServlet;
 import jeeves.utils.Log;
 import jeeves.utils.SerialFactory;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
+
+import org.jdom.Element;
+import org.jdom.JDOMException;
 
 //=============================================================================
 
@@ -147,6 +152,14 @@ public class ServiceContext extends BasicContext
 	public void setHeaders(Map<String, String> headers)
 	{
 		this.headers = headers;
+	}
+
+	public Element execute(LocalServiceRequest request) throws IOException, JDOMException {
+		ServiceContext context = new ServiceContext(request.getService(), getProviderManager(), getSerialFactory(), getProfileManager(), htContexts);
+		
+		servlet.getEngine().getServiceManager().dispatch(request,userSession,context,false);
+		
+		return request.getResult();
 	}
 }
 

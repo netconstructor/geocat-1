@@ -150,7 +150,7 @@ public class Reject implements Service
                     String oldHRef = xlink.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK);
                     String newHref;
                     if (!updatedHrefs.containsKey(oldHRef)) {
-                        Element fragment = Processor.resolveXLink(oldHRef);
+                        Element fragment = Processor.resolveXLink(oldHRef,context);
 
                         // update xlink service
                         int newId = DeletedObjects.insert(dbms, context.getSerialFactory(), Xml.getString(fragment), href);

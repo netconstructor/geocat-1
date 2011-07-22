@@ -59,7 +59,6 @@ public final class FormatsStrategy extends ReplacementStrategy
 
     private final Dbms   _dbms;
     private final String _styleSheet;
-    private final String _baseURL;
     private final String _currentLocale;
     private final SerialFactory _serialFactory;
 
@@ -67,7 +66,6 @@ public final class FormatsStrategy extends ReplacementStrategy
     public FormatsStrategy(Dbms dbms, String appPath, String baseURL, String currentLocale, SerialFactory serialFactory)
     {
         this._serialFactory = serialFactory;
-        this._baseURL = baseURL;
         this._dbms = dbms;
         this._styleSheet = appPath + Utils.XSL_REUSABLE_OBJECT_DATA_XSL;
         this._currentLocale = currentLocale;
@@ -139,7 +137,7 @@ public final class FormatsStrategy extends ReplacementStrategy
         for (Element result : results) {
             Element e = new Element(REPORT_ELEMENT);
             String id = result.getChildTextTrim(ID_COL);
-            String url = _baseURL + "/srv/" + _currentLocale + "/format.admin?id=" + id + "&dialog=true";
+            String url = XLink.LOCAL_PROTOCOL+"format.admin?id=" + id + "&dialog=true";
             String name = result.getChildTextTrim(NAME_COL);
             if (name == null || name.length() == 0) {
                 name = id;
@@ -160,7 +158,7 @@ public final class FormatsStrategy extends ReplacementStrategy
 
     public String createXlinkHref(String id, UserSession session, String strategySpecificData)
     {
-        return _baseURL + "/srv/___/xml.format.get?id=" + id;
+        return XLink.LOCAL_PROTOCOL+"xml.format.get?id=" + id;
     }
 
     public void performDelete(String[] ids, Dbms dbms, UserSession session, String ignored) throws Exception
@@ -189,7 +187,7 @@ public final class FormatsStrategy extends ReplacementStrategy
 
     private void xlinkIt(Element originalElem, String id, boolean validated)
     {
-        originalElem.setAttribute(XLink.HREF, _baseURL + "/srv/eng/xml.format.get?id=" + id,
+        originalElem.setAttribute(XLink.HREF, XLink.LOCAL_PROTOCOL+"xml.format.get?id=" + id,
                 XLink.NAMESPACE_XLINK);
 
         if (!validated) {
@@ -228,7 +226,8 @@ public final class FormatsStrategy extends ReplacementStrategy
 
     public Collection<Element> updateObject(Element xlink, Dbms dbms, String metadataLang) throws Exception
     {
-        List<Element> xml = Xml.transform((Element) xlink.clone(), _styleSheet).getChildren("format");
+        @SuppressWarnings("unchecked")
+		List<Element> xml = Xml.transform((Element) xlink.clone(), _styleSheet).getChildren("format");
 
         if(!xml.isEmpty()) {
 	        Element element = xml.get(0);
@@ -243,7 +242,7 @@ public final class FormatsStrategy extends ReplacementStrategy
 	        String query = "UPDATE "+TABLE+" SET "+NAME_COL+"=TRIM(?), "+VERSION_COL+"=TRIM(?) WHERE "+ID_COL+"=" + id;
 	        dbms.execute(query, name, version);
         }
-        return Collections.singleton(xlink);
+        return Collections.emptyList();
 
     }
 

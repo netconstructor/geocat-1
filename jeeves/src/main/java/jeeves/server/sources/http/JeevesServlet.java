@@ -197,6 +197,11 @@ public class JeevesServlet extends HttpServlet
 	}
 
 	public boolean isInitialized() { return initialized; }
+
+	public JeevesEngine getEngine() {
+		return jeeves;
+		
+	}
 }
 
 //=============================================================================

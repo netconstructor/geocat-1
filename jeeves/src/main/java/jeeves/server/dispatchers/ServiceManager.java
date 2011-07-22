@@ -332,17 +332,20 @@ public class ServiceManager
 		return context;
 	}
 
+	public void dispatch(ServiceRequest req, UserSession session) {
+		ServiceContext context = new ServiceContext(req.getService(), providMan, serialFact, profilMan, htContexts);
+		dispatch(req, session, context, true);
+	}
+
+	
 	//---------------------------------------------------------------------------
 	//---
 	//--- Dispatching methods
 	//---
 	//---------------------------------------------------------------------------
 
-	public void dispatch(ServiceRequest req, UserSession session)
+	public void dispatch(ServiceRequest req, UserSession session, ServiceContext context, boolean closeResources)
 	{
-
-		ServiceContext context = new ServiceContext(req.getService(), providMan, serialFact, profilMan, htContexts);
-
 		context.setBaseUrl(baseUrl);
 		context.setLanguage(req.getLanguage());
 		context.setUserSession(session);
@@ -405,7 +408,7 @@ public class ServiceManager
 					throw new ServiceNotAllowedEx(srvName);
 				}
 
-				response = srvInfo.execServices(req.getParams(), context);
+				response = srvInfo.execServices(req.getParams(), context,closeResources);
 
 				//---------------------------------------------------------------------
 				//--- handle forward

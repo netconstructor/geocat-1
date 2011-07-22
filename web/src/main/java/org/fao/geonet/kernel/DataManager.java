@@ -358,7 +358,7 @@ public class DataManager {
             
             if("n".equalsIgnoreCase(isHarvested) && processSharedObjects) {
             	try {
-	                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null);
+	                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null,servContext);
 	                List<Element> modified = reusableObjMan.process(processParameters);
 	                
 	                if(!modified.isEmpty()) {
@@ -379,7 +379,7 @@ public class DataManager {
                         sb.append(xlink.getValue()); sb.append(" ");
                     }
                     moreFields.add(makeField("_xlink", sb.toString(), true, true, false));
-                    Processor.detachXLink(md);
+                    Processor.detachXLink(md,servContext); 
                 }
                 else {
                     moreFields.add(makeField("_hasxlinks", "0", true, true, false));
@@ -1420,7 +1420,7 @@ public class DataManager {
 		String version = null;
 
 		if (forEditing) { // copy in xlink'd fragments but leave xlink atts to editor
-			if (doXLinks) Processor.processXLink(md); 
+			if (doXLinks) Processor.processXLink(md,srvContext); 
 			String schema = getMetadataSchema(dbms, id);
 			
 			if (withEditorValidationErrors) {
@@ -1432,7 +1432,7 @@ public class DataManager {
             }
 		}
         else {
-			if (doXLinks) Processor.detachXLink(md);
+			if (doXLinks) Processor.detachXLink(md,srvContext);
 		}
 
 		md.addNamespaceDeclaration(Edit.NAMESPACE);
@@ -1572,11 +1572,12 @@ public class DataManager {
 
 	public Element processSharedObjects(Dbms dbms, String id, Element md)
 			throws Exception, SQLException {
-		ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null);
+		ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null,servContext);
         List<Element> modified = reusableObjMan.process(processParameters);
         
         if(!modified.isEmpty()) {
             md = modified.get(0);
+            dbms.commit();
         }
 		return md;
 	}
@@ -1833,7 +1834,7 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getThumbnails(Dbms dbms, String id) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id);
+		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
 
 		if (md == null)
 			return null;
@@ -1894,7 +1895,7 @@ public class DataManager {
      */
 	private void manageThumbnail(Dbms dbms, String id, boolean small, Element env,
 										  String styleSheet) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id);
+		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
 
 		if (md == null)
 			return;
@@ -1996,7 +1997,7 @@ public class DataManager {
      * @throws Exception
      */
 	private void manageCommons(Dbms dbms, String id, Element env, String styleSheet) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id);
+		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
 
 		if (md == null) {
 			return;

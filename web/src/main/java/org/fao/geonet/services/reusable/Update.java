@@ -12,6 +12,7 @@ import org.fao.geonet.kernel.reusable.ProcessParams;
 import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
 import org.jdom.Element;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,9 +33,13 @@ public class Update implements Service {
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
 
-        ProcessParams processParams = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, null, xml, wrapped, gc.getThesaurusManager(),gc.getExtentManager(),context.getBaseUrl(),gc.getSettingManager(),false,defaultLang);
-        Collection<Element> updated = gc.getReusableObjMan().updateXlink(xml, processParams);
-
+        ProcessParams processParams = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, null, xml, wrapped, gc.getThesaurusManager(),gc.getExtentManager(),context.getBaseUrl(),gc.getSettingManager(),false,defaultLang,context);
+        Collection<Element> newElements = gc.getReusableObjMan().updateXlink(xml, processParams);
+        
+        ArrayList<Element> updated = new ArrayList<Element>(newElements);
+        updated.add(0,xml);
+        xml.detach();
+        
         return new Element("updated").addContent(updated);
     }
 }

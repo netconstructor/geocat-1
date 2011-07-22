@@ -147,7 +147,7 @@ public class ReusableObjManager
         Element metadata = dm.getMetadata(context, id, false, false, false);
 
         ProcessParams searchParams = new ProcessParams(dbms, logger, id, metadata, metadata, gc.getThesaurusManager(),
-                gc.getExtentManager(), context.getBaseUrl(), gc.getSettingManager(), false,null);
+                gc.getExtentManager(), context.getBaseUrl(), gc.getSettingManager(), false,null,context);
         List<Element> process = process(searchParams);
         if (process != null) {
             Element changed = process.get(0);
@@ -253,7 +253,7 @@ public class ReusableObjManager
 
         KeywordsStrategy strategy = new KeywordsStrategy(thesaurusMan, _appPath, baseURL, null);
         return performReplace(dbms, xml, defaultMetadataLang, KEYWORDS_PLACEHOLDER, KEYWORDS, logger, strategy,
-                params.addOnly);
+                params.addOnly,params.srvContext);
     }
 
     private boolean replaceFormats(Element xml, String defaultMetadataLang, ProcessParams params) throws Exception
@@ -264,7 +264,7 @@ public class ReusableObjManager
 
         FormatsStrategy strategy = new FormatsStrategy(dbms, _appPath, baseURL, null, _serialFactory);
         return performReplace(dbms, xml, defaultMetadataLang, FORMATS_PLACEHOLDER, FORMATS, logger, strategy,
-                params.addOnly);
+                params.addOnly,params.srvContext);
     }
 
     private boolean replaceContacts(Element xml, String defaultMetadataLang, ProcessParams params) throws Exception
@@ -275,7 +275,7 @@ public class ReusableObjManager
 
         ContactsStrategy strategy = new ContactsStrategy(dbms, _appPath, baseURL, null, _serialFactory);
         return performReplace(dbms, xml, defaultMetadataLang, CONTACTS_PLACEHOLDER, CONTACTS, logger, strategy,
-                params.addOnly);
+                params.addOnly,params.srvContext);
     }
 
     private boolean replaceExtents(Element xml, String defaultMetadataLang, ProcessParams params) throws Exception
@@ -298,18 +298,19 @@ public class ReusableObjManager
         	if(needToProcessDescendants) {
         		int index = extentAsElem.indexOf(exExtent);
 	            List<Element> changed = process(params.updateElementToProcess(exExtent));
-	            if(!changed.isEmpty()) {
+	            if(changed !=null && !changed.isEmpty()) {
 	            	extentAsElem.setContent(index, changed);
 	            }
         	}
 		}
         
         return performReplace(dbms, xml, defaultMetadataLang, EXTENTS_PLACEHOLDER, EXTENTS, logger, strategy,
-                params.addOnly);
+                params.addOnly,params.srvContext);
     }
 
     private boolean performReplace(Dbms dbms, Element xml, String defaultMetadataLang, String placeholderElemName,
-            String originalElementName, ReusableObjectLogger logger, ReplacementStrategy strategy, boolean addOnly)
+            String originalElementName, ReusableObjectLogger logger, ReplacementStrategy strategy, boolean addOnly,
+            ServiceContext srvContext)
             throws Exception
     {
     	
@@ -333,7 +334,7 @@ public class ReusableObjManager
                 
                 changed = updateXLinkAsRequired(dbms, defaultMetadataLang, strategy,
 						updatedElements, currentXLinkElements, changed,
-						placeholder, originalElem);
+						placeholder, originalElem, srvContext);
                 continue;
             }
             changed |= replaceSingleElement(placeholder, originalElem, strategy, defaultMetadataLang, addOnly, dbms,
@@ -346,13 +347,14 @@ public class ReusableObjManager
 	private boolean updateXLinkAsRequired(Dbms dbms, String defaultMetadataLang,
 			ReplacementStrategy strategy, HashSet<String> updatedElements,
 			Map<String, Element> currentXLinkElements, boolean changed,
-			Element placeholder, Element originalElem) throws IOException,
+			Element placeholder, Element originalElem, 
+			ServiceContext srvContext) throws IOException,
 			JDOMException, CacheException, AssertionError, Exception {
 		
 		boolean notValidated = NON_VALID_ROLE.equals(originalElem.getAttributeValue(XLink.ROLE, XLink.NAMESPACE_XLINK));
 		if(notValidated) {
 			String href = XLink.getHRef(originalElem);
-			Element current = resolveXLink(currentXLinkElements, href);
+			Element current = resolveXLink(currentXLinkElements, href,srvContext);
 			
 			if(originalElem.getChildren().isEmpty()) return false;
 			
@@ -362,10 +364,16 @@ public class ReusableObjManager
 					throw new AssertionError("The same xlink was updated twice");
 				} else {
 					updatedElements.add(href);
-		            Processor.uncacheXLinkUri(originalElem.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
+		            Processor.uncacheXLinkUri(XLink.getHRef(originalElem));
 		        	
 		            Collection<Element> newElements = strategy.updateObject(originalElem, dbms, defaultMetadataLang);
-		            updatePlaceholder(placeholder, newElements);
+		            if(!newElements.isEmpty()) {
+		            	ArrayList<Element> toAdd = new ArrayList<Element>(newElements);
+		            	toAdd.add(0,originalElem);
+		            	updatePlaceholder(placeholder, toAdd);
+		            } else {
+		            	updatePlaceholder(placeholder, originalElem);
+		            }
 		            changed = true;
 				}
 			}
@@ -379,12 +387,12 @@ public class ReusableObjManager
 	 * Get the XLink.  It is the unchanged copy so one can detect if the same xlink is modified more than once
 	 */
 	private Element resolveXLink(Map<String, Element> currentXLinkElements,
-			String href) throws IOException, JDOMException, CacheException {
+			String href, ServiceContext srvContext) throws IOException, JDOMException, CacheException {
 		Element current;
 		if(currentXLinkElements.containsKey(href)) {
 			current = currentXLinkElements.get(href);
 		} else {
-			current = Processor.resolveXLink(href);
+			current = Processor.resolveXLink(href,srvContext);
 			currentXLinkElements.put(href, current);
 		}
 		return current;
