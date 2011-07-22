@@ -22,30 +22,32 @@
 
   <xsl:include href="metadata-iso19110-view.xsl"/>
   
-	<!-- main template - the way into processing iso19110 -->
-	<xsl:template match="metadata-iso19110" name="metadata-iso19110">
-		<xsl:param name="schema"/>
-		<xsl:param name="edit" select="false()"/>
-		<xsl:param name="embedded"/>
-		<xsl:param name="usedot" select="false()"/>
+  <!-- main template - the way into processing iso19110 -->
+  <xsl:template name="metadata-iso19110">
+    <xsl:param name="schema"/>
+    <xsl:param name="edit" select="false()"/>
+    <xsl:param name="embedded"/>
+    
+    <xsl:apply-templates mode="iso19110" select="." >
+      <xsl:with-param name="schema" select="$schema"/>
+      <xsl:with-param name="edit"   select="$edit"/>
+      <xsl:with-param name="embedded" select="$embedded" />
+    </xsl:apply-templates>
+  </xsl:template>
 
-		<xsl:choose>
-			<xsl:when test="$usedot">
-    		<xsl:apply-templates mode="iso19110" select="." >
-      		<xsl:with-param name="schema" select="$schema"/>
-      		<xsl:with-param name="edit"   select="$edit"/>
-      		<xsl:with-param name="embedded" select="$embedded" />
-    		</xsl:apply-templates>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:variable name="refName" select="/metadata/@ref"/>	
-    		<xsl:apply-templates mode="iso19110" select="//*[geonet:element/@ref=$refName]" >
-      		<xsl:with-param name="schema" select="$schema"/>
-      		<xsl:with-param name="edit"   select="$edit"/>
-      		<xsl:with-param name="embedded" select="$embedded" />
-    		</xsl:apply-templates>
-			</xsl:otherwise>
-		</xsl:choose>
+  <xsl:template name="iso19110CompleteTab">
+    <xsl:param name="tabLink"/>
+    <xsl:param name="schema"/>
+    
+    <xsl:if test="/root/gui/config/metadata-tab/advanced">
+      <xsl:call-template name="mainTab">
+        <xsl:with-param name="title" select="/root/gui/strings/byPackage"/>
+        <xsl:with-param name="default">advanced</xsl:with-param>
+        <xsl:with-param name="menu">
+          <item label="byPackage">advanced</item>
+        </xsl:with-param>
+      </xsl:call-template>
+      </xsl:if>
   </xsl:template>
 
     <!-- =================================================================== -->

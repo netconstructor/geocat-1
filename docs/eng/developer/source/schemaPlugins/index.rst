@@ -478,11 +478,11 @@ If creating a presentation XSLT for a profile such as MCP, then the main templat
 
 Notice that main template is processing in the mode of the base iso19139 schema? The reason for this is that almost all profiles change or add a small number of elements to those in the base schema. So most of the metadata elements in a profile can be processed in the mode of the base schema. We'll see later in this section how to override processing of an element in the base schema.
 
-- a **completeTab** template, which must be called: <schema-name>CompleteTab. This template should display the tabs used by the advanced editor. Here is an example for the MCP:
+- a **completeTab** template, which must be called: <schema-name>CompleteTab. This template will display all tabs, apart from the 'default' (or simple mode) and the 'XML View' tabs, in the left hand frame of the editor/viewer screen. Here is an example for the MCP:
 
 ::
 
-  <xsl:template match="iso19139.mcpCompleteTab">
+  <xsl:template name="iso19139.mcpCompleteTab">
     <xsl:param name="tabLink"/>
 
     <xsl:call-template name="displayTab"> <!-- non existent tab - by profile -->
@@ -512,9 +512,48 @@ Notice that main template is processing in the mode of the base iso19139 schema?
       <xsl:with-param name="tabLink" select="$tabLink"/>
     </xsl:call-template>
 
-    ...... (same as for metadata-iso19139.xsl) ......
+    ...... (same as for iso19139CompleteTab in 
+   INSTALL_DIR/web/geonetwork/xml/schemas/iso19139/present/
+   metadata-iso19139.xsl) ......
 
   </xsl:template>  
+
+This template is called by the template named "tab" (which also adds the "default" and "XML View" tabs) in `INSTALL_DIR/web/geonetwork/xsl/metadata-tab-utils.xsl` using the schema name. That XSLT also has the code for the "displayTab" template. 
+
+'mcpMinimum', 'mcpCore', 'complete' etc are the names of the tabs. The name of the current or active tab is stored in the global variable "currTab" available to all presentation XSLTs. Logic to decide what to display when a particular tab is active should be contained in the root element processing tab.
+
+- a **root element** processing tab. This tab should match on the root element of the metadata record. For example, for the iso19139 schema:
+
+::
+  
+    <xsl:template mode="iso19139" match="gmd:MD_Metadata">
+      <xsl:param name="schema"/>
+      <xsl:param name="edit"/>
+      <xsl:param name="embedded"/>
+
+      <xsl:choose>
+
+      <!-- metadata tab -->
+      <xsl:when test="$currTab='metadata'">
+        <xsl:call-template name="iso19139Metadata">
+          <xsl:with-param name="schema" select="$schema"/>
+          <xsl:with-param name="edit"   select="$edit"/>
+        </xsl:call-template>
+      </xsl:when>
+
+      <!-- identification tab -->
+      <xsl:when test="$currTab='identification'">
+        <xsl:apply-templates mode="elementEP" select="gmd:identificationInfo|geonet:child[string(@name)='identificationInfo']">
+          <xsl:with-param name="schema" select="$schema"/>
+          <xsl:with-param name="edit"   select="$edit"/>
+        </xsl:apply-templates>
+      </xsl:when>
+
+      .........
+
+    </xsl:template>
+
+This template is basically a very long "choose" statement with "when" clauses that test the value of the currently defined tab (in global variable currTab). Each "when" clause will display the set of metadata elements that correspond to the tab definition using "elementEP" directly (as in the "when" clause for the 'identification' tab above) or via a named template (as in the 'metadata' tab above). For the MCP our template is similar to the one above for iso19139, except that the match would be on "mcp:MD_Metadata" (and the processing mode may differ - see the section 'An alternative XSLT design for profiles' below for more details).
 
 - a **brief** template, which must be called: <schema-name>Brief. This template processes the metadata record and extracts from it a format neutral summary of the metadata for purposes such as displaying the search results. Here is an example for the eml-gbif schema (because it is fairly short!):
 
@@ -649,7 +688,7 @@ Templates for handling these elements are in the iso19139 presentation XSLT `INS
 - use the schema name in the codelists XPath
 - fall back to the base iso19139 schema if the profile codelist doesn't have the required codelist
 
-However, if you don't need localized codelists, it is often easier and more direct to extract codelists directly from the gmxCodelists.xml file. This is in fact the solution that has been adopted for the MCP. The gmxCodelists.xml file is included in the presentatuion xslt for the MCP using a statement like:
+However, if you don't need localized codelists, it is often easier and more direct to extract codelists directly from the gmxCodelists.xml file. This is in fact the solution that has been adopted for the MCP. The gmxCodelists.xml file is included in the presentation xslt for the MCP using a statement like:
 
 ::
 
