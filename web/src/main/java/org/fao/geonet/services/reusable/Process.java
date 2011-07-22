@@ -35,7 +35,7 @@ public class Process implements Service
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
 
-        ProcessParams processParams = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, null, xml, wrapped, gc.getThesaurusManager(),gc.getExtentManager(),context.getBaseUrl(),gc.getSettingManager(),addOnly,defaultLang);
+        ProcessParams processParams = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, null, xml, wrapped, gc.getThesaurusManager(),gc.getExtentManager(),context.getBaseUrl(),gc.getSettingManager(),addOnly,defaultLang,context);
         List<Element> updated = gc.getReusableObjMan().process(processParams);
 
         return new Element("updated").addContent(updated);

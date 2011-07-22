@@ -64,6 +64,7 @@ import org.jdom.Namespace;
 import org.jdom.filter.ElementFilter;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -316,7 +317,7 @@ public class DataManager {
      */
 	public void indexMetadataGroup(Dbms dbms, String id) throws Exception {
 		Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
-		indexMetadata(dbms, id, true);
+		indexMetadata(dbms, id, true,true);
 	}
 
     /**
@@ -326,7 +327,7 @@ public class DataManager {
      * @param indexGroup
      * @throws Exception
      */
-	public void indexMetadata(Dbms dbms, String id, boolean indexGroup) throws Exception {
+	public void indexMetadata(Dbms dbms, String id, boolean indexGroup, boolean processSharedObjects) throws Exception {
         try {
             Vector<Element> moreFields = new Vector<Element>();
             int id$ = new Integer(id);
@@ -355,9 +356,9 @@ public class DataManager {
             String  rating     = rec.getChildText("rating");
             
             
-            if("n".equalsIgnoreCase(isHarvested)) {
+            if("n".equalsIgnoreCase(isHarvested) && processSharedObjects) {
             	try {
-	                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null);
+	                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null,servContext);
 	                List<Element> modified = reusableObjMan.process(processParameters);
 	                
 	                if(!modified.isEmpty()) {
@@ -378,7 +379,7 @@ public class DataManager {
                         sb.append(xlink.getValue()); sb.append(" ");
                     }
                     moreFields.add(makeField("_xlink", sb.toString(), true, true, false));
-                    Processor.detachXLink(md);
+                    Processor.detachXLink(md,servContext); 
                 }
                 else {
                     moreFields.add(makeField("_hasxlinks", "0", true, true, false));
@@ -1095,7 +1096,7 @@ public class DataManager {
 	public void setTemplate(Dbms dbms, int id, String isTemplate, String title) throws Exception {
 		setTemplateExt(dbms, id, isTemplate, title);
         boolean indexGroup = false;
-        indexMetadata(dbms, Integer.toString(id), indexGroup);
+        indexMetadata(dbms, Integer.toString(id), indexGroup,true);
 
 	}
 
@@ -1122,7 +1123,7 @@ public class DataManager {
 	public void setHarvested(Dbms dbms, int id, String harvestUuid) throws Exception {
 		setHarvestedExt(dbms, id, harvestUuid);
         boolean indexGroup = false;
-        indexMetadata(dbms, Integer.toString(id), indexGroup);
+        indexMetadata(dbms, Integer.toString(id), indexGroup,true);
 	}
 
     /**
@@ -1245,7 +1246,7 @@ public class DataManager {
 		query = "UPDATE Metadata SET rating=? WHERE id=?";
 		dbms.execute(query, rating, id);
         boolean indexGroup = false;
-        indexMetadata(dbms, Integer.toString(id), indexGroup);
+        indexMetadata(dbms, Integer.toString(id), indexGroup,false);
 
 		return rating;
 	}
@@ -1309,7 +1310,7 @@ public class DataManager {
 
 		//--- index metadata
         boolean indexGroup = false;
-        indexMetadata(dbms, id, indexGroup);
+        indexMetadata(dbms, id, indexGroup,true);
 		return id;
 	}
 
@@ -1368,7 +1369,7 @@ public class DataManager {
 
         if(index) {
             boolean indexGroup = false;
-            indexMetadata(dbms, id$, indexGroup);
+            indexMetadata(dbms, id$, indexGroup,true);
         }
 
         // Notifies the metadata change to metatada notifier service
@@ -1419,7 +1420,7 @@ public class DataManager {
 		String version = null;
 
 		if (forEditing) { // copy in xlink'd fragments but leave xlink atts to editor
-			if (doXLinks) Processor.processXLink(md); 
+			if (doXLinks) Processor.processXLink(md,srvContext); 
 			String schema = getMetadataSchema(dbms, id);
 			
 			if (withEditorValidationErrors) {
@@ -1431,7 +1432,7 @@ public class DataManager {
             }
 		}
         else {
-			if (doXLinks) Processor.detachXLink(md);
+			if (doXLinks) Processor.detachXLink(md,srvContext);
 		}
 
 		md.addNamespaceDeclaration(Edit.NAMESPACE);
@@ -1540,6 +1541,9 @@ public class DataManager {
             String parentUuid = null;
 		    md = updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms, minor);
         }
+        
+        md = processSharedObjects(dbms, id, md);
+        
 		//--- write metadata to dbms
         XmlSerializer.update(dbms, id, md, changeDate, minor);
 
@@ -1560,10 +1564,22 @@ public class DataManager {
             if(index) {
                 //--- update search criteria
                 boolean indexGroup = false;
-                indexMetadata(dbms, id, indexGroup);
+                indexMetadata(dbms, id, indexGroup, false);
             }
 		}
 		return true;
+	}
+
+	public Element processSharedObjects(Dbms dbms, String id, Element md)
+			throws Exception, SQLException {
+		ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null,servContext);
+        List<Element> modified = reusableObjMan.process(processParameters);
+        
+        if(!modified.isEmpty()) {
+            md = modified.get(0);
+            dbms.commit();
+        }
+		return md;
 	}
 
     /**
@@ -1818,7 +1834,7 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getThumbnails(Dbms dbms, String id) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id);
+		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
 
 		if (md == null)
 			return null;
@@ -1879,7 +1895,7 @@ public class DataManager {
      */
 	private void manageThumbnail(Dbms dbms, String id, boolean small, Element env,
 										  String styleSheet) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id);
+		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
 
 		if (md == null)
 			return;
@@ -1924,7 +1940,7 @@ public class DataManager {
 
 		//--- update search criteria
         boolean indexGroup = false;
-        indexMetadata(dbms, id, indexGroup);
+        indexMetadata(dbms, id, indexGroup,true);
 
 	}
 
@@ -1981,7 +1997,7 @@ public class DataManager {
      * @throws Exception
      */
 	private void manageCommons(Dbms dbms, String id, Element env, String styleSheet) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id);
+		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
 
 		if (md == null) {
 			return;
@@ -2812,7 +2828,7 @@ public class DataManager {
             String query = "UPDATE Metadata SET popularity = popularity +1 WHERE id = ?";
             dbms.execute(query, new Integer(id));
             boolean indexGroup = false;
-            indexMetadata(dbms, id, indexGroup);
+            indexMetadata(dbms, id, indexGroup,false);
         }
         catch (Exception e) {
             Log.warning(Geonet.DATA_MANAGER, "The following exception is ignored: " + e.getMessage());

@@ -348,7 +348,7 @@ public class SearchManager
 			throw new Exception("directory " + _stylesheetsDir + " not found");
 
 		File htmlCacheDirTest   = new File(appPath, htmlCacheDir);
-		if (!htmlCacheDirTest.isDirectory())
+		if (!htmlCacheDirTest.isDirectory() && !htmlCacheDirTest.mkdirs())
 			throw new IllegalArgumentException("directory " + htmlCacheDir + " not found");
 		_htmlCacheDir = htmlCacheDir;
 

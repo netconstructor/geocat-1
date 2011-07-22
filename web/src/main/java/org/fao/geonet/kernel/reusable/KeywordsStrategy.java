@@ -211,7 +211,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
         String thesaurus = validateName(thesaurusName);
         KeywordBean concept = lookup(id, session);
         String uri = concept.getCode();
-        return _baseURL + "/srv/___/xml.keyword.get?thesaurus=" + thesaurus + "&id=" + URLEncoder.encode(uri, "utf-8");
+        return XLink.LOCAL_PROTOCOL+"che.keyword.get?thesaurus=" + thesaurus + "&id=" + URLEncoder.encode(uri, "utf-8");
     }
 
     public void performDelete(String[] ids, Dbms dbms, UserSession session, String thesaurusName) throws Exception
@@ -285,7 +285,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
         String encoded = URLEncoder.encode(id, "UTF-8");
         Element descriptiveKeywords = new Element("descriptiveKeywords", XslUtil.GMD_NAMESPACE);
 
-        descriptiveKeywords.setAttribute(XLink.HREF, _baseURL + "/srv/eng/che.keyword.get?thesaurus=" + thesaurus
+        descriptiveKeywords.setAttribute(XLink.HREF, XLink.LOCAL_PROTOCOL+"che.keyword.get?thesaurus=" + thesaurus
                 + "&id=" + encoded + "&locales=en,it,de,fr", XLink.NAMESPACE_XLINK);
 
         if (!validated) {

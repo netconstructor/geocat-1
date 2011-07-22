@@ -118,7 +118,7 @@ public class ServiceInfo
 
 	//--------------------------------------------------------------------------
 
-	public Element execServices(Element params, ServiceContext context) throws Exception
+	public Element execServices(Element params, ServiceContext context,boolean closeResources) throws Exception
 	{
 		if (params == null)
 			params = new Element(Jeeves.Elem.REQUEST);
@@ -136,7 +136,7 @@ public class ServiceInfo
 		Element response = params;
 
 		for(Service service : vServices) {
-			response = execService(service, response, context);
+			response = execService(service, response, context,closeResources);
 		}
 
 		//--- we must detach the element from its parent because the output dispatcher
@@ -223,7 +223,7 @@ public class ServiceInfo
 
 	//--------------------------------------------------------------------------
 
-	private Element execService(Service service, Element params, ServiceContext context) throws Exception
+	private Element execService(Service service, Element params, ServiceContext context, boolean closeResources) throws Exception
 	{
 		try
 		{
@@ -234,15 +234,16 @@ public class ServiceInfo
 
 			//--- commit resources and return response
 
-			context.getResourceManager().close();
+			if(closeResources)
+				context.getResourceManager().close();
 
 			return response;
 		}
 		catch(Exception e)
 		{
 			//--- in case of exception we have to abort all resources
-
-			context.getResourceManager().abort();
+			if(closeResources)
+				context.getResourceManager().abort();
 			ServiceManager.error("Exception when executing service");
 			ServiceManager.error(" (C) Exc : " + e);
 

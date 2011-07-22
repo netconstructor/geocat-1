@@ -465,4 +465,34 @@ public final class Utils
         return result.toString();
     }
 
+	@SuppressWarnings("unchecked")
+	public static boolean equalElem(Element originalElem, Element current) {
+		if(originalElem == null || current == null) {
+			return false;
+		}
+		if(originalElem.getName().equals(current.getName()) && 
+				originalElem.getNamespaceURI()!=null && originalElem.getNamespaceURI().equals(current.getNamespaceURI())) {
+			
+			if(XLink.isXLink(originalElem) || XLink.isXLink(current)) {
+				String origHRef = XLink.getHRef(originalElem);
+				if(origHRef==null) return false;
+				return origHRef.equals(XLink.getHRef(current));
+			} else if(originalElem.getChildren().size() == current.getChildren().size()){
+				List<Element> originalChildren = originalElem.getChildren();
+				List<Element> currentChildren = current.getChildren();
+				for(int i = 0; i < originalElem.getChildren().size(); i++) {
+					if(!equalElem(originalChildren.get(i), currentChildren.get(i))) {
+						return false;
+					}
+				}
+				
+				if(originalChildren.isEmpty()) {
+					return originalElem.getTextTrim().equals(current.getTextTrim());
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

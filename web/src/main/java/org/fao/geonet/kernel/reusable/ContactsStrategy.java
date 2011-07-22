@@ -62,7 +62,7 @@ public final class ContactsStrategy extends ReplacementStrategy
 
     private final Dbms   _dbms;
     private final String _styleSheet;
-    private final String _baseURL;
+    //private final String _baseURL;
     private final String _currentLocale;
     private final String _appPath;
     private SerialFactory _serialFactory;
@@ -70,7 +70,7 @@ public final class ContactsStrategy extends ReplacementStrategy
     public ContactsStrategy(Dbms dbms, String appPath, String baseURL, String currentLocale, SerialFactory serialFactory)
     {
         this._serialFactory = serialFactory;
-        this._baseURL = baseURL;
+//        this._baseURL = baseURL;
         this._dbms = dbms;
         _styleSheet = appPath + Utils.XSL_REUSABLE_OBJECT_DATA_XSL;
         this._appPath = appPath;
@@ -183,7 +183,7 @@ public final class ContactsStrategy extends ReplacementStrategy
 
         originalElem.removeContent();
         // param order is important, id param must be first
-        originalElem.setAttribute(XLink.HREF, _baseURL + "/srv/eng/xml.user.get?id=" + id + "&schema=" + schema
+        originalElem.setAttribute(XLink.HREF, XLink.LOCAL_PROTOCOL+"xml.user.get?id=" + id + "&schema=" + schema
                 + "&role=" + role, XLink.NAMESPACE_XLINK);
 
         if (!validated) {
@@ -371,7 +371,7 @@ public final class ContactsStrategy extends ReplacementStrategy
         for (Element result : results) {
             Element e = new Element(REPORT_ELEMENT);
             String id = result.getChildTextTrim("id");
-            String url = _baseURL + "/srv/" + _currentLocale + "/user.get?id=" + id;
+            String url = XLink.LOCAL_PROTOCOL+"user.get?id=" + id;
 
             addChild(e, REPORT_URL, url);
             addChild(e, REPORT_ID, id);
@@ -407,7 +407,7 @@ public final class ContactsStrategy extends ReplacementStrategy
 
     public String createXlinkHref(String id, UserSession session, String strategySpecificData)
     {
-        return _baseURL + "/srv/___/xml.user.get?id=" + id;
+        return XLink.LOCAL_PROTOCOL+"xml.user.get?id=" + id;
     }
 
     public String updateHrefId(String oldHref, String id, UserSession session)

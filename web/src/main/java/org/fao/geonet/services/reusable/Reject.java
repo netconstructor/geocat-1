@@ -117,7 +117,7 @@ public class Reject implements Service
             for (MetadataRecord metadataRecord : results) {
                 final SearchManager searchmanager = gc.getSearchmanager();
                 final String metadataId = metadataRecord.id;
-                gc.getDataManager().indexMetadata(dbms, metadataId, true);
+                gc.getDataManager().indexMetadata(dbms, metadataId, true, false);
             }
 
             Element e = new Element("id");
@@ -150,7 +150,7 @@ public class Reject implements Service
                     String oldHRef = xlink.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK);
                     String newHref;
                     if (!updatedHrefs.containsKey(oldHRef)) {
-                        Element fragment = Processor.resolveXLink(oldHRef);
+                        Element fragment = Processor.resolveXLink(oldHRef,context);
 
                         // update xlink service
                         int newId = DeletedObjects.insert(dbms, context.getSerialFactory(), Xml.getString(fragment), href);

@@ -25,6 +25,7 @@ package org.fao.geonet.kernel;
 
 import jeeves.constants.Jeeves;
 import jeeves.resources.dbms.Dbms;
+import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
@@ -108,9 +109,9 @@ public class XmlSerializer {
      * @return
      * @throws Exception
      */
-	public static Element select(Dbms dbms, String table, String id) throws Exception {
+	public static Element select(Dbms dbms, String table, String id, ServiceContext srvContext) throws Exception {
 		Element rec = internalSelect(dbms, table, id);
-		if (resolveXLinks()) Processor.detachXLink(rec);
+		if (resolveXLinks()) Processor.detachXLink(rec,srvContext);
 		return rec;
 	}
 
