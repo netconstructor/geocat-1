@@ -157,7 +157,12 @@ public class SearchController
 		//--- get metadata from DB
 		GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         boolean forEditing = false, withValidationErrors = false;
-        Element res = gc.getDataManager().getMetadata(context, id, forEditing, withValidationErrors);
+        
+        // PMT GC2 : backported from GC1
+        // was :
+        //Element res = gc.getDataManager().getMetadata(context, id, forEditing, withValidationErrors);
+		Element res = gc.getDataManager().getMetadata(context, id, false, true);
+		
 		SchemaManager scm = gc.getSchemamanager();
 		if (res==null) {
             return null;

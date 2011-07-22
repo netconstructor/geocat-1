@@ -4,6 +4,10 @@ import org.fao.geonet.csw.common.exceptions.InvalidParameterValueEx;
 
 public enum OutputSchema
 {
+	// PMT GC2 : backported from old version
+	OWN("own"), 
+	GM03_PROFILE("GM03_2Record"),
+	// Those are standard
 	OGC_CORE("Record"), ISO_PROFILE("IsoRecord");
 
 	//------------------------------------------------------------------------
@@ -23,6 +27,13 @@ public enum OutputSchema
 	public static OutputSchema parse(String schema) throws InvalidParameterValueEx
 	{
 		if (schema == null)						return OGC_CORE;
+		// PMT : Backport from old geocat version
+		if (schema.equals(OGC_CORE.toString())) return OGC_CORE;
+		if (schema.equals(ISO_PROFILE.toString())) return ISO_PROFILE;
+		if (schema.equals(GM03_PROFILE.toString())) return GM03_PROFILE;
+		if (schema.equals("http://www.geocat.ch/2008/gm03_2")) return GM03_PROFILE;
+        if (schema.equals(OWN.toString()))		return OWN;
+        //
 		if (schema.equals("csw:Record"))		return OGC_CORE;
 		if (schema.equals("csw:IsoRecord")) return ISO_PROFILE;
 		
