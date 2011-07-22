@@ -55,15 +55,22 @@
         <!-- Mapping gui language to iso3code -->
         <xsl:variable name="lang">
             <xsl:choose>
+            <!-- PMT GC2 modification : 3char lang codes in GeoCat  -->
+            <!--
                 <xsl:when test="$langGui='ar'">ara</xsl:when>
                 <xsl:when test="$langGui='cn'">chi</xsl:when>
                 <xsl:when test="$langGui='de'">ger</xsl:when>
                 <xsl:when test="$langGui='es'">spa</xsl:when>
-                <xsl:when test="$langGui='fr'">fre</xsl:when><!-- TODO : sometimes fra is used in metadata record -->
+                <xsl:when test="$langGui='fr'">fre</xsl:when>
                 <xsl:when test="$langGui='nl'">dut</xsl:when>
                 <xsl:when test="$langGui='ru'">rus</xsl:when>
                 <xsl:when test="$langGui='pt'">por</xsl:when>
                 <xsl:when test="$langGui='no'">nor</xsl:when>
+                 -->
+                <xsl:when test="$langGui='deu'">deu</xsl:when>
+                <xsl:when test="$langGui='eng'">eng</xsl:when>
+                <xsl:when test="$langGui='fra'">fra</xsl:when>
+                <xsl:when test="$langGui='ita'">ita</xsl:when>
                 <xsl:otherwise>eng</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
