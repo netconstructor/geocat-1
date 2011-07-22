@@ -1,13 +1,17 @@
 package org.fao.geonet.kernel.reusable;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -21,17 +25,18 @@ import jeeves.utils.Xml;
 import jeeves.xlink.Processor;
 import jeeves.xlink.XLink;
 
+import org.apache.jcs.access.exception.CacheException;
 import org.apache.log4j.Level;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.DataManager;
-import org.fao.geonet.kernel.XmlSerializer;
-import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.kernel.ThesaurusManager;
-import org.fao.geonet.services.extent.ExtentManager;
+import org.fao.geonet.kernel.XmlSerializer;
 import org.fao.geonet.kernel.reusable.log.Record;
 import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
+import org.fao.geonet.kernel.search.spatial.Pair;
+import org.fao.geonet.services.extent.ExtentManager;
 import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.ISODate;
 import org.fao.geonet.util.LangUtils;
@@ -39,8 +44,8 @@ import org.fao.geonet.util.XslUtil;
 import org.geotools.gml3.GMLConfiguration;
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.Namespace;
-import org.jdom.Parent;
 import org.jdom.filter.Filter;
 
 public class ReusableObjManager
@@ -307,6 +312,10 @@ public class ReusableObjManager
             String originalElementName, ReusableObjectLogger logger, ReplacementStrategy strategy, boolean addOnly)
             throws Exception
     {
+    	
+    	HashSet<String> updatedElements = new HashSet<String>();
+    	Map<String,Element> currentXLinkElements = new HashMap<String, Element>();
+    	
         Iterator iter = xml.getChild("metadata").getDescendants(new PlaceholderFilter(placeholderElemName));
 
         List<Element> placeholders = Utils.convertToList(iter, Element.class);
@@ -321,12 +330,10 @@ public class ReusableObjManager
 
             if (XLink.isXLink(originalElem)) {
                 originalElem.detach();
-                Processor.uncacheXLinkUri(originalElem.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
-
-                Collection<Element> newElements = strategy.updateObject(originalElem, dbms, defaultMetadataLang);
                 
-                updatePlaceholder(placeholder, newElements);
-                changed = true;
+                changed = updateXLinkAsRequired(dbms, defaultMetadataLang, strategy,
+						updatedElements, currentXLinkElements, changed,
+						placeholder, originalElem);
                 continue;
             }
             changed |= replaceSingleElement(placeholder, originalElem, strategy, defaultMetadataLang, addOnly, dbms,
@@ -335,6 +342,53 @@ public class ReusableObjManager
 
         return changed;
     }
+
+	private boolean updateXLinkAsRequired(Dbms dbms, String defaultMetadataLang,
+			ReplacementStrategy strategy, HashSet<String> updatedElements,
+			Map<String, Element> currentXLinkElements, boolean changed,
+			Element placeholder, Element originalElem) throws IOException,
+			JDOMException, CacheException, AssertionError, Exception {
+		
+		boolean notValidated = NON_VALID_ROLE.equals(originalElem.getAttributeValue(XLink.ROLE, XLink.NAMESPACE_XLINK));
+		if(notValidated) {
+			String href = XLink.getHRef(originalElem);
+			Element current = resolveXLink(currentXLinkElements, href);
+			
+			if(originalElem.getChildren().isEmpty()) return false;
+			
+			boolean equals = Utils.equalElem((Element) originalElem.getChildren().get(0),current);
+			if(!equals) {
+				if(updatedElements.contains(href)) {
+					throw new AssertionError("The same xlink was updated twice");
+				} else {
+					updatedElements.add(href);
+		            Processor.uncacheXLinkUri(originalElem.getAttributeValue(XLink.HREF, XLink.NAMESPACE_XLINK));
+		        	
+		            Collection<Element> newElements = strategy.updateObject(originalElem, dbms, defaultMetadataLang);
+		            updatePlaceholder(placeholder, newElements);
+		            changed = true;
+				}
+			}
+		} else {
+		    updatePlaceholder(placeholder, originalElem);
+		}
+		return changed;
+	}
+
+	/**
+	 * Get the XLink.  It is the unchanged copy so one can detect if the same xlink is modified more than once
+	 */
+	private Element resolveXLink(Map<String, Element> currentXLinkElements,
+			String href) throws IOException, JDOMException, CacheException {
+		Element current;
+		if(currentXLinkElements.containsKey(href)) {
+			current = currentXLinkElements.get(href);
+		} else {
+			current = Processor.resolveXLink(href);
+			currentXLinkElements.put(href, current);
+		}
+		return current;
+	}
 
     private boolean replaceSingleElement(Element placeholder, Element originalElem, ReplacementStrategy strategy,
             String defaultMetadataLang, boolean addOnly, Dbms dbms, String originalElementName,
