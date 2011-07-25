@@ -200,7 +200,14 @@ public class SearchController
 		else if (outSchema == OutputSchema.ISO_PROFILE)
 			prefix = "iso";
 		else {
-			throw new InvalidParameterValueEx("outputSchema not supported for metadata " + id + " schema.", schema);
+			// PMT c2c previous geocat backport, was:
+			// throw new InvalidParameterValueEx("outputSchema not supported for metadata " + id + " schema.", schema);
+			if (!schema.contains("iso19139")){
+				// FIXME : should we return null or an exception in that case and which exception
+				throw new InvalidParameterValueEx("outputSchema not supported for metadata " +
+						id + " schema.", schema);
+			}
+			return res;
 		}
 	
 		String schemaDir  = scm.getSchemaCSWPresentDir(schema)+ FS;

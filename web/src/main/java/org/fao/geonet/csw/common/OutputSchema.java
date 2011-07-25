@@ -7,6 +7,7 @@ public enum OutputSchema
 	// PMT GC2 : backported from old version
 	OWN("own"), 
 	GM03_PROFILE("GM03_2Record"),
+	CHE_PROFILE("http://www.geocat.ch/2008/che"),
 	// Those are standard
 	OGC_CORE("Record"), ISO_PROFILE("IsoRecord");
 
@@ -39,6 +40,9 @@ public enum OutputSchema
 		
 		if (schema.equals(Csw.NAMESPACE_CSW.getURI())) return OGC_CORE;
 		if (schema.equals(Csw.NAMESPACE_GMD.getURI())) return ISO_PROFILE;
+		if (schema.equals("http://www.geocat.ch/2008/che")) return CHE_PROFILE;
+
+		if (schema.equals("http://www.isotc211.org/2008/gm03_2")) return GM03_PROFILE;
 
 		throw new InvalidParameterValueEx("outputSchema", schema);
 	}
