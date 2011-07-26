@@ -156,8 +156,12 @@ public class ServiceContext extends BasicContext
 
 	public Element execute(LocalServiceRequest request) throws IOException, JDOMException {
 		ServiceContext context = new ServiceContext(request.getService(), getProviderManager(), getSerialFactory(), getProfileManager(), htContexts);
+		UserSession session = userSession;
+		if(userSession == null) {
+			session = new UserSession();
+		} 
 		
-		servlet.getEngine().getServiceManager().dispatch(request,userSession,context,false);
+		servlet.getEngine().getServiceManager().dispatch(request,session,context,false);
 		
 		return request.getResult();
 	}
