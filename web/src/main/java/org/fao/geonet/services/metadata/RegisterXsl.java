@@ -51,6 +51,7 @@ public class RegisterXsl implements Service
 {
 
     static final String USER_XSL_DIR = "user_xsl/";
+    static final String ID_XSL_REGEX = "[\\w\\d-_]+";
     private Show        showService;
 
     public Element exec(Element params, ServiceContext context) throws Exception
@@ -64,7 +65,7 @@ public class RegisterXsl implements Service
     		id = UUID.randomUUID().toString();
     	}
 
-    	if( !id.matches("[\\w\\d-]+")){
+    	if( !id.matches(ID_XSL_REGEX)){
     		throw new IllegalArgumentException("only letters and characters are permitted in the id");
     	}
 

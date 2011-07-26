@@ -259,6 +259,13 @@
             <error id="illegal-params" sheet="metadata-error.xsl"/>
         </service>
 
+        <service name="metadata.xsl.remove">
+            <class name=".services.metadata.RemoveXsl"/>
+            <error id="illegal-params" sheet="metadata-error.xsl"/>
+        </service>
+        
+        
+        
         <service name="metadata.formatter.html">
             <class name=".services.metadata.Format2"/>
             <output sheet="identity.xsl"/>

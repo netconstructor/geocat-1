@@ -65,7 +65,7 @@ public class Format2 implements Service
             throw new IllegalArgumentException("Either '"+Params.UUID+"' or '"+Params.ID+"'is a required parameter");
         }
         
-        if( !xslid.matches("[\\w\\d]+")){
+        if( !xslid.matches(RegisterXsl.ID_XSL_REGEX)){
             throw new IllegalArgumentException("only letters and characters are permitted in the id");
         }
         
