@@ -229,7 +229,7 @@ public class ReusableObjManager
                 return results;
             }
 
-            return null;
+            return Collections.emptyList();
         } catch (Exception x) {
             StringWriter s = new StringWriter();
             x.printStackTrace(new PrintWriter(s));

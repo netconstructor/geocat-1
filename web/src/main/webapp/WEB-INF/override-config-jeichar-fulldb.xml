@@ -1,0 +1,19 @@
+<overrides>
+    <import file="/WEB-INF/overrides-config-geocat.xml"/>
+
+	<logging>
+      <logFile>/WEB-INF/log4j.cfg</logFile>
+      <logFile>/WEB-INF/log4j-jeichar.cfg</logFile>
+  </logging>
+	  <!-- properties allow some properties to be defined that will be substituted -->
+    <!-- into text or attributes where ${property} is the substitution pattern -->
+    <!-- The properties can reference other properties -->
+    <properties>
+        <postgis.db>geocat2_dump</postgis.db>
+    </properties>
+    <file name="config.xml">
+      <replaceText xpath="general/uploadDir">/tmp/gc_data/uploads</replaceText>
+      <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="/tmp/gc_data/schemaPluginsDir"/>
+      <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="/tmp/gc_data/htmlCacheDir"/>
+    </file>
+</overrides>

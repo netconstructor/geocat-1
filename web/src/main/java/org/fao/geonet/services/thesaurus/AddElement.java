@@ -79,7 +79,7 @@ public class AddElement implements Service {
 				thesaurus
 						.addElement(newid, prefLab, definition, east, west, south, north, lang);
 			} else {
-				thesaurus.addElement(newid, prefLab, definition, lang);
+				thesaurus.addElement(namespace, newid, prefLab, definition, lang);
 			}
 			elResp.addContent(new Element("selected").setText(ref));
 			elResp.addContent(new Element("mode").setText("edit"));
