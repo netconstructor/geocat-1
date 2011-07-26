@@ -31,6 +31,7 @@ import org.fao.geonet.constants.Params;
 import org.jdom.Element;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,46 +55,96 @@ public class RegisterXsl implements Service
 
     public Element exec(Element params, ServiceContext context) throws Exception
     {
-        String xslUrlParam = Util.getParam(params, "xsl",null);
-        String id = Util.getParam(params, Params.ID,null);
+    	String xslUrlParam = Util.getParam(params, "xsl",null);
+    	String xslFile     = Util.getParam(params, "file",null);
 
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-        }
-        
-        if( !id.matches("[\\w\\d]+")){
-            throw new IllegalArgumentException("only letters and characters are permitted in the id");
-        }
+    	String id = Util.getParam(params, Params.ID,null);
 
-        URL xslUrl;
+    	if (id == null) {
+    		id = UUID.randomUUID().toString();
+    	}
 
-        try {
-            xslUrl = new URL(xslUrlParam);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("The 'xsl' parameter must be a valid URL");
-        }
+    	if( !id.matches("[\\w\\d-]+")){
+    		throw new IllegalArgumentException("only letters and characters are permitted in the id");
+    	}
 
-        File file = new File(context.getAppPath() + USER_XSL_DIR + id + ".xsl");
-        int i = 0;
-        while (file.exists()) {
-            i++;
-            file = new File(context.getAppPath() + USER_XSL_DIR + id + "_" + i + ".xsl");
-        }
-        file.getParentFile().mkdirs();
-        copy(xslUrl, file);
 
-        if (i > 0) {
-            id = id + "_" + i;
-        }
+    	// PMT c2c : trying to use the posted (multipart) file
+    	if (xslFile != null)
+    	{
+    		File file = new File(context.getAppPath() + USER_XSL_DIR + id + ".xsl");
+    		int i = 0;
+    		while (file.exists()) {
+    			i++;
+    			file = new File(context.getAppPath() + USER_XSL_DIR + id + "_" + i + ".xsl");
+    		}
+    		file.getParentFile().mkdirs();
 
-        Element response = new Element("result");
-        Element idElem = new Element("id");
-        idElem.setAttribute("id", id);
-        response.addContent(idElem);
+    		FileInputStream from = null;
+    		FileOutputStream to = null;
+    		try {
+    			from = new FileInputStream(context.getUploadDir()  + xslFile);
+    			to = new FileOutputStream(file);
+    			byte[] buffer = new byte[4096];
+    			int bytesRead;
 
-        return response;
+    			while ((bytesRead = from.read(buffer)) != -1)
+    				to.write(buffer, 0, bytesRead); // write
+    		} finally {
+    			if (from != null)
+    				try {
+    					from.close();
+    				} catch (IOException e) {
+    					;
+    				}
+    			if (to != null)
+    				try {
+    					to.close();
+    				} catch (IOException e) {
+    					;
+    				}
+    		}
+    		Element response = new Element("result");
+    		Element idElem = new Element("id");
+    		idElem.setAttribute("id", id);
+    		response.addContent(idElem);
+
+    		return response;
+    	}
+    	// end
+
+    	// previous code:
+    	else
+    	{
+    		URL xslUrl;
+
+    		try {
+    			xslUrl = new URL(xslUrlParam);
+    		} catch (MalformedURLException e) {
+    			throw new IllegalArgumentException("The 'xsl' parameter must be a valid URL");
+    		}
+
+    		File file = new File(context.getAppPath() + USER_XSL_DIR + id + ".xsl");
+    		int i = 0;
+    		while (file.exists()) {
+    			i++;
+    			file = new File(context.getAppPath() + USER_XSL_DIR + id + "_" + i + ".xsl");
+    		}
+    		file.getParentFile().mkdirs();
+    		copy(xslUrl, file);
+
+    		if (i > 0) {
+    			id = id + "_" + i;
+    		}
+
+    		Element response = new Element("result");
+    		Element idElem = new Element("id");
+    		idElem.setAttribute("id", id);
+    		response.addContent(idElem);
+
+    		return response;
+    	}
     }
-
     private void copy(URL xslUrl, File file) throws IOException
     {
         InputStream in = null;
