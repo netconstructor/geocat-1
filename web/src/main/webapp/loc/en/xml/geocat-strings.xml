@@ -15,4 +15,30 @@
 		<sentNotifications>Notification messages sent to author</sentNotifications>
 		<unpublished>unpublished</unpublished>
 	</metadata.expired>
+	
+	<monitoring>Monitoring report</monitoring>
+    <monitoringDes>Monitoring report on GeoNetwork services state</monitoringDes>
+    <monitoring.service.db>Database connection</monitoring.service.db>
+    <monitoring.service.csw>CSW service</monitoring.service.csw>
+    <monitoring.service.csw.capabilities>Capabilities</monitoring.service.csw.capabilities>
+    <monitoring.service.csw.getrecords>GetRecords</monitoring.service.csw.getrecords>
+    <monitoring.service.print>Print service</monitoring.service.print>
+    <monitoring.service.index>Index service</monitoring.service.index>
+    <monitoring.url>Url</monitoring.url>
+    <monitoring.status>Status</monitoring.status>
+    <monitoring.error.code>Error code</monitoring.error.code>
+    <monitoring.error.description>Error description</monitoring.error.description>
+    <monitoring.responsetime>Response time</monitoring.responsetime>
+    <monitoring.metadatarecords>Metadata records</monitoring.metadatarecords>
+    <monitoring.connectionsuccess>Connection succesful</monitoring.connectionsuccess>
+    <monitoring.connectionerror>Error</monitoring.connectionerror>
+    <monitoring.enabled>Enabled</monitoring.enabled>
+    <monitoring.disabled>Disabled</monitoring.disabled>
+    <monitoring.refresh>Refresh</monitoring.refresh>
+    <monitoring.indexing>Indexing</monitoring.indexing>
+    <monitoring.idle>Idle</monitoring.idle>
+    <monitoring.service.disk>Disk monitor</monitoring.service.disk>
+    <monitoring.freespace>Free space</monitoring.freespace>
+
+
 </strings>

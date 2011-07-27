@@ -53,9 +53,9 @@ public class ServiceMonitorManager {
 
         addService(DB_MONITOR_ID, new DatabaseServiceMonitor(context));
         Log.info(Geocat.Module.MONITORING, "Added database monitor");
-
-        addService(PRINT_MONITOR_ID, new PrintServiceMonitor(context));
-        Log.info(Geocat.Module.MONITORING, "Added print service monitor");
+//		PMT geocat2 c2c : disabled for now
+//        addService(PRINT_MONITOR_ID, new PrintServiceMonitor(context));
+//        Log.info(Geocat.Module.MONITORING, "Added print service monitor");
 
         addService(CSW_MONITOR_ID, new CswServiceMonitor(context));
         Log.info(Geocat.Module.MONITORING, "Added CSW service monitor");
