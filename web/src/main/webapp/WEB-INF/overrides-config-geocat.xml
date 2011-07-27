@@ -100,6 +100,13 @@
 
             <!-- Allow a user to specify a XSL -->
             <allow service="metadata.xsl.register"/>
+            <allow service="metadata.xsl.remove"/>
+            
+            
+            <!-- Monitoring services -->
+            <allow service="monitoring.report"/>
+            <allow service="monitoring"/>
+            
         </addXML>
         <replaceAtt xpath="profile[@name = 'Guest']" attName="extends" value="Shared"/>
         <addXML xpath="profile[@name = 'Guest']">

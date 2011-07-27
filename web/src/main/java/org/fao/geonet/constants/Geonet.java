@@ -529,6 +529,8 @@ public class Geonet
 	public static final String SEARCH_LOGGER= GEONETWORK + ".search-logger";
 	public static final String THREADPOOL = GEONETWORK + ".threadpool";
 	
+	
+    public static final String MONITORING   = GEONETWORK + ".monitoring";
 	//--------------------------------------------------------------------------
 	//--- services
 

@@ -1,0 +1,41 @@
+<strings>
+	<metadata.expired>
+		<recipient>Email du bénéficiaire</recipient>
+		<numExpiredElements>Nombre de dossiers trop vieux</numExpiredElements>
+		<owner>propriétaire</owner>
+		<formTitle>Recherche les métadonnées non mises à jour</formTitle>
+		<limit>Limite de dernière modification :</limit>
+		<email>Alerte email</email>
+		<unpublish>Dépublier</unpublish>
+		<email.desc>Envoyer un email aux auteurs qui n'ont pas modifiée leurs métadonnées depuis la date limite</email.desc>
+		<unpublish.desc>Dépublier les métadonnées qui n'ont pas été modifiée depuis la date limite</unpublish.desc>
+		<email.action>Email</email.action>
+		<unpublish.action>Dépublier</unpublish.action>
+		<unsentNotifications>email non envoyé : information manquante</unsentNotifications>
+		<sentNotifications>Notification envoyée à l'auteur</sentNotifications>
+		<unpublished>dépublié</unpublished>
+	</metadata.expired>
+	<monitoring>Rapport du Monitoring</monitoring>
+    <monitoringDes>Rapport du Monitoring du statut des services de GeoNetwork</monitoringDes>
+    <monitoring.service.db>Connection Base de données</monitoring.service.db>
+    <monitoring.service.csw>Service CSW</monitoring.service.csw>
+    <monitoring.service.csw.capabilities>Capabilities</monitoring.service.csw.capabilities>
+    <monitoring.service.csw.getrecords>GetRecords</monitoring.service.csw.getrecords>
+    <monitoring.service.print>Service d'impression</monitoring.service.print>
+    <monitoring.service.index>Service d'index</monitoring.service.index>
+    <monitoring.url>URL</monitoring.url>
+    <monitoring.status>Statut</monitoring.status>
+    <monitoring.error.code>Code de l'erreur</monitoring.error.code>
+    <monitoring.error.description>Description de l'erreur</monitoring.error.description>
+    <monitoring.responsetime>Temps de réponse</monitoring.responsetime>
+    <monitoring.metadatarecords>Entrées de métadonnées</monitoring.metadatarecords>
+    <monitoring.connectionsuccess>Connection établie</monitoring.connectionsuccess>
+    <monitoring.connectionerror>Erreur</monitoring.connectionerror>
+    <monitoring.enabled>Activé</monitoring.enabled>
+    <monitoring.disabled>Desactivé</monitoring.disabled>
+    <monitoring.refresh>Actualiser</monitoring.refresh>
+    <monitoring.indexing>Indexation</monitoring.indexing>
+    <monitoring.idle>Idle</monitoring.idle>
+    <monitoring.service.disk>Monitor du disque</monitoring.service.disk>
+    <monitoring.freespace>Espace libre</monitoring.freespace>
+</strings>
