@@ -1,0 +1,18 @@
+<strings>
+	<metadata.expired>
+		<recipient>Email Recipient</recipient>
+		<numExpiredElements>Number of Expired Records</numExpiredElements>
+		<owner>Owner</owner>
+		<formTitle>Search for Expiring Metadata</formTitle>
+		<limit>Last Change Limit:</limit>
+		<email>Email Notification</email>
+		<unpublish>Unpublish</unpublish>
+		<email.desc>Send an email to authors of metadata that have not been changed within the provided limit</email.desc>
+		<unpublish.desc>Unpublishes all metadata that have not been changed within the provided limit</unpublish.desc>
+		<email.action>Email</email.action>
+		<unpublish.action>Unpublish</unpublish.action>
+		<unsentNotifications>Email not sent: missing author's contact information</unsentNotifications>
+		<sentNotifications>Notification messages sent to author</sentNotifications>
+		<unpublished>unpublished</unpublished>
+	</metadata.expired>
+</strings>

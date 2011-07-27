@@ -1,0 +1,18 @@
+<strings>
+	<metadata.expired>
+		<recipient>E-Mail Empfänger</recipient>
+		<numExpiredElements>Anzahl der abgelaufen Records</numExpiredElements>
+		<owner>Besitzer</owner>
+		<formTitle>Suche nach abgelaufenen Metadaten</formTitle>
+		<limit>Zeitspanne</limit>
+		<email>E-Mail Benachrichtigung</email>
+		<unpublish>Depublizieren</unpublish>
+		<email.desc>E-Mail an alle Erfasser, die seit der festgelegten Zeitspanne ihre Daten nicht aktualisiert haben</email.desc>
+		<unpublish.desc>Alle Metadaten depublizieren, die seit der festgelegten Zeitspanne ihre Daten nicht aktualisiert haben</unpublish.desc>
+		<email.action>E-Mail</email.action>
+		<unpublish.action>Depublizieren</unpublish.action>
+		<unsentNotifications>E-Mail nicht gesendet: Kontaktinformation des Erfassers fehlt</unsentNotifications>
+		<sentNotifications>Benachrichtigungen an den Erfasser gesendet</sentNotifications>
+		<unpublished>depubliziert</unpublished>
+	</metadata.expired>
+</strings>    
