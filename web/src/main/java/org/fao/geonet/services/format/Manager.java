@@ -29,6 +29,7 @@ import jeeves.resources.dbms.*;
 import jeeves.server.*;
 import jeeves.server.context.*;
 import jeeves.xlink.Processor;
+import jeeves.xlink.XLink;
 
 import org.fao.geonet.constants.*;
 import org.fao.geonet.services.reusable.Reject;
@@ -68,6 +69,7 @@ public class Manager implements Service {
 		Dbms dbms = (Dbms) context.getResourceManager()
 				.open(Geonet.Res.MAIN_DB);
 
+		
 		Element elRes = new Element(Jeeves.Elem.RESPONSE);
 
 		if (action.equals("DELETE")) {
@@ -91,7 +93,8 @@ public class Manager implements Service {
 				elRes.addContent(new Element(Jeeves.Elem.OPERATION)
 						.setText(Jeeves.Text.UPDATED));
 
-		        Processor.clearCache();
+				Processor.removeHRef(XLink.LOCAL_PROTOCOL+"xml.format.get?id=" + id);
+
 			}
 		}
 

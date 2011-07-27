@@ -566,7 +566,7 @@ public class ReusableObjManager
 
     private ReusableTypes hrefToReusableType(String href) {
         ReusableTypes type;
-        if (href.contains("xml.keyword.get")) {
+        if (href.contains("che.keyword.get")) {
             type = ReusableTypes.keywords;
         } else if (href.contains("xml.user.get")) {
             type = ReusableTypes.contacts;
@@ -575,7 +575,7 @@ public class ReusableObjManager
         } else if (href.contains("xml.extent.get")) {
             type = ReusableTypes.extents;
         } else {
-            throw new IllegalArgumentException(href + " is not recognized as a reusable object xlink");
+            throw new IllegalArgumentException(href + " is not recognized as a shared object xlink");
         }
         return type;
     }

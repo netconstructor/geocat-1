@@ -7,6 +7,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import jeeves.JeevesJCS;
@@ -17,6 +18,8 @@ import jeeves.utils.Log;
 import jeeves.utils.Xml;
 
 import org.apache.jcs.access.exception.CacheException;
+import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
+import org.apache.jcs.engine.behavior.IElementAttributes;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -422,6 +425,11 @@ public final class Processor {
 				break;
 			}
 		}
+	}
+
+	public static void removeHRef(String href) throws CacheException {
+		JeevesJCS.getInstance(XLINK_JCS).remove(href);
+		
 	}
 
 }

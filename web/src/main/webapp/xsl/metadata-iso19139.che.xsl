@@ -14,6 +14,18 @@
 
     <xsl:include href="xml-to-string.xsl"/>
 
+  	<!-- main template - the way into processing iso19139 -->
+  	<xsl:template name="metadata-iso19139.che">
+  		<xsl:param name="schema"/>
+  		<xsl:param name="edit" select="false()"/>
+  		<xsl:param name="embedded"/>
+
+     	<xsl:apply-templates mode="iso19139" select="." >
+      	<xsl:with-param name="schema" select="$schema"/>
+       	<xsl:with-param name="edit"   select="$edit"/>
+       	<xsl:with-param name="embedded" select="$embedded" />
+     	</xsl:apply-templates>
+    </xsl:template>
 	<!-- Do not display those elements -->
 	<xsl:template mode="elementEP"
 		match="gmd:describes|gmd:propertyType|gmd:featureType|gmd:featureAttribute" priority="2"/>
@@ -1875,5 +1887,39 @@
 			<xsl:copy-of select="geonet:info"/>
 		</metadata>
 	</xsl:template>
+
+<!--  Just stuck in here so xsl compile pre-edit stage of project, really needs to be other place -->
+  <xsl:template name="validatedXlink">
+
+     <xsl:variable name="xlinkedAncestor" select="ancestor::node()[@xlink:href]" />
+     <xsl:choose>
+     <xsl:when test="count($xlinkedAncestor) != 0 and count(ancestor::node()[@xlink:role = 'http://www.geonetwork.org/non_valid_obj']) = 0">
+         <xsl:value-of select="true()" />
+     </xsl:when>
+     <xsl:otherwise>
+         <xsl:value-of select="false()" />
+     </xsl:otherwise>
+     </xsl:choose>
+   </xsl:template>
+ 	<!--
+ 	adds toggle for Hidden Element editing in Advanced View
+ 	-->
+ 	<xsl:template name="toggle-visibility-edit">
+ 		<xsl:param name="edit" select="false()"/>
+
+ 		<xsl:if test="$edit=true()">
+ 			<tr align="left">
+                 <td></td>
+ 				<td colspan="1">
+ 					<xsl:if test="$currTab!='simple'">
+ 					<input class="content" type="checkbox" onclick="toggleVisibilityEdit()" name="toggleVisibilityEditCB" id="toggleVisibilityEditCB" value="true"/><label for="toggleVisibilityEditCB" style="margin-left:0.5em"><xsl:value-of select="/root/gui/strings/toggleVisibilityEdit"/></label>
+ 					</xsl:if>
+ 					<xsl:call-template name="relatedResources">
+ 						<xsl:with-param name="edit" select="true()"/>
+ 					</xsl:call-template>
+ 				</td>
+ 			</tr>
+ 		</xsl:if>
+ 	</xsl:template>
 	
 </xsl:stylesheet>

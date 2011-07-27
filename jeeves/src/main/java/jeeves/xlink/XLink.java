@@ -84,7 +84,7 @@ public class XLink {
 	 * @param title title of the document
 	 * 
 	 */
-	public XLink (URL href, String title, String role) {
+	public XLink (String href, String title, String role) {
 		this.href = href.toString();
 		this.title = title;
 		this.role = role;
@@ -169,5 +169,17 @@ public class XLink {
      */
 	public static String getHRef(Element originalElem) {
 		return originalElem.getAttributeValue(HREF,NAMESPACE_XLINK);
+	}
+
+	public Attribute getHrefAttribute() {
+		return new Attribute(XLink.HREF, href, NAMESPACE_XLINK);
+	}
+	
+	public Attribute getRoleAttribute() {
+		return new Attribute(XLink.ROLE, role, NAMESPACE_XLINK);
+	}
+	
+	public Attribute getShowAttribute() {
+		return new Attribute(XLink.SHOW, show, NAMESPACE_XLINK);
 	}
 }

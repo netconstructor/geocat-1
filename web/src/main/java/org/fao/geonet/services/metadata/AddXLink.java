@@ -28,6 +28,7 @@ import jeeves.constants.Jeeves;
 import jeeves.interfaces.Service;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
+import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
 import jeeves.xlink.XLink;
@@ -67,77 +68,26 @@ public class AddXLink implements Service {
 
 	public Element exec(Element params, ServiceContext context)
 			throws Exception {
-        EditUtils editUtils = new EditUtils(context);
-		editUtils.preprocessUpdate(params, context);
+		GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 
-		GeonetContext gc = (GeonetContext) context
-				.getHandlerContext(Geonet.CONTEXT_NAME);
-		DataManager dataMan = gc.getDataManager();
+		Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
+		UserSession session = context.getUserSession();
 
-		Dbms dbms = (Dbms) context.getResourceManager()
-				.open(Geonet.Res.MAIN_DB);
+		String id    = Util.getParam(params, Params.ID);
+		String ref   = Util.getParam(params, Params.REF);
+		String name  = Util.getParam(params, Params.NAME);
+		String href = Util.getParam(params, XLink.HREF);
 
-		String id = Util.getParam(params, Params.ID);
-		String ref = Util.getParam(params, Params.REF);
-		String name = Util.getParam(params, Params.NAME);
-		String href = Util.getParam(params, XLink.HREF, "");
-		// HACK.  I am ignoring role and hardcoding a call to ReusableObjectManager to determine what the role should be
-		// This is because I need reusable objects to be non_validated vs validated.
-		// String role = Util.getParam(params, jeeves.xlink.XLink.ROLE, "");
 
-		String version = Util.getParam(params, Params.VERSION);
-        synchronized (dataMan) {
+        String role = gc.getReusableObjMan().isValidated(href, context) ? "": ReusableObjManager.NON_VALID_ROLE;
+        href = gc.getReusableObjMan().createAsNeeded(href,context);
+		context.debug("Add as xlink url: " + href);
 
-    		editUtils.updateContent(params, true, true);
+		XLink xLink = new XLink (href, "", role);
 
-    		List<XLink> links = new ArrayList<XLink>();
-
-    		// FIXME : here we could improve processing, defining a
-    		// prefix for xlink element to be added could be directly
-    		// processed in updateContent so you don't do stuff twice
-    		// or more.
-    		//--- Add one xlink element sent in href parameter
-    		if (!href.equals("")) {
-    			//href.replace("&amp;", "&").replace("#", "%23")
-
-                String role = gc.getReusableObjMan().isValidated(href, context) ? "": ReusableObjManager.NON_VALID_ROLE;
-                href = gc.getReusableObjMan().createAsNeeded(href,context);
-    			URL url = new URL (href);
-    			context.debug("Add as xlink url: " + href);
-
-    			links.add(new XLink (url, "", role));
-    		}
-
-    		//--- Add all element starting with prefix href_ if exist.
-    		// Gui only available for keywords.
-    		List<Element> list = params.getChildren();
-    		for (Element el : list) {
-    			if (el.getName().startsWith("href_")) {
-    				String link = Util.getParam(params, el.getName(), "");
-
-    				if (!link.equals("")) {
-    					//--- add metadata locales in order to retrieve keywords needed
-    					// by the metadata record.
-    					String locales = Util.getParam(params, "keyword.locales", "");
-    					if (!locales.equals(""))
-    						link += "&amp;locales=" + locales;
-    		            String role = gc.getReusableObjMan().isValidated(link, context) ? "": ReusableObjManager.NON_VALID_ROLE;
-    					URL url = new URL (link);
-    					context.debug("Add as xlink url: " + link);
-    					links.add(new XLink (url, "", role));
-    				}
-    			}
-    		}
-
-            throw new NotImplementedException("Need to implement this still");
-    		/*if (!dataMan.addXLinkForElement(dbms, id, md, ref, name, links, version))
-    		    throw new Exception(id);
-
-    		Element elResp = new Element(Jeeves.Elem.RESPONSE);
-    		elResp.addContent(new Element(Geonet.Elem.ID).setText(id));
-    		return elResp;
-    		*/
-        }
+		// -- build the element to be added and return it
+		AjaxEditUtils ajaxEditUtils = new AjaxEditUtils(context);
+		return  ajaxEditUtils.addXLink(dbms, session, id, ref, name, xLink);
 	}
 }
 

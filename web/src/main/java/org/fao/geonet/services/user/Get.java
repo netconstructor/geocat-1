@@ -81,10 +81,15 @@ public class Get implements Service
 
 			Element elUser = dbms.select ("SELECT * FROM Users WHERE id=?", Integer.valueOf(id));
 
+			if(elUser.getChild("record") != null && elUser.getChild("record").getChildText("profile").equals(Geocat.Profile.SHARED)) {
+				return loadSharedUser(dbms, id);
+			}
+
 		//--- retrieve user groups
 
 			Element elGroups = new Element(Geonet.Elem.GROUPS);
 
+			
 			java.util.List list =dbms.select("SELECT groupId FROM UserGroups WHERE userId=?",Integer.valueOf(id)).getChildren();
 
 			for(int i=0; i<list.size(); i++)

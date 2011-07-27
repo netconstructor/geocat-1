@@ -30,6 +30,9 @@ import jeeves.server.ServiceConfig;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
+import jeeves.xlink.Processor;
+import jeeves.xlink.XLink;
+
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
 import org.jdom.Element;
@@ -75,6 +78,8 @@ public class Update implements Service
 		String organ    = Util.getParam(params, Params.ORG,     "");
 		String kind     = Util.getParam(params, Params.KIND,    "");
 
+		Processor.clearCache();
+		
 		UserSession usrSess = context.getUserSession();
 		String      myProfile = usrSess.getProfile();
 		String      myUserId  = usrSess.getUserId();

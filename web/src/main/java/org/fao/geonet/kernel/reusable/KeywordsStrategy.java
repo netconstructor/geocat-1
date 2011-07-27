@@ -60,7 +60,7 @@ import org.openrdf.sesame.config.AccessDeniedException;
 public final class KeywordsStrategy extends ReplacementStrategy
 {
     private static final String NAMESPACE = "http://custom.shared.obj.ch/concept#";
-    private static final String    GEOCAT_THESAURUS_NAME = "local._none_.geocat.ch";
+    private static final String GEOCAT_THESAURUS_NAME = "local._none_.geocat.ch";
     public static final String NON_VALID_THESAURUS_NAME = "local._none_.non_validated";
 
     private final ThesaurusManager _thesaurusMan;
