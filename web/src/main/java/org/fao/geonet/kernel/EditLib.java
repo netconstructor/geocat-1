@@ -1224,6 +1224,46 @@ public class EditLib
 		}
 	}
 
+	public String addEditingInfo(String schema, String id, Element md) throws Exception {
+		String version = getVersion(id, true) +"";
+
+		//TODO : porting back the code from previous geocat
+		// some functions (this one, and enumerateTree / getSchema) seem to
+		// have their equivalent in this version of geonetwork. I took a "lazy approach"
+		// and there may be a better reuse to do of the existing code.
+
+		// (entry point of the current modification is here : DataManager.java:2890)
+		
+		enumerateTree(md, 1);
+		expandTree(getSchema(schema), md);
+
+		return version;
+	}
+	private int enumerateTree(Element md, int ref)
+	{
+		Element elem = new Element(Edit.RootChild.ELEMENT, Edit.NAMESPACE);
+		elem.setAttribute(new Attribute(Edit.Element.Attr.REF, ref +""));
+
+		List list = md.getChildren();
+
+		for(int i=0; i<list.size(); i++)
+			ref = enumerateTree((Element) list.get(i), ref +1);
+
+		md.addContent(elem);
+
+		return ref;
+	}
+	public MetadataSchema getSchema(String name)
+	{
+		MetadataSchema schema = (MetadataSchema) scm.getSchema(name);
+
+		if (schema == null)
+			throw new IllegalArgumentException("Schema not registered : " + name);
+
+		return schema;
+	}
+
+
 }
 
 //=============================================================================

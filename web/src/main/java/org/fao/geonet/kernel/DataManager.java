@@ -126,7 +126,7 @@ public class DataManager {
         this.reusableObjMan = reusableObjMan;
         this.extentMan = extentMan;
         this.thesaurusMan = thesMan;
-
+		this.validator = new Validator(htmlCacheDir);
 		this.baseURL = baseURL;
         this.dataDir = dataDir;
 		this.appPath = appPath;
@@ -2803,6 +2803,8 @@ public class DataManager {
 	private String stylePath;
 	private static String FS = File.separator;
 
+	
+	private final Validator validator;
     /**
      *
      */
@@ -2850,4 +2852,60 @@ public class DataManager {
     public enum UpdateDatestamp {
         yes, no
     }
+
+    public Element getValidationReport(ServiceContext srvContext, String id) throws Exception
+    {
+        Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
+
+        // TODO : Xlinks resolved ?
+        //Was : Element md = XmlSerializer.select(dbms, "Metadata", id, true);
+        Element md = XmlSerializer.select(dbms, "Metadata", id, srvContext);
+
+        if (md == null)
+        {
+            return null;
+        }
+
+        InstrumentAndValidateResult report = instrumentMetadataAndValidate(dbms, id, md, srvContext);
+
+        Element result = new Element("validationReport");
+        result.setAttribute("id", id);
+        if (report.xsdErrors != null)
+            result.addContent(report.xsdErrors);
+        if (report.schematronReport != null)
+            result.addContent(report.schematronReport);
+        return result;
+    }
+	private InstrumentAndValidateResult instrumentMetadataAndValidate(Dbms dbms, String mdId, Element md, ServiceContext srvContext)
+	throws Exception
+    {
+        String schema = getMetadataSchema(dbms, mdId);
+        MetadataSchema mds = getSchema(schema);
+        // XSD checking on metadata
+
+        Element xsdErrors = validator.getXSDXmlReport(mds, md);
+
+        // Add editing elements
+        editLib.expandElements(schema, md);
+        String version = editLib.addEditingInfo(schema, mdId, md);
+
+        // Schematron checking
+        Element elemChecks = validator.getSchemaTronXmlReport(mds, md, srvContext.getLanguage());
+        return new InstrumentAndValidateResult(xsdErrors, elemChecks, version);
+    }
+	
+	
+	private static final class InstrumentAndValidateResult {
+        public final Element xsdErrors;
+        public final Element schematronReport;
+        public final String version;
+        public InstrumentAndValidateResult(Element xsdErrors, Element schematronReport, String version)
+        {
+            this.xsdErrors = xsdErrors;
+            this.schematronReport = schematronReport;
+            this.version = version;
+        }
+
+
+	}
 }

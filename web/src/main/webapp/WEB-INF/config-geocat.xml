@@ -139,9 +139,12 @@
           </class>
         </service>
 
-        <service name="status" type="xml">
-          <class name=".services.main.ServerStatus" />
-        </service>
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+		<!-- Validation -->
+		<service name="metadata.validation.report">
+			<class name=".services.metadata.GetValidationErrors"/>
+		</service>
+
 
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<!-- Monitoring -->
