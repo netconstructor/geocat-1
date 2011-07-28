@@ -152,4 +152,13 @@
     		<parameter name="geonetworkId" field="_id" type="AdditionalQueryables" />
     	</addXml>
     </file>
+    
+    
+    <file name="config-metadata.xml">
+    	<addXml xpath="*//service[@name='metadata.show.embedded']/output">
+			<preSheet sheet="metadata-order-complex-elements.xsl"/>
+    	</addXml>
+    </file>
+    
+    
 </overrides>

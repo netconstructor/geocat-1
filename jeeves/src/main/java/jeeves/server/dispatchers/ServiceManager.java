@@ -23,6 +23,16 @@
 
 package jeeves.server.dispatchers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletResponse;
+
 import jeeves.constants.ConfigFile;
 import jeeves.constants.Jeeves;
 import jeeves.exceptions.JeevesException;
@@ -50,16 +60,9 @@ import jeeves.utils.SOAPUtil;
 import jeeves.utils.SerialFactory;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
-import org.jdom.Element;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import org.jdom.Element;
+import org.jdom.filter.Filter;
 
 //=============================================================================
 
@@ -221,11 +224,12 @@ public class ServiceManager
 	{
 		OutputPage outPage = new OutputPage();
 
-		outPage.setStyleSheet   (output.getAttributeValue(ConfigFile.Output.Attr.SHEET));
-		outPage.setForward      (output.getAttributeValue(ConfigFile.Output.Attr.FORWARD));
-		outPage.setTestCondition(output.getAttributeValue(ConfigFile.Output.Attr.TEST));
-		outPage.setFile         (output.getAttributeValue(ConfigFile.Output.Attr.FILE) != null);
-		outPage.setBLOB         (output.getAttributeValue(ConfigFile.Output.Attr.BLOB) != null);
+		outPage.setStyleSheet    (output.getAttributeValue(ConfigFile.Output.Attr.SHEET));
+		outPage.setPreStyleSheets(output.getChildren(ConfigFile.Output.Child.PRE_SHEET));
+		outPage.setForward       (output.getAttributeValue(ConfigFile.Output.Attr.FORWARD));
+		outPage.setTestCondition (output.getAttributeValue(ConfigFile.Output.Attr.TEST));
+		outPage.setFile          (output.getAttributeValue(ConfigFile.Output.Attr.FILE) != null);
+		outPage.setBLOB          (output.getAttributeValue(ConfigFile.Output.Attr.BLOB) != null);
 
 		//--- set content type
 
@@ -238,8 +242,22 @@ public class ServiceManager
 
 		//--- handle children
 
-		List<Element> guiList = output.getChildren();
+		//List<Element> guiList = output.getChildren();
 
+		List<Element> guiList = output.getContent(new Filter()
+        {
+
+            public boolean matches(Object arg0)
+            {
+                if (arg0 instanceof Element) {
+                    Element elem = (Element) arg0;
+                    return !elem.getName().equals(ConfigFile.Output.Child.PRE_SHEET );
+                }
+                return false;
+            }
+        });
+		
+		
 		for(Element gui : guiList) {
 			outPage.addGuiService(getGuiService(pack, gui));
 		}
@@ -680,6 +698,7 @@ public class ServiceManager
 			//--- build the xml data for the XSL translation
 
 			String  styleSheet = outPage.getStyleSheet();
+			List<String> preSheets = outPage.getPreStyleSheets();			
 			Element guiElem    = outPage.invokeGuiServices(context, response, vDefaultGui);
 
 			addPrefixes(guiElem, context.getLanguage(), req.getService());
@@ -710,7 +729,6 @@ public class ServiceManager
 					error("     -> stylesheet not found on disk, aborting : " +styleSheet);
 				else
 				{
-					info("     -> transforming with stylesheet : " +styleSheet);
 
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -718,7 +736,18 @@ public class ServiceManager
 					{
 						//--- first we do the transformation
 
-						Xml.transform(rootElem, styleSheet, baos);
+					    Element transformedElem = rootElem;
+					    //--- first we do the transformation
+					    for (String preSheet : preSheets) {
+							info("     -> transforming with pre-stylesheet : " +preSheet);
+                            transformedElem = Xml.transform(transformedElem, toStyleSheetFile(preSheet));
+                        }
+					    
+					    
+						info("     -> transforming with stylesheet : " +styleSheet);
+						Xml.transform(transformedElem, styleSheet, baos);
+						
+						//Xml.transform(rootElem, styleSheet, baos);
 
 						//--- then we set the content-type and output the result
 
@@ -748,7 +777,10 @@ public class ServiceManager
 
 		return null;
 	}
-
+    private String toStyleSheetFile(String styleSheet)
+    {
+        return appPath + Jeeves.Path.XSL + styleSheet;
+    }
 	//---------------------------------------------------------------------------
 	//--- Dispatch error
 	//---------------------------------------------------------------------------
