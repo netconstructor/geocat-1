@@ -10,6 +10,6 @@ DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 OVERRIDES="-Djeeves.configuration.overrides.file=/WEB-INF/override-config-jeichar.xml"
 MEMORY="-XX:MaxPermSize=256m -Xmx1GM"
 DIRS="-Dgeonetwork.lucene.dir=/tmp/gc_lucene -Dgeonetwork.data.dir=/tmp/gc_data"
-export MAVEN_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS"
+export MAVEN_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS -Dfile.encoding=UTF8 "
 
 mvn compile test jetty:run

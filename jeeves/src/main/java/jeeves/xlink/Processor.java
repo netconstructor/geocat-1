@@ -227,10 +227,10 @@ public final class Processor {
 		JeevesJCS xlinkCache = JeevesJCS.getInstance(XLINK_JCS);
 		Element theXLink = (Element)xlinkCache.get(uri.toLowerCase());
 		if (theXLink == null) {
-			Log.error(Log.XLINK_PROCESSOR,"Uri "+uri+" wasn't there");
+			Log.warning(Log.XLINK_PROCESSOR,"Uri "+uri+" wasn't there");
 		} else {
 			xlinkCache.remove(uri);
-			Log.error(Log.XLINK_PROCESSOR,"Uri "+uri+" was removed from cache");
+			Log.warning(Log.XLINK_PROCESSOR,"Uri "+uri+" was removed from cache");
 		}
 	}
 

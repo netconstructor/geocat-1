@@ -358,7 +358,10 @@ public class ReusableObjManager
 			if(originalElem.getChildren().isEmpty()) return false;
 			
 			boolean equals = Utils.equalElem((Element) originalElem.getChildren().get(0),current);
-			if(!equals) {
+			if(current.getName().equalsIgnoreCase("error")) {
+				Log.error(Geocat.Module.REUSABLE, "ERROR resolving shared object xlink: "+href);
+			}
+			if(!equals && !current.getName().equalsIgnoreCase("error")) {
 				if(updatedElements.contains(href)) {
 					throw new AssertionError("The same xlink was updated twice");
 				} else {

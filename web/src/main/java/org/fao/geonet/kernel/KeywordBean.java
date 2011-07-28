@@ -75,7 +75,7 @@ public class KeywordBean {
 		this.id = id;
 		this.value = value;
 		this.lang = lang;
-		this.labels.put(LangUtils.to2CharLang(lang.toLowerCase()), value);
+		this.labels.put(LangUtils.to2CharLang(lang==null?"en":lang.toLowerCase()), value);
 		this.definition = definition;
 		this.code = code;
 		this.coordEast = coordEast;

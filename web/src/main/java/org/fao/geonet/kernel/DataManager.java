@@ -276,7 +276,7 @@ public class DataManager {
 				startIndexGroup();
 				try {
 					for ( Integer id : toIndex ) {
-						indexMetadataGroup(dbms, id.toString());
+						indexMetadataGroup(dbms, id.toString(), false);
 					}
 				} finally {
 					endIndexGroup();
@@ -318,6 +318,10 @@ public class DataManager {
 	public void indexMetadataGroup(Dbms dbms, String id) throws Exception {
 		Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
 		indexMetadata(dbms, id, true,true);
+	}
+	public void indexMetadataGroup(Dbms dbms, String id, boolean processSharedObjects) throws Exception {
+		Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
+		indexMetadata(dbms, id, true,processSharedObjects);
 	}
 
     /**
