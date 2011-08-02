@@ -28,6 +28,7 @@
 						height:100%;
 					}
 				</style>
+		
 			</head>
 			<body onload="init();">
 				<!-- banner -->
@@ -47,6 +48,7 @@
 				<xsl:if test="not(/root/request/modal)">
 					<xsl:apply-templates mode="loading" select="/"/>
 				</xsl:if>
+				
 			</body>
 		</html>
 	</xsl:template>
@@ -66,6 +68,9 @@
     
 	<xsl:template name="formLayout">
 		<xsl:param name="title"/>
+		
+		<xsl:param name="navpane" select="''"/>
+		
 		<xsl:param name="content"/>
 		<xsl:param name="buttons"/>
 		<xsl:param name="indent" select="100"/>
@@ -104,6 +109,9 @@
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:call-template name="formContent">
+						
+						    <xsl:with-param name="navpane" select="$navpane"/>
+						
 							<xsl:with-param name="content" select="$buttons"/>
 							<xsl:with-param name="indent" select="$indent"/>
 						</xsl:call-template>
@@ -144,13 +152,18 @@
 	</xsl:template>
 	
 	<xsl:template name="formContent">
+	    <xsl:param name="navpane"/>
 		<xsl:param name="content"/>
 		<xsl:param name="indent" select="100"/>
 		
 		<tr>
 			<xsl:choose>
 				<xsl:when test="not(/root/request/modal)">
-					<td class="padded-content" width="{$indent}"/>
+
+					<td class="padded-content" width="{$indent}">
+		                <xsl:copy-of select="$navpane"/>
+            		</td>
+
 					<td class="dots"/>
 					<td class="padded-content" align="center">
 						<xsl:copy-of select="$content"/>

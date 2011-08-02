@@ -10,17 +10,150 @@
 
 		<table width="100%">
 
+            <!-- print banner -->
+            <tr class="banner doprint" style="display:none;white-space:nowrap">
+                <td class="banner" colspan="2" width="100%"><div style="width:1024px">
+                    <img src="{/root/gui/url}/images/geocat_logo_li.gif" alt="geocat.ch logo"/>
+                    <img src="{/root/gui/url}/images/header-background-print.jpg" alt="geocat.ch logo"/>
+                    <img src="{/root/gui/url}/images/bg_kopf_geocat.gif" alt="geocat.ch logo"/>
+                </div></td>
+            </tr>
+
+
+            <!-- title -->
+            <tr class="banner noprint">
+                <td class="banner" colspan="2" width="100%">
+                    <div style="width:100%; height:103; background-image:url('{/root/gui/url}/images/header-background.jpg');">
+                        <img src="{/root/gui/url}/images/bg_kopf_geocat.gif" alt="geocat.ch logo" style="float: right;"/>
+                        <img src="{/root/gui/url}/images/geocat_logo_li.gif" alt="geocat.ch logo"/>
+                    </div>
+                </td>
+            </tr>
+
+
+
 			<!-- title -->
-			<tr class="banner">
-				<td class="banner">
-					<img src="{/root/gui/url}/images/header-left.jpg" alt="World picture" align="top" />
+<!-- 			<tr class="banner"> -->
+<!-- 				<td class="banner"> -->
+<!-- 					<img src="{/root/gui/url}/images/header-left.jpg" alt="World picture" align="top" /> -->
+<!-- 				</td> -->
+<!-- 				<td align="right" class="banner"> -->
+<!-- 					<img src="{/root/gui/url}/images/header-right.gif" alt="GeoNetwork opensource logo" align="top" /> -->
+<!-- 				</td> -->
+<!-- 			</tr> -->
+
+			<!-- buttons -->
+						<!-- buttons -->
+			<tr class="banner noprint">
+				<td class="banner-menu">
+                    <a class="banner" href="http://www.geocat.ch/geonetwork/srv/{/root/gui/language}/geocat">
+                        <xsl:value-of select="/root/gui/strings/nav/home"/>
+                    </a> |
+                    <a class="banner" href="http://www.geocat.ch/internet/geocat/{/root/gui/strings/language}/tools/sitemap.html">
+                        <xsl:value-of select="/root/gui/strings/nav/overview"/>
+                    </a> |
 				</td>
-				<td align="right" class="banner">
-					<img src="{/root/gui/url}/images/header-right.gif" alt="GeoNetwork opensource logo" align="top" />
+				<td align="right" class="banner-menu">
+					<xsl:choose>
+						<xsl:when test="/root/gui/language='eng'">
+						</xsl:when>
+						<xsl:otherwise>
+							<a class="banner" href="../eng/geocat"><xsl:value-of select="/root/gui/strings/en"/></a> |
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:choose>
+						<xsl:when test="/root/gui/language='fra'">
+						</xsl:when>
+						<xsl:otherwise>
+							<a class="banner" href="../fra/geocat"><xsl:value-of select="/root/gui/strings/fr"/></a>
+							<xsl:choose><xsl:when test="not(/root/gui/language='deu')">
+								|
+							</xsl:when></xsl:choose>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:choose>
+						<xsl:when test="/root/gui/language='deu'">
+						</xsl:when>
+						<xsl:otherwise>
+							<a class="banner" href="../deu/geocat"><xsl:value-of select="/root/gui/strings/de"/></a>
+                            <!--<xsl:choose><xsl:when test="not(/root/gui/language='ita')">
+                                |
+                            </xsl:when></xsl:choose>-->
+						</xsl:otherwise>
+					</xsl:choose>
+        			<!--<xsl:choose>
+						<xsl:when test="/root/gui/language='ita'">
+						</xsl:when>
+						<xsl:otherwise>
+					        <a class="banner" href="../ita/geocat"><xsl:value-of select="/root/gui/strings/it"/></a>
+						</xsl:otherwise>
+					</xsl:choose>-->
 				</td>
 			</tr>
 
-			<!-- buttons -->
+            <!-- buttons -->
+            <tr class="banner noprint">
+                <td class="banner-nav">
+                    <table><tr><td class="first">
+                        <a href="http://www.geocat.ch/internet/geocat/{/root/gui/strings/language}/home/news.html"><xsl:value-of select="/root/gui/strings/nav/news"/></a>
+                    </td><td>
+                        <xsl:choose>
+                            <xsl:when test="/root/gui/reqService='geocat' or /root/gui/reqService='user.login' or /root/gui/reqService='user.logout'">
+                                <a class="banner-active" href="geocat"><xsl:value-of select="/root/gui/strings/nav/metasearch"/></a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <a class="banner" href="geocat"><xsl:value-of select="/root/gui/strings/nav/metasearch"/></a>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </td><td>
+                        <xsl:if test="string(/root/gui/session/userId)!=''">
+                            <xsl:choose>
+                                <xsl:when test="/root/gui/reqService='admin'">
+                                    <a class="banner-active" href="admin"><xsl:value-of select="/root/gui/strings/nav/metainput"/></a>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <a class="banner" href="admin"><xsl:value-of select="/root/gui/strings/nav/metainput"/></a>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:if>
+                    </td><td>
+                        <a href="http://www.geocat.ch/internet/geocat/{/root/gui/strings/language}/home/documentation.html"><xsl:value-of select="/root/gui/strings/nav/doc"/></a>
+                    </td><td>
+                        <a href="http://www.geocat.ch/internet/geocat/{/root/gui/strings/language}/home/about.html"><xsl:value-of select="/root/gui/strings/nav/about"/></a>
+                    </td></tr></table>
+                </td>
+                <xsl:choose>
+                    <xsl:when test="string(/root/gui/session/userId)!=''">
+                        <td align="right" class="banner-login">
+                            <form name="logout" action="user.logout" method="post">
+                                <xsl:value-of select="/root/gui/strings/user"/>
+                                <xsl:text>: </xsl:text>
+                                <xsl:value-of select="/root/gui/session/name"/>
+                                <xsl:text> </xsl:text>
+                                <xsl:value-of select="/root/gui/session/surname"/>
+                                <xsl:text> </xsl:text>
+                                <button class="banner" onclick="goSubmit('logout')"><xsl:value-of select="/root/gui/strings/logout"/></button>
+                            </form>
+                        </td>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <td align="right" class="banner-login">
+                            <form name="login" action="user.login" method="post">
+                                <input type="submit" style="display: none;" />
+                                <xsl:value-of select="/root/gui/strings/username"/>
+                                <input class="banner" type="text" id="username" name="username" size="10" onkeypress="return entSub('login')"/>
+                                <xsl:value-of select="/root/gui/strings/password"/>
+                                <input class="banner" type="password" id="password" name="password" size="10" onkeypress="return entSub('login')"/>
+                                <button class="banner" onclick="goSubmit('login')"><xsl:value-of select="/root/gui/strings/login"/></button>
+                            </form>
+                        </td>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </tr>
+			
+			
+			<!--  PMT c2c : trunk vs old geocat version ; previous (trunk GN) was: -->
+			<!--	
 			<tr class="banner">
 				<td class="banner-menu" width="380px">
 					<a class="banner" href="{/root/gui/locService}/home"><xsl:value-of select="/root/gui/strings/home"/></a>
@@ -60,8 +193,9 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					<xsl:if test="string(/root/gui/session/userId)='' and
-											string(/root/gui/env/userSelfRegistration/enable)='true'">
-
+-->
+<!-- 											string(/root/gui/env/userSelfRegistration/enable)='true'"> -->
+<!--
 						|
 						<a class="banner" onclick="doBannerButton('{/root/gui/locService}/password.forgotten.form','{/root/gui/strings/changePassword}','1',300)" href="javascript:void(0);">
 							<xsl:value-of select="/root/gui/strings/forgottenPassword"/>
@@ -81,7 +215,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					|
-					<!-- Help section to be displayed according to GUI language -->
+					Help section to be displayed according to GUI language
 					<xsl:choose>
 						<xsl:when test="/root/gui/language='fr'">
 							<a class="banner" href="{/root/gui/url}/docs/fra/users" target="_blank"><xsl:value-of select="/root/gui/strings/help"/></a>
@@ -94,12 +228,17 @@
 				</td>
 				<td align="right" class="banner-menu" width="590px">
 					<xsl:if test="count(/root/gui/config/languages/*) &gt; 1">
-						<!-- Redirect to current page when no error could happen 
-						(ie. when having no parameters in GET), if not redirect to the home page. -->
+-->
+<!-- 						Redirect to current page when no error could happen
+						(ie. when having no parameters in GET), if not redirect to the home page.
+-->
+<!--						
 						<xsl:variable name="redirectTo">
 						<xsl:choose>
 							<xsl:when test="/root/gui/reqService='metadata.show'">main.home</xsl:when>
-							<!-- TODO : Add other exception ? -->
+-->
+<!-- 							TODO : Add other exception ? -->
+<!--
 							<xsl:otherwise><xsl:value-of select="/root/gui/reqService"/></xsl:otherwise>
 						</xsl:choose>
 						</xsl:variable>
@@ -119,16 +258,13 @@
 					</xsl:if>
 				</td>
 			</tr>
-
+-->
 			<!-- FIXME: should also contain links to last results and metadata -->
 
 			<!-- login -->
+			<!--
 			<tr class="banner">
 				<td class="banner-login" align="right" width="380px">
-					<!-- FIXME
-					<button class="banner" onclick="goSubmit('{/root/gui/service}/es/main.present')">Last search results (11-20 of 73)</button>
-					<a class="banner" href="{/root/gui/service}/es/main.present">Last search results (11-20 of 73)<xsl:value-of select="/root/gui/strings/results"/></a>
-					-->
 				</td>
 				<xsl:choose>
 					<xsl:when test="string(/root/gui/session/userId)!=''">
@@ -164,6 +300,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</tr>
+			  -->
 		</table>
 	</xsl:template>
 
@@ -176,14 +313,28 @@
 
 			<!-- title -->
 			<!-- TODO : Mutualize with main banner template -->
-			<tr class="banner">
-				<td class="banner">
-					<img src="{/root/gui/url}/images/header-left.jpg" alt="GeoNetwork opensource" align="top" />
-				</td>
-				<td align="right" class="banner">
-					<img src="{/root/gui/url}/images/header-right.gif" alt="World picture" align="top" />
-				</td>
-			</tr>
+			
+			    <tr class="banner noprint">
+		        <td class="banner" colspan="2" width="100%">
+		            <div style="width:100%; height:103; background-image:url('{/root/gui/url}/images/header-background.jpg');">
+		                <img src="{/root/gui/url}/images/header-cat.jpg" alt="GeoNetwork opensource logo" style="float: right;"/>
+		                <img src="{/root/gui/url}/images/header-logo.jpg" alt="World picture"/>
+		            </div>
+		        </td>
+		    </tr>		    
+	
+	
+	
+	
+	<!--  PMT c2c : trunk vs old geocat version ; previous (trunk GN) was: -->		
+<!-- 			<tr class="banner"> -->
+<!-- 				<td class="banner"> -->
+<!-- 					<img src="{/root/gui/url}/images/header-left.jpg" alt="GeoNetwork opensource" align="top" /> -->
+<!-- 				</td> -->
+<!-- 				<td align="right" class="banner"> -->
+<!-- 					<img src="{/root/gui/url}/images/header-right.gif" alt="World picture" align="top" /> -->
+<!-- 				</td> -->
+<!-- 			</tr> -->
 
 			<!-- buttons -->
 			<tr class="banner">

@@ -56,7 +56,7 @@ h1 {
 h2 {
 	font-size: 10px;
 	font-weight: bold;
-	text-transform: uppercase;
+	/* text-transform: uppercase; */
 }
 
 a {
@@ -76,15 +76,99 @@ a.no-help:hover {
 	text-decoration: none;
 }
 
+.arrowList ul
+{
+    list-style-type: none !important;
+    padding: 0;
+    margin: 0;
+}
+.arrowList li {
+    background-image: url('images/arrow.gif');
+    background-repeat: no-repeat;
+    background-position: 0 .2em;
+    padding-left: .6em;
+}
+
 .arrow{
 	background-image: url('images/arrow.gif');
 
 	background-repeat:no-repeat;
 
 	padding:0 0 3px 7px;
-	/*
-	text-align: left;
-	text-transform: uppercase;
+
+}
+
+.resultsHeader {
+    padding-bottom: 2em;
+    margin-bottom: 2em;
+    border-bottom: 1px solid gray;
+}
+
+.ext-gecko .hitsPerPage {
+    float: right;
+    position: relative;
+    top: -23px;
+}
+.ext-ie .hitsPerPage {
+    float: right;
+    position: relative;
+    top: -34px;
+}
+.hitsPerPage {
+    float: right;
+    position: relative;
+    top: 0px;
+}
+
+#searchResults fieldset {
+    padding: 1em;
+    padding-top: 0px;
+}
+
+#searchResults td h2 a {
+    font-size: 115%;
+}
+
+#mostPopular a.arrow,
+#latestUpdates a.arrow {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+#mostPopular legend,
+#latestUpdates legend,
+#searchResults h2 {
+    font-size: 12px !important;
+    font-weight: bold;
+}
+
+div.pop {
+    border-top: 1px dashed #0263B2;
+    border-bottom: 3px solid #0263B2;
+    border-left: 3px solid #0263B2;
+    border-right: 3px solid #0263B2;
+    background: #ffffff;
+    text-align: left;
+    position: absolute;
+    opacity: .9;
+    filter: alpha(opacity=90);
+    -moz-opacity: 0.9;
+    top:200px;
+    left:200px;
+    width:300px;
+    min-height: 150px;
+    max-height: 350px;
+    overflow: auto;
+}
+
+div.pop fieldset {
+    border: 0px;
+}
+div.pop fieldset legend {
+	color: #0263B2;
+	width: 100%;
+	font-family: Verdana;
+	font-size: 10pt;
 	font-weight: bold;
 	*/
 
@@ -93,6 +177,13 @@ a.no-help:hover {
 /*******************************************************************************
 banner
 *******************************************************************************/
+
+tr.deleted-reusable {
+	border: 2px solid #F6FF68;
+}
+td.deleted-reusable {
+	background: #F6FF68;
+}
 
 tr.banner {
 	/* moved to td, since IE does not accept it
@@ -113,12 +204,65 @@ td.banner {
 
 td.banner-menu {
 	font-size: 8pt;
-	color: #ffffff;
-	background: #064377;
+    font-family:arial,helvetica,sans-serif;
+	color: #000000;
+	background: #CCCCCC;
 	padding-left: 8px;
 	padding-right: 8px;
 	border-bottom: 1px solid #ffffff; /* moved here from tr since IE accepts it only here */
-	height: 16px;
+    font-size: 8pt;
+    padding: 3px 0 3px 17px;
+    height: 21px;
+    vertical-align: bottom;
+}
+
+td.mdmenu-active {
+    font-size: 8pt;
+    font-weight: bold;
+    background: #ffffff;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-bottom: 1px solid #ffffff; /* moved here from tr since IE accepts it only here */
+    height: 16px;
+    vertical-align: middle;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+td.banner-menu a {
+    background: #CCCCCC;
+    color: black;
+    padding:0 3px;
+}
+
+td.banner-nav {
+    font-size:1.239em;
+    color:#FFFFFF;
+    background: #CCCCCC;
+    border-bottom: 1px solid #ffffff; /* moved here from tr since IE accepts it only here */
+    height: 29px;
+    vertical-align: middle;
+}
+
+td.banner-nav td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+td.banner-nav td.first a {
+    padding-left: 22px;
+}
+
+td.banner-nav a {
+    background: #01669E;
+    color:#FFFFFF;
+    border: 1px solid white;
+    border-left: none;
+    font-family:arial,helvetica,sans-serif;
+    font-weight:bold;
+    text-decoration: none;
+    padding: 5px 14px;
+    white-space: nowrap;
 }
 
 td.banner-login {
@@ -127,12 +271,14 @@ td.banner-login {
 	/*
 	background-image: url('images/blue-background.gif');
 	*/
-	background: #266397;
+	background: #CCCCCC;
 	padding-left: 8px;
 	padding-right: 8px;
-	border-bottom: 1px solid #ffffff; /* moved here from tr since IE accepts it only here */
+    border-bottom: 1px solid #ffffff; /* moved here from tr since IE accepts it only here */
 	height: 16px;
-	vertical-align: middle
+	vertical-align: middle;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
 a.banner {
@@ -140,25 +286,9 @@ a.banner {
 	text-decoration: none;
 }
 
-a.banner:hover
-{
-	text-decoration: underline;
-}
-
-tr.banner-active, td.banner-active {
-    background-color: #fff !important;
-    border-left: 2px #0263B2 solid;
-}
-
-font.banner-active {
-  color: #fff;
-	text-decoration: none;
-	font-weight: bold;
-}
-font.banner-tab-active {
-  color: #064377;
-	text-decoration: none;
-	font-weight: bold;
+a.banner-active {
+	color: #01669E !important;
+    background: #ffffff  !important;
 }
 
 font.banner-passive {
@@ -199,6 +329,32 @@ form {
 	margin: 0px;
 }
 
+.simpleSearchFormItem {
+    padding-bottom: 1em;
+}
+
+fieldset.users {
+    width: 600px;
+}
+
+.users label {
+    float: left;
+    text-align: right;
+    padding-right: 10px;
+    display: block;
+    width: 150px;
+    padding-bottom: 4px;
+    padding-top: 4px;
+}
+
+br {
+    clear: left;
+}
+
+.users input, .users select {
+    float: left;
+}
+
 /*******************************************************************************
 content
 *******************************************************************************/
@@ -207,11 +363,11 @@ body {
 }
 
 td.content {
-	/*background: #e7edf5;*/
+	background: white;
 }
 
 .padded-content {
-	/*background: #e7edf5;*/
+	background: white;
 	padding: 5px;
 }
 
@@ -221,16 +377,7 @@ td.content {
 
 .hit {
 	border-top: 1px solid silver;
-	padding-top: 10px;	
-	margin-top: 10px;
-}
-
-.results_header {
-	margin-top: 5px; 
-	margin-bottom: 5px; 
-    overflow-x: hidden;	
-	overflow-y: auto;	
-	width: 100%;
+	padding-top: 5px;
 }
 
 td.green-content {
@@ -252,6 +399,11 @@ td.blue-content {
 	height: 30px;
 }
 
+tr.blue-content {
+	color: #ffffff;
+	background: #6699FF;
+}
+
 input.content, select.content, textarea.content {
 	font-family: Verdana;
 	font-size: 9pt;
@@ -260,31 +412,15 @@ input.content, select.content, textarea.content {
 	border: 1px solid #266397; /* moved here from tr since IE accepts it only here */
 }
 
-textarea.md {
-    resize: both !important;
+input[disabled] {
+    font-style: italic;
 }
 
-.checkbox_results {
-	font-family: Verdana;
-	font-size: 9pt;
-	color: #064377;
-	margin-right: 2px;
+button[disabled] {
+    font-style:italic;
 }
 
-select.banner-content {
-	font-size: 7pt !important;
-}
-
-input.error, textarea.error, select.error {
-    color: #FF2211 !important;
-    border: 3px solid #FF2211 !important;
-}
-
-select.lang_selector {
-	max-width: 70px;
-}
-
-a.content, button.content {
+input.button, button.content {
 	font-family: Verdana;
 	font-size: 9pt;
 	color: #064377;
@@ -296,44 +432,8 @@ a.content, button.content {
 	text-shadow: gray 2px 2px 3px;
 }
 
-.downloadsummary {
-  margin: 0px;
-}
-
-.downloadsummary button.content, button.dscontent {
-  font-family: Verdana;
-  font-size: 9pt;
-  font-weight: bold;
-  min-width: 10.2em;
-  width: 10.2em;
-  max-width: 400px;
-  cursor: pointer;
-  cursor: hand;
-  border: 1px solid #064367; /* moved here from tr since IE accepts it only here */
-  text-shadow: 2px 1px 1px #062347 !important;
-  color: #FDFDFD;
-  background-color: #4784b8;
-}
-
-button.dscontent {
-  min-width: 12.2em;
-  width: 12.2em;
-  max-width: 600px;
-}
-
-button.content img.icon {
-    width: 15px;
-    height: 15px;
-    align: absmiddle;
-    margin-right: 2px;
-}
-
-a.content {
-    padding: 1px 10px 1px 10px;
-}
-
-a.content:hover {
-    text-decoration: none
+.left-indent {
+	margin-left: 5px;
 }
 
 input.content-small, button.content-small {
@@ -346,28 +446,7 @@ input.content-small, button.content-small {
 	border: 1px solid #266397; /* moved here from tr since IE accepts it only here */
 }
 
-td.padded p {
-    padding-bottom:2px;
-}
-
-fieldset.metadata-block {
-    margin-top: 30px;
-	border-top: 3px #266397 solid;
-	border-bottom-width: 0px;
-	border-left-width: 0px;
-	border-right: 3px #266397 solid;
-}
-
-fieldset.metadata-block * fieldset {
-	margin-top: 2px;
-	border: 1px #266397 solid;
-	border-bottom-width: 0px;
-	border-right-width: 0px;
-	padding: 2px;
-}
-
-fieldset.metadata-block legend {
-    text-transform:uppercase;
+legend.block-legend {
 	font-weight: bold;
 	font-size:large;
 }
@@ -421,11 +500,7 @@ table.md {
 
 th.md {
 	text-align: left;
-}
-
-ul.md {
-     list-style-type: circle;
-     margin-left: 20px;
+	/*text-transform: capitalize;*/
 }
 
 input.md, select.md, textarea.md {
@@ -434,6 +509,11 @@ input.md, select.md, textarea.md {
 	color: #064377;
 	/* max-width: 400; */
 	border: 1px solid #266397; /* moved here from tr since IE accepts it only here */
+}
+
+input.error, textarea.error {
+	color: #ff2211;
+    border-color: #ff2211;
 }
 
 button.md {
@@ -533,7 +613,7 @@ div.handle {
 	cursor:move;
 }
 
-.dots 
+.dots
 {
 	height: 1px;
 	width: 1px;
@@ -550,6 +630,13 @@ Ajax styles
 	background-color: #f0f0ff;
 	border:  solid black 1px;
 	padding: 4px;
+}
+.ext-ie .tooltip {
+    width: 300px;
+}
+.tooltip .close {
+    font-size: 75%;
+    font-weight: bold;
 }
 
 .tipRow
@@ -571,11 +658,60 @@ Ajax styles
 	text-align: left;
 }
 
-.policyGroup 
+.policyGroup
 {
 	margin: 5px;
 	border-style:dashed;
 	border-width:0px 0px 1px 0px;
+}
+
+div.help {
+    background-color:white;
+    color:black;
+    margin:15px 5px 15px 5px;
+    padding:1px 1px 1px 1px;
+    font-size:80%;
+    font-style:italic;
+    opacity: .9;
+    filter: alpha(opacity=90);
+    -moz-opacity: 0.9;
+}
+
+div.help ul {
+        border: 1px solid #888;
+        margin: 2px;
+        padding: 0px;
+}
+div.help ul li {
+    margin: 0px;
+    padding: 1px;
+    cursor: pointer;
+    list-style-type:none;
+}
+div.help ul li div {
+    width:25px;
+    float:left;
+    text-align:center;
+}
+
+.validation-report fieldset {
+    margin: 5px 2px 2px 2px;
+    padding: 5px 2px 2px 2px;
+}
+
+.validation-report img {
+    vertical-align:middle;
+    height:8px;
+    width:8px;
+}
+
+.validation-report ul li {
+    margin-left:25px;
+    margin-top:3px;
+    /*list-style-type:disc;*/
+}
+.validation-report ul li ul li {
+    list-style-type: disc;
 }
 
 /*******************************************************************************
@@ -596,10 +732,10 @@ Other action buttons
     text-align:left;
     font-family: Verdana;
     color: #064377;
-    font-size: 8pt;
+    font-size: 9pt;
     cursor: pointer;
     cursor: hand;
-    width:98%;
+    width:90%;
     border-width: 0px;
 }
 .oAcEle button:hover {
@@ -612,13 +748,10 @@ Ajax Keyword list
 div.keywordSelectorFrame {
         background: #fff;
 		position: absolute;
+		margin: 2px;
 		padding: 2px;
-		left: 10px;
-		top: 140px;
-}
-
-* html div.keywordSelector {
-	    height: expression( this.scrollHeight > 201 ? "200px" : "auto" ); /* sets min-height for IE */
+		left: 300px;
+		top: 225px;
 }
 
 div.keywordSelector {
@@ -634,10 +767,12 @@ div.keywordSelector {
 }
 
 div.keywordList {
+        z-index: 1000;
         background: #fff;
         cursor: pointer;
-        overflow: auto;
-		max-height: 200px;
+        overflow-y: auto;
+        max-height: 200px;
+        overflow-x: hidden;
 }
 
 
@@ -658,8 +793,11 @@ div.keywordList ul li {
 	 	list-style-type:none;
 }
 
+div.keywordList ul li * {
+}
+
 div.keywordList ul li.selected {
-        background-color: #beb800;
+        background-color: #dfe8f6;
         cursor: pointer;
 }
 
@@ -731,6 +869,7 @@ div.keywordResults ul li.selected {
         cursor: pointer;
 }
 
+
 /* GEOGRAPHIC SEARCH */
 
 
@@ -739,7 +878,7 @@ div.keywordResults ul li.selected {
     margin-bottom: 1px;
 
     vertical-align: top;
-    
+
 }
 
 .geosearch{
@@ -883,7 +1022,7 @@ img.calendar:hover {
 
 /* Rating popup */
 
-button.rating 
+button.rating
 {
 	font-family: Verdana;
 	font-size: 9pt;
@@ -905,7 +1044,7 @@ button.rating
 	margin: 0px;
 }
 
-.ratingCloser 
+.ratingCloser
 {
     position: absolute;
     top:     1px;
@@ -913,8 +1052,8 @@ button.rating
     width:  16px;
     height: 16px;
     cursor: pointer;
-    
-    z-index: 20;    
+
+    z-index: 20;
 }
 
 div#error {
@@ -956,29 +1095,86 @@ div#error {
 	font-size: 0.9em;
 }
 
-div.thumbnail {
-    width: 250px !important;
-    height: 150px !important;
-    float: left;
+/*******************************************************************************
+Refine search widget
+*******************************************************************************/
+
+ul.refineAdd {
+	padding-left: 1em;
+	list-style-type: disc;
+}
+td.refineAdd {
+	padding-bottom: 10px;
+	color: #064377;
+}
+td.refineCategory {
+	padding-top: 1em;
+	color: #064377;
+}
+td.removeAll {
+	font-weight: bold;
+	color: #064377;
+}
+ul.refineRemove {
+	padding-left: 2em;
+	list-style-type: disc;
+}
+a.removeAll, a.refineRemove {
+	text-align: right;
+	font-size: 11px;
+	text-align: right;
+	float: left;
+}
+table.refineRemove {
+	background-color: #a3d5d4;
+	width: 100%;
+}
+
+/*******************************************************************************
+Style for result mode = condensed
+*******************************************************************************/
+div.condensed {
+    position:relative;
+    z-index:1;
+    width:285px;
+    height:250px;
+    float:left;
+    padding:2px;
+    margin:5px;
+    border:dotted gray 1px;
     text-align:center;
     vertical-align:middle;
     margin:2px;
 }
-img.thumbnail {
-    border: 1px solid #266397;
- }
- img.thumbnail {
-    width: 120px;
-    height: auto;
+div.condensed p {
+    position:absolute;
+    bottom:0px;
+    text-align:center;
 }
-img.thumbnail {
-    height: 120px;
-    width: auto;
+div.condensed img.logo {
+    position:absolute;
+    z-index:0;
+    width:32px;
+    top:-9px;
+    left:269px;
 }
-span.thumbnail {
-    font-size: small;
-    font-style: italic;
-    color: #2a628f;
+td.removeAll {
+	font-weight: bold;
+	color: #064377;
+}
+ul.refineRemove {
+	padding-left: 2em;
+	list-style-type: disc;
+}
+a.removeAll, a.refineRemove {
+	text-align: right;
+	font-size: 11px;
+	text-align: right;
+	float: left;
+}
+table.refineRemove {
+	background-color: #a3d5d4;
+	width: 100%;
 }
 
 div.relatedElements {
@@ -986,26 +1182,63 @@ div.relatedElements {
     border:1px solid black;
     width:320px;
     padding:2px;
-    margin:2px;
-    text-align:left;
+    margin:5px;
+    border:dotted gray 1px;
+    text-align:center;
+}
+div.condensed p {
+    position:absolute;
+    bottom:0px;
+    text-align:center;
+}
+div.condensed img.logo {
+    position:absolute;
+    z-index:0;
+    width:32px;
+    top:-9px;
+    left:269px;
+}
+div.condensed img.thumbnail {
+    z-index:1;
+    width:150px;
+    border-width:1px;
 }
 
-div.relatedElements ul {
-    margin-left: 0px;
+a.elementHiding img {
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
-div.relatedElements ul li ul {
-    margin-left: 5px;
+#toggleVisibilityEditCB {
+	padding-bottom: 4px;
 }
 
-div.relatedElements ul li ul li ul {
-    margin-left: 10px;
+.searchIcon {
+    background-image:url('images/gdict.png') !important;
+}
+
+tr.h-line {
+    border-bottom: 2px dotted #266397;
+    height: 10px;
+}
+
+span.monitoring_label {
+    font-weight: bold;
+}
+
+h1.monitoring_title {
+    font-size:1.1em;
+    margin-top:20px;
+}
+
+h2.monitoring_title {
+    font-size:1.0em;
 }
 
 /*******************************
  Keywords search box
  *******************************/
- 
+
 .ux-mselect-item .ux-mselect-item-thesaurus {
     color: #555;
     font-style: italic;

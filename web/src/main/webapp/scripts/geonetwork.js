@@ -740,3 +740,4 @@ function idxOperation(service, wait, btn, warning)
 					    }
 	);
 }
+
