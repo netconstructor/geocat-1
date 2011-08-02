@@ -249,7 +249,11 @@
 		<param name="licenseDir" value="WEB-INF/licenses" />
 	  <param name="summaryConfig" value="WEB-INF/config-summary.xml" />
     <param name="guiConfig" value="WEB-INF/config-gui.xml" />        
-    <param name="luceneConfig" value="WEB-INF/config-lucene.xml" />        
+    <param name="luceneConfig" value="WEB-INF/config-lucene.xml" />
+    <!-- The number of threads to use when indexing metadata asynchronously -->
+    <param name="indexThreadPoolSize" value="4" />
+    <!-- the priority of the threads in the index thread pool.  1 - 10 -->
+    <param name="indexThreadPoolPriority" value="5" />
 
 		<!-- Preferred schema parameter is used on import
 			when a ZIP or MEF file is imported with more than one

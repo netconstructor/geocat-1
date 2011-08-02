@@ -36,6 +36,7 @@ import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.SerialFactory;
+import jeeves.utils.Util;
 import jeeves.utils.Xml;
 import jeeves.utils.Xml.ErrorHandler;
 import jeeves.xlink.Processor;
@@ -77,6 +78,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Handles all operations on metadata (select,insert,update,delete etc...).
@@ -115,7 +123,7 @@ public class DataManager {
      * @param appPath
      * @throws Exception
      */
-	public DataManager(ServiceContext context, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, ThesaurusManager thesMan, ReusableObjManager reusableObjMan, ExtentManager extentMan, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception
+	public DataManager(final Element params, ServiceContext context, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, ThesaurusManager thesMan, ReusableObjManager reusableObjMan, ExtentManager extentMan, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception
 	{
 		searchMan = sm;
 		accessMan = am;
@@ -130,7 +138,18 @@ public class DataManager {
 		this.baseURL = baseURL;
         this.dataDir = dataDir;
 		this.appPath = appPath;
-
+		int corePoolSize = Util.getParam(params, "indexThreadPoolSize", 4);
+		ThreadFactory threadFactory = new ThreadFactory() {
+			ThreadFactory innerFactory = Executors.defaultThreadFactory();
+			public Thread newThread(Runnable r) {
+				Thread thread = innerFactory.newThread(r);
+				thread.setDaemon(true);
+				thread.setName("Index Task Thread");
+				thread.setPriority(Integer.parseInt(Util.getParam(params, "indexThreadPoolPriority", ""+Thread.NORM_PRIORITY)));
+				return thread;
+			}
+		};
+		indexThreadPool = new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
 		stylePath = context.getAppPath() + FS + Geonet.Path.STYLESHEETS + FS;
 
 		XmlSerializer.setSettingManager(ss);
@@ -208,8 +227,8 @@ public class DataManager {
 		// if anything to index then schedule it to be done after servlet is
 		// up so that any links to local fragments are resolvable
 		if ( toIndex.size() > 0 ) {
-			Timer t = new Timer();
-			t.schedule(new IndexMetadataTask(context, toIndex), 10);
+			IndexMetadataTask indexMetadataTask = new IndexMetadataTask(context, toIndex);
+			indexThreadPool.schedule(indexMetadataTask, 10, TimeUnit.MILLISECONDS);
 		}
 
 		if (docs.size() > 0) { // anything left?
@@ -243,15 +262,15 @@ public class DataManager {
 			Processor.clearCache();	
 
 			// execute indexing operation
-			Timer t = new Timer();
-			t.schedule(new IndexMetadataTask(context, toIndex), 10);
+			IndexMetadataTask indexMetadataTask = new IndexMetadataTask(context, toIndex);
+			indexThreadPool.schedule(indexMetadataTask, 10, TimeUnit.MILLISECONDS);
 		}
 	}
 
     /**
      *
      */
-	class IndexMetadataTask extends TimerTask {
+	class IndexMetadataTask implements Runnable {
 		ServiceContext context;
 		ArrayList<Integer> toIndex;
 
@@ -2792,6 +2811,7 @@ public class DataManager {
 
 	private EditLib editLib;
 
+	private ScheduledThreadPoolExecutor indexThreadPool;
 	private AccessManager  accessMan;
 	private SearchManager  searchMan;
 	private SettingManager settingMan;

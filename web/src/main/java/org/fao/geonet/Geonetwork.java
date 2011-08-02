@@ -335,7 +335,7 @@ public class Geonetwork implements ApplicationHandler
 		if (!_htmlCacheDir.isAbsolute()) {
 			htmlCacheDir = path + htmlCacheDir;
 		}
-		DataManager dataMan = new DataManager(context, schemaMan, searchMan, accessMan, dbms, settingMan, thesaurusMan, reusableObjMan, extentMan, baseURL, htmlCacheDir, dataDir, path);
+		DataManager dataMan = new DataManager(config, context, schemaMan, searchMan, accessMan, dbms, settingMan, thesaurusMan, reusableObjMan, extentMan, baseURL, htmlCacheDir, dataDir, path);
 
 		//------------------------------------------------------------------------
 		//--- initialize harvesting subsystem
