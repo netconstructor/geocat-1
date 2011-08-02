@@ -57,6 +57,18 @@ public class Delete implements Service
     {
         String[] ids = Util.getParamText(params, "id").split(",");
 
+        // PMT c2c : fixing potential security flaw by
+        // sanitazing user inputs : every entries here should
+        // be cast correctly as integer (or else the service will
+        // throw an exception but avoid malicious SQL queries to be
+        // passed to the DB server).
+        
+        // TODO : check if it was possible before to pass UUIDs
+        for (int i = 0 ; i < ids.length ; i++) {
+        	ids[i] = Integer.toString(Integer.parseInt(ids[i]));
+        }
+        	
+        
         Log.debug(Geocat.Module.REUSABLE, "Starting to delete following rejected objects: ("
                 + Arrays.toString(ids) + ")");
 

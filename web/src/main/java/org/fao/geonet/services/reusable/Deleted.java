@@ -44,6 +44,18 @@ public class Deleted implements Service
     public Element exec(Element params, ServiceContext context) throws Exception
     {
         String id = Util.getParamText(params, "id");
+        
+        // PMT c2c : fixing potential SQL injection, user input sanitization
+
+        // Note : this has also been prevented later (pre-statement 
+        // query in the DeletedObjects.get method)
+        // but it is even more secure to potentially throw 
+        // an exception (and stop the service execution) now as well.
+        
+        id = Integer.toString(Integer.parseInt(id));
+        
+        
+        
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
         return DeletedObjects.get(dbms, id);
     }
