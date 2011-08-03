@@ -10,7 +10,30 @@ import org.opengis.feature.simple.SimpleFeatureType;
  */
 public class Geocat {
     public static class Params {
-        public static final String ACTION = "action";
+        public static final String ACTION 		= "action";
+        public static final String POSITIONNAME = "positionname";
+    	public static final String STREETNUMBER = "streetnumber";
+    	public static final String STREETNAME   = "streetname";
+    	public static final String POSTBOX      = "postbox";
+    	public static final String STATE        = "state";
+    	public static final String ZIP          = "zip";
+    	public static final String COUNTRY      = "country";
+    	public static final String IS_UPLOAD    = "isUpload";
+    	public static final String EMAIL        = "email";
+    	public static final String IMAGE        = "image";
+    	public static final String PHONE        = "phone";
+    	public static final String FAC          = "facsimile";
+    	public static final String ORG          = "org";
+    	public static final String ONLINE       = "onlineresource";
+    	public static final String HOURSOFSERV  = "hoursofservice";
+    	public static final String CONTACTINST  = "contactinstructions";
+    	public static final String PUBLICACC    = "publicaccess";
+    	public static final String ORGACRONYM   = "orgacronym";
+    	public static final String DIRECTNUMBER = "directnumber";
+    	public static final String MOBILE 		= "mobile";
+    	
+    	public static final String WEBSITE 		= "website";
+
     }
 
     public static class Spatial {
@@ -45,4 +68,5 @@ public class Geocat {
         public static final String REUSABLE = "reusable";
         public static final String MONITORING = "monitoring";
     }
+    
 }
