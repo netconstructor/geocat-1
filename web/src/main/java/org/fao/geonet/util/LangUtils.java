@@ -226,11 +226,11 @@ public final class LangUtils
     public static String createDescFromParams(Element params, String paramBaseName)
     {
 
-        final String descDe = encodeXmlText(Util.getParamText(params, paramBaseName + "DE"));
-        final String descIt = encodeXmlText(Util.getParamText(params, paramBaseName + "IT"));
-        final String descFr = encodeXmlText(Util.getParamText(params, paramBaseName + "FR"));
-        final String descEn = encodeXmlText(Util.getParamText(params, paramBaseName + "EN"));
-        final String descRm = encodeXmlText(Util.getParamText(params, paramBaseName + "RM"));
+        final String descDe = encodeXmlText(Util.getParam(params, paramBaseName + "DE",""));
+        final String descIt = encodeXmlText(Util.getParam(params, paramBaseName + "IT",""));
+        final String descFr = encodeXmlText(Util.getParam(params, paramBaseName + "FR",""));
+        final String descEn = encodeXmlText(Util.getParam(params, paramBaseName + "EN",""));
+        final String descRm = encodeXmlText(Util.getParam(params, paramBaseName + "RM",""));
 
         return String.format("<DE>%s</DE><FR>%s</FR><IT>%s</IT><EN>%s</EN><RM>%s</RM>", descDe, descFr, descIt, descEn, descRm);
     }
