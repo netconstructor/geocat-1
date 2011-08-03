@@ -63,7 +63,7 @@ public final class DeletedObjects
     public static Element get(Dbms dbms, String id) throws Exception
     {
 
-        Element records = dbms.select("SELECT xml FROM DeletedObjects where id=" + id);
+        Element records = dbms.select("SELECT xml FROM DeletedObjects where id = ?", new Integer(id).intValue());
 
         return Xml.loadString(records.getChild("record").getChildText("xml"), false);
     }
