@@ -154,109 +154,166 @@ public class SearchController
      *          the schema (eg. fgdc record could not be converted to ISO).
      * @throws CatalogException
      */
-  public static Element retrieveMetadata(ServiceContext context, String id,  ElementSetName setName, OutputSchema outSchema, Set<String> elemNames, ResultType resultType) throws CatalogException {
+	public static Element retrieveMetadata(ServiceContext context, String id,
+			ElementSetName setName, OutputSchema outSchema,
+			Set<String> elemNames, ResultType resultType)
+			throws CatalogException {
 
-	try	{
-		//--- get metadata from DB
-		GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
-        boolean forEditing = false, withValidationErrors = false;
-        
-        // PMT GC2 : backported from GC1
-        // was :
-        //Element res = gc.getDataManager().getMetadata(context, id, forEditing, withValidationErrors);
-		Element res = gc.getDataManager().getMetadata(context, id, false, true);
-		
-		SchemaManager scm = gc.getSchemamanager();
-		if (res==null) {
-            return null;
-        }
-		Element info = res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE);
-		String schema = info.getChildText(Edit.Info.Elem.SCHEMA);
-
-		String FS = File.separator;
-		
-		// PMT GeoCat c2c : Backported from old geocat
-		if (schema.contains("iso19139"))
-			schema = "iso19139";
-		
-		// --- transform iso19115 record to iso19139
-		// --- If this occur user should probably migrate the catalogue from iso19115 to iso19139.
-		// --- But sometimes you could harvest remote node in iso19115 and make them available through CSW
-		if (schema.equals("iso19115")) {
-			res = Xml.transform(res, context.getAppPath() + "xsl" + FS
-					+ "conversion" + FS + "import" + FS + "ISO19115-to-ISO19139.xsl");
-			schema = "iso19139";
-		}
-		
-		//--- skip metadata with wrong schemas
-		if (schema.equals("fgdc-std") || schema.equals("dublin-core") || schema.equals("iso19110"))
-		    if(outSchema != OutputSchema.OGC_CORE)
-		    	return null;
-
-		//--- apply stylesheet according to setName and schema
-		String prefix ; 
-		if (outSchema == OutputSchema.OGC_CORE)
-			prefix = "ogc";
-		else if (outSchema == OutputSchema.ISO_PROFILE)
-			prefix = "iso";
-		else {
-			// PMT c2c previous geocat backport, was:
-			// throw new InvalidParameterValueEx("outputSchema not supported for metadata " + id + " schema.", schema);
-			if (!schema.contains("iso19139")){
-				// FIXME : should we return null or an exception in that case and which exception
-				throw new InvalidParameterValueEx("outputSchema not supported for metadata " +
-						id + " schema.", schema);
-			}
-			return res;
-		}
-	
-		String schemaDir  = scm.getSchemaCSWPresentDir(schema)+ FS;
-		String styleSheet = schemaDir + prefix +"-"+ setName +".xsl";
-
-		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("lang", context.getLanguage());
-		params.put("displayInfo", resultType == ResultType.RESULTS_WITH_SUMMARY ? "true" : "false");
-		
 		try {
-		    res = Xml.transform(res, styleSheet, params);
-		}
-        catch (Exception e) {
-		    context.error("Error while transforming metadata with id : " + id + " using " + styleSheet);
-	            context.error("  (C) StackTrace:\n" + Util.getStackTrace(e));
-		    return null;
-		}
+			// --- get metadata from DB
+			GeonetContext gc = (GeonetContext) context
+					.getHandlerContext(Geonet.CONTEXT_NAME);
+			boolean forEditing = false, withValidationErrors = false;
 
-		//--- if the client has specified some ElementNames, then we search for 
-		//--- them (all are relative XPaths to the root element) 
-		if (elemNames != null) {
-			MetadataSchema mds = scm.getSchema(schema);
-			Element frags = (Element)res.clone();
-			frags.removeContent();
-			for (String s : elemNames) {
-				try {
-					List obs = Xml.selectNodes(res, s, mds.getSchemaNS());
-					for (Object o : obs) {
-						if (o instanceof Element) {
-							Element elem = (Element)o;
-							frags.addContent((Content)elem.clone());
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw new InvalidParameterValueEx("elementName has invalid XPath : "+s,e.getMessage());
+			// PMT GC2 : backported from GC1
+			// was :
+			// Element res = gc.getDataManager().getMetadata(context, id,
+			// forEditing, withValidationErrors);
+			Element res = gc.getDataManager().getMetadata(context, id, false,
+					true);
+
+			SchemaManager scm = gc.getSchemamanager();
+			if (res == null) {
+				return null;
+			}
+			Element info = res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE);
+			String schema = info.getChildText(Edit.Info.Elem.SCHEMA);
+
+			// PMT GeoCat c2c : Backported from old geocat
+			if (schema.contains("iso19139"))
+				schema = "iso19139";
+
+			// Return metadata in their own schema
+			if (outSchema != OutputSchema.OWN) {
+
+				String FS = File.separator;
+
+				// --- transform iso19115 record to iso19139
+				// --- If this occur user should probably migrate the catalogue
+				// from
+				// iso19115 to iso19139.
+				// --- But sometimes you could harvest remote node in iso19115
+				// and
+				// make them available through CSW
+				if (schema.equals("iso19115")) {
+					res = Xml.transform(res, context.getAppPath() + "xsl" + FS
+							+ "conversion" + FS + "import" + FS
+							+ "ISO19115-to-ISO19139.xsl");
+					schema = "iso19139";
 				}
+
+				// --- skip metadata with wrong schemas
+				if (schema.equals("fgdc-std") || schema.equals("dublin-core")
+						|| schema.equals("iso19110"))
+					if (outSchema != OutputSchema.OGC_CORE)
+						return null;
+
+				// --- apply stylesheet according to setName and schema
+				String prefix;
+				if (outSchema == OutputSchema.OGC_CORE)
+					prefix = "ogc";
+				else if (outSchema == OutputSchema.ISO_PROFILE)
+					prefix = "iso";
+				else {
+					// PMT c2c previous geocat backport, was:
+					// throw new
+					// InvalidParameterValueEx("outputSchema not supported for metadata "
+					// + id + " schema.", schema);
+					if (!schema.contains("iso19139")) {
+						// FIXME : should we return null or an exception in that
+						// case and which exception
+						throw new InvalidParameterValueEx(
+								"outputSchema not supported for metadata " + id
+										+ " schema.", schema);
+					}
+					return res;
+				}
+
+				String schemaDir = scm.getSchemaCSWPresentDir(schema) + FS;
+				String styleSheet = schemaDir + prefix + "-" + setName + ".xsl";
+
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put("lang", context.getLanguage());
+				params.put("displayInfo",
+						resultType == ResultType.RESULTS_WITH_SUMMARY ? "true"
+								: "false");
+
+				try {
+					// PMT c2c GeoCat 2 : porting forward from previous version
+					// Was (currently in trunk):
+					// res = Xml.transform(res, styleSheet, params);
+
+					// issue #133730 : MDs harvested as Dublin-Core
+					// format are not well detected here.
+					// we add a check to ensure that no extra xsl transformation
+					// would not be applied.
+					if (!res.getName().equals("simpledc")) {
+						res = Xml.transform(res, styleSheet, params);
+					}
+					// we still need to do some transformation
+					// in order to ensure csw response compliance
+					// (simpledc -> csw:record)
+					else {
+						Element tempElem = new Element("Record", "csw",
+								"http://www.opengis.net/cat/csw/2.0.2");
+						tempElem.setContent(res.cloneContent());
+						res = tempElem;
+					}
+
+				} catch (Exception e) {
+					context.error("Error while transforming metadata with id : "
+							+ id + " using " + styleSheet);
+					context.error("  (C) StackTrace:\n" + Util.getStackTrace(e));
+					return null;
+				}
+
+			} // end of "if (outSchema !== OWN)"
+
+			// --- if the client has specified some ElementNames, then we search
+			// for
+			// --- them (all are relative XPaths to the root element)
+			if (elemNames != null) {
+				MetadataSchema mds = scm.getSchema(schema);
+				Element frags = (Element) res.clone();
+				frags.removeContent();
+				for (String s : elemNames) {
+					try {
+						List obs = Xml.selectNodes(res, s, mds.getSchemaNS());
+						for (Object o : obs) {
+							if (o instanceof Element) {
+								Element elem = (Element) o;
+								frags.addContent((Content) elem.clone());
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new InvalidParameterValueEx(
+								"elementName has invalid XPath : " + s,
+								e.getMessage());
+					}
+				}
+				if (resultType == ResultType.RESULTS_WITH_SUMMARY) {
+					frags.addContent((Content) info.clone());
+				}
+				res = frags;
 			}
-			if (resultType == ResultType.RESULTS_WITH_SUMMARY) {
-				frags.addContent((Content)info.clone());
-			}
-			res = frags;
+
+			// PMT GeoCat2 : is this code still necessary ? (was in previous
+			// version)
+			// --- if the client has specified some ElementNames, then we remove
+			// the unwanted children
+			// if (elemNames != null)
+			// removeElements(res, elemNames);
+			// The block above (if elemNames != null) seems to do slightly the
+			// same thing
+
+			return res;
+		} catch (Exception e) {
+			context.error("Error while getting metadata with id : " + id);
+			context.error("  (C) StackTrace:\n" + Util.getStackTrace(e));
+			throw new NoApplicableCodeEx(
+					"Raised exception while getting metadata :" + e);
 		}
-		return res;
-	} catch (Exception e) {
-		context.error("Error while getting metadata with id : "+ id);
-		context.error("  (C) StackTrace:\n"+ Util.getStackTrace(e));
-		throw new NoApplicableCodeEx("Raised exception while getting metadata :"+ e);
-  }
 
 	}
 
