@@ -352,7 +352,7 @@ public class ServiceManager
 
 	public void dispatch(ServiceRequest req, UserSession session) {
 		ServiceContext context = new ServiceContext(req.getService(), providMan, serialFact, profilMan, htContexts);
-		dispatch(req, session, context, true);
+		dispatch(req, session, context);
 	}
 
 	
@@ -362,7 +362,7 @@ public class ServiceManager
 	//---
 	//---------------------------------------------------------------------------
 
-	public void dispatch(ServiceRequest req, UserSession session, ServiceContext context, boolean closeResources)
+	public void dispatch(ServiceRequest req, UserSession session, ServiceContext context)
 	{
 		context.setBaseUrl(baseUrl);
 		context.setLanguage(req.getLanguage());
@@ -426,7 +426,7 @@ public class ServiceManager
 					throw new ServiceNotAllowedEx(srvName);
 				}
 
-				response = srvInfo.execServices(req.getParams(), context,closeResources);
+				response = srvInfo.execServices(req.getParams(), context);
 
 				//---------------------------------------------------------------------
 				//--- handle forward
@@ -552,6 +552,7 @@ public class ServiceManager
 	//---------------------------------------------------------------------------
 
 	/** Takes a service's response and builds the output
+	 * @param closeResources 
 	  */
 
 	private String dispatchOutput(ServiceRequest req, ServiceContext context,

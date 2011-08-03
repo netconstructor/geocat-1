@@ -28,6 +28,7 @@ import jeeves.server.ProfileManager;
 import jeeves.server.UserSession;
 import jeeves.server.local.LocalServiceRequest;
 import jeeves.server.resources.ProviderManager;
+import jeeves.server.resources.ResourceManager;
 import jeeves.server.sources.ServiceRequest.InputMethod;
 import jeeves.server.sources.ServiceRequest.OutputMethod;
 import jeeves.server.sources.http.JeevesServlet;
@@ -155,13 +156,33 @@ public class ServiceContext extends BasicContext
 	}
 
 	public Element execute(LocalServiceRequest request) throws IOException, JDOMException {
-		ServiceContext context = new ServiceContext(request.getService(), getProviderManager(), getSerialFactory(), getProfileManager(), htContexts);
+		ServiceContext context = new ServiceContext(request.getService(), getProviderManager(), getSerialFactory(), getProfileManager(), htContexts) {
+			public ResourceManager getResourceManager() {
+				return new ResourceManager(getProviderManager()) {
+					@Override
+					public void abort() throws Exception {
+					}
+					@Override
+					public void close() throws Exception {
+					}
+					@Override
+					public void close(String name, Object resource)
+							throws Exception {
+					}
+					@Override
+					public void abort(String name, Object resource)
+							throws Exception {
+					}
+				};
+			}
+		};
+		
 		UserSession session = userSession;
 		if(userSession == null) {
 			session = new UserSession();
 		} 
 		
-		servlet.getEngine().getServiceManager().dispatch(request,session,context,false);
+		servlet.getEngine().getServiceManager().dispatch(request,session,context);
 		
 		return request.getResult();
 	}

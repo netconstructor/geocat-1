@@ -55,7 +55,7 @@ public class DbmsPool implements ResourceProvider
 	private int    maxTries;
 	private int    maxWait;
 	private long   reconnectTime;
-
+	private ThreadLocal<Dbms> threadDbms = new ThreadLocal<Dbms>();
 	private Set<ResourceListener> hsListeners = Collections.synchronizedSet(new HashSet<ResourceListener>());
 
 	//--------------------------------------------------------------------------
@@ -133,11 +133,13 @@ public class DbmsPool implements ResourceProvider
 	//--------------------------------------------------------------------------
 	/** Gets an element from the pool
 	  */
-
 	public synchronized Object open() throws Exception
 	{
 		String lastMessage = null;
 
+		if(threadDbms.get() != null) {
+			return threadDbms.get();
+		}
 		// try to connect MAX_TRIES times
 		for (int nTries = 0; nTries < maxTries; nTries++)
 		{
@@ -174,6 +176,7 @@ public class DbmsPool implements ResourceProvider
 						}
 
 						debug("SUCCESS: DBMS Resource "+i+" is not locked");
+						threadDbms.set(dbms);
 						htDbms.put(dbms, new Boolean(true));
 						return dbms;
 					}
@@ -210,6 +213,7 @@ public class DbmsPool implements ResourceProvider
         }
 		finally
 		{
+			threadDbms.set(null);
 		    htDbms.put((Dbms) resource, new Boolean(false));
         }
 
@@ -234,6 +238,7 @@ public class DbmsPool implements ResourceProvider
 		}
 		finally
 		{
+			threadDbms.set(null);
 			htDbms.put((Dbms) resource, new Boolean(false));
 		}
 

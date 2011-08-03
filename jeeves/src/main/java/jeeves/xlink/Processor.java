@@ -188,7 +188,7 @@ public final class Processor {
 						+ " with exception message " + e.getMessage());
 			}
 			
-			if (remoteFragment != null) {
+			if (remoteFragment != null && !remoteFragment.getName().equalsIgnoreCase("error")) {
 				xlinkCache.put(uri.toLowerCase(), remoteFragment);
 				Log.debug(Log.XLINK_PROCESSOR,"cache miss for "+uri);
 			} else {
