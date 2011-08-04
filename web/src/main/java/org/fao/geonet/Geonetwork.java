@@ -351,7 +351,7 @@ public class Geonetwork implements ApplicationHandler
 		logger.info("  - Catalogue services for the web...");
 
 		CatalogConfiguration.loadCatalogConfig(path, Csw.CONFIG_FILE);
-		CatalogDispatcher catalogDis = new CatalogDispatcher(new File(path,summaryConfigXmlFile), lc);
+		CatalogDispatcher catalogDis = new CatalogDispatcher(dataStore, new File(path,summaryConfigXmlFile), lc);
 
 		//------------------------------------------------------------------------
 		//--- initialize catalogue services for the web

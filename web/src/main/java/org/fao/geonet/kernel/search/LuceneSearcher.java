@@ -585,6 +585,30 @@ public class LuceneSearcher extends MetaSearcher
     }
     
 	//--------------------------------------------------------------------------------
+    public static Query makeLocalisedQuery(Element xmlQuery, PerFieldAnalyzerWrapper analyzer, HashSet<String> tokenizedFieldSet, HashMap<String, LuceneConfigNumericField> numericFieldSet, String langCode) throws Exception
+    {
+        Query returnValue = makeQuery(xmlQuery,analyzer,tokenizedFieldSet, numericFieldSet);
+        returnValue = addLocaleTerm(returnValue, langCode);
+
+        Log.debug(Geonet.SEARCH_ENGINE, "Lucene Query: " + returnValue.toString());
+        return returnValue;
+    }
+
+    private static Query addLocaleTerm(Query query, String langCode)
+    {
+        BooleanQuery booleanQuery;
+        if (query instanceof BooleanQuery) {
+            booleanQuery = (BooleanQuery) query;
+        } else {
+            booleanQuery = new BooleanQuery();
+            booleanQuery.add(query, BooleanClause.Occur.MUST);
+        }
+
+        booleanQuery.add(new TermQuery(new Term("_locale", langCode)), BooleanClause.Occur.SHOULD);
+
+        return booleanQuery;
+    }
+
 	/**
 	 *  Makes a new lucene query.
 	 *  

@@ -90,13 +90,6 @@ public class MultiLingualIndexSupport
     protected final File           _luceneBaseDir;
     protected final  String         _defaultLangName;
 
-    public MultiLingualIndexSupport(SearchManager searchManager)
-    {
-        File defaultLangDir = searchManager.getLuceneDir();
-        this._luceneBaseDir = defaultLangDir.getParentFile();
-        this._defaultLangName = defaultLangDir.getName();
-    }
-
     public MultiLingualIndexSupport(File defaultLangDir)
     {
         this._luceneBaseDir = defaultLangDir.getParentFile();
@@ -181,7 +174,7 @@ public class MultiLingualIndexSupport
         return new MultiSearcher(searchers);
     }
 
-    public IndexWriter createWriter(File index, File localeDir)
+    /*public IndexWriter createWriter(File index, File localeDir)
             throws IOException
     {
         String[] parts = index.getName().split("_");
@@ -192,7 +185,7 @@ public class MultiLingualIndexSupport
 
         return new IndexWriter(new NIOFSDirectory(index),
                 new GeocatAnalyzer(locale), true, IndexWriter.MaxFieldLength.UNLIMITED);
-    }
+    }*/
 
     /**
      * Creates a {@link org.apache.lucene.index.IndexReader} for reading all language indexes.

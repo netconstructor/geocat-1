@@ -51,6 +51,7 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
 import org.fao.geonet.kernel.DataManager;
+import org.fao.geonet.kernel.GeonetLocale;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.spatial.ContainsFilter;
@@ -73,6 +74,7 @@ import org.geotools.data.Transaction;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
+import org.jdom.Content;
 import org.jdom.Element;
 
 import java.io.File;
@@ -81,8 +83,10 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,8 +94,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -130,7 +136,7 @@ public class SearchManager
 	private String _htmlCacheDir;
     private Spatial _spatial;
 	private LuceneIndexReaderFactory _indexReader;
-	private LuceneIndexWriterFactory _indexWriter;
+	private MultiLingualIndexWriterFactory _indexWriter;
 	private Timer _optimizerTimer = null;
     /**
      *  minutes between optimizations of the lucene index.
@@ -598,8 +604,10 @@ public class SearchManager
 		Log.debug(Geonet.INDEX_ENGINE, "Opening Writer from index");
 		_indexWriter.openWriter();
 		try {
-			Document doc = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, false);
-			_indexWriter.addDocument(doc);
+			Map<String,Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, false);
+			for (Map.Entry<String,Document> document : docs.entrySet()) {
+				_indexWriter.addDocument(document.getKey(), document.getValue());
+			}
 		} finally {
 			Log.debug(Geonet.INDEX_ENGINE, "Closing Writer from index");
 			_indexWriter.closeWriter();
@@ -631,8 +639,10 @@ public class SearchManager
      */
 	public void indexGroup(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title) throws Exception
 	{
-		Document doc = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, true);
-		_indexWriter.addDocument(doc);
+		Map<String,Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, true);
+		for (Map.Entry<String,Document> document : docs.entrySet()) {
+			_indexWriter.addDocument(document.getKey(), document.getValue());
+		}
 
 		_spatial.writer().index(schemaDir, id, metadata);
 	}
@@ -675,7 +685,7 @@ public class SearchManager
      * @return
      * @throws Exception
      */
-    private Document buildIndexDocument(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title, boolean group) throws Exception
+    private Map<String,Document> buildIndexDocument(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title, boolean group) throws Exception
 	{
 
 		Log.debug(Geonet.INDEX_ENGINE, "Deleting "+id+" from index");
@@ -690,31 +700,40 @@ public class SearchManager
 			// create empty document with only title and "any" fields
 			xmlDoc = new Element("Document");
 
+			Element defaultDoc = new Element("Document");
+            defaultDoc.setAttribute("locale", MultiLingualIndexSupport.DEFAULT_LANGUAGE);
+            xmlDoc.addContent(defaultDoc);
+
 			StringBuffer sb = new StringBuffer();
 			allText(metadata, sb);
-			addField(xmlDoc, "title", title, true, true, true);
-			addField(xmlDoc, "any", sb.toString(), true, true, true);
+			addField(defaultDoc, "title", title, true, true, true);
+			addField(defaultDoc, "any", sb.toString(), true, true, true);
 		} else {
-			Log.debug(Geonet.INDEX_ENGINE, "Metadata to index:\n"
-					+ Xml.getString(metadata));
+			Log.debug(Geonet.INDEX_ENGINE, "Metadata to index:\n" + Xml.getString(metadata));
 
             xmlDoc = getIndexFields(schemaDir, metadata);
 
 			Log.debug(Geonet.INDEX_ENGINE, "Indexing fields:\n"
 					+ Xml.getString(xmlDoc));
 		}
-		// add _id field
-		addField(xmlDoc, "_id", id, true, true, false);
+        @SuppressWarnings("unchecked")
+		List<Element> documentElements = xmlDoc.getContent();
 
-		// add more fields
-        for (Element moreField : moreFields) {
-            xmlDoc.addContent(moreField);
+        HashMap<String,Document> documents = new HashMap<String,Document>();
+        for (Element doc : documentElements) {
+        	// add _id field
+            addField(doc, "_id", id, true, true, false);
+
+			// add more fields
+	        for (Element moreField : moreFields) {
+	            doc.addContent((Content)moreField.clone());
+	        }
+	        documents.put(doc.getAttributeValue("locale").toUpperCase(), newDocument(doc));
         }
-
 		Log.debug(Geonet.INDEX_ENGINE, "Lucene document:\n"
 				+ Xml.getString(xmlDoc));
 
-        return newDocument(xmlDoc);
+        return documents;
 	}
 
 	/**
@@ -980,18 +999,126 @@ public class SearchManager
      * @throws Exception
      */
 	Element getIndexFields(String schemaDir, Element xml) throws Exception {
+        Element documents = new Element("Documents");
+        try {
+            String defaultStyleSheet = new File(schemaDir, "index-fields.xsl")
+                    .getAbsolutePath();
+            String otherLocalesStyleSheet = new File(schemaDir,
+                    "language-index-fields.xsl").getAbsolutePath();
+            Map<String,String> params = new HashMap<String, String>();
+            params.put("inspire", Boolean.toString(_inspireEnabled));
+            params.put("dataDir", _dataDir);
+            
+            Element defaultLang = Xml.transform(xml, defaultStyleSheet, params);
+            @SuppressWarnings("unchecked")
+			List<Element> otherLanguages = Xml.transform(xml, otherLocalesStyleSheet, params).removeContent();
+            mergeDefaultLang( defaultLang, otherLanguages);
+            documents.addContent(defaultLang);
+            documents.addContent(otherLanguages);
 
-		try {
-			String styleSheet = new File(schemaDir, "index-fields.xsl").getAbsolutePath();
-      Map<String,String> params = new HashMap<String, String>();
-      params.put("inspire", Boolean.toString(_inspireEnabled));
-      params.put("dataDir", _dataDir);
-			return Xml.transform(xml, styleSheet, params);
-		} catch (Exception e) {
-			Log.error(Geonet.INDEX_ENGINE, "Indexing stylesheet contains errors : " + e.getMessage());
-			throw e;
-		}
+            return documents;
+        } catch (Exception e) {
+            Log.error(Geonet.SEARCH_ENGINE,
+                    "Indexing stylesheet contains errors : " + e.getMessage());
+            throw e;
+        }
 	}
+
+
+    /**
+     * If otherLanguages has a document that is the same locale as the default then remove it from
+     * otherlanguages and merge the fields with those in defaultLang
+     */
+    private void mergeDefaultLang(Element defaultLang, List<Element> otherLanguages)
+    {
+        final String langCode;
+        if( defaultLang.getAttribute("locale") == null ){
+            langCode = "";
+        } else {
+            langCode = defaultLang.getAttributeValue("locale");
+        }
+
+        Element toMerge = null;
+
+        for (Element element : otherLanguages) {
+            String clangCode;
+            if( element.getAttribute("locale") == null ){
+                clangCode = "";
+            } else {
+                clangCode = element.getAttributeValue("locale");
+            }
+
+            if(clangCode.equals(langCode)){
+                toMerge = element;
+                break;
+            }
+        }
+
+        SortedSet<Element> toInclude = new TreeSet<Element>(new Comparator<Element>()
+        {
+
+
+            public int compare(Element o1, Element o2)
+            {
+                // <Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
+
+                int name = compare(o1, o2, "name");
+                int string = compare(o1, o2, "string");
+                int store = compare(o1, o2, "store");
+                int index = compare(o1, o2, "index");
+
+                if( name != 0){
+                    return name;
+                }
+
+                if( string != 0){
+                    return string;
+                }
+
+                if( store != 0){
+                    return store;
+                }
+
+                if( index != 0){
+                    return index;
+                }
+
+                return 0;
+
+            }
+
+            private int compare(Element o1, Element o2, String attName)
+            {
+                return safeGet(o1, attName).compareTo(safeGet(o2, attName));
+            }
+
+            public String safeGet(Element e, String attName){
+                String att = e.getAttributeValue(attName);
+                if( att == null ){
+                    return "";
+                }
+                else {
+                    return att;
+                }
+            }
+        });
+
+        if( toMerge != null ){
+            toMerge.detach();
+            otherLanguages.remove(toMerge);
+
+            for (Element element : (List<Element>) defaultLang.getChildren()) {
+                toInclude.add(element);
+            }
+            for (Element element : (List<Element>) toMerge.getChildren()) {
+                toInclude.add(element);
+            }
+            toMerge.removeContent();
+            defaultLang.removeContent();
+            defaultLang.addContent(toInclude);
+        }
+
+    }
 
 	//-----------------------------------------------------------------------------
 	// utilities
@@ -1046,28 +1173,34 @@ public class SearchManager
      */
 	private void setupIndex(boolean rebuild) throws Exception {
 		// if rebuild forced don't check
-		boolean badIndex = true;
-		if (!rebuild) {
-			try {
-				IndexReader reader = IndexReader.open(FSDirectory.open(_luceneDir));
-				reader.close();
-				badIndex = false;
-			} catch (Exception e) {
-				Log.error(Geonet.INDEX_ENGINE,
-						"Exception while opening lucene index, going to rebuild it: "
-								+ e.getMessage());
-			}
-		}
-		// if rebuild forced or bad index then rebuild index
-		if (rebuild || badIndex) {
+        MultiLingualIndexSupport support = new MultiLingualIndexSupport(_luceneDir);
+        ArrayList<File> toRebuild = new ArrayList<File>();
+        if (rebuild) {
+            toRebuild.addAll(Arrays.asList(support.listIndices()));
+            _spatial.writer().reset();
+        } else {
+            File[] indices = support.listIndices();
+            for (int i = 0; i < indices.length; i++) {
+                File index = indices[i];
+                try {
+                    IndexReader reader = IndexReader.open(FSDirectory.open(index));
+                    reader.close();
+                } catch (Exception e) {
+                    Log.error(Geonet.SEARCH_ENGINE, "Exception while opening lucene index ("+index+"), going to rebuild it: " + e.getMessage());
+                    toRebuild.add(index);
+                }
+            }
+        }
+        // if rebuild forced or bad index then rebuild index
+        if (!toRebuild.isEmpty()) {
 			Log.error(Geonet.INDEX_ENGINE, "Rebuilding lucene index");
 			if (_spatial != null) _spatial.writer().reset();
 			IndexWriter writer = new IndexWriter(FSDirectory.open(_luceneDir), _analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
 			writer.close();
 		}
 
-    _indexReader = new LuceneIndexReaderFactory(_luceneDir);
-		_indexWriter = new LuceneIndexWriterFactory(_luceneDir, _analyzer, _luceneConfig);
+        _indexReader = new LuceneIndexReaderFactory(_luceneDir);
+		_indexWriter = new MultiLingualIndexWriterFactory(_luceneDir, _analyzer, _luceneConfig);
 	}
 
 	/**

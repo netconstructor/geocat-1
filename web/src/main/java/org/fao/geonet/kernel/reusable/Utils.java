@@ -233,8 +233,7 @@ public final class Utils {
 
 		SearchManager searchManager = gc.getSearchmanager();
 
-		MultiLingualIndexSupport support = new MultiLingualIndexSupport(
-				searchManager);
+		MultiLingualIndexSupport support = new MultiLingualIndexSupport(searchManager.getLuceneDir());
 
 		MultiSearcher searcher = support.createMultiMetaSearcher(support
 				.sortCurrentLocalFirst(context.getLanguage()));

@@ -49,8 +49,6 @@ class MultiLingualIndexWriter
 {
 
     private MultiLingualIndexSupport _support;
-    private final SearchManager      _searchManager;
-    private HashMap<String, PerFieldAnalyzerWrapper> _analyzers; 
     
     /**
      * 
@@ -60,110 +58,9 @@ class MultiLingualIndexWriter
     public MultiLingualIndexWriter(SearchManager searchManager,
             File defaultLangDir)
     {
-        _searchManager = searchManager;
-        _support = new MultiLingualIndexSupport(searchManager);
+        _support = new MultiLingualIndexSupport(searchManager.getLuceneDir());
         
     }
-
-    // creates a new document
-    private Document newDocument(Element xml)
-    {
-        Document doc = new Document();
-        for (Iterator iter = xml.getChildren().iterator(); iter.hasNext();) {
-            Element field = (Element) iter.next();
-            String name = field.getAttributeValue("name");
-            // RGFIX: should be only needed for non-tokenized fields
-			String string = field.getAttributeValue("string"); // Lower case field is handled by Lucene Analyzer.
-            if (string.trim().length() > 0) {
-                String sStore = field.getAttributeValue("store");
-                String sIndex = field.getAttributeValue("index");
-                String sToken = field.getAttributeValue("token");
-                boolean bStore = sStore != null && sStore.equals("true");
-                boolean bIndex = sIndex != null && sIndex.equals("true");
-                boolean token = sToken != null && sToken.equals("true");
-                Field.Store store = null;
-                if (bStore) {
-                    store = Field.Store.YES;
-                } else {
-                    store = Field.Store.NO;
-                }
-                Field.Index index = null;
-                if (bIndex && token) {
-                    index = Field.Index.ANALYZED;
-                }
-                if (bIndex && !token) {
-                    index = Field.Index.NOT_ANALYZED;
-                }
-                if (!bIndex) {
-                    index = Field.Index.NO;
-                }
-                doc.add(new Field(name, string, store, index));
-            }
-        }
-        return doc;
-    }
-
-    public void write(Element xmlDoc) throws Exception
-    {
-
-        for (Iterator iterator = xmlDoc.getContent().iterator(); iterator
-                .hasNext();) {
-            Element docElem = (Element) iterator.next();
-
-            Attribute attribute = docElem.getAttribute("locale");
-            String langCode=null;
-            if( attribute!=null ){
-                langCode = attribute.getValue();
-            }
-            
-            // TODO : we could probably improve that if we set one Analyzer per language
-            // and keep the different kind of analyzer.
-            //
-            // Define the default Analyzer
-            PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new GeocatAnalyzer(langCode));
-    		// Here you could define specific analyzer for each fields stored in the index.
-    		//
-    		// For example adding a different analyzer for any (ie. full text search) 
-    		// could be better than a standard analyzer which has a particular way of 
-    		// creating tokens.
-    		// In that situation, when field is "mission AD-T" is tokenized to "mission" "AD" & "T"
-    		// using StandardAnalyzer.
-    		// A WhiteSpaceTokenizer tokenized to "mission" "AD-T"
-    		// which could be better in some situation.
-    		// But when field is "mission AD-34T" is tokenized to "mission" "AD-34T" using StandardAnalyzer due to number.
-    		// analyzer.addAnalyzer("any", new WhitespaceAnalyzer());
-    		// 
-    		// Uuid stored using a standard analyzer will be change to lower case.
-    		// Whitespace will not.
-    		analyzer.addAnalyzer("_uuid", new WhitespaceAnalyzer());
-    		analyzer.addAnalyzer("_title", new WhitespaceAnalyzer());
-    		analyzer.addAnalyzer("_defaultTitle", new WhitespaceAnalyzer());
-    		analyzer.addAnalyzer("operatesOn", new WhitespaceAnalyzer());
-    		analyzer.addAnalyzer("_groupOwnerName", new WhitespaceAnalyzer());
-    		analyzer.addAnalyzer("subject", new KeywordAnalyzer());
-    		
-            
-            if (!docElem.getName().equals("Document")) {
-                Log
-                        .error(Geonet.INDEX_ENGINE,
-                                "All children of the root index Element must be 'Document' elements");
-            }
-            Document doc = newDocument(docElem);
-
-            File luceneDir = getIndexDir(attribute);
-            boolean create = !luceneDir.exists();
-            if (create) {
-                luceneDir.mkdirs();
-            }
-            IndexWriter writer = new IndexWriter(new NIOFSDirectory(luceneDir), analyzer, create, IndexWriter.MaxFieldLength.UNLIMITED);
-            try {
-                writer.addDocument(doc);
-            } finally {
-                writer.close();
-            }
-        }
-    }
-
     private File getIndexDir(Attribute attribute)
     {
         String locale = MultiLingualIndexSupport.DEFAULT_LANGUAGE;

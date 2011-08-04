@@ -28,8 +28,10 @@ public class LuceneIndexReaderFactory {
 	// Constructor
 
   public LuceneIndexReaderFactory(File dir) throws IOException {
-    currentReader = IndexReader.open(FSDirectory.open(dir), true);
-    warm(currentReader);
+		MultiLingualIndexSupport support = new MultiLingualIndexSupport(dir);
+		String[] locales = support.listLocales();
+		currentReader = support.createMultiReader(locales);
+		warm(currentReader);
 	}
 
 

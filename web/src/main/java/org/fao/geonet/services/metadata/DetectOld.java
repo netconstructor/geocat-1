@@ -133,7 +133,7 @@ public class DetectOld implements Service
 
         DuplicateFilter filter = new DuplicateFilter(query.getField());
 
-        MultiLingualIndexSupport support = new MultiLingualIndexSupport(sm);
+        MultiLingualIndexSupport support = new MultiLingualIndexSupport(sm.getLuceneDir());
 
         MultiSearcher searcher = support.createMultiMetaSearcher(support.sortCurrentLocalFirst(context.getLanguage()));
         try {
