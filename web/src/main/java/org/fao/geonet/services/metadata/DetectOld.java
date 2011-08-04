@@ -1,30 +1,45 @@
 package org.fao.geonet.services.metadata;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import static java.text.MessageFormat.format;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import jeeves.exceptions.BadInputEx;
 import jeeves.interfaces.Service;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
+
 import org.apache.lucene.document.Document;
-import org.apache.lucene.search.*;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.DuplicateFilter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.reusable.Utils;
-import org.fao.geonet.kernel.search.MultiLingualIndexSupport;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.services.util.Email;
 import org.fao.geonet.util.ISODate;
 import org.jdom.Element;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.*;
-
-import static java.text.MessageFormat.format;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * A service that detects old metadata and depending on the serviceType
@@ -133,15 +148,17 @@ public class DetectOld implements Service
 
         DuplicateFilter filter = new DuplicateFilter(query.getField());
 
-        MultiLingualIndexSupport support = new MultiLingualIndexSupport(sm.getLuceneDir());
+		File luceneDir = sm.getLuceneDir();
 
-        MultiSearcher searcher = support.createMultiMetaSearcher(support.sortCurrentLocalFirst(context.getLanguage()));
+		IndexReader reader = IndexReader.open(FSDirectory.open(luceneDir), true);
+	    Searcher searcher = new IndexSearcher(reader);
+
         try {
             TopDocs hits = searcher.search(query, filter,Integer.MAX_VALUE);
 
             Multimap<String, EmailInfo> results = HashMultimap.create();
             for (ScoreDoc scoreDoc : hits.scoreDocs) {
-                Document document = searcher.doc(scoreDoc.doc);
+				Document document = reader.document(scoreDoc.doc);
                 String basicAddress = host + ":" + portNumber + context.getBaseUrl() + "/" + context.getLanguage() + "/";
                 EmailInfo emailInfo = new EmailInfo(document, basicAddress);
 

@@ -23,6 +23,9 @@
 
 package org.fao.geonet.kernel.reusable;
 
+import static java.lang.Double.parseDouble;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -44,7 +47,6 @@ import java.util.regex.Pattern;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import com.google.common.base.Function;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
@@ -53,15 +55,17 @@ import jeeves.utils.Xml;
 import jeeves.xlink.XLink;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.search.MultiLingualIndexSupport;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
 import org.fao.geonet.services.util.Email;
@@ -70,10 +74,9 @@ import org.jdom.Attribute;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.filter.Filter;
 
-import static java.lang.Double.parseDouble;
+import com.google.common.base.Function;
 
 /**
  * Utility methods for this package
@@ -233,10 +236,10 @@ public final class Utils {
 
 		SearchManager searchManager = gc.getSearchmanager();
 
-		MultiLingualIndexSupport support = new MultiLingualIndexSupport(searchManager.getLuceneDir());
+		File luceneDir = searchManager.getLuceneDir();
 
-		MultiSearcher searcher = support.createMultiMetaSearcher(support
-				.sortCurrentLocalFirst(context.getLanguage()));
+		IndexReader reader = IndexReader.open(FSDirectory.open(luceneDir), true);
+	    Searcher searcher = new IndexSearcher(reader);
 
 		try {
 			TreeSet<MetadataRecord> results = new TreeSet<MetadataRecord>(
@@ -254,7 +257,7 @@ public final class Utils {
 				TopDocs tdocs = searcher.search(query, 1);
 
 				for (ScoreDoc sdoc : tdocs.scoreDocs) {
-					Document element = searcher.doc(sdoc.doc);
+					Document element = reader.document(sdoc.doc);
 
 					List<String> xlinks = new ArrayList<String>();
 					for (String value : element.getValues(field)) {

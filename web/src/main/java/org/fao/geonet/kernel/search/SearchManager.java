@@ -47,6 +47,7 @@ import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
@@ -136,7 +137,7 @@ public class SearchManager
 	private String _htmlCacheDir;
     private Spatial _spatial;
 	private LuceneIndexReaderFactory _indexReader;
-	private MultiLingualIndexWriterFactory _indexWriter;
+	private LuceneIndexWriterFactory _indexWriter;
 	private Timer _optimizerTimer = null;
     /**
      *  minutes between optimizations of the lucene index.
@@ -606,7 +607,7 @@ public class SearchManager
 		try {
 			Map<String,Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, false);
 			for (Map.Entry<String,Document> document : docs.entrySet()) {
-				_indexWriter.addDocument(document.getKey(), document.getValue());
+				_indexWriter.addDocument(document.getValue());
 			}
 		} finally {
 			Log.debug(Geonet.INDEX_ENGINE, "Closing Writer from index");
@@ -641,7 +642,7 @@ public class SearchManager
 	{
 		Map<String,Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, true);
 		for (Map.Entry<String,Document> document : docs.entrySet()) {
-			_indexWriter.addDocument(document.getKey(), document.getValue());
+			_indexWriter.addDocument(document.getValue());
 		}
 
 		_spatial.writer().index(schemaDir, id, metadata);
@@ -701,7 +702,7 @@ public class SearchManager
 			xmlDoc = new Element("Document");
 
 			Element defaultDoc = new Element("Document");
-            defaultDoc.setAttribute("locale", MultiLingualIndexSupport.DEFAULT_LANGUAGE);
+            defaultDoc.setAttribute("locale", Geocat.DEFAULT_LANG);
             xmlDoc.addContent(defaultDoc);
 
 			StringBuffer sb = new StringBuffer();
@@ -1010,11 +1011,13 @@ public class SearchManager
             params.put("dataDir", _dataDir);
             
             Element defaultLang = Xml.transform(xml, defaultStyleSheet, params);
-            @SuppressWarnings("unchecked")
-			List<Element> otherLanguages = Xml.transform(xml, otherLocalesStyleSheet, params).removeContent();
-            mergeDefaultLang( defaultLang, otherLanguages);
+            if(new File(otherLocalesStyleSheet).exists()) {
+                @SuppressWarnings("unchecked")
+    			List<Element> otherLanguages = Xml.transform(xml, otherLocalesStyleSheet, params).removeContent();
+                mergeDefaultLang( defaultLang, otherLanguages);
+                documents.addContent(otherLanguages);
+            }
             documents.addContent(defaultLang);
-            documents.addContent(otherLanguages);
 
             return documents;
         } catch (Exception e) {
@@ -1173,34 +1176,28 @@ public class SearchManager
      */
 	private void setupIndex(boolean rebuild) throws Exception {
 		// if rebuild forced don't check
-        MultiLingualIndexSupport support = new MultiLingualIndexSupport(_luceneDir);
-        ArrayList<File> toRebuild = new ArrayList<File>();
-        if (rebuild) {
-            toRebuild.addAll(Arrays.asList(support.listIndices()));
-            _spatial.writer().reset();
-        } else {
-            File[] indices = support.listIndices();
-            for (int i = 0; i < indices.length; i++) {
-                File index = indices[i];
-                try {
-                    IndexReader reader = IndexReader.open(FSDirectory.open(index));
-                    reader.close();
-                } catch (Exception e) {
-                    Log.error(Geonet.SEARCH_ENGINE, "Exception while opening lucene index ("+index+"), going to rebuild it: " + e.getMessage());
-                    toRebuild.add(index);
-                }
-            }
-        }
-        // if rebuild forced or bad index then rebuild index
-        if (!toRebuild.isEmpty()) {
+		boolean badIndex = true;
+		if (!rebuild) {
+			try {
+				IndexReader reader = IndexReader.open(FSDirectory.open(_luceneDir));
+				reader.close();
+				badIndex = false;
+			} catch (Exception e) {
+				Log.error(Geonet.INDEX_ENGINE,
+						"Exception while opening lucene index, going to rebuild it: "
+								+ e.getMessage());
+			}
+		}
+		// if rebuild forced or bad index then rebuild index
+		if (rebuild || badIndex) {
 			Log.error(Geonet.INDEX_ENGINE, "Rebuilding lucene index");
 			if (_spatial != null) _spatial.writer().reset();
 			IndexWriter writer = new IndexWriter(FSDirectory.open(_luceneDir), _analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
 			writer.close();
 		}
 
-        _indexReader = new LuceneIndexReaderFactory(_luceneDir);
-		_indexWriter = new MultiLingualIndexWriterFactory(_luceneDir, _analyzer, _luceneConfig);
+    _indexReader = new LuceneIndexReaderFactory(_luceneDir);
+		_indexWriter = new LuceneIndexWriterFactory(_luceneDir, _analyzer, _luceneConfig);
 	}
 
 	/**

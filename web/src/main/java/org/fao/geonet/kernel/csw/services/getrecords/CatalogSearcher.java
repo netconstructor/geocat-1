@@ -37,6 +37,7 @@ import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.misc.ChainedFilter;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.CachingWrapperFilter;
@@ -54,6 +55,7 @@ import org.fao.geonet.csw.common.exceptions.CatalogException;
 import org.fao.geonet.csw.common.exceptions.InvalidParameterValueEx;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
 import org.fao.geonet.kernel.AccessManager;
+import org.fao.geonet.kernel.search.DuplicateDocFilter;
 import org.fao.geonet.kernel.search.LuceneConfig;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.LuceneSearcher;
@@ -121,7 +123,7 @@ public class CatalogSearcher {
 	private FieldSelector _selector;
 	private Query         _query;
 	private IndexReader   _reader;
-	private CachingWrapperFilter _filter;
+	private org.apache.lucene.search.Filter _filter;
 	private Sort          _sort;
 	private String        _lang;
 	
@@ -400,7 +402,7 @@ public class CatalogSearcher {
 		if (sort == null) {
 			sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)));
 		}
-
+		
 		// --- put query on groups in AND with lucene query
 
 		BooleanQuery query = new BooleanQuery();
@@ -426,8 +428,15 @@ public class CatalogSearcher {
 		// TODO Handle NPE creating spatial filter (due to constraint
 		// language version).
 		Filter spatialfilter = sm.getSpatial().filter(query, replaceElements, filterVersion);
-		CachingWrapperFilter cFilter = null;
-		if (spatialfilter != null) cFilter = new CachingWrapperFilter(spatialfilter);
+		Filter duplicateRemovingFilter = new DuplicateDocFilter(query,1000000);
+		Filter cFilter = null;
+        if (spatialfilter == null) {
+            cFilter = duplicateRemovingFilter;
+        } else {
+            Filter[] filters = new Filter[] { duplicateRemovingFilter, spatialfilter };
+			cFilter = new ChainedFilter(filters,ChainedFilter.AND);
+        }
+        //		if (spatialfilter != null) cFilter = new CachingWrapperFilter(spatialfilter);
 		boolean buildSummary = resultType == ResultType.RESULTS_WITH_SUMMARY;
 		int numHits = startPosition + maxRecords;
 
@@ -438,7 +447,7 @@ public class CatalogSearcher {
 
 		// record globals for reuse
 		_query = query;
-		_filter = cFilter;
+		_filter = new CachingWrapperFilter(cFilter);
 		_sort = sort;
 		_lang = context.getLanguage();
 	

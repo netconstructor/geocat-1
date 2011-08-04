@@ -61,6 +61,7 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
+import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
@@ -958,7 +959,7 @@ public class LuceneSearcher extends MetaSearcher
 	 */
 	public static Pair<TopDocs, Element> doSearchAndMakeSummary(int numHits, int startHit, int endHit, int maxSummaryKeys, 
 			String langCode, String resultType, Element summaryConfig, 
-			IndexReader reader, Query query, CachingWrapperFilter cFilter, Sort sort, boolean buildSummary,
+			IndexReader reader, Query query, Filter cFilter, Sort sort, boolean buildSummary,
 			boolean trackDocScores, boolean trackMaxScore, boolean docsScoredInOrder) throws Exception
 	{
 
@@ -1158,10 +1159,6 @@ public class LuceneSearcher extends MetaSearcher
      */
     public static String getMetadataFromIndex(String indexPath, String id, String fieldname) throws Exception
     {
-        return getMetadataFromIndex(indexPath,id,fieldname,"eng");
-    }
-    public static String getMetadataFromIndex(String indexPath, String id, String fieldname, String languageCode) throws Exception
-    {
 			List<String> fieldnames = new ArrayList<String>();
 			fieldnames.add(fieldname);
 			return getMetadataFromIndex(indexPath, id, fieldnames).get(fieldname);
@@ -1169,16 +1166,11 @@ public class LuceneSearcher extends MetaSearcher
 
     public static Map<String,String> getMetadataFromIndex(String indexPath, String id, List<String> fieldnames) throws Exception
     {
-        return getMetadataFromIndex(indexPath,id,fieldnames,"eng");
-    }
-    public static Map<String,String> getMetadataFromIndex(String indexPath, String id, List<String> fieldnames, String languageCode) throws Exception
-    {
-
 			MapFieldSelector selector = new MapFieldSelector(fieldnames); 
 
 			File luceneDir = new File(indexPath);
-        MultiLingualIndexSupport support = new MultiLingualIndexSupport(luceneDir);
-        MultiSearcher searcher = support.createMultiMetaSearcher(support.sortCurrentLocalFirst(languageCode));
+			IndexReader reader = IndexReader.open(FSDirectory.open(luceneDir), true);
+		      Searcher searcher = new IndexSearcher(reader);
 
 			Map<String,String> values = new HashMap<String,String>();
         
@@ -1187,7 +1179,7 @@ public class LuceneSearcher extends MetaSearcher
 		    TopDocs tdocs = searcher.search(query,1);
 	        
 	       for ( ScoreDoc sdoc : tdocs.scoreDocs ) {
-        		Document doc = searcher.doc(sdoc.doc, selector);
+        		Document doc = reader.document(sdoc.doc, selector);
 
                for ( String fieldname :  fieldnames ) {
 							values.put(fieldname, doc.get(fieldname));

@@ -2,6 +2,9 @@ package org.fao.geonet.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +23,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import com.google.common.collect.Multimaps;
 import jeeves.utils.Log;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -44,13 +46,6 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Envelope;
@@ -59,11 +54,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTWriter;
-
-import jeeves.utils.Log;
-
-import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.search.LuceneSearcher;
 
 /**
  * These are all extension methods for calling from xsl docs. Note: All params
@@ -181,9 +171,9 @@ public final class XslUtil {
         String path = appPath.toString();
         String id = uuid.toString();
         String fieldname = field.toString();
-        String language = (lang.toString().equals("") ? Geonet.DEFAULT_LANGUAGE : lang.toString());
+        String language = (lang.toString().equals("") ? null : lang.toString());
         try {
-            return LuceneSearcher.getMetadataFromIndex(path, id, fieldname, language);
+            return LuceneSearcher.getMetadataFromIndex(path, id, fieldname);
         } catch (Exception e) {
             Log.error(Geonet.GEONETWORK, "Failed to get index field value caused by " + e.getMessage());
             return "";

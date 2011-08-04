@@ -68,5 +68,7 @@ public class Geocat {
         public static final String REUSABLE = "reusable";
         public static final String MONITORING = "monitoring";
     }
+
+	public static final String DEFAULT_LANG = "eng";
     
 }
