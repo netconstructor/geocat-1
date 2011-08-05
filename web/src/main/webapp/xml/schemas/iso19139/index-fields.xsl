@@ -5,9 +5,10 @@
 										xmlns:srv="http://www.isotc211.org/2005/srv"
 										xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 										xmlns:gmx="http://www.isotc211.org/2005/gmx"
-                                                                                xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+                    xmlns:skos="http://www.w3.org/2004/02/skos/core#">
 
 	<xsl:include href="../iso19139/convert/functions.xsl"/>
+  <xsl:include href="../index-utils.xsl"/>
 
 	<!-- This file defines what parts of the metadata are indexed by Lucene
 	     Searches can be conducted on indexes defined here. 
@@ -38,7 +39,12 @@
         <!-- ========================================================================================= -->
 
 	<xsl:template match="/">
-		<Document>
+	  <xsl:variable name="iso3LangId">
+		  <xsl:call-template name="langId19139"/>
+    </xsl:variable>
+		
+		<Document locale="{string($iso3LangId)}">
+			<Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
 			<xsl:apply-templates select="gmd:MD_Metadata" mode="metadata"/>
 		</Document>
 	</xsl:template>

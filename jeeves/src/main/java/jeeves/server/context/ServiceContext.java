@@ -155,7 +155,7 @@ public class ServiceContext extends BasicContext
 		this.headers = headers;
 	}
 
-	public Element execute(LocalServiceRequest request) throws IOException, JDOMException {
+	public Element execute(LocalServiceRequest request) throws Exception {
 		ServiceContext context = new ServiceContext(request.getService(), getProviderManager(), getSerialFactory(), getProfileManager(), htContexts) {
 			public ResourceManager getResourceManager() {
 				return new ResourceManager(getProviderManager()) {
@@ -182,9 +182,18 @@ public class ServiceContext extends BasicContext
 			session = new UserSession();
 		} 
 		
+		try {
 		servlet.getEngine().getServiceManager().dispatch(request,session,context);
-		
-		return request.getResult();
+		} catch (Exception e) {
+			Log.error(Log.XLINK_PROCESSOR,"Failed to parse result xml"+ request.getService());
+			throw new ServiceExecutionFailedException(request.getService(),e);
+		}
+		try {
+			return request.getResult();
+		} catch (Exception e) {
+			Log.error(Log.XLINK_PROCESSOR,"Failed to parse result xml from service:"+request.getService()+"\n"+ request.getResultString());
+			throw new ServiceExecutionFailedException(request.getService(),e);
+		}
 	}
 }
 

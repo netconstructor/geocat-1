@@ -154,6 +154,7 @@ public final class Processor {
 			throw new RuntimeException("There have been "+failures.size()+" timeouts resolving xlinks in the last "+ELAPSE_TIME+" ms");
 		}
 
+		uri = uri.replaceAll("&+","&");
 		JeevesJCS xlinkCache = JeevesJCS.getInstance(XLINK_JCS);
 		Element remoteFragment = (Element) xlinkCache.get(uri.toLowerCase());
 
@@ -184,6 +185,7 @@ public final class Processor {
 				synchronized(Processor.class) {
 					failures.add (System.currentTimeMillis());
 				}
+				
 				Log.error(Log.XLINK_PROCESSOR,"Failed on " + uri 
 						+ " with exception message " + e.getMessage());
 			}

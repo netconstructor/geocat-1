@@ -49,11 +49,6 @@ import java.util.List;
  * </db>
  */
 public class DatabaseServiceMonitor extends ServiceMonitor {
-
-    public DatabaseServiceMonitor(ServiceContext context) {
-        super(context);   
-    }
-
     public void exec(ServiceContext context, ServiceMonitorReport report) throws ServiceMonitorException {
         try {
             timeMeasurer = new Chrono();

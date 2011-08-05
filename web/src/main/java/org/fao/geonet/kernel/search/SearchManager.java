@@ -47,6 +47,7 @@ import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
@@ -73,6 +74,7 @@ import org.geotools.data.Transaction;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
+import org.jdom.Content;
 import org.jdom.Element;
 
 import java.io.File;
@@ -81,8 +83,10 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,8 +94,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -598,8 +604,10 @@ public class SearchManager
 		Log.debug(Geonet.INDEX_ENGINE, "Opening Writer from index");
 		_indexWriter.openWriter();
 		try {
-			Document doc = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, false);
-			_indexWriter.addDocument(doc);
+			List<Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, false);
+			for (Document document : docs) {
+				_indexWriter.addDocument(document);
+			}
 		} finally {
 			Log.debug(Geonet.INDEX_ENGINE, "Closing Writer from index");
 			_indexWriter.closeWriter();
@@ -631,8 +639,10 @@ public class SearchManager
      */
 	public void indexGroup(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title) throws Exception
 	{
-		Document doc = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, true);
-		_indexWriter.addDocument(doc);
+		List<Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, true);
+		for (Document document : docs) {
+			_indexWriter.addDocument(document);
+		}
 
 		_spatial.writer().index(schemaDir, id, metadata);
 	}
@@ -675,7 +685,7 @@ public class SearchManager
      * @return
      * @throws Exception
      */
-    private Document buildIndexDocument(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title, boolean group) throws Exception
+    private List<Document> buildIndexDocument(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title, boolean group) throws Exception
 	{
 
 		Log.debug(Geonet.INDEX_ENGINE, "Deleting "+id+" from index");
@@ -690,31 +700,40 @@ public class SearchManager
 			// create empty document with only title and "any" fields
 			xmlDoc = new Element("Document");
 
+			Element defaultDoc = new Element("Document");
+            defaultDoc.setAttribute("locale", Geocat.DEFAULT_LANG);
+            xmlDoc.addContent(defaultDoc);
+
 			StringBuffer sb = new StringBuffer();
 			allText(metadata, sb);
-			addField(xmlDoc, "title", title, true, true, true);
-			addField(xmlDoc, "any", sb.toString(), true, true, true);
+			addField(defaultDoc, "title", title, true, true, true);
+			addField(defaultDoc, "any", sb.toString(), true, true, true);
 		} else {
-			Log.debug(Geonet.INDEX_ENGINE, "Metadata to index:\n"
-					+ Xml.getString(metadata));
+			Log.debug(Geonet.INDEX_ENGINE, "Metadata to index:\n" + Xml.getString(metadata));
 
             xmlDoc = getIndexFields(schemaDir, metadata);
 
 			Log.debug(Geonet.INDEX_ENGINE, "Indexing fields:\n"
 					+ Xml.getString(xmlDoc));
 		}
-		// add _id field
-		addField(xmlDoc, "_id", id, true, true, false);
+        @SuppressWarnings("unchecked")
+		List<Element> documentElements = xmlDoc.getContent();
 
-		// add more fields
-        for (Element moreField : moreFields) {
-            xmlDoc.addContent(moreField);
+        List<Document> documents = new ArrayList<Document>();
+        for (Element doc : documentElements) {
+        	// add _id field
+            addField(doc, "_id", id, true, true, false);
+
+			// add more fields
+	        for (Element moreField : moreFields) {
+	            doc.addContent((Content)moreField.clone());
+	        }
+	        documents.add(newDocument(doc));
         }
-
 		Log.debug(Geonet.INDEX_ENGINE, "Lucene document:\n"
 				+ Xml.getString(xmlDoc));
 
-        return newDocument(xmlDoc);
+        return documents;
 	}
 
 	/**
@@ -980,18 +999,128 @@ public class SearchManager
      * @throws Exception
      */
 	Element getIndexFields(String schemaDir, Element xml) throws Exception {
+        Element documents = new Element("Documents");
+        try {
+            String defaultStyleSheet = new File(schemaDir, "index-fields.xsl")
+                    .getAbsolutePath();
+            String otherLocalesStyleSheet = new File(schemaDir,
+                    "language-index-fields.xsl").getAbsolutePath();
+            Map<String,String> params = new HashMap<String, String>();
+            params.put("inspire", Boolean.toString(_inspireEnabled));
+            params.put("dataDir", _dataDir);
+            
+            Element defaultLang = Xml.transform(xml, defaultStyleSheet, params);
+            if(new File(otherLocalesStyleSheet).exists()) {
+                @SuppressWarnings("unchecked")
+    			List<Element> otherLanguages = Xml.transform(xml, otherLocalesStyleSheet, params).removeContent();
+                mergeDefaultLang( defaultLang, otherLanguages);
+                documents.addContent(otherLanguages);
+            }
+            documents.addContent(defaultLang);
 
-		try {
-			String styleSheet = new File(schemaDir, "index-fields.xsl").getAbsolutePath();
-      Map<String,String> params = new HashMap<String, String>();
-      params.put("inspire", Boolean.toString(_inspireEnabled));
-      params.put("dataDir", _dataDir);
-			return Xml.transform(xml, styleSheet, params);
-		} catch (Exception e) {
-			Log.error(Geonet.INDEX_ENGINE, "Indexing stylesheet contains errors : " + e.getMessage());
-			throw e;
-		}
+            return documents;
+        } catch (Exception e) {
+            Log.error(Geonet.SEARCH_ENGINE,
+                    "Indexing stylesheet contains errors : " + e.getMessage());
+            throw e;
+        }
 	}
+
+
+    /**
+     * If otherLanguages has a document that is the same locale as the default then remove it from
+     * otherlanguages and merge the fields with those in defaultLang
+     */
+    private void mergeDefaultLang(Element defaultLang, List<Element> otherLanguages)
+    {
+        final String langCode;
+        if( defaultLang.getAttribute("locale") == null ){
+            langCode = "";
+        } else {
+            langCode = defaultLang.getAttributeValue("locale");
+        }
+
+        Element toMerge = null;
+
+        for (Element element : otherLanguages) {
+            String clangCode;
+            if( element.getAttribute("locale") == null ){
+                clangCode = "";
+            } else {
+                clangCode = element.getAttributeValue("locale");
+            }
+
+            if(clangCode.equals(langCode)){
+                toMerge = element;
+                break;
+            }
+        }
+
+        SortedSet<Element> toInclude = new TreeSet<Element>(new Comparator<Element>()
+        {
+
+
+            public int compare(Element o1, Element o2)
+            {
+                // <Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
+
+                int name = compare(o1, o2, "name");
+                int string = compare(o1, o2, "string");
+                int store = compare(o1, o2, "store");
+                int index = compare(o1, o2, "index");
+
+                if( name != 0){
+                    return name;
+                }
+
+                if( string != 0){
+                    return string;
+                }
+
+                if( store != 0){
+                    return store;
+                }
+
+                if( index != 0){
+                    return index;
+                }
+
+                return 0;
+
+            }
+
+            private int compare(Element o1, Element o2, String attName)
+            {
+                return safeGet(o1, attName).compareTo(safeGet(o2, attName));
+            }
+
+            public String safeGet(Element e, String attName){
+                String att = e.getAttributeValue(attName);
+                if( att == null ){
+                    return "";
+                }
+                else {
+                    return att;
+                }
+            }
+        });
+
+        if( toMerge != null ){
+            toMerge.detach();
+            otherLanguages.remove(toMerge);
+
+            for (Element element : (List<Element>) defaultLang.getChildren()) {
+                toInclude.add(element);
+            }
+            for (Element element : (List<Element>) toMerge.getChildren()) {
+                toInclude.add(element);
+            }
+            toMerge.removeContent();
+            defaultLang.removeContent();
+            defaultLang.addContent(toInclude);
+        }
+
+    }
 
 	//-----------------------------------------------------------------------------
 	// utilities
@@ -1129,11 +1258,14 @@ public class SearchManager
 	private Document newDocument(Element xml)
 	{
 		Document doc = new Document();
-		
+		boolean hasLocalField = false;
         for (Object o : xml.getChildren()) {
             Element field = (Element) o;
             String name = field.getAttributeValue("name");
             String string = field.getAttributeValue("string"); // Lower case field is handled by Lucene Analyzer.
+            
+            if(name.equals(Geocat.LUCENE_LOCALE_KEY)) hasLocalField = true;
+            
             if (string.trim().length() > 0) {
             	String sStore = field.getAttributeValue("store");
                 String sIndex = field.getAttributeValue("index");
@@ -1167,6 +1299,11 @@ public class SearchManager
                 }
             }
         }
+        
+        if(!hasLocalField) {
+        	doc.add(new Field(Geocat.LUCENE_LOCALE_KEY,Geocat.DEFAULT_LANG,Field.Store.YES,Field.Index.NOT_ANALYZED));
+        }
+        
 		return doc;
 	}
     /**
@@ -1502,4 +1639,5 @@ public class SearchManager
                 Geometry.class, FeatureSource.class,
                 SpatialIndex.class);
     }
+
 }

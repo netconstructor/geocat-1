@@ -51,19 +51,19 @@ public class ServiceMonitorManager {
         // Add services to monitor
         monitorServices = new HashMap<String, ServiceMonitor>();
 
-        addService(DB_MONITOR_ID, new DatabaseServiceMonitor(context));
+        addService(DB_MONITOR_ID, new DatabaseServiceMonitor());
         Log.info(Geocat.Module.MONITORING, "Added database monitor");
 //		PMT geocat2 c2c : disabled for now
 //        addService(PRINT_MONITOR_ID, new PrintServiceMonitor(context));
 //        Log.info(Geocat.Module.MONITORING, "Added print service monitor");
 
-        addService(CSW_MONITOR_ID, new CswServiceMonitor(context));
+        addService(CSW_MONITOR_ID, new CswServiceMonitor());
         Log.info(Geocat.Module.MONITORING, "Added CSW service monitor");
 
-        addService(INDEXER_MONITOR_ID, new IndexServiceMonitor(context));
+        addService(INDEXER_MONITOR_ID, new IndexServiceMonitor());
         Log.info(Geocat.Module.MONITORING, "Added indexer service monitor");
 
-        addService(FREEDISK_MONITOR_ID, new FreeDiskServiceMonitor(context));
+        addService(FREEDISK_MONITOR_ID, new FreeDiskServiceMonitor());
         Log.info(Geocat.Module.MONITORING, "Added free disk service monitor");
     }
 

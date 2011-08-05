@@ -37,6 +37,7 @@ import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.misc.ChainedFilter;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.CachingWrapperFilter;
@@ -54,21 +55,45 @@ import org.fao.geonet.csw.common.exceptions.CatalogException;
 import org.fao.geonet.csw.common.exceptions.InvalidParameterValueEx;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
 import org.fao.geonet.kernel.AccessManager;
+import org.fao.geonet.kernel.search.DuplicateDocFilter;
 import org.fao.geonet.kernel.search.LuceneConfig;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.LuceneSearcher;
 import org.fao.geonet.kernel.search.LuceneUtils;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.search.spatial.Pair;
+import org.fao.geonet.kernel.search.spatial.SpatialIndexWriter;
+import org.geotools.data.DataStore;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.gml2.GMLConfiguration;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.xml.Encoder;
+import org.jdom.Attribute;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.Namespace;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.Or;
 
+import com.vividsolutions.jts.geom.Geometry;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -76,6 +101,21 @@ import java.util.StringTokenizer;
 //=============================================================================
 
 public class CatalogSearcher {
+    private static final Collection<String> searchElementsToIgnore;
+    static {
+        HashSet<String> set = new HashSet<String>();
+        set.add("-");
+        searchElementsToIgnore = Collections.unmodifiableSet(set);
+    }
+    private final GMLConfiguration   _configuration;
+    private final DataStore 		 _datastore;
+    /**
+     * Filter geometry object WKT, used in the logger ugly way to store this
+     * object, as ChainedFilter API is a little bit cryptic for me...
+     * will be set to null (so not logged) if the conif.xml statLogSpatialObjects is false
+     */
+    private String                         _geomWKT          = null;
+    private boolean                        _logSpatialObjects = false;
 	private Element _summaryConfig;
 	private LuceneConfig	_luceneConfig;
 	private HashSet<String> _tokenizedFieldSet;
@@ -83,11 +123,14 @@ public class CatalogSearcher {
 	private FieldSelector _selector;
 	private Query         _query;
 	private IndexReader   _reader;
-	private CachingWrapperFilter _filter;
+	private org.apache.lucene.search.Filter _filter;
 	private Sort          _sort;
 	private String        _lang;
 	
-	public CatalogSearcher(File summaryConfig, LuceneConfig luceneConfig) {
+	public CatalogSearcher(DataStore datastore, File summaryConfig, LuceneConfig luceneConfig) {
+        _datastore = datastore;
+        _configuration = new GMLConfiguration();
+
 		try {
 			if (summaryConfig != null)
 				_summaryConfig = Xml.loadStream(new FileInputStream(
@@ -350,7 +393,7 @@ public class CatalogSearcher {
 		if (luceneExpr != null) {
 			Log.debug(Geonet.CSW_SEARCH, "Search criteria:\n" + Xml.getString(luceneExpr));
         }
-		Query data = (luceneExpr == null) ? null : LuceneSearcher.makeQuery(luceneExpr, SearchManager.getAnalyzer(), _tokenizedFieldSet, _numericFieldSet);
+		Query data = (luceneExpr == null) ? null : LuceneSearcher.makeLocalisedQuery(luceneExpr, SearchManager.getAnalyzer(), _tokenizedFieldSet, _numericFieldSet, context.getLanguage());
         Log.info(Geonet.CSW_SEARCH,"LuceneSearcher made query:\n" + data.toString());
 
 
@@ -359,7 +402,7 @@ public class CatalogSearcher {
 		if (sort == null) {
 			sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)));
 		}
-
+		
 		// --- put query on groups in AND with lucene query
 
 		BooleanQuery query = new BooleanQuery();
@@ -381,11 +424,19 @@ public class CatalogSearcher {
 		// --- proper search
 		Log.debug(Geonet.CSW_SEARCH, "Lucene query: " + query.toString());
 
+        Element replaceElements = replaceElements(filterExpr);
 		// TODO Handle NPE creating spatial filter (due to constraint
 		// language version).
-		Filter spatialfilter = sm.getSpatial().filter(query, filterExpr, filterVersion);
-		CachingWrapperFilter cFilter = null;
-		if (spatialfilter != null) cFilter = new CachingWrapperFilter(spatialfilter);
+		Filter spatialfilter = sm.getSpatial().filter(query, replaceElements, filterVersion);
+		Filter duplicateRemovingFilter = new DuplicateDocFilter(query,1000000);
+		Filter cFilter = null;
+        if (spatialfilter == null) {
+            cFilter = duplicateRemovingFilter;
+        } else {
+            Filter[] filters = new Filter[] { duplicateRemovingFilter, spatialfilter };
+			cFilter = new ChainedFilter(filters,ChainedFilter.AND);
+        }
+        //		if (spatialfilter != null) cFilter = new CachingWrapperFilter(spatialfilter);
 		boolean buildSummary = resultType == ResultType.RESULTS_WITH_SUMMARY;
 		int numHits = startPosition + maxRecords;
 
@@ -396,7 +447,7 @@ public class CatalogSearcher {
 
 		// record globals for reuse
 		_query = query;
-		_filter = cFilter;
+		_filter = new CachingWrapperFilter(cFilter);
 		_sort = sort;
 		_lang = context.getLanguage();
 	
@@ -447,6 +498,169 @@ public class CatalogSearcher {
 		return Pair.read(summary, results);
 	}
 
+	// ---------------------------------------------------------------------------
+
+    private Element replaceElements(Element filterExpr) throws IOException, Exception
+    {
+
+        final Namespace namespace = Namespace.getNamespace("gml", "http://www.opengis.net/gml");
+        ArrayList<Element> elements = lookupGeoms(filterExpr, namespace);
+
+        FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+
+        for (Element element : elements) {
+            if (_datastore == null ) {
+                throw new RuntimeException("datastore is not configured correctly.  Problem discovered when trying to replace:"
+                        + Xml.getString(element));
+            }
+
+            Attribute attribute = element.getAttribute("id", namespace);
+            Geometry fullGeom = null;
+            List<Geometry> geoms = new ArrayList<Geometry>();
+            String[] gmlIds = attribute.getValue().split(",");
+
+            for (String gmlId : gmlIds) {
+
+                FeatureIterator<SimpleFeature> iter = null;
+                if (gmlId.startsWith("kantone:")) {
+                    iter = getIdentifiedFeature(gmlId, filterFactory, "KANTONSNR", "kantoneBB");
+                } else if (gmlId.startsWith("gemeinden:")) {
+                    iter = getIdentifiedFeature(gmlId, filterFactory, "OBJECTVAL", "gemeindenBB");
+                } else if (gmlId.startsWith("country:")) {
+                    iter = getIdentifiedFeature(gmlId, filterFactory, "LAND", "countries");
+                }
+
+                if (iter != null) {
+                    try {
+                        final SimpleFeature simpleFeature = iter.next();
+                        Geometry geom = (Geometry) simpleFeature.getDefaultGeometry();
+                        while (iter.hasNext()) {
+                            geom = geom.union((Geometry) iter.next().getDefaultGeometry());
+                        }
+                        // the shapefiles are in EPSG:21781 and the MetaData is
+                        // in
+                        // WGS84...
+
+                        geom = JTS.transform(geom, CRS.findMathTransform(simpleFeature.getFeatureType()
+                                .getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84, true));
+                        geoms.add(geom);
+
+                        if (fullGeom == null) {
+                            fullGeom = geom;
+                        } else {
+                            fullGeom = fullGeom.union(geom);
+                        }
+
+                    } finally {
+                        iter.close();
+                    }
+                } else {
+                    Log.warning(Geonet.CSW_SEARCH, "Cannot find : " + gmlId);
+                }
+
+            }
+            if (this._logSpatialObjects) {
+                this._geomWKT = fullGeom.toText();
+            }
+
+            Element withinFilter = findWithinFilter(element);
+
+            if(withinFilter!=null && geoms.size() > 1){
+                Element parentElement = withinFilter.getParentElement();
+                int index = parentElement.indexOf(withinFilter);
+
+                ArrayList<Element> ors = new ArrayList<Element>();
+                ors.add(withinFilter);
+                for (Geometry geometry : geoms) {
+                    Element newEl = (Element) withinFilter.clone();
+                    ArrayList<Element> geomEl = lookupGeoms(newEl, namespace);
+                    setGeom(geomEl.get(0), geometry);
+                    ors.add(newEl);
+                }
+
+                Element or = new Element("Or","ogc", "http://www.opengis.net/ogc");
+                parentElement.setContent(index, or);
+
+                or.addContent(ors);
+            }
+
+            setGeom(element, fullGeom);
+        }
+        return filterExpr;
+    }
+
+    private Element findWithinFilter(Element element)
+    {
+        if(element == null ){
+            return null;
+        }
+        if(element.getName().equalsIgnoreCase("WITHIN")){
+            return element;
+        }
+        return findWithinFilter(element.getParentElement());
+    }
+
+    private void setGeom(Element element, Geometry fullGeom) throws IOException, JDOMException
+    {
+        Element parentElement = element.getParentElement();
+        int index = parentElement.indexOf(element);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Encoder encoder = new Encoder(_configuration);
+        encoder.setOmitXMLDeclaration(true);
+        encoder.setNamespaceAware(true);
+
+        encoder.encode(SpatialIndexWriter.toMultiPolygon(fullGeom), org.geotools.gml3.GML.MultiPolygon, out);
+        Element geomElem = org.fao.geonet.csw.common.util.Xml.loadString(out.toString(), false);
+        parentElement.setContent(index, geomElem);
+    }
+
+    private ArrayList<Element> lookupGeoms(Element filterExpr, final Namespace namespace)
+    {
+        org.jdom.filter.Filter filter = new org.jdom.filter.Filter()
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            public boolean matches(Object obj)
+            {
+                if (obj instanceof Element) {
+                    Element element = (Element) obj;
+                    Attribute attribute = element.getAttribute("id", namespace);
+                    if (attribute != null) {
+                        String id = attribute.getValue();
+                        if (id.startsWith("kantone:") || id.startsWith("gemeinden:") || id.startsWith("country:")) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+        };
+        Iterator children = filterExpr.getDescendants(filter);
+        ArrayList<Element> elements = new ArrayList<Element>();
+        while (children.hasNext()) {
+            elements.add((Element) children.next());
+        }
+        return elements;
+    }
+
+    private FeatureIterator<SimpleFeature> getIdentifiedFeature(String gmlId, FilterFactory2 filterFactory,
+            String idField, String typeName) throws IOException
+    {
+        FeatureIterator<SimpleFeature> iter;
+        String[] ids = gmlId.split(":", 2)[1].split(",");
+        List<org.opengis.filter.Filter> filters = new ArrayList<org.opengis.filter.Filter>(ids.length);
+        for (String id : ids) {
+            filters.add(filterFactory.equals(filterFactory.property(idField), filterFactory.literal(id)));
+        }
+        Or equalFilter = filterFactory.or(filters);
+        FeatureCollection<SimpleFeatureType, SimpleFeature> features = _datastore.getFeatureSource(typeName).getFeatures(
+                equalFilter);
+        iter = features.features();
+        return iter;
+    }
 	// ---------------------------------------------------------------------------
 
 	/**

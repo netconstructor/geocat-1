@@ -23,9 +23,12 @@
 
 package org.fao.geonet.services.monitoring.services;
 
+import jeeves.interfaces.Service;
+import jeeves.server.ServiceConfig;
 import jeeves.server.context.ServiceContext;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.jdom.Element;
 
 /**
  * Service monitor for indexing
@@ -44,25 +47,20 @@ import org.fao.geonet.constants.Geonet;
  *   <errorDescription>EXCEPTION_MESSAGE</errorDescription>
  * </indexService>
  */
-public class IndexServiceMonitor extends ServiceMonitor {
-
-    public IndexServiceMonitor(ServiceContext context) {
-        super(context);
-    }
+public class IndexServiceMonitor extends ServiceMonitor implements Service {
 
     public void exec(ServiceContext context, ServiceMonitorReport report) throws ServiceMonitorException {
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 
         try {
             // TODO check indexing
-            /**
-            if( gc.getSearchmanager().isIndexing() ){
+            if( gc.getDataManager().isIndexing() ){
 
                 updateReport(report, "indexing");
             } else {
 
                 updateReport(report, "idle");
-            }*/
+            }
             updateReport(report, "idle");
 
         } catch (Exception ex) {
@@ -78,5 +76,13 @@ public class IndexServiceMonitor extends ServiceMonitor {
 
     private void updateReportError(ServiceMonitorReport report, Exception ex) {
         report.addStatusError(ServiceMonitorManager.INDEXER_MONITOR_ID, "500", "IndexServiceMonitor: " + ex.getMessage());
+    }
+
+	public void init(String appPath, ServiceConfig params) throws Exception {}
+
+	public Element exec(Element params, ServiceContext context) throws Exception {
+		GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
+
+	    return new Element("IndexReport").setText(""+gc.getDataManager().isIndexing());
     }
 }

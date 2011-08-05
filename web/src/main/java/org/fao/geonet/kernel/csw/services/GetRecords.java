@@ -46,6 +46,7 @@ import org.fao.geonet.kernel.search.LuceneConfig;
 import org.fao.geonet.kernel.search.LuceneSearcher;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.util.ISODate;
+import org.geotools.data.DataStore;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
@@ -70,8 +71,8 @@ public class GetRecords extends AbstractOperation implements CatalogService
 
 	private SearchController _searchController;
 	
-	public GetRecords(File summaryConfig, LuceneConfig luceneConfig) {
-    	_searchController = new SearchController(summaryConfig, luceneConfig);
+	public GetRecords(DataStore ds, File summaryConfig, LuceneConfig luceneConfig) {
+    	_searchController = new SearchController(ds, summaryConfig, luceneConfig);
     }
 
 	public SearchController getSearchController() {

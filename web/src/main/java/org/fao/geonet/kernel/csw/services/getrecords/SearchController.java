@@ -23,10 +23,16 @@
 
 package org.fao.geonet.kernel.csw.services.getrecords;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
+
 import org.apache.lucene.search.Sort;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
@@ -43,16 +49,9 @@ import org.fao.geonet.kernel.SelectionManager;
 import org.fao.geonet.kernel.schema.MetadataSchema;
 import org.fao.geonet.kernel.search.LuceneConfig;
 import org.fao.geonet.kernel.search.spatial.Pair;
+import org.geotools.data.DataStore;
 import org.jdom.Content;
 import org.jdom.Element;
-import org.jdom.Namespace;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 //=============================================================================
 
@@ -60,9 +59,9 @@ public class SearchController
 {
     
 	private final CatalogSearcher _searcher;
-    public SearchController(File summaryConfig, LuceneConfig luceneConfig)
+    public SearchController(DataStore ds, File summaryConfig, LuceneConfig luceneConfig)
     {
-        _searcher = new CatalogSearcher(summaryConfig, luceneConfig);
+        _searcher = new CatalogSearcher(ds, summaryConfig, luceneConfig);
     }
 	
     public CatalogSearcher getSearcher() {

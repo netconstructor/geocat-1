@@ -10,7 +10,7 @@
 		If a variable has to be maintained in the user session, it needs to be 
 		added to the GeoNetwork constants in the Java source code.
 		Please keep indexes consistent among metadata standards if they should
-		work accross different metadata resources -->
+		work across different metadata resources -->
 	<!-- ========================================================================================= -->
 	
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />

@@ -67,6 +67,8 @@ public class ApacheDBCPool implements ResourceProvider {
 	private String user;
 	private String passwd;
 	private String url;
+	private ThreadLocal<Dbms> threadDbms = new ThreadLocal<Dbms>();
+
 	private String apacheUrl = "jdbc:apache:commons:dbcp:";
 	private final String apacheDriver = "org.apache.commons.dbcp.PoolingDriver";
 	private Set<ResourceListener> hsListeners = Collections
@@ -220,6 +222,7 @@ public class ApacheDBCPool implements ResourceProvider {
 	public void end() {
 
 		try {
+			threadDbms.set(null);
 			PoolingDriver driver = (PoolingDriver) DriverManager.getDriver(apacheUrl);
 			driver.closePool(name);
 		} catch (java.sql.SQLException e) {
@@ -239,10 +242,16 @@ public class ApacheDBCPool implements ResourceProvider {
 	 */
 
 	public synchronized Object open() throws Exception {
+		if(threadDbms.get() != null) {
+			debug("Found a dbms in  " + url);
+			return threadDbms.get();
+		}
+
 		debug("Opening " + url);
 		Dbms dbms = new Dbms(apacheDriver, apacheUrl + name, url);
 		String nullStr = null;
 		dbms.connect(nullStr, nullStr);
+		threadDbms.set(dbms);
 		return dbms;
 	}
 
@@ -256,6 +265,7 @@ public class ApacheDBCPool implements ResourceProvider {
 		try {
 			dbms.commit();
 		} finally {
+			threadDbms.set(null);
 			dbms.disconnect();
 			synchronized (hsListeners) {
 				for (ResourceListener l : hsListeners)
@@ -274,6 +284,7 @@ public class ApacheDBCPool implements ResourceProvider {
 		try {
 			dbms.abort();
 		} finally {
+			threadDbms.set(null);
 			dbms.disconnect();
 			synchronized (hsListeners) {
 				for (ResourceListener l : hsListeners)
