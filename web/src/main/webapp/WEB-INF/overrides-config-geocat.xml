@@ -106,6 +106,7 @@
             <allow service="metadata.validation.report"/>
             
             <!-- Monitoring services -->
+            <allow service="monitoring.indexing"/>
             <allow service="monitoring.report"/>
             <allow service="monitoring"/>
             

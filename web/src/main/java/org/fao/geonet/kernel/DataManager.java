@@ -352,6 +352,9 @@ public class DataManager {
      */
 	public void indexMetadata(Dbms dbms, String id, boolean indexGroup, boolean processSharedObjects) throws Exception {
         try {
+        	synchronized (this) {
+    	        indexing = true;
+            }
             Vector<Element> moreFields = new Vector<Element>();
             int id$ = new Integer(id);
             
@@ -379,7 +382,7 @@ public class DataManager {
             String  rating     = rec.getChildText("rating");
             
             
-            if("n".equalsIgnoreCase(isHarvested) && processSharedObjects) {
+             if("n".equalsIgnoreCase(isHarvested) && processSharedObjects && schema.trim().equals("iso19139.che")) {
             	try {
 	                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null,servContext);
 	                List<Element> modified = reusableObjMan.process(processParameters);
@@ -489,6 +492,11 @@ public class DataManager {
 		catch (Exception x) {
 			Log.error(Geonet.DATA_MANAGER, "The metadata document index with id=" + id + " is corrupt/invalid - ignoring it. Error: " + x.getMessage());
 			x.printStackTrace();
+		} finally {
+        	synchronized (this) {
+    	        indexing = false;
+            }
+
 		}
 	}
 
@@ -2819,6 +2827,7 @@ public class DataManager {
 	private HarvestManager harvestMan;
     private final ReusableObjManager reusableObjMan;
     private final ExtentManager extentMan;
+    private boolean indexing;
     private final ThesaurusManager thesaurusMan;
     private String dataDir;
     private ServiceContext servContext;
@@ -2932,4 +2941,8 @@ public class DataManager {
 
 
 	}
+
+	public synchronized boolean isIndexing() {
+	    return indexing && indexThreadPool.getTaskCount() > 0;
+    }
 }

@@ -76,9 +76,6 @@ import java.net.URL;
  * 
  */
 public class CswServiceMonitor extends ServiceMonitor {
-    public CswServiceMonitor(ServiceContext context) {
-        super(context);
-    }
 
     public void exec(ServiceContext context, ServiceMonitorReport report) throws ServiceMonitorException {
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);

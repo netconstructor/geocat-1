@@ -34,8 +34,8 @@ import org.jdom.Element;
 public abstract class ServiceMonitor {
     protected Chrono timeMeasurer;
 
-    public ServiceMonitor(ServiceContext context) {
-
+    public ServiceMonitor() {
+    	
     }
 
     public abstract void exec(ServiceContext context, ServiceMonitorReport report) throws ServiceMonitorException;

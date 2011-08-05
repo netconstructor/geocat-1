@@ -63,10 +63,6 @@ public class PrintServiceMonitor extends ServiceMonitor {
     private HttpClient client = new HttpClient();
 	private HostConfiguration config = new HostConfiguration();
 
-    public PrintServiceMonitor(ServiceContext context) {
-        super(context);
-    }
-
     public void exec(ServiceContext context, ServiceMonitorReport report) throws ServiceMonitorException {
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 

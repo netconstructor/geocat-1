@@ -51,10 +51,6 @@ import org.apache.commons.io.FilenameUtils;
 public class FreeDiskServiceMonitor extends ServiceMonitor {
     private final long MINIMUM_FREE_SPACE = 1048576;   // kb (1 Gb)
 
-    public FreeDiskServiceMonitor(ServiceContext context) {
-        super(context);
-    }
-
     public void exec(ServiceContext context, ServiceMonitorReport report) throws ServiceMonitorException {
         try {
             String drive = FilenameUtils.getPrefix(context.getAppPath());

@@ -166,6 +166,14 @@
 			</error>
 		</service>
 
+        <service name="monitoring.indexing" type="xml">
+			<class name=".services.monitoring.services.IndexServiceMonitor" />
+
+            <error id="operation-not-allowed" sheet="error.xsl" statusCode="403">
+				<xml name="error" file="xml/privileges-error.xml" />
+			</error>
+		</service>
+
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <!-- Add an xlink to a metadata                                    -->
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
