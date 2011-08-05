@@ -48,6 +48,7 @@ public class GeoNetworkAnalyzer extends GeoNetworkReusableAnalyzerBase {
     private Set<String> stopwords = null;
     private boolean enablePositionIncrements = true;
     private boolean ignoreCase = true;
+	private char[] charsToIgnore;
 
     /**
      * Creates this analyzer using no stopwords.
@@ -60,14 +61,21 @@ public class GeoNetworkAnalyzer extends GeoNetworkReusableAnalyzerBase {
      * Creates this analyzer using the provided stopwords, which may be null.
      * 
      * @param stopwords
+     * @param charsToIgnore characters to treat like a space
      */
-    public GeoNetworkAnalyzer(Set<String> stopwords) {
+    public GeoNetworkAnalyzer(Set<String> stopwords, char[] charsToIgnore) {
         super();
         this.stopwords = stopwords;
         if(stopwords != null) {
             for(String sw : stopwords) {
                 Log.debug("GeoNetworkAnalyzer", "stopword: " + sw);
             }
+        }
+        this.charsToIgnore = charsToIgnore;
+        if(charsToIgnore != null) {
+        	for(char s : charsToIgnore) {
+        		Log.debug("GeoNetworkAnalyzer", "character to ignore: " + s);
+        	}
         }
     }
 
@@ -82,7 +90,12 @@ public class GeoNetworkAnalyzer extends GeoNetworkReusableAnalyzerBase {
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
 
-        final Tokenizer source = new StandardTokenizer(Version.LUCENE_30, reader);
+        final Tokenizer source;
+        if(charsToIgnore!=null && charsToIgnore.length > 0) {
+        	source = new StandardTokenizer(Version.LUCENE_30, new CharToSpaceReader(reader, charsToIgnore));
+        } else {
+        	source = new StandardTokenizer(Version.LUCENE_30, reader);
+        }
 
         if(stopwords != null) {
             return new TokenStreamComponents(source, new StopFilter(enablePositionIncrements, new ASCIIFoldingFilter(new LowerCaseFilter(new StandardFilter(source))), stopwords, ignoreCase));

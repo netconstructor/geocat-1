@@ -43,10 +43,7 @@ this.store.insert(index,rec);
 this.setValue(rec.data.id);
 this.fireEvent("select",this,rec,index)
 }});
-Ext.reg("twintriggercombo",Ext.ux.form.TwinTriggerComboBox);/*
- * Ext Core Library $version&#xD;&#xA;http://extjs.com/&#xD;&#xA;Copyright(c) 2006-2009, $author.&#xD;&#xA;&#xD;&#xA;The MIT License&#xD;&#xA;&#xD;&#xA;Permission is hereby granted, free of charge, to any person obtaining a copy&#xD;&#xA;of this software and associated documentation files (the &quot;Software&quot;), to deal&#xD;&#xA;in the Software without restriction, including without limitation the rights&#xD;&#xA;to use, copy, modify, merge, publish, distribute, sublicense, and/or sell&#xD;&#xA;copies of the Software, and to permit persons to whom the Software is&#xD;&#xA;furnished to do so, subject to the following conditions:&#xD;&#xA;&#xD;&#xA;The above copyright notice and this permission notice shall be included in&#xD;&#xA;all copies or substantial portions of the Software.&#xD;&#xA;&#xD;&#xA;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR&#xD;&#xA;IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,&#xD;&#xA;FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE&#xD;&#xA;AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER&#xD;&#xA;LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,&#xD;&#xA;OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN&#xD;&#xA;THE SOFTWARE.&#xD;&#xA;
- */
-Ext.ns("Ext.ux");
+Ext.reg("twintriggercombo",Ext.ux.form.TwinTriggerComboBox);Ext.ns("Ext.ux");
 Ext.ux.RatingItem=Ext.extend(Ext.Component,{starWidth:16,resetValue:"",defaultConfig:{defaultSelected:-1,nbStars:5,split:1,selected:-1,showTitles:true,cls:"",disabled:false},constructor:function(element,config){Ext.apply(this,config);
 Ext.applyIf(this,this.defaultConfig);
 Ext.ux.RatingItem.superclass.constructor.call(this);
@@ -312,13 +309,7 @@ return retval
 };
 return renderer
 }});
-Ext.reg("xdatetime",Ext.ux.form.DateTime);/*
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
- */
-Ext.ns("Ext.ux.grid");
+Ext.reg("xdatetime",Ext.ux.form.DateTime);Ext.ns("Ext.ux.grid");
 Ext.ux.grid.RowExpander=Ext.extend(Ext.util.Observable,{expandOnEnter:true,expandOnDblClick:true,header:"",width:20,sortable:false,fixed:true,hideable:false,menuDisabled:true,dataIndex:"",id:"expander",lazyRender:true,enableCaching:true,constructor:function(config){Ext.apply(this,config);
 this.addEvents({beforeexpand:true,expand:true,beforecollapse:true,collapse:true});
 Ext.ux.grid.RowExpander.superclass.constructor.call(this);
@@ -818,10 +809,7 @@ if(!this.fromAllowDup){this.fromMultiselect.store.add(range);
 this.fromMultiselect.store.sort(this.displayField,"ASC")
 }this.valueChanged(this.toMultiselect.store)
 }});
-Ext.reg("itemselector",Ext.ux.ItemSelector);/*
- * Ext Core Library $version&#xD;&#xA;http://extjs.com/&#xD;&#xA;Copyright(c) 2006-2009, $author.&#xD;&#xA;&#xD;&#xA;The MIT License&#xD;&#xA;&#xD;&#xA;Permission is hereby granted, free of charge, to any person obtaining a copy&#xD;&#xA;of this software and associated documentation files (the &quot;Software&quot;), to deal&#xD;&#xA;in the Software without restriction, including without limitation the rights&#xD;&#xA;to use, copy, modify, merge, publish, distribute, sublicense, and/or sell&#xD;&#xA;copies of the Software, and to permit persons to whom the Software is&#xD;&#xA;furnished to do so, subject to the following conditions:&#xD;&#xA;&#xD;&#xA;The above copyright notice and this permission notice shall be included in&#xD;&#xA;all copies or substantial portions of the Software.&#xD;&#xA;&#xD;&#xA;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR&#xD;&#xA;IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,&#xD;&#xA;FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE&#xD;&#xA;AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER&#xD;&#xA;LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,&#xD;&#xA;OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN&#xD;&#xA;THE SOFTWARE.&#xD;&#xA;
- */
-Ext.ns("Ext.ux");
+Ext.reg("itemselector",Ext.ux.ItemSelector);Ext.ns("Ext.ux");
 Ext.ux.Lightbox=(function(){var els={},images=[],activeImage,initialized=false,selectors=[];
 return{overlayOpacity:0.85,animate:true,resizeSpeed:8,borderSize:10,labelImage:"Image",labelOf:"of",init:function(){this.resizeDuration=this.animate?((11-this.resizeSpeed)*0.15):0;
 this.overlayDuration=this.animate?0.2:0;
@@ -4440,7 +4428,7 @@ if(obj.BoundingBox){obj.BoundingBox.push(boundingBox)
 }else{obj.projection=boundingBox.crs;
 boundingBox=obj
 }this.readChildNodes(node,boundingBox)
-},BoundingBox:function(node,obj){this.readers.ows["WGS84BoundingBox"].apply(this,[node,obj])
+},BoundingBox:function(node,obj){this.readers.ows.WGS84BoundingBox.apply(this,[node,obj])
 },LowerCorner:function(node,obj){var str=this.getChildValue(node).replace(this.regExes.trimSpace,"");
 str=str.replace(this.regExes.trimComma,",");
 var pointList=str.split(this.regExes.splitSpace);
@@ -10433,7 +10421,7 @@ if(!(obj[name] instanceof Array)){obj[name]=new Array()
 }},ows:OpenLayers.Util.applyDefaults({BoundingBox:function(node,obj){if(obj.bounds){obj.BoundingBox=[{crs:obj.projection,value:[obj.bounds.left,obj.bounds.bottom,obj.bounds.right,obj.bounds.top]}];
 delete obj.projection;
 delete obj.bounds
-}OpenLayers.Format.OWSCommon.v1_0_0.prototype.readers.ows["BoundingBox"].apply(this,arguments)
+}OpenLayers.Format.OWSCommon.v1_0_0.prototype.readers.ows.BoundingBox.apply(this,arguments)
 }},OpenLayers.Format.OWSCommon.v1_0_0.prototype.readers.ows)},write:function(options){var node=this.writeNode("csw:GetRecords",options);
 return OpenLayers.Format.XML.prototype.write.apply(this,[node])
 },writers:{csw:{GetRecords:function(options){if(!options){options={}
@@ -11567,7 +11555,7 @@ for(var i=0,len=attrs.length;
 i<len;
 ++i){boundingBox[attrs[i].name]=attrs[i].nodeValue
 }obj.BoundingBox.push(boundingBox)
-},BoundingBox:function(node,obj){this.readers.ows["WGS84BoundingBox"].apply(this,[node,obj])
+},BoundingBox:function(node,obj){this.readers.ows.WGS84BoundingBox.apply(this,[node,obj])
 }}},CLASS_NAME:"OpenLayers.Format.CSWGetRecords.v2_0_2_GeoNetwork"});OpenLayers.Format.GeoNetworkRecords=OpenLayers.Class(OpenLayers.Format.XML,{defaultPrefix:"nons",namespaces:{nons:"",geonet:"http://www.fao.org/geonetwork"},initialize:function(options){OpenLayers.Format.XML.prototype.initialize.apply(this,[options])
 },read:function(data){if(typeof data=="string"){data=OpenLayers.Format.XML.prototype.read.apply(this,[data])
 }if(data&&data.nodeType==9){data=data.documentElement
@@ -12134,7 +12122,7 @@ return Ext.apply(enc,{type:"TMS",format:layer.type})
 },TileCache:function(layer){var enc=this.encoders.layers.HTTPRequest.call(this,layer);
 return Ext.apply(enc,{type:"TileCache",layer:layer.layername,maxExtent:layer.maxExtent.toArray(),tileSize:[layer.tileSize.w,layer.tileSize.h],extension:layer.extension,resolutions:layer.serverResolutions||layer.resolutions})
 },KaMapCache:function(layer){var enc=this.encoders.layers.KaMap.call(this,layer);
-return Ext.apply(enc,{type:"KaMapCache",group:layer.params.g,metaTileWidth:layer.params.metaTileSize["w"],metaTileHeight:layer.params.metaTileSize["h"]})
+return Ext.apply(enc,{type:"KaMapCache",group:layer.params.g,metaTileWidth:layer.params.metaTileSize.w,metaTileHeight:layer.params.metaTileSize.h})
 },KaMap:function(layer){var enc=this.encoders.layers.HTTPRequest.call(this,layer);
 return Ext.apply(enc,{type:"KaMap",map:layer.params.map,extension:layer.params.i,group:layer.params.g||"",maxExtent:layer.maxExtent.toArray(),tileSize:[layer.tileSize.w,layer.tileSize.h],resolutions:layer.serverResolutions||layer.resolutions})
 },HTTPRequest:function(layer){return{baseURL:this.getAbsoluteUrl(layer.url instanceof Array?layer.url[0]:layer.url),opacity:(layer.opacity!=null)?layer.opacity:1,singleTile:layer.singleTile}
@@ -15310,7 +15298,7 @@ if(grid.getSelectionModel().getCount()!==0){this.selectedTpl=data.id
 }this.validate()
 },scope:this}}));
 this.catalogue.search({E_template:"y"},null,null,1,true,this.tplStore,null)
-}this.add(new Ext.form.ComboBox({name:"E_group",mode:"local",emptyText:OpenLayers.i18n("chooseGroup"),triggerAction:"all",fieldLabel:OpenLayers.i18n("group"),store:this.groupStore,allowBlank:false,valueField:"id",displayField:"name",tpl:'<tpl for="."><div class="x-combo-list-item">{[values.label.'+OpenLayers.Lang.getCode()+"]}</div></tpl>",listeners:{select:function(field,newValue,oldValue){this.selectedGroup=newValue;
+}this.add(new Ext.form.ComboBox({name:"E_group",mode:"local",emptyText:OpenLayers.i18n("chooseGroup"),triggerAction:"all",fieldLabel:OpenLayers.i18n("group"),store:this.groupStore,allowBlank:false,valueField:"id",displayField:"name",tpl:'<tpl for="."><div class="x-combo-list-item">{[values.label.'+OpenLayers.Lang.getCode()+"]}</div></tpl>",listeners:{select:function(field,record,idx){this.selectedGroup=record.get("id");
 this.validate()
 },scope:this}}));
 this.add({xtype:"textfield",name:"isTemplate",hidden:true,value:this.isTemplate})
@@ -17318,8 +17306,8 @@ catalogue.on("afterBadLogin",loginAlert,this)
 }function loginAlert(cat,user){Ext.Msg.show({title:"Login",msg:"Login failed. Check your username and password.",icon:Ext.MessageBox.ERROR,buttons:Ext.MessageBox.OK})
 }function createSearchForm(){var advancedCriteria=[];
 var services=catalogue.services;
-var themekeyField=new GeoNetwork.form.OpenSearchSuggestionTextField({hideLabel:false,minChars:1,hideTrigger:false,url:services.opensearchSuggest,field:"orgName",name:"E_orgName",fieldLabel:OpenLayers.i18n("org")});
-var orgNameField=new GeoNetwork.form.OpenSearchSuggestionTextField({hideLabel:false,minChars:1,hideTrigger:false,url:services.opensearchSuggest,field:"keyword",name:"E_themekey",fieldLabel:OpenLayers.i18n("keyword")});
+var orgNameField=new GeoNetwork.form.OpenSearchSuggestionTextField({hideLabel:false,minChars:1,hideTrigger:false,url:services.opensearchSuggest,field:"orgName",name:"E_orgName",fieldLabel:OpenLayers.i18n("org")});
+var themekeyField=new GeoNetwork.form.OpenSearchSuggestionTextField({hideLabel:false,minChars:1,hideTrigger:false,url:services.opensearchSuggest,field:"keyword",name:"E_themekey",fieldLabel:OpenLayers.i18n("keyword")});
 var when=new Ext.form.FieldSet({title:OpenLayers.i18n("when"),autoWidth:true,defaultType:"datefield",collapsible:true,collapsed:true,items:GeoNetwork.util.SearchFormTools.getWhen()});
 var catalogueField=GeoNetwork.util.SearchFormTools.getCatalogueField(services.getSources,services.logoUrl);
 var groupField=GeoNetwork.util.SearchFormTools.getGroupField(services.getGroups);

@@ -161,7 +161,9 @@ public class SearchManager
     private static Analyzer createGeoNetworkAnalyzer(SettingInfo settingInfo) {
         Log.debug(Geonet.SEARCH_ENGINE, "Creating GeoNetworkAnalyzer");
         Set<String> stopwords = findStopwords(settingInfo);
-        return new GeoNetworkAnalyzer(stopwords);
+        char[] ignoreChars = settingInfo.getAnalyzerIgnoreChars();
+        
+        return new GeoNetworkAnalyzer(stopwords,ignoreChars);
     }
 
     /**
