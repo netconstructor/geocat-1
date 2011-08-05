@@ -1,19 +1,40 @@
 <project name="geonetwork-schematron" default="copy_languages">
 
 	<property name="baseDir" value=".." description="base directory" />
-  <property name="uiLocalizations" value="../src/main/webapp/loc/"/>
-  <property name="schemasDir" value="../src/main/webapp/xml/schemas/"/>
+        <property name="uiLocalizations" value="../src/main/webapp/loc/"/>
+        <property name="schemasDir" value="../src/main/webapp/xml/schemas/"/>
 
 	<target name="clean">
 	  <ant target="operate_on_loc_dirs">
 	    <property name="taskName" value="clean_loc_dir"/>
-    </ant>
+          </ant>
 	</target>
 
 	<target name="copy_languages">
 	  <ant target="operate_on_loc_dirs">
 	    <property name="taskName" value="copy_loc_dir"/>
-    </ant>
+          </ant>
+          <ant target="compile-strings-xml">
+                <property name="inDir" value="${uiLocalizations}en/xml" />
+                <property name="outDir" value="${uiLocalizations}eng/xml" />
+          </ant>
+          <ant target="compile-strings-xml">
+                <property name="inDir" value="${uiLocalizations}de/xml" />
+                <property name="outDir" value="${uiLocalizations}deu/xml" />
+          </ant>
+          <ant target="compile-strings-xml">
+                <property name="inDir" value="${uiLocalizations}fr/xml" />
+                <property name="outDir" value="${uiLocalizations}fra/xml" />
+          </ant>
+          <!-- PMT C2C :  not italian translation ?
+    	  <ant target="compile-strings-xml">
+                <property name="inDir" value="${dir}/it/xml" />
+                <property name="outDir" value="${dir}/ita/xml" />
+              </ant>
+          -->
+    
+
+
 	</target>
 
   <target name="operate_on_loc_dirs" description="perform an operation on all localization dirs">
@@ -42,26 +63,48 @@
         <property name="dir" value="${schemasDir}/iso19139.che/loc"/>
       </ant>
     </target>
-	<target name="copy_loc_dir">
+
+    <target name="copy_loc_dir">
 	  <copy todir="${dir}/eng" encoding="UTF-8">
 	    <fileset dir="${dir}/en"/>
-    </copy>
+          </copy>
 	  <copy todir="${dir}/fra" encoding="UTF-8">
 	    <fileset dir="${dir}/fr"/>
-    </copy>
+          </copy>
 	  <copy todir="${dir}/deu" encoding="UTF-8">
 	    <fileset dir="${dir}/de"/>
-    </copy>
+          </copy>
 	  <copy todir="${dir}/ita" encoding="UTF-8" failOnError="false">
 	    <fileset dir="${dir}/it"/>
-    </copy>
-	</target>
+          </copy>
+    </target>
 
-	<target name="clean_loc_dir">
+    <target name="compile-strings-xml" description="Produce actual strings.xml files">
+                <property name="inDir" value="" />
+                <property name="outDir" value="" />
+
+		<delete file="${outDir}/strings.xml" />
+                <echo level="info" message="Generating geocat strings.xml from ${inDir} to ${outDir}" />
+    
+		<!-- this does not work (strange stackOverflowError), using exec instead
+                <xslt basedir="."
+                        style="${inDir}/xml-merge.xsl" 
+                        in="${inDir}/geocat-merge.xml" 
+                        out="${outDir}/strings.xml">
+                      	<classpath location="../../schematrons/saxon9.jar" />
+           	</xslt>
+		-->
+		<exec executable="java" output="${outDir}/strings.xml" error="/dev/null">
+			<arg line="-jar ../../schematrons/saxon9.jar ${inDir}/geocat-merge.xml ${inDir}/xml-merge.xsl" />
+		</exec>
+		
+    </target>
+
+    <target name="clean_loc_dir">
 	  <delete dir="${dir}/eng"/>
 	  <delete dir="${dir}/fra"/>
 	  <delete dir="${dir}/deu"/>
 	  <delete dir="${dir}/ita"/>
-	</target>
+    </target>
 
 </project>

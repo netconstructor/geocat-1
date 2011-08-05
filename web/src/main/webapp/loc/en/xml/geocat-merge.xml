@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<merge xmlns="http://informatik.hu-berlin.de/merge">
+   <file1>strings.xml</file1>
+   <file2>geocat-strings.xml</file2>
+</merge>         
+
