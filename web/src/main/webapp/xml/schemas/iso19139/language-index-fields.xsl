@@ -23,12 +23,7 @@
 
 	<xsl:template match="/">
 		<xsl:variable name="iso3DocLangId">
-			<xsl:choose>
-				<xsl:when test="gmd:MD_Metadata/gmd:language/gco:CharacterString">
-					<xsl:value-of select="gmd:MD_Metadata/gmd:language/gco:CharacterString"/>  
-				</xsl:when>
-				<xsl:otherwise><xsl:value-of select="$defaultLang"/></xsl:otherwise>
-			</xsl:choose>
+		  <xsl:call-template name="langId19139"/>
 		</xsl:variable>
 		
 		<Documents>

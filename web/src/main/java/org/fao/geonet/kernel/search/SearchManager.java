@@ -604,9 +604,9 @@ public class SearchManager
 		Log.debug(Geonet.INDEX_ENGINE, "Opening Writer from index");
 		_indexWriter.openWriter();
 		try {
-			Map<String,Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, false);
-			for (Map.Entry<String,Document> document : docs.entrySet()) {
-				_indexWriter.addDocument(document.getValue());
+			List<Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, false);
+			for (Document document : docs) {
+				_indexWriter.addDocument(document);
 			}
 		} finally {
 			Log.debug(Geonet.INDEX_ENGINE, "Closing Writer from index");
@@ -639,9 +639,9 @@ public class SearchManager
      */
 	public void indexGroup(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title) throws Exception
 	{
-		Map<String,Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, true);
-		for (Map.Entry<String,Document> document : docs.entrySet()) {
-			_indexWriter.addDocument(document.getValue());
+		List<Document> docs = buildIndexDocument(schemaDir, metadata, id, moreFields, isTemplate, title, true);
+		for (Document document : docs) {
+			_indexWriter.addDocument(document);
 		}
 
 		_spatial.writer().index(schemaDir, id, metadata);
@@ -685,7 +685,7 @@ public class SearchManager
      * @return
      * @throws Exception
      */
-    private Map<String,Document> buildIndexDocument(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title, boolean group) throws Exception
+    private List<Document> buildIndexDocument(String schemaDir, Element metadata, String id, List<Element> moreFields, String isTemplate, String title, boolean group) throws Exception
 	{
 
 		Log.debug(Geonet.INDEX_ENGINE, "Deleting "+id+" from index");
@@ -719,7 +719,7 @@ public class SearchManager
         @SuppressWarnings("unchecked")
 		List<Element> documentElements = xmlDoc.getContent();
 
-        HashMap<String,Document> documents = new HashMap<String,Document>();
+        List<Document> documents = new ArrayList<Document>();
         for (Element doc : documentElements) {
         	// add _id field
             addField(doc, "_id", id, true, true, false);
@@ -728,7 +728,7 @@ public class SearchManager
 	        for (Element moreField : moreFields) {
 	            doc.addContent((Content)moreField.clone());
 	        }
-	        documents.put(doc.getAttributeValue("locale").toUpperCase(), newDocument(doc));
+	        documents.add(newDocument(doc));
         }
 		Log.debug(Geonet.INDEX_ENGINE, "Lucene document:\n"
 				+ Xml.getString(xmlDoc));
@@ -1258,11 +1258,14 @@ public class SearchManager
 	private Document newDocument(Element xml)
 	{
 		Document doc = new Document();
-		
+		boolean hasLocalField = false;
         for (Object o : xml.getChildren()) {
             Element field = (Element) o;
             String name = field.getAttributeValue("name");
             String string = field.getAttributeValue("string"); // Lower case field is handled by Lucene Analyzer.
+            
+            if(name.equals(Geocat.LUCENE_LOCALE_KEY)) hasLocalField = true;
+            
             if (string.trim().length() > 0) {
             	String sStore = field.getAttributeValue("store");
                 String sIndex = field.getAttributeValue("index");
@@ -1296,6 +1299,11 @@ public class SearchManager
                 }
             }
         }
+        
+        if(!hasLocalField) {
+        	doc.add(new Field(Geocat.LUCENE_LOCALE_KEY,Geocat.DEFAULT_LANG,Field.Store.YES,Field.Index.NOT_ANALYZED));
+        }
+        
 		return doc;
 	}
     /**
@@ -1631,4 +1639,5 @@ public class SearchManager
                 Geometry.class, FeatureSource.class,
                 SpatialIndex.class);
     }
+
 }

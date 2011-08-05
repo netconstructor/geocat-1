@@ -19,23 +19,12 @@
 	
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />
 	<xsl:include href="../index-utils.xsl"/>
-		
-    <xsl:variable name="UPPER">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
-    <xsl:variable name="LOWER">abcdefghijklmnopqrstuvwxyz</xsl:variable>
     
 	<!-- ========================================================================================= -->
 
 	<xsl:template match="/">
 		<xsl:variable name="iso3DocLangId">
-			<xsl:variable name="tmp">
-                <xsl:choose>
-				    <xsl:when test="*[@gco:isoType='gmd:MD_Metadata']/gmd:language/gco:CharacterString">
-					   <xsl:value-of select="*[@gco:isoType='gmd:MD_Metadata']/gmd:language/gco:CharacterString"/>  
-				    </xsl:when>
-				    <xsl:otherwise><xsl:value-of select="$defaultLang"/></xsl:otherwise>
-			     </xsl:choose>
-            </xsl:variable>
-            <xsl:value-of select="translate($tmp, $UPPER, $LOWER)"></xsl:value-of>
+		  <xsl:call-template name="langId19139"/>
 		</xsl:variable>
 		
 		<Documents>

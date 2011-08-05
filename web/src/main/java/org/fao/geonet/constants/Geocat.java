@@ -70,5 +70,6 @@ public class Geocat {
     }
 
 	public static final String DEFAULT_LANG = "eng";
+	public static final String LUCENE_LOCALE_KEY = "_lucene";
     
 }
