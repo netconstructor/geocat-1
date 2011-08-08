@@ -47,14 +47,13 @@
         <replaceXML xpath="resources">
             <resource enabled="true">
                 <name>main-db</name>
-                <provider>jeeves.resources.dbms.DbmsPool</provider>
+                <provider>jeeves.resources.dbms.ApacheDBCPool</provider>
                 <config>
                     <user>${postgis.user}</user>
                     <password>${postgis.pass}</password>
                     <driver>org.postgis.DriverWrapper</driver>
                     <url>jdbc:postgresql_postGIS://${postgis.host}:${postgis.port}/${postgis.db}</url>
                     <poolSize>10</poolSize>
-                    <reconnectTime>3600</reconnectTime>
                 </config>
             </resource>
         </replaceXML>
