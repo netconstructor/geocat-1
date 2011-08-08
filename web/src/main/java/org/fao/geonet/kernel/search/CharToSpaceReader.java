@@ -18,6 +18,7 @@ import bak.pcj.set.CharOpenHashSet;
 class CharToSpaceReader extends FilterReader {
 	
 	private CharOpenHashSet set;
+	char space = ' ';
 	
 	/**
 	 * @param reader
@@ -31,7 +32,6 @@ class CharToSpaceReader extends FilterReader {
 	@Override
 	public int read(char[] in, int start, int end) throws IOException {
 		int read = super.read(in, start, end);
-		char space = ' ';
 		for (int i = start; i < read ; i++) {
 	        if(set.contains(in[i])) {
 	        	in[i] = space;
