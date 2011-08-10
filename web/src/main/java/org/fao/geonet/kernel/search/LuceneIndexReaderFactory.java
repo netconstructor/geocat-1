@@ -2,6 +2,7 @@ package org.fao.geonet.kernel.search;
 
 import jeeves.utils.Log;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.constants.Geonet;
 
@@ -20,7 +21,7 @@ import java.io.IOException;
 
 public class LuceneIndexReaderFactory {
 
-  private IndexReader currentReader;
+  private volatile IndexReader currentReader;
   private boolean reopening;
 	private Object mutex = new Object(); // for debugging
 
@@ -79,8 +80,12 @@ public class LuceneIndexReaderFactory {
        	swapReader(newReader);
 				Log.debug(Geonet.SEARCH_ENGINE, "Thread "+Thread.currentThread().getId()+": reopened IndexReader");
 			}
-		} finally {
-      finishReopen();
+	}catch(AlreadyClosedException e) {
+	    synchronized (this) {
+	        currentReader = IndexReader.open(currentReader.directory(), true);
+        }
+	} finally {
+	    finishReopen();
     }
   }
 
