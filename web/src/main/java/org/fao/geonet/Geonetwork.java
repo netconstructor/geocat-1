@@ -76,6 +76,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.postgis.PostgisDataStoreFactory;
 import org.geotools.data.shapefile.indexed.IndexType;
 import org.geotools.data.shapefile.indexed.IndexedShapefileDataStore;
+import org.geotools.factory.GeoTools;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
@@ -136,6 +137,7 @@ public class Geonetwork implements ApplicationHandler
 	@SuppressWarnings("unchecked")
 	public Object start(Element config, ServiceContext context) throws Exception
 	{
+		System.setProperty(GeoTools.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.toString(true));
 		logger = context.getLogger();
 
 		path    = context.getAppPath();

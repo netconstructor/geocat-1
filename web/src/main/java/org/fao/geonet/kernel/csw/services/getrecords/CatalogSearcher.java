@@ -81,6 +81,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Or;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -101,11 +102,15 @@ import java.util.StringTokenizer;
 //=============================================================================
 
 public class CatalogSearcher {
-    private static final Collection<String> searchElementsToIgnore;
+	private static final CoordinateReferenceSystem CRS_4326;
     static {
-        HashSet<String> set = new HashSet<String>();
-        set.add("-");
-        searchElementsToIgnore = Collections.unmodifiableSet(set);
+        CoordinateReferenceSystem temp;
+        try {
+            temp = CRS.decode("EPSG:4326");
+        }catch (Exception e) {
+            temp = DefaultGeographicCRS.WGS84;
+        }
+        CRS_4326 = temp;
     }
     private final GMLConfiguration   _configuration;
     private final DataStore 		 _datastore;
@@ -543,6 +548,7 @@ public class CatalogSearcher {
 
                         geom = JTS.transform(geom, CRS.findMathTransform(simpleFeature.getFeatureType()
                                 .getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84, true));
+                        geom.setUserData(CRS_4326);
                         geoms.add(geom);
 
                         if (fullGeom == null) {
