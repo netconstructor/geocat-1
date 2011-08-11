@@ -9,6 +9,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.constants.Geonet;
 
 import java.io.File;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /* Lucene only allows one IndexWriter to be open at a time.  
    However, multiple threads can use this single IndexWriter.  
@@ -17,16 +19,13 @@ import java.io.File;
 
 public class LuceneIndexWriterFactory {
 	
-	protected IndexWriter _writer;
+	protected volatile IndexWriter _writer;
 	protected int _count;
-	private File _luceneDir;
-	private PerFieldAnalyzerWrapper _analyzer;
-	private LuceneConfig _luceneConfig;
+	private final File _luceneDir;
+	private final PerFieldAnalyzerWrapper _analyzer;
+	private final LuceneConfig _luceneConfig;
 	
-	// true iff optimization is in progress
-	private boolean _optimizing = false; 
-	private Object  _mutex = new Object(); 
-	
+	private final Lock optimizingLock = new ReentrantLock();
 	
 	public LuceneIndexWriterFactory(File luceneDir, PerFieldAnalyzerWrapper analyzer, LuceneConfig luceneConfig) {
 		_luceneDir = luceneDir;
@@ -74,15 +73,15 @@ public class LuceneIndexWriterFactory {
 	}
 	
 	public void optimize() throws Exception {
-		if (_optimizing) return;
-		synchronized (_mutex) {
- 			_optimizing  = true;
-			Log.info(Geonet.INDEX_ENGINE,"Optimizing the Lucene Index...");
-			_writer.optimize(); 
-			Log.info(Geonet.INDEX_ENGINE,"Optimizing Done.");
-			_optimizing = false;
-		}
-		return;
+        if (optimizingLock.tryLock()) {
+            try {
+                Log.info(Geonet.INDEX_ENGINE, "Optimizing the Lucene Index...");
+                _writer.optimize();
+                Log.info(Geonet.INDEX_ENGINE, "Optimizing Done.");
+            } finally {
+                optimizingLock.unlock();
+            }
+        }
 	}
 
 
