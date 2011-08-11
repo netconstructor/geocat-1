@@ -8197,7 +8197,7 @@ INSERT INTO Settings VALUES (839,837,'selected','false');
 INSERT INTO Settings VALUES (900,1,'harvester',NULL);
 INSERT INTO Settings VALUES (901,900,'enableEditing','${geonetwork.harvester.enableEditing}');
 INSERT INTO Settings VALUES (1000,1,'lucene',NULL);
-INSERT INTO Settings VALUES (1001,1000,'ignorechars',E'-/\\_,.\'"');
+INSERT INTO Settings VALUES (1001,1000,'ignorechars',E'/\\_\'`"-');
 
 INSERT INTO Settings VALUES (910,1,'metadata',NULL);
 INSERT INTO Settings VALUES (911,910,'enableSimpleView','${geonetwork.metadata.enableSimpleView}');

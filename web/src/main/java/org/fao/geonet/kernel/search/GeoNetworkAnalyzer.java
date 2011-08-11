@@ -31,6 +31,7 @@ import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.util.Version;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Set;
 
@@ -91,20 +92,32 @@ public class GeoNetworkAnalyzer extends GeoNetworkReusableAnalyzerBase {
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
 
         final Tokenizer source;
-        if(charsToIgnore!=null && charsToIgnore.length > 0) {
-        	source = new StandardTokenizer(Version.LUCENE_30, new CharToSpaceReader(reader, charsToIgnore));
-        } else {
-        	source = new StandardTokenizer(Version.LUCENE_30, reader);
-        }
+    	source = new StandardTokenizer(Version.LUCENE_30, wrapReader(reader));
 
         if(stopwords != null) {
-            return new TokenStreamComponents(source, new StopFilter(enablePositionIncrements, new ASCIIFoldingFilter(new LowerCaseFilter(new StandardFilter(source))), stopwords, ignoreCase));
+            return new TokenStreamComponents(source, new StopFilter(enablePositionIncrements, new ASCIIFoldingFilter(new LowerCaseFilter(new StandardFilter(source))), stopwords, ignoreCase)){
+                @Override
+                protected boolean reset(final Reader reader) throws IOException {
+                    return super.reset(wrapReader(reader));
+                }
+            };
         }
         else {
-            return new TokenStreamComponents(source, new ASCIIFoldingFilter(new LowerCaseFilter(new StandardFilter(source))));
+            return new TokenStreamComponents(source, new ASCIIFoldingFilter(new LowerCaseFilter(new StandardFilter(source)))){
+                @Override
+                protected boolean reset(final Reader reader) throws IOException {
+                    return super.reset(wrapReader(reader));
+                }
+            };
         }
     }
 
-
+    private Reader wrapReader(Reader reader) {
+        if(charsToIgnore!=null && charsToIgnore.length > 0) {
+            return new CharToSpaceReader(reader, charsToIgnore);
+        } else {
+            return reader;
+        }
+    }
 
 }
