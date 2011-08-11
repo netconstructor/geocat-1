@@ -66,6 +66,8 @@ import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.spatial.SpatialOperator;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -124,7 +126,7 @@ public abstract class SpatialFilter extends Filter
 
         final Map<String, FeatureId> unrefinedSpatialMatches = unrefinedSpatialMatches();
         final Set<FeatureId> matches = new HashSet<FeatureId>();
-        final Map<FeatureId,Integer> docIndexLookup = new HashMap<FeatureId,Integer>();
+        final Multimap<FeatureId,Integer> docIndexLookup = HashMultimap.create();
         
         if(unrefinedSpatialMatches.isEmpty()) return bits;
 
@@ -148,7 +150,7 @@ public abstract class SpatialFilter extends Filter
                  FeatureId featureId = unrefinedSpatialMatches.get(key); 
                  if (featureId!=null) {
                    matches.add(featureId);
-                   docIndexLookup.put(featureId, doc);
+                   docIndexLookup.put(featureId, doc + docBase);
                  }
               } catch (Exception e) {
                  throw new RuntimeException(e);
@@ -167,7 +169,7 @@ public abstract class SpatialFilter extends Filter
         }
     }
 
-    private OpenBitSet applySpatialFilter(Set<FeatureId> matches, Map<FeatureId, Integer> docIndexLookup, OpenBitSet bits) throws IOException
+    private OpenBitSet applySpatialFilter(Set<FeatureId> matches, Multimap<FeatureId, Integer> docIndexLookup, OpenBitSet bits) throws IOException
     {
 
         JeevesJCS jcs = getJCSCache();
@@ -187,7 +189,9 @@ public abstract class SpatialFilter extends Filter
                 FeatureId featureId = feature.getIdentifier();
                 jcs.put(featureId.getID(), feature.getDefaultGeometry());
                 if( evaluateFeature(feature) ){
-                    bits.set(docIndexLookup.get(featureId));
+                    for(int doc:docIndexLookup.get(featureId)) {
+                        bits.set(doc);
+                    }
                 }
             }
         } catch (CacheException e) {
@@ -222,7 +226,7 @@ public abstract class SpatialFilter extends Filter
         }
     }
 
-    private void processCachedFeatures(GroupCacheAccess jcs, Set<FeatureId> matches, Map<FeatureId, Integer> docIndexLookup, OpenBitSet bits)
+    private void processCachedFeatures(GroupCacheAccess jcs, Set<FeatureId> matches, Multimap<FeatureId, Integer> docIndexLookup, OpenBitSet bits)
     {
         for(java.util.Iterator<FeatureId> iter=matches.iterator();iter.hasNext();){
             FeatureId id = iter.next();
@@ -231,7 +235,9 @@ public abstract class SpatialFilter extends Filter
                 iter.remove();
                 SimpleFeature feature = SimpleFeatureBuilder.build(FEATURE_TYPE, new Object[]{geom}, id.getID());
                 if( evaluateFeature(feature) ){
-                    bits.set(docIndexLookup.get(id));
+                    for(int doc:docIndexLookup.get(id)) {
+                        bits.set(doc);
+                    }
                 }
             }
         }

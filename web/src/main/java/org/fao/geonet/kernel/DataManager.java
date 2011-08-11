@@ -74,6 +74,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -352,8 +353,8 @@ public class DataManager {
      */
 	public void indexMetadata(Dbms dbms, String id, boolean indexGroup, boolean processSharedObjects) throws Exception {
         try {
-        	synchronized (this) {
-    	        indexing = true;
+        	synchronized (indexing) {
+    	        indexing.push(true);
             }
             Vector<Element> moreFields = new Vector<Element>();
             int id$ = new Integer(id);
@@ -390,7 +391,6 @@ public class DataManager {
 	                if(modified != null && !modified.isEmpty()) {
 	                    md = modified.get(0);
 	                    XmlSerializer.update(dbms, id, md, new ISODate().toString(), null);
-	                    dbms.commit();
 	                }
             	} catch (Exception e) {
             		Log.error(Geonet.DATA_MANAGER, "error while trying to update shared objects of metadata, "+id+" "+e.getMessage()); //DEBUG
@@ -493,8 +493,8 @@ public class DataManager {
 			Log.error(Geonet.DATA_MANAGER, "The metadata document index with id=" + id + " is corrupt/invalid - ignoring it. Error: " + x.getMessage());
 			x.printStackTrace();
 		} finally {
-        	synchronized (this) {
-    	        indexing = false;
+        	synchronized (indexing) {
+    	        indexing.pop();
             }
 
 		}
@@ -1774,7 +1774,7 @@ public class DataManager {
      * @param id
      * @throws Exception
      */
-	public synchronized void deleteMetadata(Dbms dbms, String id) throws Exception {
+	public void deleteMetadata(Dbms dbms, String id) throws Exception {
         String uuid = getMetadataUuid(dbms, id);
         String isTemplate = getMetadataTemplate(dbms, id);
 
@@ -2827,7 +2827,7 @@ public class DataManager {
 	private HarvestManager harvestMan;
     private final ReusableObjManager reusableObjMan;
     private final ExtentManager extentMan;
-    private boolean indexing;
+    private final Stack<Boolean> indexing = new Stack<Boolean>();
     private final ThesaurusManager thesaurusMan;
     private String dataDir;
     private ServiceContext servContext;
@@ -2943,6 +2943,6 @@ public class DataManager {
 	}
 
 	public synchronized boolean isIndexing() {
-	    return indexing && indexThreadPool.getTaskCount() > 0;
+	    return !indexing.isEmpty() && indexThreadPool.getTaskCount() > 0;
     }
 }

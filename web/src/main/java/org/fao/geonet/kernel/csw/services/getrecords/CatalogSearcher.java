@@ -64,6 +64,7 @@ import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.kernel.search.spatial.SpatialIndexWriter;
 import org.geotools.data.DataStore;
+import org.geotools.data.DefaultQuery;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
@@ -530,11 +531,11 @@ public class CatalogSearcher {
 
                 FeatureIterator<SimpleFeature> iter = null;
                 if (gmlId.startsWith("kantone:")) {
-                    iter = getIdentifiedFeature(gmlId, filterFactory, "KANTONSNR", "kantoneBB");
+                    iter = getIdentifiedFeature(gmlId, filterFactory, "KANTONSNR", "kantone_search");
                 } else if (gmlId.startsWith("gemeinden:")) {
-                    iter = getIdentifiedFeature(gmlId, filterFactory, "OBJECTVAL", "gemeindenBB");
+                    iter = getIdentifiedFeature(gmlId, filterFactory, "OBJECTVAL", "gemeinden_search");
                 } else if (gmlId.startsWith("country:")) {
-                    iter = getIdentifiedFeature(gmlId, filterFactory, "LAND", "countries");
+                    iter = getIdentifiedFeature(gmlId, filterFactory, "LAND", "countries_search");
                 }
 
                 if (iter != null) {
@@ -544,12 +545,7 @@ public class CatalogSearcher {
                         while (iter.hasNext()) {
                             geom = geom.union((Geometry) iter.next().getDefaultGeometry());
                         }
-                        // the shapefiles are in EPSG:21781 and the MetaData is
-                        // in
-                        // WGS84...
 
-                        geom = JTS.transform(geom, CRS.findMathTransform(simpleFeature.getFeatureType()
-                                .getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84, true));
                         geom.setUserData(CRS_4326);
                         geoms.add(geom);
 
@@ -664,6 +660,7 @@ public class CatalogSearcher {
             filters.add(filterFactory.equals(filterFactory.property(idField), filterFactory.literal(id)));
         }
         Or equalFilter = filterFactory.or(filters);
+        DefaultQuery query = new DefaultQuery(typeName, equalFilter, new String[]{idField,"the_geom"});
         FeatureCollection<SimpleFeatureType, SimpleFeature> features = _datastore.getFeatureSource(typeName).getFeatures(
                 equalFilter);
         iter = features.features();

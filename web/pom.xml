@@ -359,6 +359,27 @@
               <overwrite>true</overwrite>
             </configuration>
           </execution>
+<!--          <execution>
+            <id>copy-test-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/test/resources</directory>
+                  <filtering>false</filtering>
+                  <targetPath>${project.build.testOutputDirectory}</targetPath>
+                  <excludes>
+                    <exclude>**/.svn</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+              <overwrite>false</overwrite>
+            </configuration>
+          </execution>-->
           <execution>
             <id>copy-webapp</id>
             <phase>process-resources</phase>

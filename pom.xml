@@ -125,6 +125,7 @@
           <target>1.5</target>  <!-- The -target argument for the Java compiler. -->
           <debug>true</debug>   <!-- Whether to include debugging information.   -->
           <encoding>UTF-8</encoding> <!-- The -encoding argument for the Java compiler. -->
+          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         </configuration>
       </plugin>
 

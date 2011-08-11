@@ -15,10 +15,10 @@ public class UtilsTest {
 	String deFrKeywordTemplate = "<gmd:MD_Keywords xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"><gmd:keyword xsi:type=\"gmd:PT_FreeText_PropertyType\"><gmd:PT_FreeText><gmd:textGroup><gmd:LocalisedCharacterString locale=\"%s\">%s</gmd:LocalisedCharacterString></gmd:textGroup><gmd:textGroup><gmd:LocalisedCharacterString locale=\"%s\">%s</gmd:LocalisedCharacterString></gmd:textGroup></gmd:PT_FreeText></gmd:keyword></gmd:MD_Keywords>";
 	@Test
 	public void testEqualElem() throws IOException, JDOMException {
-		Element frDeKeyword = Xml.loadString(format(deFrKeywordTemplate,"#FR","Neuchâtel", "#DE","Neuenburg"),false);
-		Element deFrKeyword = Xml.loadString(format(deFrKeywordTemplate,"#DE","Neuenburg", "#FR","Neuchâtel"),false);
-		Element duplicateTranslations = Xml.loadString(format(deFrKeywordTemplate,"#FR","Neuchâtel", "#FR","Neuchâtel"),false);
-		Element wrongTranslations = Xml.loadString(format(deFrKeywordTemplate,"#FR","Neuenburg", "#DE","Neuchâtel"),false);
+		Element frDeKeyword = Xml.loadString(format(deFrKeywordTemplate,"#FR","Neuchatel", "#DE","Neuenburg"),false);
+		Element deFrKeyword = Xml.loadString(format(deFrKeywordTemplate,"#DE","Neuenburg", "#FR","Neuchatel"),false);
+		Element duplicateTranslations = Xml.loadString(format(deFrKeywordTemplate,"#FR","Neuchatel", "#FR","Neuchatel"),false);
+		Element wrongTranslations = Xml.loadString(format(deFrKeywordTemplate,"#FR","Neuenburg", "#DE","Neuchatel"),false);
 
 		assertTrue(Utils.equalElem(frDeKeyword, deFrKeyword));
 		assertTrue(Utils.equalElem(deFrKeyword, deFrKeyword));

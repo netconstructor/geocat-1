@@ -30,12 +30,14 @@
         <xsl:variable name="e" select="./gmd:eastBoundLongitude/gco:Decimal/text()"/>
         <xsl:variable name="n" select="./gmd:northBoundLatitude/gco:Decimal/text()"/>
         <xsl:variable name="s" select="./gmd:southBoundLatitude/gco:Decimal/text()"/>
-        <gml:Polygon>
-            <gml:exterior>
-                <gml:LinearRing>
-                    <gml:coordinates><xsl:value-of select="$w"/>,<xsl:value-of select="$n"/>, <xsl:value-of select="$e"/>,<xsl:value-of select="$n"/>, <xsl:value-of select="$e"/>,<xsl:value-of select="$s"/>, <xsl:value-of select="$w"/>,<xsl:value-of select="$s"/>, <xsl:value-of select="$w"/>,<xsl:value-of select="$n"/></gml:coordinates>
-                </gml:LinearRing>
-            </gml:exterior>
-        </gml:Polygon>
+        <xsl:if test="$w!='' and $e!='' and $n!='' and $s!=''">
+          <gml:Polygon>
+              <gml:exterior>
+                  <gml:LinearRing>
+                      <gml:coordinates><xsl:value-of select="$w"/>,<xsl:value-of select="$n"/>, <xsl:value-of select="$e"/>,<xsl:value-of select="$n"/>, <xsl:value-of select="$e"/>,<xsl:value-of select="$s"/>, <xsl:value-of select="$w"/>,<xsl:value-of select="$s"/>, <xsl:value-of select="$w"/>,<xsl:value-of select="$n"/></gml:coordinates>
+                  </gml:LinearRing>
+              </gml:exterior>
+          </gml:Polygon>
+        </xsl:if>
     </xsl:template>
 </xsl:stylesheet>
