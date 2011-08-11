@@ -23,6 +23,20 @@
 
 package org.fao.geonet.kernel.csw.services.getrecords;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
@@ -30,7 +44,6 @@ import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
@@ -45,6 +58,7 @@ import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.fao.geonet.GeonetContext;
@@ -69,7 +83,6 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.gml2.GMLConfiguration;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -85,20 +98,6 @@ import org.opengis.filter.Or;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 //=============================================================================
 
@@ -409,7 +408,11 @@ public class CatalogSearcher {
 
 		if (sort == null) {
 			sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)));
+ 	        ArrayList<SortField> sortFields = new ArrayList<SortField>(Arrays.asList(sort.getSort()));
+	        sortFields.add(0,new LangSortField(context.getLanguage()));
+	        sort.setSort(sortFields.toArray(new SortField[sortFields.size()]));
 		}
+		
 		
 		// --- put query on groups in AND with lucene query
 

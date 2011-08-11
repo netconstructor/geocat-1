@@ -34,6 +34,9 @@
 				<Document locale="{string($iso3LangId)}">
 					<Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
 
+    			<xsl:variable name="docLang" select="/*[@gco:isoType='gmd:MD_Metadata']/gmd:language/gco:CharacterString"/>
+    			<Field name="_docLocale" string="{normalize-space(string($docLang))}" store="true" index="true" token="false"/>
+
 					<xsl:variable name="poundLangId" select="concat('#',$langId)" />
 					<xsl:variable name="_defaultTitle">
 						<xsl:call-template name="defaultTitle"/>
