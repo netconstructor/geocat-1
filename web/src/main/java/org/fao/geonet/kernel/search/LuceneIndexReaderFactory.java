@@ -80,10 +80,6 @@ public class LuceneIndexReaderFactory {
        	swapReader(newReader);
 				Log.debug(Geonet.SEARCH_ENGINE, "Thread "+Thread.currentThread().getId()+": reopened IndexReader");
 			}
-	}catch(AlreadyClosedException e) {
-	    synchronized (this) {
-	        currentReader = IndexReader.open(currentReader.directory(), true);
-        }
 	} finally {
 	    finishReopen();
     }
