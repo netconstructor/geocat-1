@@ -177,7 +177,7 @@ public class MetadataLib
 				Element md = updateFixedInfo(id, Xml.loadString(data, false),
 													  uuid, date, schema, siteURL, settings, sm);
 
-				XmlSerializer.update(dbms, id, md, date, null);
+				XmlSerializer.update(dbms, id, md, date, true);
 				dbms.commit();
 			}
 		}
