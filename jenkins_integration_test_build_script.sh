@@ -10,7 +10,7 @@ cp -R /tmp/geocat.ch/webspecs/ $JENKINS_COPY
 cd $JENKINS_COPY
 
 WEBSPECS_CONF="-Dadmin.user=$ADMIN_USER -Dadmin.pass=$ADMIN_PASS -Dwebspecs.config=./core/src/main/resources/geocat/integration_geocat_config.properties"
-SBT_OPTS="$SBT_OPTS -Dfile.encoding=UTF8 -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Dsbt.log.noformat=true"
+SBT_OPTS="$WEBSPECS_CONF -Dfile.encoding=UTF8 -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Dsbt.log.noformat=true"
 java ${SBT_OPTS} -jar ./sbt-launch.jar "core/run-test-suite"
 
 if [ -d "$TEST_REPORTS" ]; then
