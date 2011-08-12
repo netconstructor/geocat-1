@@ -1,8 +1,8 @@
 <project name="geonetwork-schematron" default="copy_languages">
 
 	<property name="baseDir" value=".." description="base directory" />
-        <property name="uiLocalizations" value="../src/main/webapp/loc/"/>
-        <property name="schemasDir" value="../src/main/webapp/xml/schemas/"/>
+        <property name="uiLocalizations" value="../target/webapp/loc/"/>
+        <property name="schemasDir" value="../target/webapp/xml/schemas/"/>
 
 	<target name="clean">
 	  <ant target="operate_on_loc_dirs">
