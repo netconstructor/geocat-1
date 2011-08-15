@@ -1,55 +1,271 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:geonet="http://www.fao.org/geonetwork"
-                xmlns:exslt="http://exslt.org/common"
-                exclude-result-prefixes="exslt">
-    <xsl:include href="banner.xsl"/>
-    <xsl:include href="utils.xsl"/>
+    xmlns:exslt="http://exslt.org/common" xmlns:geonet="http://www.fao.org/geonetwork"
+    exclude-result-prefixes="xsl exslt geonet">
+
+    <xsl:include href="main.xsl"/>
     <xsl:include href="metadata.xsl"/>
-    <xsl:include href="mapfish_includes.xsl"/>
+    
+    <xsl:template mode="css" match="/">
+        <script type="text/javascript">
+            window.gMfLocation = '<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/';
+        </script>
+    
+        <xsl:call-template name="geoCssHeader"/>
+<!--         <xsl:call-template name="ext-ux-css"/> -->
+        <link rel="stylesheet" type="text/css"
+              href="{/root/gui/url}/scripts/mapfishIntegration/boxselect.css"/>
+        <link href="{/root/gui/url}/print.css" type="text/css" rel="stylesheet" media="print"/>
+        <link href="{/root/gui/url}/scripts/mapfish/mapfish.css" type="text/css" rel="stylesheet"/>
+        <style type="text/css">
+            .olControlAttribution {
+              left: 5px !important;
+              bottom: 5px !important;
+            }
+            .olControlAttribution a {
+              padding: 2px;
+            }
 
-    <xsl:template match="*[not(*) and not(@value) and not(@id)]" mode="js-translations">
-                "<xsl:value-of select="name(.)"/>":"<xsl:value-of select="normalize-space(translate(.,'&quot;', '`'))"/>",</xsl:template>
+            .float-left {
+              float: left;
+            }
+            .clear-left {
+              clear: left;
+            }
+            .zoomin {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/img/icon_zoomin.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .zoomout {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/img/icon_zoomout.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .zoomfull {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/img/icon_zoomfull.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .pan {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/img/icon_pan.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .selectBbox {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/img/draw_polygon_off.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .drawPolygon {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/img/draw_polygon_off.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .drawRectangle {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/images/draw_rectangle_off.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .clearPolygon {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/img/draw_polygon_clear_off.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .layerTreeButton {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/images/layers.png) !important;
+              height:20px !important;
+              width:20px !important;
+            }
+            .compressedFieldSet {
+              padding-top: 0;
+              padding-bottom: 2px;
+              margin-bottom: 2px;
+            }
+            .compressedFormItem {
+              margin-bottom: 0;
+            }
+            .compressedFormItem div {
+              padding-top: 0;
+            }
+            .compressedFormItem label {
+              padding: 0;
+            }
+            .simpleFormFieldset {
+                border-style: none;
+            }
+            .vCenteredColumn div.x-form-item {
+              position: absolute;
+              top: 60px;
+            }
+            .uriButtons li {
+              display: block;
+              float: left;
+              list-style-type: none;
+              padding-right: 20px;
+            }
+            fieldset#featured {
+              margin: 5px;
+              float: right;
+            }
+            fieldset#latestUpdates {
+              margin-top: 2em;
+              float: left;
+            }
 
-    <xsl:template match="*" mode="js-translations"/>
+            .mf-email-pdf-action {
+              background-image:url(<xsl:value-of select="/root/gui/url"/>/images/emailPDF.png) !important;
+            }
+        </style>
+    </xsl:template>
+    
+    <!--
+    additional scripts
+    -->
+    <xsl:template mode="script" match="/">
+    
+        <!-- To avoid an interaction with prototype and ExtJs.Tooltip, should be loadded before ExtJs -->
+        <xsl:choose>
+            <xsl:when test="/root/request/debug">
+                <script type="text/javascript" src="{/root/gui/url}/scripts/prototype.js"></script>
+            </xsl:when>
+            <xsl:otherwise>
+              <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.js"></script>      
+            </xsl:otherwise>
+        </xsl:choose>
+    
+        <xsl:call-template name="geoHeader"/>
+        
+        <!-- Required by keyword selection panel -->
+        <xsl:if test="/root/gui/config/search/keyword-selection-panel">
+            <xsl:call-template name="ext-ux"/>
+        </xsl:if>
+        
+         <xsl:choose>
+            <xsl:when test="/root/request/debug">           
+                <script type="text/javascript" src="{/root/gui/url}/scripts/geonetwork.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/scriptaculous/scriptaculous.js?load=slider,effects,controls"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/modalbox.js"></script>
 
-    <xsl:template match="*" mode="js-translations-combo-suite">
-        ,["<xsl:value-of select="@value"/><xsl:value-of select="@id"/>", "<xsl:value-of select="."/>"]</xsl:template>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/gn_search.js"></script>
+                
+                <!--link rel="stylesheet" type="text/css" href="{/root/gui/url}/scripts/ext/resources/css/ext-all.css" />
+                <link rel="stylesheet" type="text/css" href="{/root/gui/url}/scripts/ext/resources/css/file-upload.css" />
 
-    <xsl:template match="*" mode="js-translations-combo">
-        <xsl:if test="position()>1">,</xsl:if>["<xsl:value-of select="@value"/><xsl:value-of select="@id"/>", "<xsl:value-of select="."/>"]</xsl:template>
+                <link rel="stylesheet" type="text/css" href="{/root/gui/url}/scripts/openlayers/theme/default/style.css" />
+                <link rel="stylesheet" type="text/css" href="{/root/gui/url}/geonetwork_map.css" /-->
+         
+                <script type="text/javascript" src="{/root/gui/url}/scripts/ext/adapter/ext/ext-base.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/ext/ext-all-debug.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/ext/form/FileUploadField.js"></script>
 
-    <xsl:template match="entry" mode="js-translations-topicCat">
-        ,["<xsl:value-of select="code"/>", "<xsl:value-of select="label"/>"]</xsl:template>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/LoadingPanel.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/ScaleBar.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/geo/proj4js-compressed.js"></script>
 
-    <xsl:template match="record" mode="js-translations-sources-groups"><xsl:if test="position()>1">,</xsl:if><xsl:choose><xsl:when test="siteid">["_source/<xsl:value-of select="siteid"/>", "<xsl:value-of select="name"/>"</xsl:when><xsl:otherwise>["_groupOwner/<xsl:value-of select="id"/>", "<xsl:value-of select="label/*[name()=/root/gui/language]"/>"</xsl:otherwise></xsl:choose>]</xsl:template>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/geoext/lib/GeoExt.js"></script>             
+                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/MapFish.js"></script>
 
-    <xsl:template match="record" mode="js-translations-formats">
-        ,["<xsl:value-of select="name"/><xsl:if test="version != '-'">_<xsl:value-of select="version"/></xsl:if>", "<xsl:value-of select="name"/> (<xsl:value-of select="version"/>)"]</xsl:template>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/OGCUtil.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/MapStateManager.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/CatalogueInterface.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/WMCManager.js"></script>
+
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/Control/ExtentBox.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/Control/ZoomWheel.js"></script>
+
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/lang/de.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/lang/en.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/lang/es.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/lang/fr.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/lang/nl.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/lang/no.js"></script>
+
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/Ext.ux/form/DateTime.js"></script>
+
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/tree/WMSListGenerator.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/tree/WMSTreeGenerator.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/wms/BrowserPanel.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/wms/LayerInfoPanel.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/wms/LayerStylesPanel.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/wms/PreviewPanel.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/wms/WMSLayerInfo.js"></script>
+
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/FeatureInfoPanel.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/LegendPanel.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/OpacitySlider.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/PrintAction.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/ProjectionSelector.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/TimeSelector.js"></script>
+                
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/BaseWindow.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/SingletonWindowManager.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/AddWMS.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/FeatureInfo.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/Opacity.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/LoadWmc.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/WMSTime.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/LayerStyles.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/WmsLayerMetadata.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/map/windows/Disclaimer.js"></script>
+
+                <script type="text/javascript" src="{/root/gui/url}/scripts/ol_settings.js"></script>       
+                <script type="text/javascript" src="{/root/gui/url}/scripts/ol_minimap.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/ol_map.js"></script>
+                
+                <script type="text/javascript" src="{/root/gui/url}/scripts/editor/tooltip.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/editor/tooltip-manager.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/editor/simpletooltip.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/editor/metadata-show.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/editor/metadata-editor.js"></script>
+            </xsl:when>
+            <xsl:otherwise>             
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.scriptaculous.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.search.js"></script>
+
+                <!-- Editor JS is still required here at least for batch operation -->
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.editor.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.map.js"></script>              
+            </xsl:otherwise>
+         </xsl:choose>
+            
+            
+        <script type="text/javascript" src="{/root/gui/url}/scripts/core/kernel/kernel.js"></script>
+        <script type="text/javascript"
+                src="{/root/gui/url}/scripts/mapfishIntegration/proj4js-compressed.js"/>
+        <script type="text/javascript"
+                src="{/root/gui/url}/scripts/mapfishIntegration/MapComponent.js"/>
+        <script type="text/javascript"
+                src="{/root/gui/url}/scripts/mapfishIntegration/MapDrawComponent.js"/>
+        <script type="text/javascript"
+                src="{/root/gui/url}/scripts/mapfishIntegration/Ext.ux.BoxSelect.js"/>
+        <script type="text/javascript">
+            OpenLayers.Lang.setCode('<xsl:value-of select="/root/gui/strings/language"/>');
+            Proj4js.defs["EPSG:21781"] = "+title=CH1903 / LV03 +proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs";
+        </script>
+
+        <script type="text/javascript"
+                src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/>
+        <script type="text/javascript"
+                src="{/root/gui/url}/scripts/mapfishIntegration/EMailPDFAction.js"/>
+        <script type="text/javascript"
+                src="{/root/gui/url}/scripts/mapfishIntegration/DomQueryNS.js"/>
+        <script type="text/javascript" src="{/root/gui/url}/scripts/geocat.js"></script>
+        <script type="text/javascript">
+            Ext.onReady(function() {
+                geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', '<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
+                geocat.language = '<xsl:value-of select="root/gui/language"/>';
+            });
+        </script>
+        
+    </xsl:template>
 
 
+    <xsl:variable name="lang" select="/root/gui/language"/>
 
-    <xsl:template match="/">
-        <html width="100%" height="100%">
-            <head>
-                <title><xsl:value-of select="/root/gui/strings/title"/></title>
-                <link href="{/root/gui/url}/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-                <link href="{/root/gui/url}/favicon.ico" rel="icon" type="image/x-icon" />
-
-                <!-- Recent updates newsfeed -->
-                <link href="{/root/gui/locService}/rss.latest?georss=gml" rel="alternate" type="application/rss+xml" title="GeoNetwork opensource GeoRSS | {/root/gui/strings/recentAdditions}" />
-                <link href="{/root/gui/locService}/portal.opensearch" rel="search" type="application/opensearchdescription+xml">
-                    <xsl:attribute name="title">GeoNetwork|<xsl:value-of select="//site/organization"/>|<xsl:value-of select="//site/name"/></xsl:attribute>
-                </link>
-
-                <!-- meta tags -->
-                <xsl:copy-of select="/root/gui/strings/header_meta/meta"/>
-            </head>
-            <body width="100%" height="100%">
-                <div id="north" style="width:100%">
-                    <xsl:call-template name="banner"/>
-                </div>
+    <xsl:template name="content">
                 <div id="searchResults" style="display:none;">
                     <h2><xsl:value-of select="/root/gui/strings/mainpageTitle"/></h2>
                     <img src="{/root/gui/url}/images/geocatII-web.jpg" alt="Geocat cat" width="100px"/>
@@ -65,38 +281,19 @@
                         </td></tr>
                     </table>
                 </div>
-                <xsl:call-template name="mapfish_includes"/>
+  </xsl:template>   
 
-                <script type="text/javascript"
-                        src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js"/>
-                <script type="text/javascript"
-                        src="{/root/gui/url}/scripts/geonetwork.js"/>
-
-                <script type="text/javascript">
-                    var translations = {
-                        <xsl:apply-templates select="/root/gui/strings/*" mode="js-translations"/>
-                        'sortByTypes':[<xsl:apply-templates select="/root/gui/strings/sortByType" mode="js-translations-combo"/>],
-                        'outputTypes':[<xsl:apply-templates select="/root/gui/strings/outputType" mode="js-translations-combo"/>],
-                        'dataTypes':[['', '<xsl:value-of select="/root/gui/strings/any"/>']<xsl:apply-templates select="/root/gui/strings/dataType" mode="js-translations-combo-suite"/>],
-                        'hitsPerPageChoices':[<xsl:apply-templates select="/root/gui/strings/hitsPerPageChoice" mode="js-translations-combo"/>],
-                        'topicCat': [['', '<xsl:value-of select="/root/gui/strings/any"/>']<xsl:apply-templates select="/root/gui/iso19139/codelist[@name='gmd:MD_TopicCategoryCode']/entry" mode="js-translations-topicCat"/>],
-                        'sources_groups': [<xsl:apply-templates select="/root/gui/groups/record" mode="js-translations-sources-groups"><xsl:sort select="label/*[name()=/root/gui/language]"/><xsl:sort select="name"/></xsl:apply-templates><xsl:if
-                        test="count(/root/gui/groups/record) > 0 and count(/root/gui/sources/record) > 0">,</xsl:if><xsl:apply-templates select="/root/gui/sources/record" mode="js-translations-sources-groups"><xsl:sort select="label/*[name()=/root/gui/language]"/><xsl:sort select="name"/></xsl:apply-templates>],
-                        'formats': [['', '<xsl:value-of select="/root/gui/strings/any"/>']<xsl:apply-templates select="/root/gui/formats/record" mode="js-translations-formats"/>]
-                    };
-
-                    function translate(text) {
-                        return translations[text] || text;
-                    }
-
-                    Ext.onReady(function() {
-                        geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
-                        geocat.language = '<xsl:value-of select="root/gui/language"/>';
-                    });
-                </script>
-            </body>
-        </html>
-    </xsl:template>
+    <!--
+    loading indicator   
+    -->
+  <xsl:template mode="loading" match="/" priority="2">
+    <div id="loading">
+      <div class="loading-indicator">
+        <img src="{/root/gui/url}/images/spinner.gif" width="32" height="32"/>Geocat.ch Geographic Catalogue<br />
+        <span id="loading-msg"><xsl:value-of select="/root/gui/strings/loading"/></span>
+      </div>
+    </div>
+  </xsl:template>
 
     <!--
         featured map

@@ -8,7 +8,7 @@
         <wfs.host>localhost</wfs.host>
         <wfs.port>8081</wfs.port>
     </properties>
-    <file name="config.xml">
+    <file name=".*/WEB-INF/config.xml">
         <replaceText xpath="default/service">geocat</replaceText>
         <replaceText xpath="default/language">eng</replaceText>
         <replaceAtt xpath="appHandler/param[@name = 'preferredSchema']" attName="value" value="iso19139.che"/>
@@ -62,7 +62,7 @@
             <include>config-geocat.xml</include>
         </addXML>
     </file>
-    <file name="user-profiles.xml">
+    <file name=".*/WEB-INF/user-profiles.xml">
         <addXML xpath="profile[@name ='Editor']">
             <allow service="metadata.xlink.add"/>
         </addXML>
@@ -149,18 +149,21 @@
         </addXML>
     </file>
 
-    <file name="config-csw.xml">
+    <file name=".*/WEB-INF/config-csw.xml">
     	<addXml xpath="*//operation[@name = 'GetRecords']/parameters">
     		<parameter name="geonetworkId" field="_id" type="AdditionalQueryables" />
     	</addXml>
     </file>
     
     
-    <file name="config-metadata.xml">
+    <file name=".*/WEB-INF/config-metadata.xml">
     	<addXml xpath="*//service[@name='metadata.show.embedded']/output">
 			<preSheet sheet="metadata-order-complex-elements.xsl"/>
     	</addXml>
     </file>
-    
-    
+    <file name=".*/WEB-INF/config-gui.xml">
+        <addXml xpath="">
+            <geoserver.url>http://${wfs.host}:${wfs.port}/geoserver</geoserver.url>
+        </addXml>
+    </file>
 </overrides>

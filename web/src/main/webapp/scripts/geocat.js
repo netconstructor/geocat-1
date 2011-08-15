@@ -94,7 +94,7 @@ var geocat = {
         refinements: {}
     },
 
-    initialize: function(baseUrl, authentified) {
+    initialize: function(baseUrl, geoserverUrl, authentified) {
         Ext.QuickTips.init();
         Ext.apply(Ext.QuickTips.getQuickTip(), {
             autoWidth: true,
@@ -109,7 +109,7 @@ var geocat = {
         var map = geocat.map = mapCmp.map;
 
         geocat.baseUrl = baseUrl;
-        geocat.geoserverUrl = geocat.baseUrl.replace(/[^\/]*\/$/, "") + "geoserver/";
+        geocat.geoserverUrl = geoserverUrl;
         geocat.authentified = authentified;
 
         geocat.selectionHighlightLayer = new OpenLayers.Layer.WMS(
@@ -153,10 +153,9 @@ var geocat = {
         this.viewPort = new Ext.Viewport({
             layout: 'border',
             items: [{
-                region: 'north',
-                contentEl: 'north',
-                autoHeight: true,
-                border: false
+                region:'north',
+                contentEl :'header',
+                border:false
             },{
                 region: 'west',
                 id: 'westRegion',
@@ -215,7 +214,7 @@ var geocat = {
             listeners: {
                 render: function() {
                     //get rid of the loading mask
-                    Ext.get("loadingMask").remove();
+                    Ext.get("loading").remove();
 
                     Ext.get("searchResults").show(); //search results where with "display:none" to avoid having the loading screen with a scrollbar
                 }
@@ -247,7 +246,7 @@ var geocat = {
         }
 
         // Ensure layertree instance is created (c.f. print module)
-        this.createLayerTree();
+//        this.createLayerTree();
     },
 
     createSearchForm: function() {
@@ -1374,13 +1373,13 @@ var geocat = {
         toolbar.add(new mapfish.widgets.print.DlgPrintAction({
             map: geocat.map,
             text: "",
-            configUrl: geocat.baseUrl + "print/info.json",
+            configUrl: geocat.baseUrl + "pdf/info.json",
             geocat: this
         }));
         toolbar.add(new mapfish.widgets.print.EMailPDFAction({
             map: geocat.map,
             text: "",
-            configUrl: geocat.baseUrl + "print/info.json",
+            configUrl: geocat.baseUrl + "pdf/info.json",
             geocat: this,
             tooltip: OpenLayers.Lang.translate('mf.print.print-tooltip-email')
         }));

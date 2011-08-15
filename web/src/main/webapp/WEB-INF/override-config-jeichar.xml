@@ -11,9 +11,12 @@
     <properties>
         <postgis.db>geocat2_trunk</postgis.db>
     </properties>
-    <file name="config.xml">
+    <file name=".*/WEB-INF/config.xml">
       <replaceText xpath="general/uploadDir">/tmp/gc_data/uploads</replaceText>
       <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="/tmp/gc_data/schemaPluginsDir"/>
       <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="/tmp/gc_data/htmlCacheDir"/>
+    </file>
+    <file name=".*/WEB-INF/config-gui.xml">
+        <replaceText xpath="geoserver.url">http://ec2-79-125-29-72.eu-west-1.compute.amazonaws.com/geoserver</replaceText>
     </file>
 </overrides>

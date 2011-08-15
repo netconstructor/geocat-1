@@ -11,7 +11,7 @@
     <properties>
         <postgis.db>geocat2_dump</postgis.db>
     </properties>
-    <file name="config.xml">
+    <file name=".*/WEB-INF/config.xml">
       <replaceText xpath="general/uploadDir">/tmp/full_gc_data/uploads</replaceText>
       <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="/tmp/full_gc_data/schemaPluginsDir"/>
       <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="/tmp/full_gc_data/htmlCacheDir"/>
