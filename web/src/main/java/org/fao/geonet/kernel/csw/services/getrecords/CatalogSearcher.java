@@ -276,6 +276,7 @@ public class CatalogSearcher {
 
 		try {
 			Element result = Xml.transform(filterExpr, styleSheet);
+			removeEmptyBranches(result);
             Log.info(Geonet.CSW_SEARCH,"filterToLucene result:\n" + Xml.getString(result));
             return result;
 
@@ -289,7 +290,19 @@ public class CatalogSearcher {
 		}
 	}
 
-	// ---------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+    private void removeEmptyBranches(Element element) {
+	    ArrayList<Element> children = new ArrayList<Element>(element.getChildren());
+	    for(Element e: children) {
+	        removeEmptyBranches(e);
+	    }
+	    
+	    if(element.getChildren().isEmpty() && element.getTextTrim().isEmpty() && element.getAttribute("fld") == null) {
+	        element.detach();
+	    }
+    }
+
+    // ---------------------------------------------------------------------------
 
 	private void checkForErrors(Element elem) throws InvalidParameterValueEx {
 		List children = elem.getChildren();

@@ -602,7 +602,7 @@ public class LuceneSearcher extends MetaSearcher
             booleanQuery = (BooleanQuery) query;
         } else {
             booleanQuery = new BooleanQuery();
-            booleanQuery.add(query, BooleanClause.Occur.MUST);
+            booleanQuery.add(query, BooleanClause.Occur.SHOULD);
         }
 
         booleanQuery.add(new TermQuery(new Term("_locale", langCode)), BooleanClause.Occur.SHOULD);
