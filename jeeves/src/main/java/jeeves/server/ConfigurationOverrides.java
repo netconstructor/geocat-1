@@ -58,9 +58,8 @@ import java.util.regex.Pattern;
          <dir>xml</dir>
          <aparam>overridden</aparam>
      </properties>
-     <!-- In this version only the file name is considered not the path.  -->
-     <!-- So case conf1/config.xml and conf2/config.xml cannot be handled -->
-     <file name="config.xml">
+     <!-- A regular expression for matching the file affected. -->
+     <file name=".*WEB-INF/config\.xml">
          <!-- This example will update the file attribute of the xml element with the name attribute 'countries' -->
          <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/europeanCountries.xml"/>
          <!-- if there is no value then the attribute is removed -->
@@ -95,13 +94,13 @@ import java.util.regex.Pattern;
          <!-- remove a single node -->
          <removeXML xpath="default/gui/xml[@name = countries2]"/>
      </file>
-     <file name="config2.xml">
+     <file name=".*WEB-INF/config2.xml">
          <replaceText xpath="default/language">de</replaceText>
      </file>
  </overrides>
  * ]]></pre>
  */
-class ConfigurationOverrides {
+public class ConfigurationOverrides {
 
 
     enum Updates {
@@ -173,13 +172,13 @@ class ConfigurationOverrides {
         String resource = lookupOverrideParameter(servlet);
 
         ServletResourceLoader loader = new ServletResourceLoader(servlet);
-        updateConfig(loader,resource,new File(configFile).getName(), configRoot);
+        updateConfig(loader,resource,configFile, configRoot);
     }
 
     /**
      * default visibility so that unit tests can be written against it
      */
-    static void updateConfig(ResourceLoader loader, String overridesResource, String fileName, Element configRoot) throws JDOMException, IOException {
+    static void updateConfig(ResourceLoader loader, String overridesResource, String configFilePath, Element configRoot) throws JDOMException, IOException {
         Element overrides = loader.loadXmlResource(overridesResource);
         if (overrides == null) {
             return;
@@ -188,8 +187,9 @@ class ConfigurationOverrides {
         List<Element> files = overrides.getChildren(FILE_NODE_NAME);
         for (Element file : files) {
             String expectedfileName = file.getAttributeValue(FILE_NAME_ATT_NAME);
-            if (expectedfileName.equals(fileName)) {
-                Log.info(Log.JEEVES, "Overrides being applied to configuration file: " + fileName);
+
+            if (Pattern.matches(expectedfileName, configFilePath)) {
+                Log.info(Log.JEEVES, "Overrides being applied to configuration file: " + expectedfileName);
 
                 List<Element> elements = file.getChildren();
                 for (Element element : elements) {

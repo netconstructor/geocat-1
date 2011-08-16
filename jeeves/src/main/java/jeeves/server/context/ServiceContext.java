@@ -195,6 +195,10 @@ public class ServiceContext extends BasicContext
 			throw new ServiceExecutionFailedException(request.getService(),e);
 		}
 	}
+
+	public JeevesServlet getServlet() {
+        return servlet;
+    }
 }
 
 //=============================================================================
