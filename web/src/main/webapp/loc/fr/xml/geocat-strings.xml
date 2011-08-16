@@ -1,4 +1,50 @@
 <strings>
+    <mainpageTitle js="true">Recherche de géodonnées et géoservices</mainpageTitle>
+    <refinements js="true">Affinage</refinements>
+    <refineSearch.title js="true">Précisez votre recherche</refineSearch.title>
+    <keyword js="true">Mot-clé</keyword>
+    <theme js="true">Sujet ISO</theme>
+    <contact js="true">Nom de famille</contact>
+    <rtitle js="true">Titre</rtitle>
+    <organizationName js="true">Organisation</organizationName>
+    <kantone js="true">Canton(s)</kantone>
+    <theme js="true">Thématique</theme>
+    <formatTxt js="true">Format</formatTxt>
+    <toEdit js="true">A éditer</toEdit>
+    <toPublish js="true">A publier</toPublish>
+    <bbox js="true">BBOX</bbox>
+    <wherenone js="true">Partout</wherenone>
+    <adminUnit js="true">Unité administrative</adminUnit>
+    <drawOnMap js="true">Dessiner sur la carte</drawOnMap>
+    <startNewPolygon js="true">Dessiner un nouveau polygone</startNewPolygon>
+    <startNewPolygonHelp js="true">Dessiner un polygone (Double clique pour terminer)</startNewPolygonHelp>
+    <valid js="true">Valide</valid>
+    <yes js="true">Oui</yes>
+    <no js="true">Non</no>
+    <intersectGeo js="true">au moins partiellement à l\'intérieur</intersectGeo>
+    <withinGeo js="true">complètement à l\'intérieur ou égal</withinGeo>
+    <containsGeo js="true">comprend au moins</containsGeo>
+    <layerTree js="true">Arbre des couches</layerTree>
+    <nothingFound js="true">Pas de résultat</nothingFound>
+    <source js="true">Provenance?</source>
+    <catalog js="true">Catalogue(s)</catalog>
+    <dataType id="dataset">Données</dataType>
+    <dataType id="basicgeodata">Geodonnées de base</dataType>
+    <dataType id="basicgeodata-federal"> + Geodonnées de base - fédérales</dataType>
+    <dataType id="basicgeodata-cantonal"> + Geodonnées de base - cantonales</dataType>
+    <dataType id="basicgeodata-communal"> + Geodonnées de base - communales</dataType>
+    <dataType id="basicgeodata-other"> + Geodonnées de base - autres</dataType>
+    <dataType id="service">Services</dataType>
+    <dataType id="service-OGC:WMS"> + Services WMS</dataType>
+    <dataType id="service-OGC:WFS"> + Services WFS</dataType>
+    <extended js="true">Recherche avancée</extended>
+    <hideAdvancedOptions js="true">Recherche simple</hideAdvancedOptions>
+    <highlights js="true">Epinglés</highlights>
+    <hitsPerPage js="true">Résultats par page</hitsPerPage>
+    <hitsPerPageChoice value="10">10</hitsPerPageChoice>
+    <hitsPerPageChoice value="20">20</hitsPerPageChoice>
+    <hitsPerPageChoice value="50">50</hitsPerPageChoice>
+    <hitsPerPageChoice value="100">100</hitsPerPageChoice>
 	<metadata.expired>
 		<recipient>Email du bénéficiaire</recipient>
 		<numExpiredElements>Nombre de dossiers trop vieux</numExpiredElements>

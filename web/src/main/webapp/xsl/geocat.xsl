@@ -165,7 +165,6 @@
                 <script type="text/javascript" src="{/root/gui/url}/scripts/geo/proj4js-compressed.js"></script>
 
                 <script type="text/javascript" src="{/root/gui/url}/scripts/geoext/lib/GeoExt.js"></script>             
-                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/MapFish.js"></script>
 
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/OGCUtil.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/MapStateManager.js"></script>
@@ -252,10 +251,21 @@
                 src="{/root/gui/url}/scripts/mapfishIntegration/EMailPDFAction.js"/>
         <script type="text/javascript"
                 src="{/root/gui/url}/scripts/mapfishIntegration/DomQueryNS.js"/>
-        <script type="text/javascript" src="{/root/gui/url}/scripts/geocat.js"></script>
+        <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js"></script>
         <script type="text/javascript">
+            Ext.apply(translations, {
+                        'sortByTypes':[<xsl:apply-templates select="/root/gui/strings/sortByType" mode="js-translations-combo"/>],
+                        'outputTypes':[<xsl:apply-templates select="/root/gui/strings/outputType" mode="js-translations-combo"/>],
+                        'dataTypes':[['', '<xsl:value-of select="/root/gui/strings/any"/>']<xsl:apply-templates select="/root/gui/strings/dataType" mode="js-translations-combo-suite"/>],
+                        'hitsPerPageChoices':[<xsl:apply-templates select="/root/gui/strings/hitsPerPageChoice" mode="js-translations-combo"/>],
+                        'topicCat': [['', '<xsl:value-of select="/root/gui/strings/any"/>']<xsl:apply-templates select="/root/gui/iso19139/codelist[@name='gmd:MD_TopicCategoryCode']/entry" mode="js-translations-topicCat"/>],
+                        'sources_groups': [<xsl:apply-templates select="/root/gui/groups/record" mode="js-translations-sources-groups"><xsl:sort select="label/*[name()=/root/gui/language]"/><xsl:sort select="name"/></xsl:apply-templates><xsl:if
+                        test="count(/root/gui/groups/record) > 0 and count(/root/gui/sources/record) > 0">,</xsl:if><xsl:apply-templates select="/root/gui/sources/record" mode="js-translations-sources-groups"><xsl:sort select="label/*[name()=/root/gui/language]"/><xsl:sort select="name"/></xsl:apply-templates>],
+                        'formats': [['', '<xsl:value-of select="/root/gui/strings/any"/>']<xsl:apply-templates select="/root/gui/formats/record" mode="js-translations-formats"/>]
+                    });
+            
             Ext.onReady(function() {
-                geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', '<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
+                geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', Env.proxy+'url=<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
                 geocat.language = '<xsl:value-of select="root/gui/language"/>';
             });
         </script>
@@ -384,4 +394,19 @@
             </fieldset>
         </xsl:if>
     </xsl:template>
+
+    <xsl:template match="*" mode="js-translations-combo-suite">
+        ,["<xsl:value-of select="@value"/><xsl:value-of select="@id"/>", "<xsl:value-of select="."/>"]</xsl:template>
+
+    <xsl:template match="*" mode="js-translations-combo">
+        <xsl:if test="position()>1">,</xsl:if>["<xsl:value-of select="@value"/><xsl:value-of select="@id"/>", "<xsl:value-of select="."/>"]</xsl:template>
+
+    <xsl:template match="entry" mode="js-translations-topicCat">
+        ,["<xsl:value-of select="code"/>", "<xsl:value-of select="label"/>"]</xsl:template>
+
+    <xsl:template match="record" mode="js-translations-sources-groups"><xsl:if test="position()>1">,</xsl:if><xsl:choose><xsl:when test="siteid">["_source/<xsl:value-of select="siteid"/>", "<xsl:value-of select="name"/>"</xsl:when><xsl:otherwise>["_groupOwner/<xsl:value-of select="id"/>", "<xsl:value-of select="label/*[name()=/root/gui/language]"/>"</xsl:otherwise></xsl:choose>]</xsl:template>
+
+    <xsl:template match="record" mode="js-translations-formats">
+        ,["<xsl:value-of select="name"/><xsl:if test="version != '-'">_<xsl:value-of select="version"/></xsl:if>", "<xsl:value-of select="name"/> (<xsl:value-of select="version"/>)"]</xsl:template>
+
 </xsl:stylesheet>

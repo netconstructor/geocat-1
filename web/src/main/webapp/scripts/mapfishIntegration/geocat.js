@@ -116,7 +116,7 @@ var geocat = {
                 "Highlight",
                 geocat.geoserverUrl + "wms", {
             styles: 'Selection',
-            layers: ['gn:kantoneBB'],
+            layers: ['chtopo:kantoneBB'],
             format: Ext.isIE6 ? 'image/png8' : 'image/png',
             transparent: true
         }, {
@@ -599,7 +599,7 @@ var geocat = {
             delete this.kantoneCombo;
         }
         if (this.kantoneCombo) return this.kantoneCombo; // returns singleton if created
-        this.kantoneCombo = geocat.createSearchWFS(true, 'gn', 'kantoneBB', ['KUERZEL', 'KANTONSNR', 'BOUNDING'], {
+        this.kantoneCombo = geocat.createSearchWFS(false, 'chtopo', 'kantoneBB', ['KUERZEL', 'KANTONSNR', 'BOUNDING'], {
             id: 'kantoneComboBox',
             fieldLabel: translate('kantone'),
             displayField: 'KUERZEL',
@@ -642,7 +642,7 @@ var geocat = {
             delete this.gemeindenCombo;
         }
         if (this.gemeindenCombo) return this.gemeindenCombo; // returns singleton if created
-        this.gemeindenCombo = geocat.createSearchWFS(false, 'gn', 'gemeindenBB', ['GEMNAME_L', 'GEMNAME', 'OBJECTVAL', 'KANTONSNR', 'BOUNDING'], {
+        this.gemeindenCombo = geocat.createSearchWFS(false, 'chtopo', 'gemeindenBB', ['GEMNAME_L', 'GEMNAME', 'OBJECTVAL', 'KANTONSNR', 'BOUNDING'], {
             id: 'gemeindenComboBox',
             fieldLabel: translate('city'),
             searchField: 'GEMNAME_L',
@@ -1548,15 +1548,15 @@ var geocat = {
             var layerFilter = null;
             if (values.gemeinden) {
                 ids = values.gemeinden;
-                layer = 'gn:gemeindenBB';
+                layer = 'chtopo:gemeindenBB';
                 layerFilter = "OBJECTVAL";
             } else if (values.kantone) {
                 ids = values.kantone;
-                layer = 'gn:kantoneBB';
+                layer = 'chtopo:kantoneBB';
                 layerFilter = "KANTONSNR";
             } else if (values.country) {
                 ids = values.country;
-                layer = 'gn:countries';
+                layer = ':countries';
                 layerFilter = "LAND";
             }
             if (ids) {

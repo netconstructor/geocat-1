@@ -315,7 +315,7 @@
 	<foundCRS js="true">Systèmes disponibles</foundCRS>
 	
 	<about>A propos</about>
-	<abstract>Résumé</abstract>
+	<abstract js="true">Résumé</abstract>
 	<accept>Accepter</accept>
 	<actionOnSelect>Actions sur la sélection</actionOnSelect>
 	<add js="true">Ajouter</add>
@@ -472,7 +472,7 @@
 	<firstNameMandatory js="true">Le prénom est obligatoire</firstNameMandatory>
 	<foundWords>Nombre de mots trouvés :</foundWords>
 	<freeKeyword>Mot-clés libres</freeKeyword>
-	<from>Début</from>
+	<from js="true">Début</from>
 	<fromDateSelector>Select FROM date</fromDateSelector>
 	<fuzzy>Précision</fuzzy>
 	<fuzzyImprecise>Imprécis</fuzzyImprecise>
@@ -765,7 +765,7 @@
 	<printSelection>Imprimer au PDF</printSelection>
 	<schema>Schéma</schema>
 	<schematronError>Erreur Schematron</schematronError>
-	<search>Rechercher</search>
+	<search js="true">Rechercher</search>
 	<searchAllText>Partout</searchAllText>
 	<searchBox>Recherche de données et information</searchBox>
 	<searchIndex>Index de recherche</searchIndex>
@@ -829,13 +829,13 @@
 	<timeoutChoice value="20">20 secondes</timeoutChoice>
 	<timeoutChoice value="30">30 secondes</timeoutChoice>
 	<title>GeoNetwork - Portail pour l'information géo-spatiale</title>
-	<to>Fin</to>
+	<to js="true">Fin</to>
 	<toDateSelector>Select TO date</toDateSelector>
 	<tools>Outils</tools>
 	<topic>Sujet</topic>
 	<transferOwnership>Transfert de privilèges</transferOwnership>
 	<transferOwnershipDes>Transfert des privilèges de métadonnées pour un autre utilisateur</transferOwnershipDes>
-	<type>Type</type>
+	<type js="true">Type</type>
 	<up>Monter</up>
 	<update>Mettre à jour</update>
 	<updateCategories>Mettre à jour les catégories</updateCategories>
@@ -864,9 +864,9 @@
 	<viewInGE>Google Earth</viewInGE>
 	<waitGetCap js="true">Chargement en cours ...</waitGetCap>
 	<westbc>Coordonnée ouest de l'emprise</westbc>
-	<what>Quoi ?</what>
-	<when>Quand ?</when>
-	<where>Où ?</where>
+	<what js="true">Quoi ?</what>
+	<when js="true">Quand ?</when>
+	<where js="true">Où ?</where>
 	<winInfo1>Cette fenêtre montre les ressources de GeoNetwork.</winInfo1>
 	<winInfo2>L'icône Besoin d'aide (?) vous donne accès à l'aide.</winInfo2>
 	<wwwlink>Liens Internet</wwwlink>

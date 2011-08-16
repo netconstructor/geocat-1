@@ -308,7 +308,7 @@
 	<foundCRS js="true">Available coordinate systems</foundCRS>
 	
 	<about>About</about>
-	<abstract>Abstract</abstract>
+	<abstract js="true">Abstract</abstract>
 	<accept>Accept</accept>
 	<actionOnSelect>actions on selection</actionOnSelect>
 	<add js="true">add</add>
@@ -363,7 +363,7 @@
 	<chooseFile>Choose the location of the file to upload</chooseFile>
 	<chooseLargeThumbnail>Choose the location of the large thumbnail file</chooseLargeThumbnail>
 	<chooseThumbnail>Choose the location of the small thumbnail file </chooseThumbnail>
-	<city>City</city>
+	<city js="true">City</city>
 	<clear js="true">Clear</clear>
 	<clearAll>Clear All</clearAll>
 	<close js="true">Close</close>
@@ -382,7 +382,7 @@
 	<convert>Convert</convert>
 	<copyright1>Copyright</copyright1>
 	<copyright2><p>All rights reserved.<br/> Your generic copyright statement </p></copyright2>
-	<country>Country</country>
+	<country js="true">Country</country>
 	<create>Create</create>
 	<createTip>Create a new metadata from this template</createTip>
 	<crs code="EPSG:4326">WGS 84</crs>
@@ -464,7 +464,7 @@
 	<firstNameMandatory js="true">The First Name field is mandatory</firstNameMandatory>
 	<foundWords>Number of terms found:</foundWords>
 	<freeKeyword>Free Keywords</freeKeyword>
-	<from>From</from>
+	<from js="true">From</from>
 	<fromDateSelector>Select FROM date</fromDateSelector>
 	<fuzzy>Search accuracy</fuzzy>
 	<fuzzyImprecise>Imprecise</fuzzyImprecise>
@@ -762,7 +762,7 @@
 	<printSelection>Print to PDF</printSelection>
 	<schema>Schema</schema>
 	<schematronError>Schematron Error</schematronError>
-	<search>Search</search>
+	<search js="true">Search</search>
 	<searchAllText>What?</searchAllText>
 	<searchBox>Search for Data and Information</searchBox>
 	<searchIndex>Search index</searchIndex>
@@ -825,13 +825,13 @@
 	<timeoutChoice value="20">after 20 seconds</timeoutChoice>
 	<timeoutChoice value="30">after 30 seconds</timeoutChoice>
 	<title>GeoNetwork - The portal to spatial data and information</title>
-	<to>To</to>
+	<to js="true">To</to>
 	<toDateSelector>Select TO date</toDateSelector>
 	<tools>Tools</tools>
 	<topic>Topic</topic>
 	<transferOwnership>Transfer ownership</transferOwnership>
 	<transferOwnershipDes>Transfer metadata ownership to another user</transferOwnershipDes>
-	<type>Type</type>
+	<type js="true">Type</type>
 	<up>up</up>
 	<update>Update</update>
 	<updateCategories>Update categories</updateCategories>
@@ -860,9 +860,9 @@
 	<viewInGE>View in Google Earth</viewInGE>
 	<waitGetCap js="true">Loading server layers, please wait...</waitGetCap>
 	<westbc>West Bounding Coordinate</westbc>
-	<what>What?</what>
-	<when>When?</when>
-	<where>Where?</where>
+	<what js="true">What?</what>
+	<when js="true">When?</when>
+	<where js="true">Where?</where>
 	<winInfo1>This window will show GeoNetwork resources. This window may be hidden at times depending on how your browser manages windows. In this case, you will have to manually bring the window to the foreground when necessary.</winInfo1>
 	<winInfo2>Throughout the Help (?) icon give you access to explanations. When you activate this icon, it's output will be displayed in this Resource Window.</winInfo2>
 	<wwwlink>Web link</wwwlink>

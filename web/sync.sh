@@ -14,7 +14,7 @@ function syncFile () {
 
 syncFile xsl/geocat.xsl
 syncFile xsl/mapfish_includes.xsl
-syncFile scripts/geocat.js
+syncDir scripts/mapfishIntegration
 syncFile WEB-INF/overrides-config-geocat.xml
 syncFile WEB-INF/override-config-jeichar.xml
 touch target/webapp/WEB-INF/config-gui.xml
