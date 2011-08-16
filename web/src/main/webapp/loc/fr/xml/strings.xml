@@ -360,7 +360,7 @@
 	<byPackage>Vue Avancée</byPackage>
 	<cancel>Annuler</cancel>
 	<categories>Catégories</categories>
-	<category>Catégorie</category>
+	<category js="true">Catégorie</category>
 	<categoryManagement>Gestion des catégories</categoryManagement>
 	<categoryManDes>Ajouter/Modifier/Supprimer et visualiser les catégories</categoryManDes>
 	<categoryNameMandatory>Le nom de la catégorie est obligatoire.</categoryNameMandatory>
@@ -390,7 +390,7 @@
 	<copyright1>Copyright</copyright1>
 	<copyright2><p>Tout droit réservé.</p></copyright2>
 	<country>Pays</country>
-	<create>Dupliquer</create>
+	<create js="true">Dupliquer</create>
 	<createTip>Créer des métadonnées à partir de ce template</createTip>
 	<crs code="EPSG:4326">WGS 84</crs>
   <crs code="EPSG:2154">RGF93 / Lambert-93</crs>
@@ -410,7 +410,7 @@
 	<decline>Refuser</decline>
 	<definition>Définition</definition>
 	<del>Supprimer</del>
-	<delete>Supprimer</delete>
+	<delete js="true">Supprimer</delete>
 	<deleteCategory>Supprimer la catégorie ?</deleteCategory>
 	<deleteConfirmationTitle>Rapport sur la suppression</deleteConfirmationTitle>
 	<deleteGroup>Supprimer le groupe ?</deleteGroup>
@@ -447,7 +447,7 @@
 	<durationYears>année(s)</durationYears>
 	<dynamic>Interactive</dynamic>
 	<eastbc>Coordonnée est de l'emprise</eastbc>
-	<edit>Editer</edit>
+	<edit js="true">Editer</edit>
 	<Editor>Éditeur</Editor>
 	<email>Email</email>
 	<emailAddressInvalid js="true">Adresse email invalide</emailAddressInvalid>
@@ -754,7 +754,7 @@
   <visualizationService>URL du service de visualisation (WMS)</visualizationService>
 	<resultsCoordinate>Résultats correspondant aux critères de recherche géographiques</resultsCoordinate>
 	<resultsFreeText>Résultats de la recherche</resultsFreeText>
-	<resultsMatching>Nombre de résultats : </resultsMatching>
+	<resultsMatching js="true">Nombre de résultats : </resultsMatching>
 	<Reviewer>Relécteur</Reviewer>
 	<rss>Ouvrez flux RSS</rss>
 	<rtitle>Titre</rtitle>
@@ -787,7 +787,7 @@
 	<setAll>Tous</setAll>
 	<setOnSave>Valeur définie lors de la sauvegarde</setOnSave>
 	<shibLogin>Shib Login</shibLogin>
-	<show>Métadonnées</show>
+	<show js="true">Métadonnées</show>
 	<showFileDownloadSummary>Télécharger des fichiers ...</showFileDownloadSummary>
 	<simple>Recherche simple</simple>
 	<simpleTab>Vue par défaut</simpleTab>
@@ -797,7 +797,7 @@
 	<siteId>Identifiant</siteId>
 	<sizeBytes>Size (bytes)</sizeBytes>
 	<sort>Trier</sort>
-	<sortBy>Trier par</sortBy>
+	<sortBy js="true">Trier par</sortBy>
 	<sortByType id="changeDate">Date de mise à jour</sortByType>
 	<sortByType id="popularity">Popularité</sortByType>
 	<sortByType id="rating">Note</sortByType>

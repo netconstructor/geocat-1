@@ -1,4 +1,7 @@
 <strings>
+    <spatialRepresentation>Struktur der räumlichen Daten</spatialRepresentation>
+    <selectedElementsAction>Ausgewählte Metadaten</selectedElementsAction>
+    <resolution>Räumliche Auflösung</resolution>   
     <mainpageTitle js="true">Suche nach Geodaten und Geodiensten</mainpageTitle>
     <refinements js="true">Verfeinerungen</refinements>
     <refineSearch.title js="true">Suche verfeinern</refineSearch.title>

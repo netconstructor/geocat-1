@@ -353,7 +353,7 @@
 	<byPackage>By Package</byPackage>
 	<cancel>Abbrechen</cancel>
 	<categories>Kategorien</categories>
-	<category>Kategorie</category>
+	<category js="true">Kategorie</category>
 	<categoryManagement>Kategorie Management</categoryManagement>
 	<categoryManDes>Hinzufügen/Bearbeiten/Löschen und Ansehen von Kategorien</categoryManDes>
 	<categoryNameMandatory>A category name must be filled in.</categoryNameMandatory>
@@ -383,7 +383,7 @@
 	<copyright1>Copyright</copyright1>
 	<copyright2><p>Alle Rechte vorbehalten.<br/></p></copyright2>
 	<country>Staat</country>
-	<create>Erstellen</create>
+	<create js="true">Erstellen</create>
 	<createTip>Neue Metadaten mit dieser Vorlage erstellen</createTip>
 	<crs code="EPSG:4326">WGS 84</crs>
 	<crs code="EPSG:3786">World Equidistant Cylindrical (Sphere)</crs>
@@ -402,7 +402,7 @@
 	<decline>Ablehnen</decline>
 	<definition>Definition</definition>
 	<del>del</del>
-	<delete>Löschen</delete>
+	<delete js="true">Löschen</delete>
 	<deleteCategory>Delete the category?</deleteCategory>
 	<deleteConfirmationTitle>Delete Metadata Confirmation</deleteConfirmationTitle>	
 	<deleteGroup>Delete the group ?</deleteGroup>
@@ -439,7 +439,7 @@
 	<durationYears>Jahr(e)</durationYears>
 	<dynamic>Interaktiv</dynamic>
 	<eastbc>östliche Grenzkoordinate</eastbc>
-	<edit>Bearbeiten</edit>
+	<edit js="true">Bearbeiten</edit>
 	<Editor>Editor</Editor>
 	<email>E-Mail</email>
 	<emailAddressInvalid js="true">E-Mail Adresse ist ungültig</emailAddressInvalid>
@@ -749,7 +749,7 @@
   <visualizationService>Visualization service URL (WMS)</visualizationService>
 	<resultsCoordinate>Ergebnisse, die auf Koordinatensuche zu treffen </resultsCoordinate>
 	<resultsFreeText>Ergebnisse, die auf Freitextsuche zu treffen </resultsFreeText>
-	<resultsMatching>Suchergebnisse :</resultsMatching>
+	<resultsMatching js="">Suchergebnisse :</resultsMatching>
 	<Reviewer>Inhaltkritiker</Reviewer>
 	<rss>RSS feed öffnen</rss>
 	<rtitle>Titel</rtitle>
@@ -782,7 +782,7 @@
 	<setAll>Alle setzen</setAll>
 	<setOnSave>Value will be set when record is saved</setOnSave>
 	<shibLogin>Shib Login</shibLogin>
-	<show>Metadaten</show>
+	<show js="true">Metadaten</show>
 	<showFileDownloadSummary>Zeige Datei Download Auswahl</showFileDownloadSummary>
 	<simple>einfache Suche</simple>
 	<simpleTab>Default Ansicht</simpleTab>
@@ -791,7 +791,7 @@
 	<site>Seite</site>
 	<siteId>Seiten ID</siteId>
 	<sizeBytes>Größe (Bytes)</sizeBytes>
-	<sortBy>Geordnet nach</sortBy>
+	<sortBy js="true">Geordnet nach</sortBy>
 	<sortByType id="changeDate">Änderungsdatum</sortByType>
 	<sortByType id="popularity">Popularität</sortByType>
 	<sortByType id="rating">Bewertung</sortByType>

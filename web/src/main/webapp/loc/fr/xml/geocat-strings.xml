@@ -1,4 +1,7 @@
 <strings>
+    <spatialRepresentation>Représentation spatiale</spatialRepresentation>
+    <selectedElementsAction>Actions sur la sélection</selectedElementsAction>
+    <resolution>Résolution spatiale</resolution>
     <mainpageTitle js="true">Recherche de géodonnées et géoservices</mainpageTitle>
     <refinements js="true">Affinage</refinements>
     <refineSearch.title js="true">Précisez votre recherche</refineSearch.title>

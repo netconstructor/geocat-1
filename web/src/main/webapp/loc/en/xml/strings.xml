@@ -353,7 +353,7 @@
 	<byPackage>By Package</byPackage>
 	<cancel>Cancel</cancel>
 	<categories>Categories</categories>
-	<category>Category</category>
+	<category js="true">Category</category>
 	<categoryManagement>Category management</categoryManagement>
 	<categoryManDes>Add/modify/delete and show categories</categoryManDes>
 	<categoryNameMandatory>A category name must be filled in.</categoryNameMandatory>
@@ -383,7 +383,7 @@
 	<copyright1>Copyright</copyright1>
 	<copyright2><p>All rights reserved.<br/> Your generic copyright statement </p></copyright2>
 	<country js="true">Country</country>
-	<create>Create</create>
+	<create js="true">Create</create>
 	<createTip>Create a new metadata from this template</createTip>
 	<crs code="EPSG:4326">WGS 84</crs>
 	<crs code="EPSG:3786">World Equidistant Cylindrical (Sphere)</crs>
@@ -402,7 +402,7 @@
 	<decline>Decline</decline>
 	<definition>Definition</definition>
 	<del>del</del>
-	<delete>Delete</delete>
+	<delete js="true">Delete</delete>
 	<deleteCategory>Delete the category?</deleteCategory>
 	<deleteConfirmationTitle>Delete Metadata Confirmation</deleteConfirmationTitle>	
 	<deleteGroup>Delete the group ?</deleteGroup>
@@ -439,7 +439,7 @@
 	<durationYears>year(s)</durationYears>
 	<dynamic>Interactive</dynamic>
 	<eastbc>East Bounding Coordinate</eastbc>
-	<edit>Edit</edit>
+	<edit js="true">Edit</edit>
 	<Editor>Editor</Editor>
 	<email>Email</email>
 	<emailAddressInvalid js="true">Email address is invalid</emailAddressInvalid>
@@ -751,7 +751,7 @@
   <visualizationService>Visualization service URL (WMS)</visualizationService>
 	<resultsCoordinate>Results matching the coordinate search </resultsCoordinate>
 	<resultsFreeText>Results matching the Free Text Word </resultsFreeText>
-	<resultsMatching>Aggregate Results matching search criteria :</resultsMatching>
+	<resultsMatching js="true">Aggregate Results matching search criteria :</resultsMatching>
 	<Reviewer>Content reviewer</Reviewer>
 	<rss>Open RSS feed</rss>
 	<rtitle>Title</rtitle>
@@ -776,7 +776,7 @@
 	<select>Select : </select>
 	<selectAll>Select all metadata</selectAll>
 	<selectAllNotPossible>Too many hits! Must be less than </selectAllNotPossible>
-	<selected> selected</selected>
+	<selected js="true"> selected</selected>
 	<selectedOnly>Display selected only</selectedOnly>
 	<selection>Selection</selection>
 	<selectNone>Unselect metadata selected</selectNone>
@@ -784,7 +784,7 @@
 	<setAll>Set All</setAll>
 	<setOnSave>Value will be set when record is saved</setOnSave>
 	<shibLogin>Shib Login</shibLogin>
-	<show>Metadata</show>
+	<show js="true">Metadata</show>
 	<showFileDownloadSummary>Show File Download Chooser</showFileDownloadSummary>
 	<simple>Simple search</simple>
 	<simpleTab>Default view</simpleTab>
@@ -793,7 +793,7 @@
 	<site>Site</site>
 	<siteId>Site ID</siteId>
 	<sizeBytes>Size (bytes)</sizeBytes>
-	<sortBy>Sort by</sortBy>
+	<sortBy js="true">Sort by</sortBy>
 	<sortByType id="changeDate">Change date</sortByType>
 	<sortByType id="popularity">Popularity</sortByType>
 	<sortByType id="rating">Rating</sortByType>

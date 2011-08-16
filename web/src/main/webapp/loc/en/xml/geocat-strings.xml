@@ -1,4 +1,7 @@
 <strings>
+    <spatialRepresentation>Spatial Representation</spatialRepresentation>
+    <selectedElementsAction>Selected elements action</selectedElementsAction>
+    <resolution>Spatial Resolution</resolution>
     <mainpageTitle js="true">Search for geodata and geoservices</mainpageTitle>
     <refinements js="true">Refinements</refinements>
     <refineSearch.title js="true">Refine Search</refineSearch.title>
