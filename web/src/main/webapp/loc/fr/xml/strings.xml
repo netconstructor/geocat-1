@@ -265,7 +265,7 @@
 	<searchText js="true">Text search</searchText>
 	<mdTitle js="true">Titre de la métadonnée</mdTitle>
 	<createRelation js="true">Créer la relation</createRelation>
-	<export>Exporter</export>
+	<export js="true">Exporter</export>
 	<exportText>Export (TXT)</exportText>
 	<addXMLFragment>Ajouter depuis un dictionnaire ...</addXMLFragment>
 	<translateWithGoogle>Utiliser le service de traduction de Google pour proposer une traduction pour la langue sélectionnée.</translateWithGoogle>
@@ -324,8 +324,8 @@
 	<admin>Administration</admin>
 	<Administrator>Administrateur</Administrator>
 	<agrovocKeyword>Mots clés Agrovoc</agrovocKeyword>
-	<all>Tout</all>
-	<any>- Tous -</any>
+	<all js="true">Tout</all>
+	<any js="true">- Tous -</any>
 	<anytime>N'importe quand</anytime>
 	<appSchInfoTab>Schéma d'app.</appSchInfoTab>
 	<assigned>Attribuer</assigned>
@@ -370,7 +370,7 @@
 	<chooseFile>Choisir le fichier à télécharger</chooseFile>
 	<chooseLargeThumbnail>Choisir la vignette (grand format)</chooseLargeThumbnail>
 	<chooseThumbnail>Choisir la vignette (petit format)</chooseThumbnail>
-	<city>Ville</city>
+	<city js="true">Ville</city>
 	<clear js="true">Effacer</clear>
 	<clearAll>Aucun</clearAll>
 	<close js="true">Fermer</close>
@@ -389,7 +389,7 @@
 	<convert>Conversion</convert>
 	<copyright1>Copyright</copyright1>
 	<copyright2><p>Tout droit réservé.</p></copyright2>
-	<country>Pays</country>
+	<country js="true">Pays</country>
 	<create js="true">Dupliquer</create>
 	<createTip>Créer des métadonnées à partir de ce template</createTip>
 	<crs code="EPSG:4326">WGS 84</crs>
@@ -505,7 +505,7 @@
 	<i18n>Test i18n</i18n>
 	<i18nDesc>Permet de lister les chaînes de traduction manquantes pour l'interface.</i18nDesc>
 	<identificationTab>Identification</identificationTab>
-	<identifier>Identifiant</identifier>
+	<identifier js="true">Identifiant</identifier>
 	<imAreaInterest>Select an Area Of Interest</imAreaInterest>
 	<imPan>Pan</imPan>
 	<import>Importer</import>
@@ -819,7 +819,7 @@
 	<systemConfigDes>Permet de modifier quelques paramètres systèmes</systemConfigDes>
 	<systemInfo>Information système</systemInfo>
 	<systemInfoDes>Consultation des informations sur le catalogue, l'index, Java, le système d'exploitation</systemInfoDes>
-	<template>Modèle</template>
+	<template js="true">Modèle</template>
 	<Term>Terme</Term>
 	<thanks>Merci</thanks>
 	<theme>Sujet ISO</theme>

@@ -1,7 +1,17 @@
 <strings>
-    <spatialRepresentation>Spatial Representation</spatialRepresentation>
-    <selectedElementsAction>Selected elements action</selectedElementsAction>
-    <resolution>Spatial Resolution</resolution>
+    <nav>
+        <home>Homepage</home>
+        <overview>Overview</overview>
+        <news>News</news>
+        <metasearch>Discovery service</metasearch>
+        <metainput>Metadata management</metainput>
+        <doc>Documentation</doc>
+        <about>About geocat.ch</about>
+    </nav>
+    <replaceSharedObjects js="true">Validate shared objects</replaceSharedObjects>
+    <spatialRepresentation js="true">Spatial Representation</spatialRepresentation>
+    <selectedElementsAction js="true">Selected elements action</selectedElementsAction>
+    <resolution js="true">Spatial Resolution</resolution>
     <mainpageTitle js="true">Search for geodata and geoservices</mainpageTitle>
     <refinements js="true">Refinements</refinements>
     <refineSearch.title js="true">Refine Search</refineSearch.title>

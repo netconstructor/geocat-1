@@ -33,6 +33,9 @@ Ext.ux.BoxSelect = Ext.extend(Ext.form.ComboBox, {
             }
          });
     },
+    beforeBlur:function() {
+        
+    },
 
     onBlur:function() {
         Ext.ux.BoxSelect.superclass.onBlur.apply(this, arguments);

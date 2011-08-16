@@ -258,7 +258,7 @@
 	<searchText js="true">Text search</searchText>
 	<mdTitle js="true">Metadata title</mdTitle>
 	<createRelation js="true">Create relation</createRelation>
-	<export>Export (ZIP)</export>
+	<export js="true">Export (ZIP)</export>
 	<exportText>Export (TXT)</exportText>	
 	<addXMLFragment>Add from dictionary ...</addXMLFragment>
 	<translateWithGoogle>Use Google translation service to suggest a translation for selected language.</translateWithGoogle>
@@ -317,8 +317,8 @@
 	<admin>Administration</admin>
 	<Administrator>Administrator</Administrator>
 	<agrovocKeyword>Agrovoc Keywords</agrovocKeyword>
-	<all>all</all>
-	<any>- Any -</any>
+	<all js="true">all</all>
+	<any js="true">- Any -</any>
 	<anytime>Anytime</anytime>
 	<appSchInfoTab>App. schema</appSchInfoTab>
 	<assigned>Assigned</assigned>
@@ -497,7 +497,7 @@
 	<i18n>Test i18n</i18n>
 	<i18nDesc>This service should help GeoNetwork opensource developers to have up to date localized files for the GUI.</i18nDesc>
 	<identificationTab>Identification</identificationTab>
-	<identifier>Identifier</identifier>
+	<identifier js="true">Identifier</identifier>
 	<imAreaInterest>Select an Area Of Interest</imAreaInterest>
 	<imPan>Pan</imPan>
 	<import>Import</import>
@@ -815,7 +815,7 @@
 	<systemConfigDes>Allows to change some system's parameters</systemConfigDes>
 	<systemInfo>System information</systemInfo>
 	<systemInfoDes>Shows advanced information about catalogue, index, Java, operating system</systemInfoDes>
-	<template>Template</template>
+	<template js="true">Template</template>
 	<Term>Term</Term>
 	<thanks>Thank you for your effort. The GeoNetwork</thanks>
 	<theme>ISO topic category</theme>

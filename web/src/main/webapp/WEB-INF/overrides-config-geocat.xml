@@ -9,8 +9,7 @@
         <wfs.port>8081</wfs.port>
     </properties>
     <file name=".*/WEB-INF/config.xml">
-        <replaceText xpath="default/service">geocat</replaceText>
-        <replaceText xpath="default/language">eng</replaceText>
+        <replaceText xpath="default/language">deu</replaceText>
         <replaceAtt xpath="appHandler/param[@name = 'preferredSchema']" attName="value" value="iso19139.che"/>
         <addXML xpath="appHandler">
             <param name="postgisConfig">
@@ -162,6 +161,8 @@
     	</addXml>
     </file>
     <file name=".*/WEB-INF/config-gui.xml">
+        <replaceAtt xpath="client" attName="url" value="geocat"/>
+        <replaceAtt xpath="client" attName="parameters"/>
         <addXml xpath="">
             <geoserver.url>http://${wfs.host}:${wfs.port}/geoserver</geoserver.url>
         </addXml>

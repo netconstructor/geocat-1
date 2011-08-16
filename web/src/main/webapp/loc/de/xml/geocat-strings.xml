@@ -1,7 +1,17 @@
 <strings>
-    <spatialRepresentation>Struktur der räumlichen Daten</spatialRepresentation>
-    <selectedElementsAction>Ausgewählte Metadaten</selectedElementsAction>
-    <resolution>Räumliche Auflösung</resolution>   
+    <nav>
+        <home>Startseite</home>
+        <overview>Übersicht</overview>
+        <news>Aktuell</news>
+        <metasearch>Katalog</metasearch>
+        <metainput>Metadatenmanagement</metainput>
+        <doc>Dokumentation</doc>
+        <about>Über geocat.ch</about>
+    </nav>
+    <replaceSharedObjects js="true">Wiederverwendbare Elemente bestätigen</replaceSharedObjects>
+    <spatialRepresentation js="true">Struktur der räumlichen Daten</spatialRepresentation>
+    <selectedElementsAction js="true">Ausgewählte Metadaten</selectedElementsAction>
+    <resolution js="true">Räumliche Auflösung</resolution>   
     <mainpageTitle js="true">Suche nach Geodaten und Geodiensten</mainpageTitle>
     <refinements js="true">Verfeinerungen</refinements>
     <refineSearch.title js="true">Suche verfeinern</refineSearch.title>

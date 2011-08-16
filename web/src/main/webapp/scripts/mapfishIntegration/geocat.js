@@ -246,7 +246,7 @@ var geocat = {
         }
 
         // Ensure layertree instance is created (c.f. print module)
-//        this.createLayerTree();
+        this.createLayerTree();
     },
 
     createSearchForm: function() {
@@ -1161,6 +1161,7 @@ var geocat = {
         form.doLayout();
         form.doLayout();
         geocat.updateComboSizes.defer(0, this, [form, form.body.dom.clientWidth]);
+        Ext.get("mapMap").setHeight(Ext.get("map").dom.parentNode.getHeight())
     },
 
     createCountryStore: function() {
@@ -1332,7 +1333,7 @@ var geocat = {
                     }
                 }
             }
-            if (bbox) geocat.map.zoomToExtent(bbox);
+            try {if (bbox) geocat.map.zoomToExtent(bbox);}catch(e){}
         };
         search.on('change', refreshTheContour);
 

@@ -1,7 +1,17 @@
 <strings>
-    <spatialRepresentation>Représentation spatiale</spatialRepresentation>
-    <selectedElementsAction>Actions sur la sélection</selectedElementsAction>
-    <resolution>Résolution spatiale</resolution>
+    <nav>
+        <home>Page d'accueil</home>
+        <overview>Vue d'ensemble</overview>
+        <news>Actualités</news>
+        <metasearch>Catalogue</metasearch>
+        <metainput>Gestion de métadonnées</metainput>
+        <doc>Documentation</doc>
+        <about>Autour de geocat</about>
+    </nav>
+    <replaceSharedObjects js="true">Remplacer par des objets réutilisables</replaceSharedObjects>
+    <spatialRepresentation js="true">Représentation spatiale</spatialRepresentation>
+    <selectedElementsAction js="true">Actions sur la sélection</selectedElementsAction>
+    <resolution js="true">Résolution spatiale</resolution>
     <mainpageTitle js="true">Recherche de géodonnées et géoservices</mainpageTitle>
     <refinements js="true">Affinage</refinements>
     <refineSearch.title js="true">Précisez votre recherche</refineSearch.title>

@@ -117,6 +117,7 @@
               background-image:url(<xsl:value-of select="/root/gui/url"/>/images/emailPDF.png) !important;
             }
         </style>
+        <link href="{/root/gui/url}/geocat.css" type="text/css" rel="stylesheet"/>
     </xsl:template>
     
     <!--
@@ -361,7 +362,7 @@
                     <xsl:variable name="md">
                         <xsl:apply-templates mode="brief" select="."/>
                     </xsl:variable>
-                    <xsl:variable name="metadata" select="exslt:node-set($md)/*[1]"/>
+                    <xsl:variable name="metadata" select="$md/*[1]"/>
                     <a class="arrow" href="javascript:geocat.openMetadataWindow('{geonet:info/uuid}');" title="{$metadata/title}">
                         <xsl:value-of select="$metadata/title"/>
                         <br/>

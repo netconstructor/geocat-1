@@ -258,7 +258,7 @@
 	<searchText js="true">Text search</searchText>
 	<mdTitle js="true">Metadata title</mdTitle>
 	<createRelation js="true">Create relation</createRelation>
-	<export>Export</export>
+	<export js="true">Export</export>
 	<exportText>Export (TXT)</exportText>	
 	<addXMLFragment>Add from dictionary ...</addXMLFragment>
 	<translateWithGoogle>Use Google translation service to suggest a translation for selected language.</translateWithGoogle>
@@ -317,8 +317,8 @@
 	<admin>Administration</admin>
 	<Administrator>Administrator</Administrator>
 	<agrovocKeyword>Agrovoc Schlüsselwörter</agrovocKeyword>
-	<all>all</all>
-	<any>- Alle -</any>
+	<all js="true">all</all>
+	<any js="true">- Alle -</any>
 	<anytime>zu jeder Zeit</anytime>
 	<appSchInfoTab>App. Schema</appSchInfoTab>
 	<assigned>Zugeteilt</assigned>
@@ -363,7 +363,7 @@
 	<chooseFile>Auswahl des Verzeinisses der hochgeladenen Datei </chooseFile>
 	<chooseLargeThumbnail>Auswahl des Verzeinisses der hochgeladenen großen Minaturansicht </chooseLargeThumbnail>
 	<chooseThumbnail>Auswahl des Verzeinisses der hochgeladenen Minaturansicht </chooseThumbnail>
-	<city>Stadt</city>
+	<city js="true">Stadt</city>
 	<clear js="true">leeren</clear>
 	<clearAll>Alles leeren</clearAll>
 	<close js="true">Schließen</close>
@@ -382,7 +382,7 @@
 	<convert>Konvertieren</convert>
 	<copyright1>Copyright</copyright1>
 	<copyright2><p>Alle Rechte vorbehalten.<br/></p></copyright2>
-	<country>Staat</country>
+	<country js="true">Staat</country>
 	<create js="true">Erstellen</create>
 	<createTip>Neue Metadaten mit dieser Vorlage erstellen</createTip>
 	<crs code="EPSG:4326">WGS 84</crs>
@@ -495,7 +495,7 @@
 	<i18n>Test i18n</i18n>
 	<i18nDesc>This service should help GeoNetwork opensource developers to have up to date localized files for the GUI.</i18nDesc>
 	<identificationTab>Identifikation</identificationTab>
-	<identifier>Identifikator</identifier>
+	<identifier js="true">Identifikator</identifier>
 	<imAreaInterest>Fläche auswählen</imAreaInterest>
 	<imPan>Kartenausschnitt verschieben</imPan>
 	<import>Import</import>
@@ -749,7 +749,7 @@
   <visualizationService>Visualization service URL (WMS)</visualizationService>
 	<resultsCoordinate>Ergebnisse, die auf Koordinatensuche zu treffen </resultsCoordinate>
 	<resultsFreeText>Ergebnisse, die auf Freitextsuche zu treffen </resultsFreeText>
-	<resultsMatching js="">Suchergebnisse :</resultsMatching>
+	<resultsMatching js="true">Suchergebnisse :</resultsMatching>
 	<Reviewer>Inhaltkritiker</Reviewer>
 	<rss>RSS feed öffnen</rss>
 	<rtitle>Titel</rtitle>
@@ -813,7 +813,7 @@
 	<systemConfigDes>Änderung von Systemeinstellungen</systemConfigDes>
 	<systemInfo>System information</systemInfo>
 	<systemInfoDes>Shows advanced information about catalogue, index, Java, operating system</systemInfoDes>
-	<template>Vorlage</template>
+	<template js="true">Vorlage</template>
 	<Term>Ausdruck</Term>
 	<thanks>Thank you for your effort. The GeoNetwork</thanks>
 	<theme>ISO Thema Kategorie</theme>
