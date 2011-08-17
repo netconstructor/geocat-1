@@ -38,7 +38,7 @@
 			}
 
 			function removeExtent(){
-				if (confirm('<xsl:value-of select="/root/gui/strings/extent/confirmDelete" />')){
+				if (confirm('<xsl:value-of select="/root/gui/strings/extents/confirmDelete" />')){
 				    esearching.deleteExtent(document.simplesearch);
 				}
 			}
@@ -65,7 +65,7 @@
 				<td>
 					<xsl:call-template name="formLayout">
 						<xsl:with-param name="title">
-							<xsl:value-of select="/root/gui/strings/extent/management" />
+							<xsl:value-of select="/root/gui/strings/extents/management" />
 						</xsl:with-param>
 
 						<xsl:with-param name="content">

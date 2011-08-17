@@ -144,7 +144,6 @@ ESearching.prototype.deleteExtent = function(form){
     }
 
     new Ajax.Request(Env.locService +'/'+ 'xml.extent.delete', opt);
-
 };
 
 
