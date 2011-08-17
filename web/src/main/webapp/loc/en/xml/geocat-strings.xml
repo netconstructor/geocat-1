@@ -110,5 +110,37 @@
 	<monitoring.service.disk>Disk monitor</monitoring.service.disk>
 	<monitoring.freespace>Free space</monitoring.freespace>
 
-
+    <reject>Reject</reject>
+    <replaceSharedObjects>Validate shared objects</replaceSharedObjects>
+    <format>
+           <management>Distribution formats management</management>
+           <manDes>Add/modify/delete and show distribution formats</manDes>
+    </format>
+    <formats>Formats</formats>
+    <extents>Extents</extents>
+    <deleted>Deleted</deleted>
+    <insufficient.privileges.import.replace>A metadata record exists that you cannot replace because of insufficient privileges</insufficient.privileges.import.replace>
+    <updateDatasetTitle>Update dataset</updateDatasetTitle>
+    <updateDatasetMsg>You have to check \'Update dataset metadata\' to add an onlineResource section for not allowed metadata</updateDatasetMsg>
+    <reusable>
+        <validated>Validated</validated>
+        <nonValidated>Non-validated</nonValidated>
+        <nonValidTitle>Non-validated shared objects</nonValidTitle>
+        <nonValidDesc>Validate/Reject shared objects that have not yet been validated</nonValidDesc>
+        <rejectTitle>Rejection Message</rejectTitle>
+        <rejectDefaultMsg>Choose another shared object...</rejectDefaultMsg>
+    </reusable>
+    <deletedSharedObject>
+        <msg>Shared metadata elements have been deleted that affect metadata document(s) that you own.  The complete list of affected metadata objects are listed bellow. Please update the documents listed in this email.</msg>
+        <subject>Shared object deleted</subject>
+    </deletedSharedObject>
+    <Shared>Shared</Shared>
+    <extents>
+           <deselectAll>Deselect all</deselectAll>
+           <selectAll>Select all</selectAll>
+           <management>Manage Extents</management>
+           <confirmDelete>Confirm deleting selected extents</confirmDelete>
+           <manDes>Add/remove/update registered extents</manDes>
+    </extents>
+    <page>Page</page>
 </strings>

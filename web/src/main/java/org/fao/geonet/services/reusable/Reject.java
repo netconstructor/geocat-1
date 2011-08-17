@@ -114,11 +114,11 @@ public class Reject implements Service
             }
 
             updateHrefs(strategy, context, dbms, session, id, results, baseURL, strategySpecificData);
+            ArrayList<Integer> mdIds = new ArrayList<Integer>();
             for (MetadataRecord metadataRecord : results) {
-                final SearchManager searchmanager = gc.getSearchmanager();
-                final String metadataId = metadataRecord.id;
-                gc.getDataManager().indexMetadata(dbms, metadataId, true, false);
+                mdIds.add(Integer.parseInt(metadataRecord.id));
             }
+            gc.getDataManager().scheduleIndexTask(context, mdIds);
 
             Element e = new Element("id");
             e.setText(id);

@@ -12,7 +12,7 @@
         <xsl:param name="wfs"/>
         <xsl:param name="id"/>
 		
-			<button onclick="javascript:popWindow('{/root/gui/locService}/extent.edit?crs=EPSG:21781&amp;typename={$typename}&amp;id={$id}&amp;wfs={$wfs}');" class="content">
+			<button onclick="javascript:popWindow('{/root/gui/locService}/extent.edit?crs=EPSG:21781&amp;typename={$typename}&amp;id={$id}&amp;wfs={$wfs}&amp;modal');" class="content">
 				<xsl:value-of select="/root/gui/strings/add"/>
 			</button>
 	</xsl:template>
@@ -156,7 +156,7 @@
 					<xsl:copy-of select="$valid"/><xsl:text> </xsl:text><xsl:value-of select="$completeDesc"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<a href="javascript:popWindow('{/root/gui/locService}/extent.edit?crs=EPSG:21781&amp;wfs={$wfs}&amp;typename={$typename}&amp;id={$id}');">
+					<a href="javascript:popWindow('{/root/gui/locService}/extent.edit?crs=EPSG:21781&amp;wfs={$wfs}&amp;typename={$typename}&amp;id={$id}&amp;modal');">
 	                    <xsl:copy-of select="$valid"/><xsl:text> </xsl:text><xsl:value-of select="$completeDesc"/>
 					</a>
 				</xsl:otherwise>

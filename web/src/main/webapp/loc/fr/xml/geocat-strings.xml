@@ -97,4 +97,41 @@
     <monitoring.idle>Idle</monitoring.idle>
     <monitoring.service.disk>Monitor du disque</monitoring.service.disk>
     <monitoring.freespace>Espace libre</monitoring.freespace>
+
+    <reject>Refuser</reject>
+    <replaceSharedObjects>Remplacer par des objets réutilisables</replaceSharedObjects>
+    <format>
+        <management>Gestion des formats de distribution</management>
+        <manDes>Ajouter/modifier/supprimer des formats de distribution</manDes>
+    </format>
+    <formats>Formats</formats>
+    <extents>Etendues</extents>
+    <deleted>Supprimé</deleted>
+    <insufficient.privileges.import.replace>Une métadonnée avec le même identifiant existe déjà. Vos privilèges ne suffisent pas pour la remplacer.</insufficient.privileges.import.replace>
+    <updateDatasetTitle>Mettre à jour une MDD</updateDatasetTitle>
+    <updateDatasetMsg>Il faut cocher \'Mettre à jour une MDD\' pour ajouter une section "ressource online" si on n\'a pas droit d\'édition sur la MDS</updateDatasetMsg>
+    <reusable>
+        <validated>validé</validated>
+        <nonValidated>non validé</nonValidated>
+        <nonValidTitle>Gérer les objets réutilisables non validés</nonValidTitle>
+        <nonValidDesc>Valider/rejeter les objets réutilisables non validés</nonValidDesc>
+        <rejectTitle>Message de rejet</rejectTitle>
+        <rejectDefaultMsg>Choisissez un autre objet réutilisable...</rejectDefaultMsg>
+    </reusable>
+    <deletedSharedObject>
+        <msg>Cher partenaire geocat.ch,
+Des objets réutilisables que vous utilisez dans vos métadonnées ont été rejetés. Vous trouverez ci-contre la liste des métadonnées concernées et la raison du rejet. Nous vous prions de bien vouloir adapter ces métadonnées et de les republier. N&apos;hésitez pas à prendre contact avec nous en cas de questions: geocat@swisstopo.ch
+Merci beaucoup de votre collaboration et meilleures salutations.
+Votre équipe geocat.ch</msg>
+        <subject>Objet réutilisable rejeté</subject>
+    </deletedSharedObject>
+    <Shared>Objet réutilisable</Shared>
+    <extents>
+        <deselectAll>Tout déselectionner</deselectAll>
+        <selectAll>Tout selectionner</selectAll>
+        <management>Gérer les étendues</management>
+        <confirmDelete>Etes-vous sur de vouloir suprimmer les étendues sélectionnées</confirmDelete>
+        <manDes>Gestion des objets géographiques</manDes>
+    </extents>
+    <page>Page</page>
 </strings>

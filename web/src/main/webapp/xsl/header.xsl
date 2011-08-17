@@ -66,7 +66,7 @@
 		</script>		
 		
 		<!-- stylesheet -->
-		<link rel="stylesheet" type="text/css" href="{/root/gui/url}/geonetwork.css"/>
+		<link rel="stylesheet" type="text/css" href="{/root/gui/url}/geocat.css"/>
 		<link rel="stylesheet" type="text/css" href="{/root/gui/url}/modalbox.css"/>
 		<xsl:apply-templates mode="css" select="/"/>
 		

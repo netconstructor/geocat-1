@@ -98,4 +98,41 @@
     <monitoring.idle>Leerlauf</monitoring.idle>
     <monitoring.service.disk>Disk Monitor</monitoring.service.disk>
     <monitoring.freespace>Freier Speicherplatz</monitoring.freespace>  
+
+    <reject>Ablehnen</reject>
+    <replaceSharedObjects>Wiederverwendbare Elemente bestätigen</replaceSharedObjects>
+    <format>
+        <management>Datenformate</management>
+        <manDes>Hinzufügen/Bearbeiten/Löschen und Anzeigen der Datenformate</manDes>
+    </format>
+    <formats>Format</formats>
+    <extents>Ausdehnung</extents>
+    <deleted>Gelöscht</deleted>
+    <insufficient.privileges.import.replace>Es gibt einen Metadatensatz mit diesem Identifikator, der nicht ersetzt werden kann, da Sie nicht über die nötigen Rechte verfügen.</insufficient.privileges.import.replace>
+    <updateDatasetTitle>Datensatz updaten</updateDatasetTitle>
+    <updateDatasetMsg>\'Datensatz updaten\' muss angekreuzt sein, um eine online Ressource bei Metadaten anzufügen, wo man kein Schreibrecht hat</updateDatasetMsg>
+    <reusable>
+        <validated>Bestätigt</validated>
+        <nonValidated>Unbestätigt</nonValidated>
+        <nonValidTitle>Unbestätigte wiederverwendbare Objekte</nonValidTitle>
+        <nonValidDesc>Wiederverwendbare Objekte bestätigen/ablehnen</nonValidDesc>
+        <rejectTitle>Nachricht zur Ablehnung von wiederverwendbaren Objekten</rejectTitle>
+        <rejectDefaultMsg>Wählen Sie ein anderes wiederverwendbares Objekt...</rejectDefaultMsg>
+    </reusable>
+    <deletedSharedObject>
+        <msg>Lieber geocat.ch-Partner,
+Es sind von Ihnen genutzte wiederverwendbare Objekte entfernt worden. Nachfolgend finden Sie die Liste der betroffenen Metadatensätze und die Begründung der Ablehnung. Wir bitten Sie, diese Metadaten anzupassen und erneut zu publizieren. Nehmen Sie bei Fragen bitte direkt mit uns Kontakt auf geocat@swisstopo.ch.
+Besten Dank für die Zusammenarbeit und Freundliche Grüsse
+Ihr geocat.ch-Team</msg>
+        <subject>Wiederverwendbares Objekt entfernt</subject>
+    </deletedSharedObject>
+    <Shared>Wiederverwendbares Element</Shared>
+    <extents>
+       <deselectAll>Auswahl löschen</deselectAll>
+       <selectAll>Alles auswählen</selectAll>
+       <management>Ausdehnungen</management>
+       <confirmDelete>Sind Sie sicher, dass sie die ausgewählten Ausdehnungen löschen wollen</confirmDelete>
+       <manDes>Hinzufügen/Bearbeiten/Löschen und Anzeigen der Ausdehnungen</manDes>
+    </extents>
+    <page>Seite</page>
 </strings>    

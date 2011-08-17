@@ -4,11 +4,27 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     
     <xsl:include href="main.xsl"/>
-    <xsl:include href="mapfish_includes.xsl"/>
 
+    <xsl:template mode="css" match="/">
+        <script type="text/javascript">
+            window.gMfLocation = '<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/';
+        </script>
+        <xsl:call-template name="geoCssHeader"/>
+    </xsl:template>
+            
     <xsl:template mode="script" match="/">
-        <xsl:call-template name="mapfish_includes"/>
-        <script src="{/root/gui/url}/scripts/mfbase/ext/ext-all.js" type="text/javascript"/>
+    
+        <!-- To avoid an interaction with prototype and ExtJs.Tooltip, should be loaded before ExtJs -->
+        <xsl:choose>
+            <xsl:when test="/root/request/debug">
+                <script type="text/javascript" src="{/root/gui/url}/scripts/prototype.js"></script>
+            </xsl:when>
+            <xsl:otherwise>
+              <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.js"></script>      
+            </xsl:otherwise>
+        </xsl:choose>
+    
+        <xsl:call-template name="geoHeader"/>
         <script src="{/root/gui/url}/scripts/RowExpander.js" type="text/javascript"/>
          
          <script language="JavaScript1.2" type="text/javascript">
@@ -32,17 +48,16 @@
          </script>
 
          <script src="{/root/gui/url}/scripts/reusable-validate.js" type="text/javascript"/>
-        <xsl:call-template name="js-translations"/>
-
     </xsl:template>
     
 	<xsl:template name="content">
 	   <xsl:call-template name="formLayout">
             <xsl:with-param name="title" select="/root/gui/strings/reusable/nonValidTitle"/>
-            <xsl:with-param name="navpane">
-                <xsl:call-template name="nav"/>
+            <xsl:with-param name="indent">0
             </xsl:with-param>
             <xsl:with-param name="content">
+                <xsl:call-template name="nav"/>
+            
                 <xsl:call-template name="form"/>
             </xsl:with-param>
             <xsl:with-param name="buttons">
@@ -55,10 +70,6 @@
     <xsl:template name="buttons">
         <button class="content" id='edit' onclick="edit()">
             <xsl:value-of select="/root/gui/strings/edit"/>
-        </button>
-                            &#160;
-        <button class="content" id='duplicates' onclick="replaceDuplicates()">
-            <xsl:value-of select="/root/gui/strings/replaceDuplicates"/>
         </button>
                             &#160;
         <button class="content" id='validate' onclick="validate()">
@@ -75,13 +86,13 @@
     </xsl:template>
 	
 	<xsl:template name="nav">
-        <table align="left" width="100%">
-            <tr id="nav_contacts"><td><a href="javascript:show('contacts')"><xsl:value-of select="/root/gui/strings/user"/></a></td></tr>
-            <tr id="nav_formats"><td><a href="javascript:show('formats')"><xsl:value-of select="/root/gui/strings/formats"/></a></td></tr>
-            <tr id="nav_extents"><td><a href="javascript:show('extents')"><xsl:value-of select="/root/gui/strings/extents"/></a></td></tr>
-            <tr id="nav_keywords"><td><a href="javascript:show('keywords')"><xsl:value-of select="/root/gui/strings/keywords"/></a></td></tr>
-            <tr id="nav_deleted"><td><a href="javascript:showDeletePage('{/root/gui/strings/delete}')"><xsl:value-of select="/root/gui/strings/deleted"/></a></td></tr>
-       </table>
+        <ul class="nav" style="padding-left: 60px;">
+            <li id="nav_contacts"> <a href="javascript:show('contacts')"><xsl:value-of select="/root/gui/strings/user"/></a></li>
+            <li id="nav_formats"> <a href="javascript:show('formats')"><xsl:value-of select="/root/gui/strings/formats"/></a></li>
+            <li id="nav_extents"> <a href="javascript:show('extents')"><xsl:value-of select="/root/gui/strings/extents"/></a></li>
+            <li id="nav_keywords"> <a href="javascript:show('keywords')"><xsl:value-of select="/root/gui/strings/keywords"/></a></li>
+            <li id="nav_deleted"> <a href="javascript:showDeletePage('{/root/gui/strings/delete}')"><xsl:value-of select="/root/gui/strings/deleted"/></a></li>
+       </ul><br/>
 	</xsl:template>
 	
 	   

@@ -5,8 +5,7 @@
 
 	<xsl:include href="extent-util.xsl" />
 
-	<xsl:output method='html' version='1.0' encoding='UTF-8'
-		indent='yes' />
+	<xsl:output method='html' encoding='UTF-8' indent='yes' />
 
 	<xsl:template match="wfs">
 		<ul>

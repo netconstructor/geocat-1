@@ -157,7 +157,7 @@ public class Search extends List
         Geometry geometry = new WKTReader().read(wkt);
         PropertyName geomAtt = filterFactory.property(featureType.getFeatureSource().getSchema()
                 .getGeometryDescriptor().getLocalName());
-        return filterFactory.intersects(geomAtt, filterFactory.literal(geometry));
+        return filterFactory.within(geomAtt, filterFactory.literal(geometry));
     }
 
     private DefaultQuery xmlFilterQuery(String xml, String version, FeatureType featureType, String[] properties)

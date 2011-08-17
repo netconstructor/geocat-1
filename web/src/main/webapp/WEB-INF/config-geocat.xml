@@ -108,6 +108,7 @@
         <service name="extent.edit">
             <class name=".services.extent.Get">
                 <param name="typename"/>
+                <param name="modal" />
             </class>
             <output sheet="extent-edit.xsl" />
         </service>

@@ -228,8 +228,7 @@ public class DataManager {
 		// if anything to index then schedule it to be done after servlet is
 		// up so that any links to local fragments are resolvable
 		if ( toIndex.size() > 0 ) {
-			IndexMetadataTask indexMetadataTask = new IndexMetadataTask(context, toIndex);
-			indexThreadPool.schedule(indexMetadataTask, 10, TimeUnit.MILLISECONDS);
+			scheduleIndexTask(context, toIndex);
 		}
 
 		if (docs.size() > 0) { // anything left?
@@ -244,6 +243,11 @@ public class DataManager {
       Log.debug(Geonet.DATA_MANAGER, "- removed record (" + id + ") from index");
 		}
 	}
+
+    public void scheduleIndexTask(ServiceContext context, ArrayList<Integer> toIndex) {
+        IndexMetadataTask indexMetadataTask = new IndexMetadataTask(context, toIndex);
+        indexThreadPool.schedule(indexMetadataTask, 10, TimeUnit.MILLISECONDS);
+    }
 
     /**
      *
@@ -262,9 +266,7 @@ public class DataManager {
 			// clean XLink Cache so that cache and index remain in sync
 			Processor.clearCache();	
 
-			// execute indexing operation
-			IndexMetadataTask indexMetadataTask = new IndexMetadataTask(context, toIndex);
-			indexThreadPool.schedule(indexMetadataTask, 10, TimeUnit.MILLISECONDS);
+			scheduleIndexTask(context, toIndex);
 		}
 	}
 
@@ -405,7 +407,7 @@ public class DataManager {
                         sb.append(xlink.getValue()); sb.append(" ");
                     }
                     moreFields.add(makeField("_xlink", sb.toString(), true, true, false));
-                    Processor.detachXLink(md,servContext); 
+                    Processor.processXLink(md,servContext); 
                 }
                 else {
                     moreFields.add(makeField("_hasxlinks", "0", true, true, false));

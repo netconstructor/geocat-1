@@ -475,29 +475,56 @@
 					</xsl:variable>
 					
 					-->
-					
-					<xsl:variable name="i18n">
-						
-						<xsl:call-template name="addrow">
-							<xsl:with-param name="service" select="'localization'"/>
-							<xsl:with-param name="title" select="/root/gui/strings/localiz"/>
-							<xsl:with-param name="desc" select="/root/gui/strings/localizDes"/>
-						</xsl:call-template>
-						
-						<xsl:call-template name="addrow">
-							<xsl:with-param name="service" select="'test.i18n'"/>
-							<xsl:with-param name="title" select="/root/gui/strings/i18n"/>
-							<xsl:with-param name="desc" select="/root/gui/strings/i18nDesc"/>
-						</xsl:call-template>
-						
-					</xsl:variable>
-					
-					<xsl:call-template name="addTitle">
-						<xsl:with-param name="icon">comment.png</xsl:with-param>
-						<xsl:with-param name="title" select="/root/gui/strings/localiz"/>
-						<xsl:with-param name="content" select="$i18n"/>
-					</xsl:call-template>
-					
+                    
+                    <xsl:variable name="i18n">
+                        
+                        <xsl:call-template name="addrow">
+                            <xsl:with-param name="service" select="'localization'"/>
+                            <xsl:with-param name="title" select="/root/gui/strings/localiz"/>
+                            <xsl:with-param name="desc" select="/root/gui/strings/localizDes"/>
+                        </xsl:call-template>
+                        
+                        <xsl:call-template name="addrow">
+                            <xsl:with-param name="service" select="'test.i18n'"/>
+                            <xsl:with-param name="title" select="/root/gui/strings/i18n"/>
+                            <xsl:with-param name="desc" select="/root/gui/strings/i18nDesc"/>
+                        </xsl:call-template>
+                        
+                    </xsl:variable>
+                    
+                    <xsl:call-template name="addTitle">
+                        <xsl:with-param name="icon">comment.png</xsl:with-param>
+                        <xsl:with-param name="title" select="/root/gui/strings/localiz"/>
+                        <xsl:with-param name="content" select="$i18n"/>
+                    </xsl:call-template>
+                    
+                    <xsl:variable name="reusableObjects">
+                        
+                        <xsl:call-template name="addrow">
+                            <xsl:with-param name="service" select="'reusable.non_validated.admin'"/>
+                            <xsl:with-param name="title" select="/root/gui/strings/reusable/nonValidTitle"/>
+                            <xsl:with-param name="desc" select="/root/gui/strings/reusable/nonValidDesc"/>
+                        </xsl:call-template>
+                        
+                        <xsl:call-template name="addrow">
+                            <xsl:with-param name="service" select="'extent.admin'"/>
+                            <xsl:with-param name="title" select="/root/gui/strings/extents/management"/>
+                            <xsl:with-param name="desc" select="/root/gui/strings/extents/manDes"/>
+                        </xsl:call-template>
+                        
+                        <xsl:call-template name="addrow">
+                            <xsl:with-param name="service" select="'format.admin'"/>
+                            <xsl:with-param name="title" select="/root/gui/strings/format/management"/>
+                            <xsl:with-param name="desc" select="/root/gui/strings/format/manDes"/>
+                        </xsl:call-template>
+                        
+                    </xsl:variable>
+                    
+                    <xsl:call-template name="addTitle">
+                        <xsl:with-param name="icon">layers.png</xsl:with-param>
+                        <xsl:with-param name="title" select="/root/gui/strings/Shared"/>
+                        <xsl:with-param name="content" select="$reusableObjects"/>
+                    </xsl:call-template>
 					
 				</table>
 				<p/>

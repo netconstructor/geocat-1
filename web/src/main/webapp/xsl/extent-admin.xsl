@@ -1,32 +1,34 @@
-metadata_expire_operations.xsl
-metadata_expire_results.xsl<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:include href="main.xsl" />
+	<xsl:include href="mapfish_includes.xsl" />
 	<xsl:include href="extent-util.xsl" />
-    <xsl:include href="mapfish_includes.xsl" />
 
-	<!--
-    additional scripts
-    -->
-	<xsl:template mode="script" match="/">
-		<!-- javascript -->
-		<script language="JavaScript1.2" type="text/javascript">
-			var locService= "<xsl:value-of select="/root/gui/locService" />";
-			var locUrl = "<xsl:value-of select="/root/gui/locUrl" />";
-			var url = "<xsl:value-of select="/root/gui/url" />";
-			var foundWords = '<xsl:value-of select="/root/gui/strings/foundWords" />';
-			var pages = '<xsl:value-of select="/root/gui/strings/pages" />';
-			var selection = '<xsl:value-of select="/root/gui/strings/selection" />';
-			var sort = '<xsl:value-of select="/root/gui/strings/sort" />';
-			var label = '<xsl:value-of select="/root/gui/strings/label" />';
-			var definition = '<xsl:value-of select="/root/gui/strings/definition" />';
-		</script>
-		<script type="text/javascript" src="{/root/gui/url}/scripts/core/kernel/kernel.js" language="JavaScript" />
+
+    <xsl:template mode="css" match="/">
+        <script type="text/javascript">
+            window.gMfLocation = '<xsl:value-of select="/root/gui/url"/>/scripts/mapfish/';
+        </script>
+        <xsl:call-template name="geoCssHeader"/>
+        <xsl:call-template name="mapfish_css_includes"/>
+    </xsl:template>
+            
+    <xsl:template mode="script" match="/">
+    
+        <!-- To avoid an interaction with prototype and ExtJs.Tooltip, should be loaded before ExtJs -->
+        <xsl:choose>
+            <xsl:when test="/root/request/debug">
+                <script type="text/javascript" src="{/root/gui/url}/scripts/prototype.js"></script>
+            </xsl:when>
+            <xsl:otherwise>
+              <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.js"></script>      
+            </xsl:otherwise>
+        </xsl:choose>
+    
+        <xsl:call-template name="geoHeader"/>
+        <xsl:call-template name="mapfish_script_includes"/>
         <script type="text/javascript" src="{/root/gui/url}/scripts/extentSearching.js" language="JavaScript"/>
-    	<script type="text/javascript" src="{/root/gui/url}/scripts/scriptaculous/scriptaculous.js?load=effects,controls" />
-
-        <xsl:call-template name="mapfish_includes"/>
 
 		<script language="JavaScript1.2" type="text/javascript">
 
@@ -41,7 +43,7 @@ metadata_expire_results.xsl<?xml version="1.0" encoding="UTF-8"?>
 				}
 			}
 			function refresh(){
-			    doSearchSubmit();
+			    doSearchSubmit(1);
 			    msgWindow.close();
 			}
 
@@ -49,6 +51,8 @@ metadata_expire_results.xsl<?xml version="1.0" encoding="UTF-8"?>
             function initMapComponent() {
                 var mapCmp = new MapComponent('olMap', {displayLayertree: false});
                 drawCmp = new MapDrawComponent(mapCmp.map, {toolbar: mapCmp.toolbar, activate: true});
+                Ext.get("olMapMap").setHeight(Ext.get("olMapMap").dom.parentNode.getHeight())
+                mapCmp.zoomToFullExtent();
             }
 		</script>
 	</xsl:template>
@@ -101,7 +105,7 @@ metadata_expire_results.xsl<?xml version="1.0" encoding="UTF-8"?>
     
     <xsl:template name="form">
         <form method="get" action="javascript:doSearchSubmit(1);" name="simplesearch">
-            <input value="200" type="hidden" id="numResults" name="numResults"/>
+            <input value="20" type="hidden" id="numResults" name="numResults"/>
             <table align="center">
                 <tr>
                     <td class="padded-content">

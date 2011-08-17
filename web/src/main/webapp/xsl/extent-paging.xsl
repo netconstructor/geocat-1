@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-<xsl:output method='html' version='1.0' encoding='UTF-8' indent='yes'/>
+<xsl:output method='html' encoding='UTF-8' indent='yes'/>
 
 <xsl:include href="extent-util.xsl"/>
 
@@ -26,7 +26,7 @@
 	</td></tr></table>
 
 
-	<xsl:if test="$hits != '0'">
+	<xsl:if test="$hits != 0">
 
 		<table align="center" border="0" width="80%">
 			<colgroup>
@@ -97,12 +97,12 @@
                 <td colspan="2">
                     <button id="selectAll" name="selectAll" onclick="javascript:esearching.selectAll(true,'{$wfs}','{$typename}');"
                         class="content">
-                        <xsl:value-of select="/root/gui/strings/extent/selectAll" />
+                        <xsl:value-of select="/root/gui/strings/extents/selectAll" />
                     </button>
                     &#160;
                     <button id="deselectAll" name="deselectAll" onclick="javascript:esearching.selectAll(false,'{$wfs}','{$typename}');"
                         class="content">
-                        <xsl:value-of select="/root/gui/strings/extent/deselectAll" />
+                        <xsl:value-of select="/root/gui/strings/extents/deselectAll" />
                     </button>
                     &#160;
                     <button id="del" name="del" onclick="javascript:removeExtent();"
