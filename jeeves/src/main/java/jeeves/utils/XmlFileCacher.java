@@ -23,15 +23,14 @@
 
 package jeeves.utils;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-
 import java.io.File;
 import java.io.IOException;
 
-import jeeves.server.ConfigurationOveridesTest;
 import jeeves.server.ConfigurationOverrides;
 import jeeves.server.sources.http.JeevesServlet;
+
+import org.jdom.Element;
+import org.jdom.JDOMException;
 
 //=============================================================================
 
