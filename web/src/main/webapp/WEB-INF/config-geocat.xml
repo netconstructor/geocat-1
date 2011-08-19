@@ -27,13 +27,56 @@
             </output>
         </service>
 
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
         <service name="xml.user.get">
             <class name=".services.user.Get">
                 <param name="xml" />
             </class>
 
-            <output sheet="user-xml.xsl" contentType="text/xml; charset=UTF-8" />
+            <output sheet="shared-user/user-xml.xsl" contentType="text/xml; charset=UTF-8" />
         </service>
+        
+        <service name="validated.shared.user.admin">
+            <class name=".services.user.List" >
+                <param name="type" value="VALIDATED_SHARED"/>
+            </class>
+
+            <output sheet="shared-user/user-list.xsl">
+                <xml name="strings" file="xml/confirm.xml" />
+            </output>
+        </service>
+        <service name="nonvalidated.shared.user.admin">
+            <class name=".services.user.List" >
+                <param name="type" value="NON_VALIDATED_SHARED"/>
+            </class>
+
+            <output sheet="shared-user/user-list.xsl">
+                <xml name="strings" file="xml/confirm.xml" />
+            </output>
+        </service>
+
+        <service name="shared.user.edit">
+            <class name=".services.user.Get" />
+
+            <output sheet="shared-user/user-update.xsl">
+                <call name="groups" class=".guiservices.groups.GetMine" />
+                <call name="profiles" class="jeeves.guiservices.profiles.Get" />
+            </output>
+        </service>
+
+
+        <service name="shared.user.update">
+            <class name=".services.user.SharedUpdate" />
+            <output forward="shared-user/user.list" />
+        </service>
+
+        <service name="shared.user.remove">
+            <class name=".services.user.Remove" />
+            <output forward="shared-user/user.list" />
+        </service>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
         <service name="reusable.object.process">
             <class name=".services.reusable.Process"/>

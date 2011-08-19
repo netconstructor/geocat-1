@@ -23,6 +23,7 @@
 
 package org.fao.geonet.services.user;
 
+import org.fao.geonet.constants.Geocat;
 import jeeves.constants.Jeeves;
 import jeeves.interfaces.Service;
 import jeeves.resources.dbms.Dbms;
@@ -30,8 +31,11 @@ import jeeves.server.ServiceConfig;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
+import jeeves.xlink.Processor;
+
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
+import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
 
 import java.util.ArrayList;
@@ -41,7 +45,7 @@ import java.util.ArrayList;
 /** Update the information of a user
   */
 
-public class Update implements Service
+public class SharedUpdate implements Service
 {
 	//--------------------------------------------------------------------------
 	//---
@@ -72,9 +76,43 @@ public class Update implements Service
 		String zip      = Util.getParam(params, Params.ZIP,     "");
 		String country  = Util.getParam(params, Params.COUNTRY, "");
 		String email    = Util.getParam(params, Params.EMAIL,   "");
-		String organ    = Util.getParam(params, Params.ORG,     "");
+		String organ    = LangUtils.createDescFromParams(params, Params.ORG);
 		String kind     = Util.getParam(params, Params.KIND,    "");
+		
+        String phone    = Util.getParam(params, Geocat.Params.PHONE, "");
+        String fac      = Util.getParam(params, Geocat.Params.FAC, "");
+        String email1    = Util.getParam(params, Params.EMAIL+1,   "");
+        String phone1    = Util.getParam(params, Geocat.Params.PHONE+1, "");
+        String fac1      = Util.getParam(params, Geocat.Params.FAC+1, "");
+        String email2    = Util.getParam(params, Params.EMAIL+2,   "");
+        String phone2    = Util.getParam(params, Geocat.Params.PHONE+2, "");
+        String fac2      = Util.getParam(params, Geocat.Params.FAC+2, "");
 
+		String streetnb = Util.getParam(params, Geocat.Params.STREETNUMBER, "");
+		String street   = Util.getParam(params, Geocat.Params.STREETNAME, "");
+		String postbox  = Util.getParam(params, Geocat.Params.POSTBOX, "");
+		String position = LangUtils.createDescFromParams(params, Geocat.Params.POSITIONNAME);
+
+		String online      = LangUtils.createDescFromParams(params, Geocat.Params.ONLINE);
+        String onlinename  = LangUtils.createDescFromParams(params, "onlinename");
+        String onlinedesc  = LangUtils.createDescFromParams(params, "onlinedescription");
+
+        String hours    = Util.getParam(params, Geocat.Params.HOURSOFSERV, "");
+		String instruct = Util.getParam(params, Geocat.Params.CONTACTINST, "");
+		String publicacc = Util.getParam(params, Geocat.Params.PUBLICACC, "");
+		String orgacronym = LangUtils.createDescFromParams(params, Geocat.Params.ORGACRONYM);
+		String directnumber = Util.getParam(params, Geocat.Params.DIRECTNUMBER, "");
+		String mobile = Util.getParam(params, Geocat.Params.MOBILE, "");
+
+		if (!context.getProfileManager().exists(profile))
+			throw new Exception("Unkown profile : "+ profile);
+
+		if( profile.equals(Geocat.Profile.SHARED) ){
+		    publicacc = "y";
+		}
+
+		Processor.clearCache();
+		
 		UserSession usrSess = context.getUserSession();
 		String      myProfile = usrSess.getProfile();
 		String      myUserId  = usrSess.getUserId();
@@ -127,10 +165,17 @@ public class Update implements Service
 				id = context.getSerialFactory().getSerial(dbms, "Users") +"";
 
 				String query = "INSERT INTO Users (id, username, password, surname, name, profile, "+
-							"address, city, state, zip, country, email, organisation, kind) "+
-							"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						"address, state, zip, country, email, organisation, kind, streetnumber, "+
+						"streetname, postbox, city, phone, facsimile, positionname, onlineresource, "+
+						"hoursofservice, contactinstructions, publicaccess, orgacronym, directnumber, mobile, " +
+						"email1, phone1, facsimile1, email2, phone2, facsimile2, onlinename, onlinedescription) "+
+						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-				dbms.execute(query, new Integer(id), username, Util.scramble(password), surname, name, profile, address, city, state, zip, country, email, organ, kind);
+				dbms.execute(query, new Integer(id), username, Util.scramble(password), surname,
+					 name, profile, address, state, zip, country, email, organ, kind,
+					 streetnb, street, postbox, city, phone, fac, position, online, hours,
+					 instruct, (publicacc.equals("")?"n":"y"), orgacronym, directnumber, mobile, email1, phone1, fac1, email2, phone2, fac2, onlinename, onlinedesc);
+
 
 			//--- add groups
 
@@ -144,11 +189,25 @@ public class Update implements Service
 
 			// -- full update
 				if (operation.equals(Params.Operation.FULLUPDATE)) {
-					String query = "UPDATE Users SET username=?, password=?, surname=?, name=?, profile=?, address=?, city=?, state=?, zip=?, country=?, email=?, organisation=?, kind=? WHERE id=?";
+					String query = "UPDATE Users SET username=?, password=?, surname=?, name=?, "
+							+ "address=?, state=?, zip=?, country=?, email=?,"
+							+ "organisation=?, kind=?, "
+							+ "profile=?, streetnumber=?, streetname=?, postbox=?, city=?, "
+							+ "phone=?, facsimile=?, positionname=?, onlineresource=?, "
+							+ "hoursofservice=?, contactinstructions=?, publicaccess=?, "
+							+ "orgacronym=?, directnumber=?, mobile=?, email1=?, phone1=?, facsimile1=?, "
+							+ "email2=?, phone2=?, facsimile2=?, onlinename=?, onlinedescription=? "
+							+ "WHERE id=?";
+					dbms.execute(query, username, Util.scramble(password),
+							surname, name, address, state, zip, country, email,
+							organ, kind, profile, streetnb, street, postbox,
+							city, phone, fac, position, online, hours,
+							instruct, (publicacc.equals("") ? "n" : "y"),
+							orgacronym, directnumber, mobile, email1, phone1,
+							fac1, email2, phone2, fac2, onlinename, onlinedesc,
+							new Integer(id));
 
-					dbms.execute (query, username, Util.scramble(password), surname, name, profile, address, city, state, zip, country, email, organ, kind, new Integer(id));
-
-					//--- add groups
+					// --- add groups
 
 					dbms.execute("DELETE FROM UserGroups WHERE userId=?", new Integer(id));
 
@@ -201,3 +260,4 @@ public class Update implements Service
 }
 
 //=============================================================================
+

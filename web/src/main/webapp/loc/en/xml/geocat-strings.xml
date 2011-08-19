@@ -143,4 +143,20 @@
            <manDes>Add/remove/update registered extents</manDes>
     </extents>
     <page>Page</page>
+    
+    <streetname>Street name</streetname>
+    <streetnumber>N°</streetnumber>
+    <postbox>Postbox</postbox>
+    <userdetails>User details</userdetails>
+    <facsimile>Facsimile</facsimile>
+    <phone>Phone</phone>
+    <orgacronym>Organisation acronym</orgacronym>
+    <positionname>Position name</positionname>
+    <directnumber>Direct number</directnumber>
+    <mobile>Mobile</mobile>
+    <onlineresource>Online resource</onlineresource>
+    <desc>Description</desc>
+    <hoursofservice>Hours of service</hoursofservice>
+    <contactinstructions>Contact instructions</contactinstructions>
+    
 </strings>

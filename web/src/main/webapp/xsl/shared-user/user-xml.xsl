@@ -7,8 +7,8 @@
 
 	<xsl:output method="xml" indent="yes"/>
 
-    <xsl:include href="iso-internal-multilingual-conversion.xsl"/>
-    <xsl:include href="iso-internal-multilingual-conversion-url.xsl"/>
+    <xsl:include href="../iso-internal-multilingual-conversion.xsl"/>
+    <xsl:include href="../iso-internal-multilingual-conversion-url.xsl"/>
 
 	<!-- Return an iso19139 representation of a contact
 	stored in the metadata catalogue.
@@ -299,7 +299,7 @@
                 <xsl:variable name="validated">
                 </xsl:variable>
 		<che:parentResponsibleParty xmlns:xlink="http://www.w3.org/1999/xlink"
-					    xlink:href="local://xml.user.get?id={parentinfo}&amp;schema=iso19139.che&amp;role=distributor"
+					    xlink:href="http://{/root/gui/env/server/host}:{/root/gui/env/server/port}/geonetwork/srv/eng/xml.user.get?id={parentinfo}&amp;schema=iso19139.che&amp;role=distributor"
 					    xlink:show="embed">
 		  <xsl:if test="string(../parentValidated)='n'">
 		    <xsl:attribute name="xlink:role">http://www.geonetwork.org/non_valid_obj</xsl:attribute>

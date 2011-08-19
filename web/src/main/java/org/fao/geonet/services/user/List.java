@@ -33,6 +33,7 @@ import jeeves.utils.Util;
 import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
+import org.fao.geonet.services.user.List.Type;
 import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
 
@@ -45,13 +46,21 @@ import java.util.*;
 
 public class List implements Service
 {
+    enum Type {
+        NORMAL, VALIDATED_SHARED, NON_VALIDATED_SHARED
+    }
+
+    private Type type;
+    
 	//--------------------------------------------------------------------------
 	//---
 	//--- Init
 	//---
 	//--------------------------------------------------------------------------
 
-	public void init(String appPath, ServiceConfig params) throws Exception {}
+	public void init(String appPath, ServiceConfig params) throws Exception {
+	    this.type = Type.valueOf(params.getValue("type", "NORMAL"));
+	}
 
 	//--------------------------------------------------------------------------
 	//---
@@ -84,20 +93,35 @@ public class List implements Service
             sortBy = "username";
         }
 
-		String profilesParam = params.getChildText(Params.PROFILE);
-		if( profilesParam!=null && profileSet.contains(profilesParam)){
-		    profileSet.retainAll(Collections.singleton(profilesParam));
-		}
+        String profilesParam = params.getChildText(Params.PROFILE);
+        String extraWhere;
+        switch(type) {
+        case NON_VALIDATED_SHARED:
+            profileSet.retainAll(Collections.singleton(Geocat.Profile.SHARED));
+            extraWhere = " not validated='y' and profile='"+Geocat.Profile.SHARED+"'";
+            break;
+        case VALIDATED_SHARED:
+            profileSet.retainAll(Collections.singleton(Geocat.Profile.SHARED));
+            extraWhere = " validated='y' and profile='"+Geocat.Profile.SHARED+"'";
+            break;
+        default:
+            if( profilesParam!=null && profileSet.contains(profilesParam)){
+                profileSet.retainAll(Collections.singleton(profilesParam));
+            }
+            extraWhere = " not profile='"+Geocat.Profile.SHARED+"'";
+            break;
+        }
 
+        String where = "WHERE"+extraWhere;
         String name = params.getChildText(Params.NAME);
 		Element elUsers = null;
 
 		if (name == null)
     		//--- retrieve all users
-			elUsers = dbms.select ("SELECT "+sortVals+"* FROM Users ORDER BY " + sortBy);
+			elUsers = dbms.select ("SELECT "+sortVals+"* FROM Users "+where+" ORDER BY " + sortBy);
 		else {
 			// TODO : Add organisation
-			elUsers = dbms.select ("SELECT "+sortVals+"* FROM Users WHERE "
+			elUsers = dbms.select ("SELECT "+sortVals+"* FROM Users WHERE " + extraWhere
 					+ "(username ilike '%" + name + "%' "
                     + "or surname ilike '%" + name + "%' "
                     + "or email ilike '%" + name + "%' "

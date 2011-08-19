@@ -511,11 +511,26 @@
                             <xsl:with-param name="title" select="/root/gui/strings/extents/management"/>
                             <xsl:with-param name="desc" select="/root/gui/strings/extents/manDes"/>
                         </xsl:call-template>
-                        
+
                         <xsl:call-template name="addrow">
                             <xsl:with-param name="service" select="'format.admin'"/>
                             <xsl:with-param name="title" select="/root/gui/strings/format/management"/>
                             <xsl:with-param name="desc" select="/root/gui/strings/format/manDes"/>
+                        </xsl:call-template>
+
+                        <xsl:call-template name="addrow">
+                            <xsl:with-param name="service" select="'validated.shared.user.admin'"/>
+                            <xsl:with-param name="title">
+                                 <xsl:value-of select="/root/gui/strings/userManagement"/> - <xsl:value-of select="/root/gui/strings/reusable/validated"/>
+                            </xsl:with-param>
+                            <xsl:with-param name="desc" select="/root/gui/strings/userManagementDes"/>
+                        </xsl:call-template>
+                        <xsl:call-template name="addrow">
+                            <xsl:with-param name="service" select="'nonvalidated.shared.user.admin'"/>
+                            <xsl:with-param name="title">
+                                 <xsl:value-of select="/root/gui/strings/userManagement"/> - <xsl:value-of select="/root/gui/strings/reusable/nonValidated"/>
+                            </xsl:with-param>
+                            <xsl:with-param name="desc" select="/root/gui/strings/userManagementDes"/>
                         </xsl:call-template>
                         
                     </xsl:variable>

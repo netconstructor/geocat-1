@@ -46,6 +46,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.GeoNetworkAnalyzer;
 import org.jdom.Content;
@@ -355,6 +356,12 @@ public final class LangUtils
 
     public static void resolveMultiLingualElements(Element elUser, final String[] elementsToResolve) throws IOException, JDOMException
     {
+        boolean removeTranslation = (elUser.getChild("record")!=null && 
+                elUser.getChild("record").getChild("profile") !=null && 
+                !elUser.getChild("record").getChild("profile").getTextTrim().equals(Geocat.Profile.SHARED)) ||
+                (elUser.getChild("profile") != null &&
+                        !elUser.getChild("profile").getTextTrim().equals(Geocat.Profile.SHARED));
+        
         Filter findMultilingualElements = new Filter()
         {
             private static final long serialVersionUID = 1L;
@@ -378,8 +385,23 @@ public final class LangUtils
         for (Element elem : toResolve) {
             String text = elem.getText();
             elem.setText(null);
-            elem.addContent(loadInternalMultiLingualElemCollection(text));
+            List<Content> translationsAsSimpleXML = loadInternalMultiLingualElemCollection(text);
+            if(removeTranslation) elem.setText(getSingleTranslation(translationsAsSimpleXML));
+            else elem.addContent(translationsAsSimpleXML);
         }
+    }
+
+    private static String getSingleTranslation(List<Content> translationsAsSimpleXML) {
+
+        for (Content content : translationsAsSimpleXML) {
+            if (content instanceof Element) {
+                Element e = (Element) content;
+                if(!e.getTextTrim().isEmpty()) {
+                    return e.getTextTrim();
+                }
+            }
+        }
+        return "";
     }
 
     public static String two2ThreeLangCode(String sLang)
