@@ -57,7 +57,7 @@
                     </xsl:call-template>
                 </xsl:variable>
 
-				<li xlink:href="{concat('http://', /root/gui/env/server/host, ':', /root/gui/env/server/port, /root/gui/locService)}/xml.user.get?id={id}">
+				<li xlink:href="local://xml.user.get?id={id}">
                     <xsl:copy-of select="$valid"/><xsl:text> </xsl:text>
 					<xsl:value-of select="name"/><xsl:text> </xsl:text><xsl:value-of select="surname"/> 
 					<xsl:text> </xsl:text>

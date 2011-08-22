@@ -113,9 +113,10 @@
 	        <allow service="shared.user.edit"/>
 	        <allow service="validated.shared.user.admin"/>
 	        <allow service="nonvalidated.shared.user.admin"/>
-	        <allow service="shared.user.remove"/>
-	        <allow service="shared.user.update"/>
-	        <allow service="shared.user.infoupdate"/>
+	        <allow service="validated.shared.user.remove"/>
+	        <allow service="validated.shared.user.update"/>
+	        <allow service="nonvalidated.shared.user.remove"/>
+	        <allow service="nonvalidated.shared.user.update"/>
             
         </addXML>
         <replaceAtt xpath="profile[@name = 'Guest']" attName="extends" value="Shared"/>
@@ -177,10 +178,10 @@
         <replaceAtt xpath="mapSearch" attName="options" value="{projection: 'EPSG:4326', maxExtent: new OpenLayers.Bounds(5,45,10,55), units: 'degrees', restrictedExtent: new OpenLayers.Bounds(5,45,10,55)}"/>
         <replaceAtt xpath="mapViewer" attName="options" value="{projection: 'EPSG:4326', maxExtent: new OpenLayers.Bounds(5,45,10,55), units: 'degrees', restrictedExtent: new OpenLayers.Bounds(5,45,10,55)}"/>
         <replaceXML xpath="mapSearch/layers">
-                <layer server="http://${wfs.host}:${wfs.port}/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
+            <layer server="http://${wfs.host}:${wfs.port}/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
         </replaceXML>
         <replaceXML xpath="mapViewer/layers">
-                <layer server="http://${wfs.host}:${wfs.port}/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
+           <layer server="http://${wfs.host}:${wfs.port}/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
         </replaceXML>
     </file>
 </overrides>

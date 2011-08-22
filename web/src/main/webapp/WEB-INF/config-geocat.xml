@@ -66,14 +66,24 @@
         </service>
 
 
-        <service name="shared.user.update">
+        <service name="validated.shared.user.update">
             <class name=".services.user.SharedUpdate" />
-            <output forward="shared-user/user.list" />
+            <output forward="validated.shared.user.admin" />
         </service>
 
-        <service name="shared.user.remove">
+        <service name="validated.shared.user.remove">
             <class name=".services.user.Remove" />
-            <output forward="shared-user/user.list" />
+            <output forward="validated.shared.user.admin" />
+        </service>
+
+        <service name="nonvalidated.shared.user.update">
+            <class name=".services.user.SharedUpdate" />
+            <output forward="nonvalidated.shared.user.admin" />
+        </service>
+
+        <service name="nonvalidated.shared.user.remove">
+            <class name=".services.user.Remove" />
+            <output forward="nonvalidated.shared.user.admin" />
         </service>
 
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -93,6 +103,7 @@
         <service name="shared.user.list">
             <class name=".services.user.List">
                 <param name="xml" />
+                <param name="type" value="SHARED"/>
             </class>
 
             <output sheet="user-list-xml.xsl" />

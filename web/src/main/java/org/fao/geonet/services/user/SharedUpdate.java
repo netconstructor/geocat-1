@@ -69,7 +69,7 @@ public class SharedUpdate implements Service
 		String password = Util.getParam(params, Params.PASSWORD);
 		String surname  = Util.getParam(params, Params.SURNAME, "");
 		String name     = Util.getParam(params, Params.NAME,    "");
-		String profile  = Util.getParam(params, Params.PROFILE);
+		String profile  = Geocat.Profile.SHARED;
 		String address  = Util.getParam(params, Params.ADDRESS, "");
 		String city     = Util.getParam(params, Params.CITY,    "");
 		String state    = Util.getParam(params, Params.STATE,   "");
@@ -99,17 +99,12 @@ public class SharedUpdate implements Service
 
         String hours    = Util.getParam(params, Geocat.Params.HOURSOFSERV, "");
 		String instruct = Util.getParam(params, Geocat.Params.CONTACTINST, "");
-		String publicacc = Util.getParam(params, Geocat.Params.PUBLICACC, "");
 		String orgacronym = LangUtils.createDescFromParams(params, Geocat.Params.ORGACRONYM);
 		String directnumber = Util.getParam(params, Geocat.Params.DIRECTNUMBER, "");
 		String mobile = Util.getParam(params, Geocat.Params.MOBILE, "");
 
-		if (!context.getProfileManager().exists(profile))
-			throw new Exception("Unkown profile : "+ profile);
+        String validated = Util.getParam(params, Geocat.Params.VALIDATED);
 
-		if( profile.equals(Geocat.Profile.SHARED) ){
-		    publicacc = "y";
-		}
 
 		Processor.clearCache();
 		
@@ -118,18 +113,6 @@ public class SharedUpdate implements Service
 		String      myUserId  = usrSess.getUserId();
 
 		java.util.List listGroups = params.getChildren(Params.GROUPS);
-
-		if (!operation.equals(Params.Operation.RESETPW)) {
-			if (!context.getProfileManager().exists(profile))
-				throw new Exception("Unknown profile : "+ profile);
-
-			if (profile.equals(Geonet.Profile.ADMINISTRATOR))
-				listGroups = new ArrayList();
-		}
-
-		if (myProfile.equals(Geonet.Profile.ADMINISTRATOR) ||
-				myProfile.equals("UserAdmin") ||
-				myUserId.equals(id)) {
 
 
 			Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
@@ -168,13 +151,13 @@ public class SharedUpdate implements Service
 						"address, state, zip, country, email, organisation, kind, streetnumber, "+
 						"streetname, postbox, city, phone, facsimile, positionname, onlineresource, "+
 						"hoursofservice, contactinstructions, publicaccess, orgacronym, directnumber, mobile, " +
-						"email1, phone1, facsimile1, email2, phone2, facsimile2, onlinename, onlinedescription) "+
-						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						"email1, phone1, facsimile1, email2, phone2, facsimile2, onlinename, onlinedescription, validated) "+
+						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 				dbms.execute(query, new Integer(id), username, Util.scramble(password), surname,
 					 name, profile, address, state, zip, country, email, organ, kind,
 					 streetnb, street, postbox, city, phone, fac, position, online, hours,
-					 instruct, (publicacc.equals("")?"n":"y"), orgacronym, directnumber, mobile, email1, phone1, fac1, email2, phone2, fac2, onlinename, onlinedesc);
+					 instruct, "y", orgacronym, directnumber, mobile, email1, phone1, fac1, email2, phone2, fac2, onlinename, onlinedesc, validated);
 
 
 			//--- add groups
@@ -202,7 +185,7 @@ public class SharedUpdate implements Service
 							surname, name, address, state, zip, country, email,
 							organ, kind, profile, streetnb, street, postbox,
 							city, phone, fac, position, online, hours,
-							instruct, (publicacc.equals("") ? "n" : "y"),
+							instruct, "y",
 							orgacronym, directnumber, mobile, email1, phone1,
 							fac1, email2, phone2, fac2, onlinename, onlinedesc,
 							new Integer(id));
@@ -236,10 +219,6 @@ public class SharedUpdate implements Service
 					throw new IllegalArgumentException("unknown user update operation "+operation);
 				}
 			} 
-		} else {
-			throw new IllegalArgumentException("you don't have rights to do this");
-		}
-
 		return new Element(Jeeves.Elem.RESPONSE);
 	}
 

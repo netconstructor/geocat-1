@@ -33,6 +33,7 @@ public class Geocat {
     	public static final String MOBILE 		= "mobile";
     	
     	public static final String WEBSITE 		= "website";
+        public static final String VALIDATED    = "validated";
 
     }
 

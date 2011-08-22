@@ -76,11 +76,15 @@
 	form
 	-->
 	<xsl:template name="form">
+	   <xsl:variable name="validatedPrefix">
+	       <xsl:choose>
+	           <xsl:when test="/root/request/validated = 'y'">validated</xsl:when>
+	           <xsl:otherwise>nonvalidated</xsl:otherwise>
+	       </xsl:choose>
+	   </xsl:variable>
 		<form name="userupdateform" class="users" accept-charset="UTF-8"
 			 method="post">
-			<xsl:attribute name="action">
-			     shared.user.update?operation=editinfo
-			</xsl:attribute>
+			<xsl:attribute name="action"><xsl:value-of select="$validatedPrefix"/>.shared.user.update?operation=<xsl:value-of select="/root/request/operation"/>&amp;validated=<xsl:value-of select="/root/request/validated"/></xsl:attribute>
 
 			<xsl:if test="/root/response/record/id">
 				<input type="hidden" name="id" size="-1" value="{/root/response/record/id}"/>
