@@ -2128,8 +2128,16 @@
           <xsl:when test="string(gmd:protocol[1]/gco:CharacterString)='DB:POSTGIS' 
             and string(gmd:name/gco:CharacterString|gmd:name/gmx:MimeFileType)!=''">
             <xsl:apply-templates mode="iso19139GeoPublisher" select="gmd:name/gco:CharacterString">
-            <xsl:with-param name="access" select="'private'"/>
+            <xsl:with-param name="access" select="'db'"/>
             <xsl:with-param name="id" select="$id"/>
+            </xsl:apply-templates>
+          </xsl:when>
+          <xsl:when test="(string(gmd:protocol[1]/gco:CharacterString)='FILE:GEO'
+            or string(gmd:protocol[1]/gco:CharacterString)='FILE:RASTER') 
+            and string(gmd:linkage/gmd:URL)!=''">
+            <xsl:apply-templates mode="iso19139GeoPublisher" select="gmd:name/gco:CharacterString">
+              <xsl:with-param name="access" select="'fileOrUrl'"/>
+              <xsl:with-param name="id" select="$id"/>
             </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
@@ -2508,6 +2516,10 @@
           <xsl:when test="../../gmd:protocol/gco:CharacterString='DB:POSTGIS'">
             <xsl:value-of select="concat(../../gmd:linkage/gmd:URL, '#', .)"/>
           </xsl:when>
+          <xsl:when test="../../gmd:protocol/gco:CharacterString='FILE:GEO'
+            or ../../gmd:protocol/gco:CharacterString='FILE:RASTER'">
+            <xsl:value-of select="../../gmd:linkage/gmd:URL"/>
+          </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="."/>
           </xsl:otherwise>
@@ -2667,9 +2679,18 @@
       <metadatacreationdate>
         <xsl:value-of select="gmd:dateStamp/*"/>
       </metadatacreationdate>
-
       <geonet:info>
-        <xsl:copy-of select="geonet:info/*"/>
+        <xsl:copy-of select="geonet:info/*[name(.)!='edit']"/>
+        <xsl:choose>
+          <xsl:when test="/root/gui/env/harvester/enableEditing='false' and geonet:info/isHarvested='y' and geonet:info/edit='true'">
+            <edit>false</edit>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="geonet:info/edit"/>
+          </xsl:otherwise>
+        </xsl:choose>
+        
+         
         <!-- 
           Internal category could be define using different informations
         in a metadata record (according to standard). This could be improved.

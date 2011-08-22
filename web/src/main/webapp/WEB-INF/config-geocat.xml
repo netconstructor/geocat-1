@@ -76,6 +76,10 @@
             <output forward="validated.shared.user.admin" />
         </service>
 
+        <service name="shared.user.update">
+            <class name=".services.user.SharedUpdate" />
+        </service>
+
         <service name="nonvalidated.shared.user.update">
             <class name=".services.user.SharedUpdate" />
             <output forward="nonvalidated.shared.user.admin" />

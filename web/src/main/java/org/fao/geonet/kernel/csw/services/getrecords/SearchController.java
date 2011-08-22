@@ -158,25 +158,17 @@ public class SearchController
 			Set<String> elemNames, ResultType resultType)
 			throws CatalogException {
 
-		try {
-			// --- get metadata from DB
-			GeonetContext gc = (GeonetContext) context
-					.getHandlerContext(Geonet.CONTEXT_NAME);
-			boolean forEditing = false, withValidationErrors = false;
-
-			// PMT GC2 : backported from GC1
-			// was :
-			// Element res = gc.getDataManager().getMetadata(context, id,
-			// forEditing, withValidationErrors);
-			Element res = gc.getDataManager().getMetadata(context, id, false,
-					true);
-
-			SchemaManager scm = gc.getSchemamanager();
-			if (res == null) {
-				return null;
-			}
-			Element info = res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE);
-			String schema = info.getChildText(Edit.Info.Elem.SCHEMA);
+	try	{
+		//--- get metadata from DB
+		GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
+        boolean forEditing = false, withValidationErrors = false, keepXlinkAttributes = false;
+        Element res = gc.getDataManager().getGeocatMetadata(context, id, forEditing, withValidationErrors, keepXlinkAttributes,true);
+		SchemaManager scm = gc.getSchemamanager();
+		if (res==null) {
+            return null;
+        }
+		Element info = res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE);
+		String schema = info.getChildText(Edit.Info.Elem.SCHEMA);
 
 			// PMT GeoCat c2c : Backported from old geocat
 			if (schema.contains("iso19139"))

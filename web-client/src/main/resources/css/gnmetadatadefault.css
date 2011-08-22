@@ -1,4 +1,6 @@
-
+.metadata a {
+  font-weight : bold;
+}
 
 /* Specific elements */
 .title {
@@ -341,7 +343,7 @@ span.buttons a.small span {
 }
 .buttons a.findsub span {
   padding-left : 15px !important;
-  background-image : url(../images/default/report_magnify.png);
+  background-image : url(../images/default/find.png);
 }
 .buttons a.error span {
   padding-left : 15px !important;
@@ -436,6 +438,12 @@ div.button {
   background-image : url(../images/default/folder_brick.png) !important;
 }
 .attachedAdd {
+  background-image : url(../images/default/folder_go.png) !important;
+}
+.uploadIconAdd {
+  background-image : url(../images/default/folder_page_white.png) !important;
+}
+.uploadIcon {
   background-image : url(../images/default/folder_go.png) !important;
 }
 .suggestionIcon {

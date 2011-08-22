@@ -88,9 +88,10 @@
 			<!--singlefile target="$INSTALL_PATH/web/geonetwork.war" 
 			src="../web/target/geonetwork.war" override="true"/-->
 			
-			<fileset dir="../web/target/geonetwork"  targetdir="$INSTALL_PATH/web/geonetwork" />			
+			<fileset dir="../web/target/geonetwork"  targetdir="$INSTALL_PATH/web/geonetwork"/>			
 
 			<fileset dir="../release/data"   targetdir="$INSTALL_PATH/data" />
+			<fileset dir="../release/schemaPlugins"   targetdir="$INSTALL_PATH/web/geonetwork/schemaPlugins" />
 			
 			<executable targetfile="$INSTALL_PATH/bin/start-geonetwork.sh" />
 			<executable targetfile="$INSTALL_PATH/bin/stop-geonetwork.sh" />

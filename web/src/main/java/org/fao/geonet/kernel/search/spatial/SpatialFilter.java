@@ -22,8 +22,7 @@
 
 package org.fao.geonet.kernel.search.spatial;
 
-import static org.fao.geonet.constants.Geocat.Spatial.FEATURE_TYPE;
-import static org.fao.geonet.constants.Geocat.Spatial.SPATIAL_FILTER_JCS;
+import static org.fao.geonet.kernel.search.spatial.SpatialIndexWriter.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,7 +55,9 @@ import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory2;
@@ -77,6 +78,15 @@ import com.vividsolutions.jts.index.SpatialIndex;
 public abstract class SpatialFilter extends Filter
 {
     private static final long     serialVersionUID = -6221744013750827050L;
+    private static final SimpleFeatureType FEATURE_TYPE;
+    static {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.add(GEOM_ATTRIBUTE_NAME, Geometry.class, DefaultGeographicCRS.WGS84);
+        builder.setDefaultGeometry(GEOM_ATTRIBUTE_NAME);
+        builder.setName(SPATIAL_INDEX_TYPENAME);
+        FEATURE_TYPE = builder.buildFeatureType();
+    }
+
 	private static final Geometry WORLD_BOUNDS;
 	static {
 		GeometryFactory fac = new GeometryFactory();
@@ -189,9 +199,9 @@ public abstract class SpatialFilter extends Filter
                 FeatureId featureId = feature.getIdentifier();
                 jcs.put(featureId.getID(), feature.getDefaultGeometry());
                 if( evaluateFeature(feature) ){
-                    for(int doc:docIndexLookup.get(featureId)) {
-                        bits.set(doc);
-                    }
+                  for(int doc:docIndexLookup.get(featureId)) {
+                      bits.set(doc);
+                  }
                 }
             }
         } catch (CacheException e) {
@@ -235,9 +245,9 @@ public abstract class SpatialFilter extends Filter
                 iter.remove();
                 SimpleFeature feature = SimpleFeatureBuilder.build(FEATURE_TYPE, new Object[]{geom}, id.getID());
                 if( evaluateFeature(feature) ){
-                    for(int doc:docIndexLookup.get(id)) {
-                        bits.set(doc);
-                    }
+                  for(int doc:docIndexLookup.get(id)) {
+                      bits.set(doc);
+                  }
                 }
             }
         }

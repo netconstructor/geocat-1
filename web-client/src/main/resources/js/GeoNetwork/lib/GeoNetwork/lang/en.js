@@ -19,6 +19,8 @@
 Ext.namespace('GeoNetwork', 'GeoNetwork.lang');
 
 GeoNetwork.lang.en = {
+    'connectIssue': "Catalogue connection issue",
+    'connectIssueMsg': "Error 404. Can't connect to catalogue at url ",
     'featureInfoTooltipTitle': "Feature info",
     'featureInfoTooltipText': "Click in the map to get feature info from all visible layers.",
     'zoomToMaxExtentTooltipTitle': "Full extent",
@@ -110,6 +112,7 @@ GeoNetwork.lang.en = {
     'gazetteerAddressField4Label': "'Gemeente'",
     'gazetteerAddressField5Label': "House number",
     'searchOptionButton': "Search",
+    'resetSearchForm': "Reset search form values.",
     'GazetteerWindowTitle': "Search for address",
     'searchResults': "Search results",
     'errorTitle': "Error",
@@ -177,6 +180,7 @@ GeoNetwork.lang.en = {
     'digital': 'Digital',
     'hardCopy': 'Hard copy',
     'download': 'Download',
+    'downloadable': 'Download',
     'interactive': 'Interactive',
     'resourceType': 'Resource type',
     'dataset': 'Dataset',
@@ -289,7 +293,9 @@ GeoNetwork.lang.en = {
     'errorDatasetNotFound': "Dataset not found.",
     'datasetFound': "Dataset found and added to the map preview.",
     'checkFailure': "Failed to check dataset in remote node.",
-    'addOnlineSource': "Add WMS info to online source",
+    'addOnlineSourceTitle': "Link service to metadata",
+    'addOnlineSource': 'Add links',
+    'addOnlineSourceTT': 'Add an onlinesource section to the current metadata record pointing to the WMS/WFS/WCS services. If the service is a WMS, the layer could be displayed in the map viewer.',
     'statusInformation': "Status information.",
     'publishing': "Publishing ...",
     'mapPreview': "Map preview",
@@ -380,6 +386,8 @@ GeoNetwork.lang.en = {
     'resultBy': ' result(s) / ',
     'subTemplateImport': 'Directory entry import',
     'xmlData': 'XML',
+    'minorEdit': 'Minor edit',
+    'minorEditTT': '',
     // Shortcuts
     'runASearch': 'Run a search.',
     'focusOnAny': 'Move focus to the full text search field.',
@@ -432,7 +440,12 @@ GeoNetwork.lang.en = {
     'xmax': 'X max',
     'ymax': 'Y max',
     'newLabel': 'Label',
-    'newDefinition': 'Definition'
+    'newDefinition': 'Definition',
+    'selDirectoryTT': 'Select a type of directory. A directory group all elements having the same root element name (eg. gmd:CI_ResponsibleParty is a contact directory)',
+    'privTplElTT': 'Manage privileges for the current selection.',
+    'addTplElTT': 'Add an element from an XML fragment to a directory. The destination directory is based on the root element name (eg. gmd:CI_ResponsibleParty).',
+    'copyTplElTT': 'Create a new entry in the directory from the current selection.',
+    'delTplElTT': 'Remove selected entry from the directory.'
 };
 
 OpenLayers.Util.extend(OpenLayers.Lang.en, GeoNetwork.lang.en);

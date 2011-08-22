@@ -19,6 +19,8 @@
 Ext.namespace('GeoNetwork', 'GeoNetwork.Lang');
 
 GeoNetwork.Lang.fr = {
+    'connectIssue': "Échec de connexion au catalogue",
+    'connectIssueMsg': "Erreur 404. Impossible de se connecter à l'URL ",
     'featureInfoTooltipTitle': "caractéristique",
     'featureInfoTooltipText': "Cliquer sur la carte pour obtenir des informations sur les données affichees.",
     'zoomToMaxExtentTooltipTitle': "Zoom optimal",
@@ -110,6 +112,7 @@ GeoNetwork.Lang.fr = {
     'searchOptionButton': "Recherche",
     'GazetteerWindowTitle': "Résultat pour l'adresse",
     'searchResults': "Recherche les résultats",
+    'resetSearchForm': "Réinitialiser le formulaire de recherche.",
     'errorTitle': "Erreur",
     'SearchOptionLoadFailureMsg': "Pas de résultats trouvés. \n Le serveur peut être indisponible. \n",
     'gazetteerTooltipTitle': "Recherche basée sur l'adresse",
@@ -173,7 +176,8 @@ GeoNetwork.Lang.fr = {
     'scale': 'Échelle',
     'digital': 'Numérique',
     'hardCopy': 'Copie papier',
-    'download': 'Téléchargeable',
+    'download': 'Télécharger',
+    'downloadable': 'Téléchargeable',
     'interactive': 'Interactive',
     'resourceType': 'Type de ressource',
     'dataset': 'Série de données',
@@ -229,7 +233,7 @@ GeoNetwork.Lang.fr = {
     'selectFile': 'Sélectionner un fichier',
     'image': 'Image',
     'uploading': 'Transfert en cours ...',
-    'upload': 'Transfert',
+    'upload': 'Transférer',
     'success': 'Succès',
     'failure': 'Échec',
     'error': 'Erreur',
@@ -289,7 +293,9 @@ GeoNetwork.Lang.fr = {
     'errorDatasetNotFound': "Jeu de données non trouvé.",
     'datasetFound': "Jeu de données trouvé et ajouté à la carte.",
     'checkFailure': "Echec de la vérification de la présence du jeu de données dans le nœud distant.",
-    'addOnlineSource': "Ajouter le lien WMS à la fiche",
+    'addOnlineSourceTitle': "Lier le service à la fiche",
+    'addOnlineSource': "Ajouter les liens",
+    'addOnlineSourceTT': 'Ajouter les informations pour faire la liaison avec la couche dans le service WMS/WFS/WCS.',
     'statusInformation': "Status.",
     'publishing': "Publication en cours ...",
     'mapPreview': "Carte",
@@ -382,6 +388,8 @@ GeoNetwork.Lang.fr = {
     'resultBy': ' resultat(s) / ',
     'subTemplateImport': 'Importer un élément dans un annuaire',
     'xmlData': 'XML',
+    'minorEdit': 'Modif. mineure',
+    'minorEditTT': 'Lorsque cette option est activée, la date de mise à jour des métadonnées n\'est pas changée. Lors de l\'utilisation des suggestions, ou de la mise à jour d\'une imagette, cette option est sans effet, la date est mise à jour.',
     // Shortcuts
     'runSearch': 'Lancer la recherche.',
     'focusOnAny': 'Déplacer le curseur sur le critère plein texte.',
@@ -433,6 +441,11 @@ GeoNetwork.Lang.fr = {
     'xmax': 'X max',
     'ymax': 'Y max',
     'newLabel': 'Libellé',
-    'newDefinition': 'Définition'
+    'newDefinition': 'Définition',
+    'selDirectoryTT': "Choisir un type d'annuaire. Un annuaire est constitué d'éléments ayant la même balise racine (eg. les éléments gmd:CI_ResponsibleParty font partie de l'annuaire de contact)",
+    'privTplElTT': 'Gérer les privilèges sur la sélection.',
+    'addTplElTT': "Ajouter un élément à partir d'un fragment d'XML. L'annuaire cible est basé sur le nom de la balise racine (eg. gmd:CI_ResponsibleParty).",
+    'copyTplElTT': "Créer un nouvel élément dans l'annuaire à partir de l'élément sélectionné.",
+    'delTplElTT': 'Supprimer la sélection.'
 };
 OpenLayers.Util.extend(OpenLayers.Lang.fr, GeoNetwork.Lang.fr);

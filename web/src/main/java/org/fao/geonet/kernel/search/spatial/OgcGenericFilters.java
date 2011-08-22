@@ -187,12 +187,11 @@ public class OgcGenericFilters
         @Override
         public Object visit(BBOX filter, Object extraData)
         {
-
             if(filter.getExpression2() instanceof Literal && ((Literal) filter.getExpression2()).getValue() instanceof BoundingBox) {
                 BoundingBox expr2 = (BoundingBox) ((Literal) filter.getExpression2()).getValue();
 
                 FilterFactory2 factory = getFactory(extraData);
-                return factory.bbox(factory.property(Geocat.Spatial.GEOM_ATTRIBUTE_NAME), expr2);
+                return factory.bbox(factory.property(SpatialIndexWriter.GEOM_ATTRIBUTE_NAME), expr2);
             } else {
                 return filter;
             }

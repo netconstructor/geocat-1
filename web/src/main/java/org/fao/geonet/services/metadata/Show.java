@@ -110,10 +110,10 @@ public class Show implements Service
 		//--- get metadata
 		
 		Element elMd;
-		boolean addEditing = "true".equalsIgnoreCase(Util.getParam(params, "addEditing","false"));;
+		boolean addEditing = "true".equalsIgnoreCase(Util.getParam(params, "addEditing","false"));
 		if (!skipInfo || addEditing) {
-            boolean withValidationErrors = false;
-            elMd = gc.getDataManager().getMetadata(context, id, addEditing, withValidationErrors);
+            boolean withValidationErrors = false, keepXLinkAttributes = false, hideElements = true;
+            elMd = gc.getDataManager().getGeocatMetadata(context, id, addEditing, withValidationErrors, keepXLinkAttributes, hideElements);
 		}
         else {
 			elMd = dm.getMetadataNoInfo(context, id);

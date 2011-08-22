@@ -11,6 +11,7 @@
 	<pt>Рortuguês</pt> <!-- Do not translate! -->
 	<ca>Català</ca> <!-- Do not translate! -->	
     <no>Norsk</no>  <!-- Do not translate! -->
+    <fi>Suomeksi</fi>  <!-- Do not translate! -->
 
 	<!-- new strings - 2.7 -->
   <subtemplate.admin>Gestion des annuaires</subtemplate.admin>
@@ -590,6 +591,7 @@
 	<metadata.admin.index.desc>Regénérer l&apos;index du catalogue</metadata.admin.index.desc>
 	<metadata.admin.index.failed js="true">Echec lors de la mise à jour de l'index.</metadata.admin.index.failed>
 	<metadata.admin.index.success js="true">Mise à jour de l'index en cours.</metadata.admin.index.success>
+	<metadata.admin.index.wait js="true">Index operation already in progress please wait.</metadata.admin.index.wait>
 	<metadata.admin.index.optimize.desc>Optimisation de l'index Lucene</metadata.admin.index.optimize.desc>
 	<metadata.admin.index.rebuildxlinks.desc>Vider le cache d'XLink et reconstruire l'index</metadata.admin.index.rebuildxlinks.desc>
 	<lucene.config.reload>Recharger la configuration Lucene</lucene.config.reload>
@@ -714,8 +716,10 @@
     <protocolChoice show="-" value="OGC:WPS">OGC-WPS Web Processing Service</protocolChoice>
 	<protocolChoice show="-" value="WWW:DOWNLOAD-1.0-ftp--download">Fichier à télécharger (FTP)</protocolChoice>
 	<protocolChoice show="-" value="WWW:DOWNLOAD-1.0-http--download">Fichier à télécharger</protocolChoice>
-	<protocolChoice show="-" value="DB:POSTGIS">Table PostGIS</protocolChoice>
-	<protocolChoice show="y" value="WWW:LINK-1.0-http--ical">iCalendar (URL)</protocolChoice>
+  <protocolChoice show="-" value="FILE:GEO">Fichier SIG</protocolChoice>
+  <protocolChoice show="-" value="FILE:RASTER">Fichier SIG RASTER</protocolChoice>
+  <protocolChoice show="-" value="DB:POSTGIS">Table PostGIS</protocolChoice>
+  <protocolChoice show="y" value="WWW:LINK-1.0-http--ical">iCalendar (URL)</protocolChoice>
 	<protocolChoice show="y" value="WWW:LINK-1.0-http--link">Adresse Internet (URL)</protocolChoice>
 	<protocolChoice show="y" value="WWW:LINK-1.0-http--partners">Site web partenaire (URL)</protocolChoice>
 	<protocolChoice show="y" value="WWW:LINK-1.0-http--related">Adresse Internet associée (URL)</protocolChoice>

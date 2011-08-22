@@ -27,6 +27,25 @@
 
 package org.fao.geonet.kernel;
 
+import java.io.File;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.UUID;
+import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+
 import jeeves.constants.Jeeves;
 import jeeves.exceptions.JeevesException;
 import jeeves.exceptions.OperationNotAllowedEx;
@@ -40,6 +59,7 @@ import jeeves.utils.Util;
 import jeeves.utils.Xml;
 import jeeves.utils.Xml.ErrorHandler;
 import jeeves.xlink.Processor;
+
 import org.apache.commons.lang.StringUtils;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
@@ -58,34 +78,12 @@ import org.fao.geonet.kernel.setting.SettingManager;
 import org.fao.geonet.lib.Lib;
 import org.fao.geonet.services.extent.ExtentManager;
 import org.fao.geonet.util.ISODate;
+import org.fao.geonet.util.ThreadUtils;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.filter.ElementFilter;
-
-import java.io.File;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-import java.util.Vector;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Handles all operations on metadata (select,insert,update,delete etc...).
@@ -228,7 +226,7 @@ public class DataManager {
 		// if anything to index then schedule it to be done after servlet is
 		// up so that any links to local fragments are resolvable
 		if ( toIndex.size() > 0 ) {
-			scheduleIndexTask(context, toIndex);
+			startThreadsToReindex(context,toIndex);
 		}
 
 		if (docs.size() > 0) { // anything left?
@@ -243,11 +241,6 @@ public class DataManager {
       Log.debug(Geonet.DATA_MANAGER, "- removed record (" + id + ") from index");
 		}
 	}
-
-    public void scheduleIndexTask(ServiceContext context, ArrayList<Integer> toIndex) {
-        IndexMetadataTask indexMetadataTask = new IndexMetadataTask(context, toIndex);
-        indexThreadPool.schedule(indexMetadataTask, 10, TimeUnit.MILLISECONDS);
-    }
 
     /**
      *
@@ -266,39 +259,84 @@ public class DataManager {
 			// clean XLink Cache so that cache and index remain in sync
 			Processor.clearCache();	
 
-			scheduleIndexTask(context, toIndex);
+			// execute indexing operation
+			startThreadsToReindex(context,toIndex);
 		}
 	}
 
     /**
-     *
+     * Splits a list of metadata ids into groups and assigned them to threads
+		 * for reindexing.
+		 *
+     * @param context
+     * @param ids
      */
-	class IndexMetadataTask implements Runnable {
-		ServiceContext context;
-		ArrayList<Integer> toIndex;
-
-        IndexMetadataTask(ServiceContext context, ArrayList<Integer> toIndex) {
-			this.context = context;
-			this.toIndex = toIndex;
-		}
-
-		public void run() {
+	public void startThreadsToReindex(ServiceContext context, ArrayList<Integer> ids) {
 
 			try {
 
+				// split reindexing task according to number of processors we can
+				// assign
+				int threadCount = ThreadUtils.getNumberOfThreads();
+    		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+
+				int perThread;
+    		if (ids.size() < threadCount) perThread = ids.size();
+    		else perThread = ids.size() / threadCount;
+    		int index = 0;
+
+    		while(index < ids.size()) {
+      		int start = index;
+      		int count = Math.min(perThread,ids.size()-start);
+      		// create threads to process this chunk of ids
+      		Runnable worker = new IndexMetadataTask(context, ids, start, count);
+      		executor.execute(worker);
+      		index += count;
+    		}
+
+    		executor.shutdown();
+
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+
+				finishRebuilding();
+			}
+		}
+
+  /**
+    * Task to reindex the entire catalog at startup or from the 
+	  * Administration menu. Creates number of threads according to 
+		* number allocated to JVM.
+    */
+	class IndexMetadataTask implements Runnable {
+
+		private final ServiceContext context;
+		private final ArrayList<Integer> ids;
+		private final int beginIndex, count;
+
+		IndexMetadataTask(ServiceContext context, ArrayList<Integer> ids, int beginIndex, int count) {
+			this.context = context;
+			this.ids = ids;
+			this.beginIndex = beginIndex;
+			this.count = count;
+		}
+
+    public void run() {
+			try {
+				Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
 				// poll context to see whether servlet is up yet
 				while (!context.isServletInitialized()) {
 					Log.debug(Geonet.DATA_MANAGER, "Waiting for servlet to finish initializing.."); 
 					Thread.sleep(10000); // sleep 10 seconds
 				}
-
+	
 				// servlet up so safe to index all metadata that needs indexing
-
-				Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
 				startIndexGroup();
 				try {
-					for ( Integer id : toIndex ) {
-						indexMetadataGroup(dbms, id.toString(), false);
+     			for(int i=beginIndex; i<beginIndex+count; i++) {
+						indexMetadataGroup(dbms, ids.get(i).toString(), true);
 					}
 				} finally {
 					endIndexGroup();
@@ -308,12 +346,12 @@ public class DataManager {
 				//-- to avoid exhausting Dbms pool
 				context.getResourceManager().close(Geonet.Res.MAIN_DB, dbms);
 			} catch (Exception e) {
+				Log.error(Geonet.DATA_MANAGER, "Reindexing thread threw exception");
 				e.printStackTrace();
-			} finally {
-				finishRebuilding();
 			}
-		}
-	}
+    }
+
+  }
 
     /**
      *
@@ -392,7 +430,7 @@ public class DataManager {
 	                
 	                if(modified != null && !modified.isEmpty()) {
 	                    md = modified.get(0);
-	                    XmlSerializer.update(dbms, id, md, new ISODate().toString(), null);
+	                    XmlSerializer.update(dbms, id, md, new ISODate().toString(), false);
 	                }
             	} catch (Exception e) {
             		Log.error(Geonet.DATA_MANAGER, "error while trying to update shared objects of metadata, "+id+" "+e.getMessage()); //DEBUG
@@ -1325,7 +1363,7 @@ public class DataManager {
 		// Update fixed info for metadata record only
 		Element xml = Xml.loadString(data, false);
 		if (isTemplate.equals('n')) {
-		    xml = updateFixedInfo(schema, Integer.toString(serial), uuid, xml, parentUuid, DataManager.UpdateDatestamp.yes, dbms, null);
+		    xml = updateFixedInfo(schema, Integer.toString(serial), uuid, xml, parentUuid, DataManager.UpdateDatestamp.yes, dbms);
 		}
 		
 		//--- store metadata
@@ -1380,7 +1418,7 @@ public class DataManager {
 
         if (ufo && isTemplate.equals("n")) {
             String parentUuid = null;
-            metadata = updateFixedInfo(schema, Integer.toString(id), null, metadata, parentUuid, DataManager.UpdateDatestamp.no, dbms, null);
+            metadata = updateFixedInfo(schema, id$, uuid, metadata, parentUuid, DataManager.UpdateDatestamp.no, dbms);
         }
 
          if (source == null) {
@@ -1425,26 +1463,26 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getMetadataNoInfo(ServiceContext srvContext, String id) throws Exception {
-		Element md = getMetadata(srvContext, id, false, false, false);
+	    Element md = getMetadata(srvContext, id, false, false, false);
 		md.removeChild(Edit.RootChild.INFO, Edit.NAMESPACE);
 		return md;
 	}
 
     /**
      * Retrieves a metadata (in xml) given its id; adds editing information if requested and validation errors if requested.
-     *
+     * 
      * @param srvContext
      * @param id
-     * @param forEditing
+     * @param forEditing        Add extra element to build metadocument {@link EditLib#expandElements(String, Element)}
      * @param withEditorValidationErrors
+     * @param keepXlinkAttributes When XLinks are resolved in non edit mode, do not remove XLink attributes.
      * @return
      * @throws Exception
      */
-    public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors) throws Exception {
-        return getMetadata(srvContext,id,forEditing,withEditorValidationErrors,true);
-    }
-
-	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean elementsHide) throws Exception {
+	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes) throws Exception {
+		return getGeocatMetadata(srvContext,id,forEditing,withEditorValidationErrors,keepXlinkAttributes, true);
+	}
+	public Element getGeocatMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes, boolean elementsHide) throws Exception {
 		Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
 		boolean doXLinks = XmlSerializer.resolveXLinks();
 		Element md = XmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
@@ -1465,7 +1503,13 @@ public class DataManager {
             }
 		}
         else {
-			if (doXLinks) Processor.detachXLink(md,srvContext);
+			if (doXLinks) {
+			    if (keepXlinkAttributes) {
+			        Processor.processXLink(md,srvContext);
+			    } else {
+			        Processor.detachXLink(md,srvContext);
+			    }
+			}
 		}
 
 		md.addNamespaceDeclaration(Edit.NAMESPACE);
@@ -1559,12 +1603,12 @@ public class DataManager {
      * @param validate
      * @param lang
      * @param changeDate
-     * @param minor
+     * @param updateDateStamp
      *
      * @return
      * @throws Exception
      */
-	public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate, String minor) throws Exception {
+	public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate, boolean updateDateStamp) throws Exception {
 		// when invoked from harvesters, session is null
         if(session != null) {
             session.removeProperty(Geonet.Session.VALIDATION_REPORT + id);
@@ -1572,13 +1616,13 @@ public class DataManager {
 		String schema = getMetadataSchema(dbms, id);
         if(ufo) {
             String parentUuid = null;
-		    md = updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms, minor);
+		    md = updateFixedInfo(schema, id, null, md, parentUuid, (updateDateStamp ? DataManager.UpdateDatestamp.yes : DataManager.UpdateDatestamp.no), dbms);
         }
         
         md = processSharedObjects(dbms, id, md);
         
 		//--- write metadata to dbms
-        XmlSerializer.update(dbms, id, md, changeDate, minor);
+        XmlSerializer.update(dbms, id, md, changeDate, updateDateStamp);
 
         String isTemplate = getMetadataTemplate(dbms, id);
         // Notifies the metadata change to metatada notifier service
@@ -1966,7 +2010,7 @@ public class DataManager {
 
 		md = Xml.transform(root, styleSheet);
         String changeDate = null;
-		XmlSerializer.update(dbms, id, md, changeDate, null);
+		XmlSerializer.update(dbms, id, md, changeDate, true);
 
         // Notifies the metadata change to metatada notifier service
         notifyMetadataChange(dbms, md, id);
@@ -2196,16 +2240,15 @@ public class DataManager {
      * @param uuid If the metadata is a new record (not yet saved), provide the uuid for that record
      * @param md
      * @param parentUuid
-     * @param updateDatestamp
+     * @param updateDatestamp   FIXME ? updateDatestamp is not used when running XSL transformation
      * @param dbms
-     * @param minor
      * @return
      * @throws Exception
      */
-	public Element updateFixedInfo(String schema, String id, String uuid, Element md, String parentUuid, UpdateDatestamp updateDatestamp, Dbms dbms, String minor) throws Exception {
+	public Element updateFixedInfo(String schema, String id, String uuid, Element md, String parentUuid, UpdateDatestamp updateDatestamp, Dbms dbms) throws Exception {
         boolean autoFixing = settingMan.getValueAsBool("system/autofixing/enable", true);
         if(autoFixing) {
-        	Log.debug(Geonet.DATA_MANAGER, "Autofixing is enabled, trying update-fixed-info");
+        	Log.debug(Geonet.DATA_MANAGER, "Autofixing is enabled, trying update-fixed-info (updateDatestamp: " + updateDatestamp.name() + ")");
             
         	String query = "SELECT uuid, isTemplate FROM Metadata WHERE id = " + id;
             Element rec = dbms.select(query).getChild("record");
@@ -2223,15 +2266,13 @@ public class DataManager {
                 Element env = new Element("env");
                 env.addContent(new Element("id").setText(id));
                 env.addContent(new Element("uuid").setText(uuid));
-                if (minor != null) {
-                    if (!minor.equals("")) {
+                
+                if (updateDatestamp == UpdateDatestamp.yes) {
                         env.addContent(new Element("changeDate").setText(new ISODate().toString()));
-                    }
                 }
                 if(parentUuid != null) {
                     env.addContent(new Element("parentUuid").setText(parentUuid));
                 }
-                env.addContent(new Element("updateDateStamp").setText(updateDatestamp.name()));
                 env.addContent(new Element("datadir").setText(Lib.resource.getDir(dataDir, Params.Access.PRIVATE, id)));
 
                 // add original metadata to result
@@ -2401,8 +2442,8 @@ public class DataManager {
 		String parentSchema = params.get(Params.SCHEMA);
 
 		// --- get parent metadata in read/only mode
-        boolean forEditing = false, withValidationErrors = false;
-        Element parent = getMetadata(srvContext, parentId, forEditing, withValidationErrors,false);
+        boolean forEditing = false, withValidationErrors = false, keepXlinkAttributes = false;
+        Element parent = getGeocatMetadata(srvContext, parentId, forEditing, withValidationErrors, keepXlinkAttributes,false);
 
 		Element env = new Element("update");
 		env.addContent(new Element("parentUuid").setText(parentUuid));
@@ -2423,7 +2464,7 @@ public class DataManager {
 				continue;
 			}
 
-            Element child = getMetadata(srvContext, childId, forEditing, withValidationErrors, false);
+            Element child = getGeocatMetadata(srvContext, childId, forEditing, withValidationErrors, keepXlinkAttributes, false);
 
 			String childSchema = child.getChild(Edit.RootChild.INFO,
 					Edit.NAMESPACE).getChildText(Edit.Info.Elem.SCHEMA);
@@ -2455,7 +2496,7 @@ public class DataManager {
 			Element childForUpdate = new Element("root");
 			childForUpdate = Xml.transform(rootEl, styleSheet, params);
 			
-			XmlSerializer.update(dbms, childId, childForUpdate, new ISODate().toString(), null);
+			XmlSerializer.update(dbms, childId, childForUpdate, new ISODate().toString(), true);
 
 
             // Notifies the metadata change to metatada notifier service

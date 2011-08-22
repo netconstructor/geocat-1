@@ -262,7 +262,8 @@ public class AjaxEditUtils extends EditUtils {
      * @throws Exception
      */
 	public Element getMetadataEmbedded(ServiceContext srvContext, String id, boolean forEditing, boolean withValidationErrors) throws Exception {
-		Element md = dataManager.getMetadata(srvContext, id, forEditing, withValidationErrors);
+	    boolean keepXlinkAttributes = false;
+		Element md = dataManager.getMetadata(srvContext, id, forEditing, withValidationErrors, keepXlinkAttributes);
 		UserSession session = srvContext.getUserSession();
 		setMetadataIntoSession(session, md, id);
 		return md;
@@ -473,7 +474,7 @@ public class AjaxEditUtils extends EditUtils {
 						break;
 					}
 				}
-
+				
 				// -- now delete the element as requested
 				parent.removeContent(me);
 				
@@ -611,7 +612,7 @@ public class AjaxEditUtils extends EditUtils {
 		editLib.removeEditingInfo(md);
 		editLib.contractElements(md);
         String parentUuid = null;
-        md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms, null);
+        md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms);
 
 		//--- do the validation on the metadata
 		return dataManager.doValidate(session, dbms, schema, id, md, lang, false).one();
@@ -662,12 +663,12 @@ public class AjaxEditUtils extends EditUtils {
 
         editLib.contractElements(md);
         String parentUuid = null;
-		md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms, null);
+		md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms);
 		
 		md = dataManager.processSharedObjects(dbms, id, md);
 		
         String changeDate = null;
-		XmlSerializer.update(dbms, id, md, changeDate, null);
+		XmlSerializer.update(dbms, id, md, changeDate, false);
 
         // Notifies the metadata change to metatada notifier service
         dataManager.notifyMetadataChange(dbms, md, id);
@@ -720,12 +721,12 @@ public class AjaxEditUtils extends EditUtils {
 
 		editLib.contractElements(md);
         String parentUuid = null;
-        md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms, null);
+        md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms);
 
         md = dataManager.processSharedObjects(dbms, id, md);
         
         String changeDate = null;
-		XmlSerializer.update(dbms, id, md, changeDate, null);
+		XmlSerializer.update(dbms, id, md, changeDate, false);
 
         // Notifies the metadata change to metatada notifier service
         dataManager.notifyMetadataChange(dbms, md, id);

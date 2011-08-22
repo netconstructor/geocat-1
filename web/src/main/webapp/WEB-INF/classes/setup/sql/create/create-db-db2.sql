@@ -286,6 +286,8 @@ CREATE TABLE OperationAllowed
     primary key(groupId,metadataId,operationId)
   );
 
+CREATE INDEX OperationAllowedNDX1 ON OperationAllowed(metadataId);
+
 -- ======================================================================
 
 CREATE TABLE MetadataRating
@@ -340,7 +342,7 @@ CREATE TABLE CswServerCapabilitiesInfo
 -- ======================================================================
 CREATE TABLE Thesaurus
   (
-    id   varchar(250),
+    id   varchar(250) not null,
     activated    varchar(1),
     primary key(id)
   );

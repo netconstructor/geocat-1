@@ -12,6 +12,9 @@ import java.io.File;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /* Lucene only allows one IndexWriter to be open at a time.  
    However, multiple threads can use this single IndexWriter.  
    This class manages a global IndexWriter and uses reference counting to 
@@ -73,15 +76,15 @@ public class LuceneIndexWriterFactory {
 	}
 	
 	public void optimize() throws Exception {
-        if (optimizingLock.tryLock()) {
-            try {
-                Log.info(Geonet.INDEX_ENGINE, "Optimizing the Lucene Index...");
-                _writer.optimize();
-                Log.info(Geonet.INDEX_ENGINE, "Optimizing Done.");
-            } finally {
-                optimizingLock.unlock();
-            }
-        }
+		if (optimizingLock.tryLock()) {
+			try {
+				Log.info(Geonet.INDEX_ENGINE,"Optimizing the Lucene Index...");
+				_writer.optimize(); 
+				Log.info(Geonet.INDEX_ENGINE,"Optimizing Done.");
+			} finally {
+				optimizingLock.unlock();
+			}
+		}
 	}
 
 

@@ -31,9 +31,7 @@ import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
-
 import org.apache.jcs.access.exception.CacheException;
-import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureEvent;
@@ -82,17 +80,33 @@ import java.util.logging.Level;
 public class SpatialIndexWriter implements FeatureListener
 {
 
-    private static final int                                     MAX_WRITES_IN_TRANSACTION = 5000;
+    static final String                                          IDS_ATTRIBUTE_NAME        = "id";
+    static final String                                          GEOM_ATTRIBUTE_NAME       = "the_geom";
+    static final String                                          SPATIAL_INDEX_TYPENAME    = "spatialindex";
+		static final String                                          SPATIAL_FILTER_JCS        = "SpatialFilterCache";
+    public static final int                                      MAX_WRITES_IN_TRANSACTION = 5000;
 
-    private final Parser                                         _parser;
-    private final Transaction                                    _transaction;
-    private final Lock                                           _lock;
-    private FeatureStore<SimpleFeatureType, SimpleFeature>       _featureStore;
-    private STRtree                                              _index;
-    private static int                                           _writes;
+    private final Parser                              _parser;
+    private final Transaction                         _transaction;
+    private final  int                                _maxWrites;
+    private final Lock                                _lock;
+    private FeatureStore<SimpleFeatureType, SimpleFeature> _featureStore;
+    private STRtree                                   _index;
+    private static int                                _writes;
 
+		/**
+			* TODO: javadoc.
+			* 
+			* @param dataStore
+			* @param parser
+			* @param transaction
+			* @param maxWrites Maximum number of writes in a transaction. If set to
+			* 1 then AUTO_COMMIT is being used.
+			* @param lock
+			*/
     public SpatialIndexWriter(DataStore datastore, Parser parser,
-            Transaction transaction, Lock lock) throws Exception
+            Transaction transaction, int maxWrites, Lock lock) 
+						throws Exception
     {
         // Note: The Configuration takes a long time to create so it is worth
         // re-using the same Configuration
@@ -101,6 +115,7 @@ public class SpatialIndexWriter implements FeatureListener
         _parser.setStrict(false);
         _parser.setValidating(false);
         _transaction = transaction;
+				_maxWrites = maxWrites;
 
         _featureStore = createFeatureStore(datastore);
         _featureStore.setTransaction(_transaction);
@@ -147,7 +162,7 @@ public class SpatialIndexWriter implements FeatureListener
 
                 _writes++;
 
-                if (_writes > MAX_WRITES_IN_TRANSACTION) {
+                if (_writes > _maxWrites) {
                     _transaction.commit();
                     _writes = 0;
                 }
@@ -185,7 +200,7 @@ public class SpatialIndexWriter implements FeatureListener
             FilterFactory2 factory = CommonFactoryFinder
                     .getFilterFactory2(GeoTools.getDefaultHints());
             Filter filter = factory.equals(
-                    factory.property(Geocat.Spatial.IDS_ATTRIBUTE_NAME), factory.literal(id));
+                    factory.property(IDS_ATTRIBUTE_NAME), factory.literal(id));
 
             _index = null;
 
@@ -363,7 +378,7 @@ public class SpatialIndexWriter implements FeatureListener
 	private FeatureStore<SimpleFeatureType, SimpleFeature> createFeatureStore(DataStore datastore) throws Exception
     {
 
-        return (FeatureStore<SimpleFeatureType, SimpleFeature>) datastore.getFeatureSource(Geocat.Spatial.SPATIAL_INDEX_TYPENAME);
+        return (FeatureStore<SimpleFeatureType, SimpleFeature>) datastore.getFeatureSource(SPATIAL_INDEX_TYPENAME);
     }
 
 	public static MultiPolygon toMultiPolygon(Geometry geometry)

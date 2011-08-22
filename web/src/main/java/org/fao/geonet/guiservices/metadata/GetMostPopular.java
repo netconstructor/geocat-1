@@ -96,7 +96,7 @@ public class GetMostPopular implements Service {
 					mdInfo.detach();
 					Element info = mdInfo.getChild("info", Edit.NAMESPACE);
 					String id = info.getChildText("id");
-					Element md = dataMan.getMetadata(context, id, false, true);
+					Element md = dataMan.getMetadata(context, id, false, true,true);
 
 					_response.addContent(md);
 				}

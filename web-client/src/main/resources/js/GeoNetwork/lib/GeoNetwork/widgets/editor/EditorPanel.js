@@ -183,11 +183,11 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
                     name: 'f_' + ref,
                     buttonText: '',
                     buttonCfg: {
-                        iconCls: 'upload-icon'
+                        iconCls: 'uploadIconAdd'
                     }
                 }],
                 buttons: [{
-                    text: OpenLayers.i18n('save'),
+                    text: OpenLayers.i18n('upload'),
                     iconCls: 'attachedAdd',
                     handler: function(){
                         if (fileUploadPanel.getForm().isValid()) {
@@ -206,6 +206,8 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
                                     // Hide window
                                     panel.fileUploadWindow.hide();
                                 }
+                                // TODO : improve error message
+                                // Currently return  Unexpected token < from ext doDecode
                             });
                         }
                     }
@@ -263,27 +265,29 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
                 extent: extent,
                 serviceUrl: this.catalogue.services.geopublisher,
                 listeners: {
-                    addOnLineSource: function(panel, url, layerName, serviceTypes){
+                    addOnLineSource: function(panel, node, protocols){
+                        var p;
+                        var xml = "";
+                        var layerName = node.get('namespacePrefix') + ":" + this.layerName;
                         var id = '_X' + insertNodeRef + '_' + nodeName.replace(":", "COLON");
-                        var wmsOnlineSource = 
+                        var wxsOnlineSource = 
                             '<gmd:onLine xmlns:gmd=&quot;http://www.isotc211.org/2005/gmd&quot; xmlns:gco=&quot;http://www.isotc211.org/2005/gco&quot;><gmd:CI_OnlineResource>' + 
-                                '<gmd:linkage>' + 
-                                    '<gmd:URL>' + 
-                                        url + 
-                                    '</gmd:URL>' + 
-                                '</gmd:linkage>' + 
-                                '<gmd:protocol>' + 
-                                    '<gco:CharacterString>OGC:WMS-1.1.1-http-get-map</gco:CharacterString>' + 
-                                '</gmd:protocol>' + 
-                                '<gmd:name><gco:CharacterString>' + 
-                                    layerName + 
-                                '</gco:CharacterString></gmd:name>' + 
-                                '<gmd:description><gco:CharacterString>' + 
-                                    layerName + 
-                                '</gco:CharacterString></gmd:description>' + 
+                                '<gmd:linkage><gmd:URL>${url}</gmd:URL></gmd:linkage>' + 
+                                '<gmd:protocol><gco:CharacterString>${protocol}</gco:CharacterString></gmd:protocol>' + 
+                                '<gmd:name><gco:CharacterString>${layerName}</gco:CharacterString></gmd:name>' + 
+                                '<gmd:description><gco:CharacterString>${layerName}</gco:CharacterString></gmd:description>' + 
                             '</gmd:CI_OnlineResource></gmd:onLine>';
                         
-                        GeoNetwork.editor.EditorTools.addHiddenFormField(id, wmsOnlineSource);
+                        for (p in protocols) {
+                            if (protocols.hasOwnProperty(p)) {
+                                xml += OpenLayers.String.format(wxsOnlineSource, {
+                                    url: node.get(p + 'Url'),
+                                    protocol: protocols[p].label,
+                                    layerName: layerName
+                                }) + "&&&";
+                            }
+                        }
+                        GeoNetwork.editor.EditorTools.addHiddenFormField(id, xml);
                         
                         // Save
                         editorPanel.save();
@@ -754,12 +758,6 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
             text: OpenLayers.i18n(action) + ' (' + action + ')'
         });
     },
-    failureCallback: function(el, response){
-    
-    },
-    successCallback: function(el, response){
-    
-    },
     closeCallback: function(){
         this.onEditorClosed();
         this.ownerCt.hide();
@@ -829,6 +827,7 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
         this.metadataId = document.mainForm.id.value;
         this.versionId = document.mainForm.version.value;
         
+        this.toolbar.setIsMinor(document.mainForm.minor.value);
         this.toolbar.setIsTemplate(this.metadataType.value);
         // If panel was disabled on startup, enable it after initialization
         if (this.disabled) {
@@ -998,6 +997,11 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
             }
         }
     },
+    /**
+     * Populate the toolbar view menu with the list of available views according
+     * to the metadata tabs defined in the returned HTML page and register the
+     * switchTab action.
+     */
     updateViewMenu: function(){
         var modes = Ext.query('span.mode', this.body.dom),
             menu = [],
@@ -1007,6 +1011,7 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
             if (modes[i].firstChild) {
                 var id = modes[i].getAttribute('id');
                 var next = Ext.get(modes[i]).next();
+                var label = modes[i].innerHTML;
                 var tabs = next.query('LI');
                 var current = next.query('LI[id=' + document.mainForm.currTab.value + ']');
                 var activeMode = current.length === 1;
@@ -1028,7 +1033,7 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
                         }
                     }
                 }
-                menu.push([modes[i].innerHTML, id, activeMode]);
+                menu.push([label, id, activeMode]);
             }
         }
         this.toolbar.updateViewMenu(menu);
