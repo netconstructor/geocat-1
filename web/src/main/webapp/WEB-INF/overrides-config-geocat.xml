@@ -117,7 +117,8 @@
 	        <allow service="validated.shared.user.update"/>
 	        <allow service="nonvalidated.shared.user.remove"/>
 	        <allow service="nonvalidated.shared.user.update"/>
-            
+	        
+            <allow service="thesaurus.editelement"/>
         </addXML>
         <replaceAtt xpath="profile[@name = 'Guest']" attName="extends" value="Shared"/>
         <addXML xpath="profile[@name = 'Guest']">

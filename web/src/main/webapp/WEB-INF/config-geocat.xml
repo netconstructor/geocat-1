@@ -402,5 +402,12 @@
             <output sheet="skos-to-iso.xsl" contentType="text/xml; charset=UTF-8"/>
         </service>
 
+    <service name="thesaurus.editelement">
+        <class name=".services.thesaurus.EditElement" />
+        <output sheet="thesaurus-edit-element.xsl">
+            <call name="languages" class=".guiservices.languages.Get" />
+        </output>
+    </service>
+
     </services>
 </geonet>

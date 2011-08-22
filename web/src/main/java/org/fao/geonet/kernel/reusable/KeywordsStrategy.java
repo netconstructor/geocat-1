@@ -184,6 +184,8 @@ public final class KeywordsStrategy extends ReplacementStrategy
         Element thesParam = new Element("pThesauri");
         thesParam.setText(NON_VALID_THESAURUS_NAME);
         params.addContent(thesParam);
+        params.addContent(new Element("pTypeSearch").setText("2"));
+        params.addContent(new Element("pKeyword").setText("*"));
         
         searcher.search("*", params);
         searcher.sortResults("label");
