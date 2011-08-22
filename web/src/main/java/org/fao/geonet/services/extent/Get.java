@@ -208,7 +208,7 @@ public class Get implements Service
             return errorTypename(extentMan, typename);
         }
 
-        if (id.equals("SKIP") || id.length() == 0) {
+        if (id==null || id.equals("SKIP") || id.length() == 0) {
             final Element response = new Element("response");
             formatFeatureType(featureType, wfs, response);
             return response;

@@ -16,6 +16,7 @@ function syncFile () {
   cp -R src/main/webapp/$1 target/webapp/$1  
 }
 
+syncDir scripts *.js
 syncDir scripts/mapfishIntegration
 syncDir xsl *.xsl
 syncDir xsl/shared-user/
