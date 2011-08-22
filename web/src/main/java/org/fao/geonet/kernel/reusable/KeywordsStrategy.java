@@ -184,7 +184,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
         Element thesParam = new Element("pThesauri");
         thesParam.setText(NON_VALID_THESAURUS_NAME);
         params.addContent(thesParam);
-
+        
         searcher.search("*", params);
         searcher.sortResults("label");
         session.setProperty(Geonet.Session.SEARCH_KEYWORDS_RESULT, searcher);

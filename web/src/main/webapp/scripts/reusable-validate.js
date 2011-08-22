@@ -35,6 +35,10 @@ function showDeletePage(buttonTxt){
 }
 
 function editWindows(url){
+    var localPrefix = "local://";
+    if(url.indexOf(localPrefix) == 0) {
+        url = Env.host + Env.locService + '/' +url.substring(localPrefix.length);
+    }
     editWin = popWindow(url);
 }
 

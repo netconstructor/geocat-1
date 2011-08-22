@@ -172,7 +172,7 @@ public class KeywordsSearcher {
         }
 
 		// Get params from request and set default
-		String sKeyword = Util.getParam(params, "pKeyword");
+		String sKeyword = Util.getParam(params, "pKeyword","");
 		
 		// Get max results number or set default one.
 		_maxResults = Util.getParam(params, "maxResults", _maxResults);
