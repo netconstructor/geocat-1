@@ -32,7 +32,7 @@ public class XslUtilTest
         assertEquals(3, result.split("<a").length);
         assertEquals(2, result.split("<p>").length);
         assertEquals(2, result.split("</p>").length);
-        assertEquals(6, result.split("<br/>").length);
+        assertEquals(4, result.split("<br/>").length);
         assertNotNull(XslUtil.parse(result, true));
 	}
 

@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.common.base.Function;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
 import jeeves.utils.Xml;
@@ -46,16 +45,18 @@ import jeeves.xlink.XLink;
 
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.KeywordBean;
-import org.fao.geonet.kernel.search.KeywordsSearcher;
-import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
+import org.fao.geonet.kernel.search.KeywordsSearcher;
+import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.XslUtil;
 import org.jdom.Element;
 import org.openrdf.model.GraphException;
 import org.openrdf.model.URI;
 import org.openrdf.sesame.config.AccessDeniedException;
+
+import com.google.common.base.Function;
 
 public final class KeywordsStrategy extends ReplacementStrategy
 {
@@ -197,7 +198,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
         for (Element element : results) {
             String id = element.getChildTextTrim("id");
             Element e = new Element(REPORT_ELEMENT);
-            String url = _baseURL + "/srv/" + _currentLocale + "/thesaurus.editelement?mode=edit&ref="
+            String url = XLink.LOCAL_PROTOCOL+"thesaurus.editelement?mode=edit&ref="
                     + NON_VALID_THESAURUS_NAME + "&id=" + id;
             addChild(e, REPORT_ID, id);
             addChild(e, REPORT_URL, url);

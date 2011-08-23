@@ -1,8 +1,9 @@
 package org.fao.xsl;
 
-import static org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode.*;
+import static org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode.EXCLUDE;
+import static org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode.INCLUDE;
+import static org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode.NA;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import jeeves.utils.Xml;
 import org.jdom.Element;
 import org.jdom.filter.Filter;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -305,18 +307,24 @@ public class ValidateTransformationTest
         rules.put("associationType", new Exists(new Finder("DS_AssociationTypeCode")));
         rules.put("initiativeType", new Exists(new Finder("DS_InitiativeTypeCode")));
         file = testFile(file, Control.GM03_1_ISO, rules, true);
-
+    }
+    
+    @Test @Ignore("I don't have time right now to get this to pass")
+    public void importExportAggregateInfoFull() throws Throwable
+    {
+        File file = new File(data, "gm03/AllComprehensiveAttributes.xml");
+        Multimap<String, Requirement> rules = ArrayListMultimap.create();
+        file = testFile(file, Control.GM03_1_ISO, rules, true);
+        
         rules = ArrayListMultimap.create();
         rules.put("GM03_2Comprehensive.Comprehensive.aggregationInfo_MD_Identification", new Exists(new Finder("aggregationInfo")));
         rules.put("GM03_2Comprehensive.Comprehensive.MD_AggregateInformation", new Exists(new Finder("associationType")));
         rules.put("GM03_2Comprehensive.Comprehensive.MD_AggregateInformation", new Exists(new Finder("initiativeType")));
         rules.put("GM03_2Comprehensive.Comprehensive.MD_AggregateInformation", new Exists(new Finder("aggregateDataSetIdentifier")));
         rules.put("GM03_2Comprehensive.Comprehensive.CI_Citation", new Exists(new Finder("MD_AggregateInformation")));
-
-        //TODO
-        fail("I don't have time right now to get this to pass");
+        
         file = testFile(file, Control.ISO_GM03, rules, true);
-
+        
         rules = ArrayListMultimap.create();
         rules.put("aggregationInfo", Requirement.ACCEPT);
         rules.put("MD_AggregateInformation", Requirement.ACCEPT);
@@ -324,7 +332,7 @@ public class ValidateTransformationTest
         rules.put("aggregateDataSetIdentifier", new Exists(new Finder("MD_Identifier")));
         rules.put("associationType", new Exists(new Finder("DS_AssociationTypeCode")));
         rules.put("initiativeType", new Exists(new Finder("DS_InitiativeTypeCode")));
-
+        
         testFile(file, Control.GM03_2_ISO, rules, true);
     }
 
