@@ -72,7 +72,9 @@
         </service>
 
         <service name="validated.shared.user.remove">
-            <class name=".services.user.Remove" />
+            <class name=".services.user.Remove">
+                <param name="type" value="VALIDATED_SHARED"/>
+            </class>
             <output forward="validated.shared.user.admin" />
         </service>
 
@@ -86,8 +88,15 @@
         </service>
 
         <service name="nonvalidated.shared.user.remove">
-            <class name=".services.user.Remove" />
+            <class name=".services.user.Remove">
+                <param name="type" value="NON_VALIDATED_SHARED"/>
+            </class>
             <output forward="nonvalidated.shared.user.admin" />
+        </service>
+        <service name="shared.user.remove">
+            <class name=".services.user.Remove">
+                <param name="type" value="SHARED"/>
+            </class>
         </service>
 
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

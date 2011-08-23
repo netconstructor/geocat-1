@@ -57,7 +57,7 @@ public final class DeletedObjects
 
     public static String href(int id, String baseURL)
     {
-        return baseURL + "/srv/eng/xml.reusable.deleted?id=" + id;
+        return "local://xml.reusable.deleted?id=" + id;
     }
 
     public static Element get(Dbms dbms, String id) throws Exception

@@ -124,8 +124,7 @@ public class Reject implements Service
             }
             gc.getDataManager().startThreadsToReindex(context, mdIds);
 
-            Element e = new Element("id");
-            e.setText(id);
+            Element e = new Element("id").setText(id);
             result.add(e);
         }
 

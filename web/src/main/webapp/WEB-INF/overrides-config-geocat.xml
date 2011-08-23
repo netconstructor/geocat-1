@@ -117,6 +117,7 @@
 	        <allow service="validated.shared.user.update"/>
 	        <allow service="nonvalidated.shared.user.remove"/>
 	        <allow service="nonvalidated.shared.user.update"/>
+	        <allow service="shared.user.remove"/>
 	        
             <allow service="thesaurus.editelement"/>
         </addXML>
