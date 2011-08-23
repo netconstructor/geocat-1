@@ -87,8 +87,6 @@ public final class Utils {
 	public static Element updateXLink(ReplacementStrategy strategy,
 			ServiceContext context, Map<String, String> idMapping, String id,
 			boolean validated) throws Exception {
-		GeonetContext gc = (GeonetContext) context
-				.getHandlerContext(Geonet.CONTEXT_NAME);
 		Dbms dbms = (Dbms) context.getResourceManager()
 				.open(Geonet.Res.MAIN_DB);
 
@@ -254,7 +252,7 @@ public final class Utils {
 			for (String field : luceneFields) {
 				Term term = new Term(field, "*id=" + concreteId + "*");
 				WildcardQuery query = new WildcardQuery(term);
-				TopDocs tdocs = searcher.search(query, 1);
+				TopDocs tdocs = searcher.search(query, Integer.MAX_VALUE);
 
 				for (ScoreDoc sdoc : tdocs.scoreDocs) {
 					Document element = reader.document(sdoc.doc);
