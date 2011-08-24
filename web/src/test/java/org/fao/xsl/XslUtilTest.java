@@ -3,10 +3,27 @@ package org.fao.xsl;
 import static org.junit.Assert.*;
 
 import org.fao.geonet.util.XslUtil;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class XslUtilTest
 {
+    private static String transformer;
+
+    @BeforeClass
+    public static void setup() {
+        transformer = System.getProperty("javax.xml.transform.TransformerFactory");
+        System.setProperty("javax.xml.transform.TransformerFactory", "de.fzi.dbs.xml.transform.CachingTransformerFactory");
+    }
+    @AfterClass
+    public static void teardown() {
+        if(transformer == null) {
+            System.getProperties().remove("javax.xml.transform.TransformerFactory");
+        } else {
+            System.setProperty("javax.xml.transform.TransformerFactory", transformer);
+        }
+    }
 
     @Test
     public void testExpandScientific()

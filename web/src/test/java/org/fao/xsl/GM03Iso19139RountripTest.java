@@ -9,6 +9,8 @@ import javax.xml.validation.Schema;
 
 import org.fao.geonet.exceptions.SchematronValidationErrorEx;
 import org.fao.geonet.services.gm03.TranslateAndValidate;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GM03Iso19139RountripTest
@@ -21,6 +23,8 @@ public class GM03Iso19139RountripTest
     static File     cheResult;
     static File     isoRoundRoundResult;
     static File     cheRoundRoundResult;
+
+    private static String transformer;
 
     File[][] file;
 
@@ -36,6 +40,19 @@ public class GM03Iso19139RountripTest
 
         file = new File[][]{ new File[] { isoResult, TransformationTestSupport.isoXsd }, new File[] { cheResult, TransformationTestSupport.gm03Xsd },
                new File[] { isoRoundRoundResult, TransformationTestSupport.isoXsd }, new File[] { cheRoundRoundResult, TransformationTestSupport.gm03Xsd } };
+    }
+    @BeforeClass
+    public static void setup() {
+        transformer = System.getProperty("javax.xml.transform.TransformerFactory");
+        System.setProperty("javax.xml.transform.TransformerFactory", "de.fzi.dbs.xml.transform.CachingTransformerFactory");
+    }
+    @AfterClass
+    public static void teardown() {
+        if(transformer == null) {
+        System.getProperties().remove("javax.xml.transform.TransformerFactory");
+        } else {
+            System.setProperty("javax.xml.transform.TransformerFactory", transformer);
+        }
     }
 
     @Test
