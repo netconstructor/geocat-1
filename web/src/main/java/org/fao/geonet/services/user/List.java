@@ -33,7 +33,6 @@ import jeeves.utils.Util;
 import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
-import org.fao.geonet.services.user.List.Type;
 import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
 
@@ -46,10 +45,6 @@ import java.util.*;
 
 public class List implements Service
 {
-    enum Type {
-        NORMAL, VALIDATED_SHARED, NON_VALIDATED_SHARED, SHARED
-    }
-
     private Type type;
     
 	//--------------------------------------------------------------------------

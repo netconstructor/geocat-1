@@ -117,14 +117,14 @@ public class Reject implements Service
                 emailInfo.put(record.ownerId, record.id);
             }
 
-            updateHrefs(strategy, context, dbms, session, id, results, baseURL, strategySpecificData);
+            Element newIds = updateHrefs(strategy, context, dbms, session, id, results, baseURL, strategySpecificData);
             ArrayList<Integer> mdIds = new ArrayList<Integer>();
             for (MetadataRecord metadataRecord : results) {
                 mdIds.add(Integer.parseInt(metadataRecord.id));
             }
             gc.getDataManager().startThreadsToReindex(context, mdIds);
 
-            Element e = new Element("id").setText(id);
+            Element e = new Element("idMap").addContent(new Element("oldId").setText(id)).addContent(newIds);
             result.add(e);
         }
 
@@ -137,10 +137,11 @@ public class Reject implements Service
 
     }
 
-    private void updateHrefs(final ReplacementStrategy strategy, ServiceContext context, Dbms dbms,
+    private Element updateHrefs(final ReplacementStrategy strategy, ServiceContext context, Dbms dbms,
             final UserSession session, String id, Set<MetadataRecord> results, String baseURL,
             String strategySpecificData) throws Exception
     {
+        Element newIds = new Element("newIds");
         // Move the reusable object to the DeletedObjects table and update
         // the xlink attribute information
         // so that the objects are obtained from that table
@@ -157,6 +158,7 @@ public class Reject implements Service
 
                         // update xlink service
                         int newId = DeletedObjects.insert(dbms, context.getSerialFactory(), Xml.getString(fragment), href);
+                        newIds.addContent(new Element("id").setText(String.valueOf(newId)));
                         newHref = DeletedObjects.href(newId, baseURL);
                         updatedHrefs.put(oldHRef, newHref);
                     } else {
@@ -173,6 +175,8 @@ public class Reject implements Service
 
             metadataRecord.commit(dbms);
         }
+        
+        return newIds;
     }
 
     private void emailNotifications(final ReplacementStrategy strategy, ServiceContext context, Dbms dbms,

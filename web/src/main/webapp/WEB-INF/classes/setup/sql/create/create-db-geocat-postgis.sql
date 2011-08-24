@@ -2,6 +2,17 @@
 -- === Extra SQL required for geocat service
 -- ======================================================================
 
+CREATE TABLE deletedobjects (
+    id integer NOT NULL,
+    description text NOT NULL,
+    xml text NOT NULL,
+    deletiondate text NOT NULL
+);
+
+
+ALTER TABLE public.deletedobjects OWNER TO "www-data";
+
+
 CREATE TABLE Formats
   (
     id          int,

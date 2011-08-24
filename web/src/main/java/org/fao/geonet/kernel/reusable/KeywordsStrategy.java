@@ -219,7 +219,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
 
     public void performDelete(String[] ids, Dbms dbms, UserSession session, String thesaurusName) throws Exception
     {
-        Thesaurus thesaurus = _thesaurusMan.getThesaurusByName(validateName(thesaurusName));
+       Thesaurus thesaurus = _thesaurusMan.getThesaurusByName(validateName(thesaurusName));
 
         for (String id : ids) {
             try {
@@ -399,10 +399,14 @@ public final class KeywordsStrategy extends ReplacementStrategy
     public Function<String,String> numericIdToConcreteId(final UserSession session) {
         return new Function<String,String>() {
             public String apply(String id) {
-                KeywordsSearcher searcher = (KeywordsSearcher) session.getProperty(Geonet.Session.SEARCH_KEYWORDS_RESULT);
-                KeywordBean concept = searcher.existsResult(id);
                 try {
-                    return  URLEncoder.encode(concept.getCode(), "utf-8");
+                    KeywordsSearcher searcher = (KeywordsSearcher) session.getProperty(Geonet.Session.SEARCH_KEYWORDS_RESULT);
+                    try {
+                        Integer.parseInt(id);
+                        KeywordBean concept = searcher.existsResult(id);
+                        id = concept.getCode();
+                    } catch(NumberFormatException e) {}
+                    return  URLEncoder.encode(NAMESPACE+id, "utf-8");
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
                 }

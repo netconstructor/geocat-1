@@ -26,7 +26,6 @@ package org.fao.geonet.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +43,6 @@ import jeeves.utils.Xml;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
-import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
 import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
@@ -424,6 +422,32 @@ public final class LangUtils
             return "roh";
         }
         return sLang;
+    }
+
+    public static String loadString(String string, String appPath, String language) throws IOException, JDOMException {
+        String[] keys = string.split(".",2);
+        List<Element> strings = loadStrings(appPath,language);
+        for (Element element : strings) {
+            if(element.getName().equals(keys[0])) {
+                if(keys.length > 1) {
+                    String value = loadString(keys[1],appPath,language);
+                    if(value != null) {
+                        return value;
+                    }
+                } else {
+                    return element.getText();
+                }
+            }
+            if(element.getName().equals(string)) {
+                return element.getText();
+            }
+        }
+        
+        if(!"eng".equalsIgnoreCase(language)) {
+            return loadString(string, appPath, "eng");
+        }
+        
+        return null;
     }
 
 }

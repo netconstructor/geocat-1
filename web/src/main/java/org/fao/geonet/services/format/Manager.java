@@ -21,6 +21,8 @@
 
 package org.fao.geonet.services.format;
 
+import static org.fao.geonet.services.extent.ExtentHelper.ID;
+
 import org.jdom.*;
 
 import jeeves.constants.*;
@@ -28,11 +30,13 @@ import jeeves.interfaces.*;
 import jeeves.resources.dbms.*;
 import jeeves.server.*;
 import jeeves.server.context.*;
+import jeeves.utils.Util;
 import jeeves.xlink.Processor;
 import jeeves.xlink.XLink;
 
 import org.fao.geonet.constants.*;
 import org.fao.geonet.services.reusable.Reject;
+import org.fao.geonet.util.LangUtils;
 import org.fao.geonet.kernel.reusable.ReusableTypes;
 
 //=============================================================================
@@ -73,12 +77,14 @@ public class Manager implements Service {
 		Element elRes = new Element(Jeeves.Elem.RESPONSE);
 
 		if (action.equals("DELETE")) {
-		    String msg="";//TODO
-            new Reject().reject(context, ReusableTypes.formats, new String[]{id}, msg, "");
-
-//			dbms.execute("DELETE FROM Formats WHERE id=" + id);
-			elRes.addContent(new Element(Jeeves.Elem.OPERATION)
-					.setText(Jeeves.Text.REMOVED));
+	        if(!Boolean.parseBoolean(Util.getParam(params, "forceDelete", "false"))) {
+	            String msg = LangUtils.loadString("reusable.rejectDefaultMsg", context.getAppPath(), context.getLanguage());
+	            return new Reject().reject(context, ReusableTypes.formats, new String[]{id}, msg, null);
+	        } else {
+    			dbms.execute("DELETE FROM Formats WHERE id=" + id);
+    			elRes.addContent(new Element(Jeeves.Elem.OPERATION)
+    					.setText(Jeeves.Text.REMOVED));
+	        }
 		} else {
 			if (id == null) {
 				int newId = context.getSerialFactory().getSerial(dbms,
