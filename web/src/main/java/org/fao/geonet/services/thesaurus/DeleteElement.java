@@ -34,7 +34,10 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
+import org.fao.geonet.kernel.reusable.ReusableTypes;
 import org.fao.geonet.kernel.search.KeywordsSearcher;
+import org.fao.geonet.services.reusable.Reject;
+import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
 
 import java.util.Iterator;
@@ -57,6 +60,16 @@ public class DeleteElement implements Service {
 
         // Retrieve thesaurus
         String sThesaurusName = Util.getParam(params, "pThesaurus");
+        
+        if(sThesaurusName.equals("local._none_.non_validated") || sThesaurusName.equals("local._none_.geocat.ch")) {
+            if(!Boolean.parseBoolean(Util.getParam(params, "forceDelete", "false"))) {
+                String msg = LangUtils.loadString("reusable.rejectDefaultMsg", context.getAppPath(), context.getLanguage());
+
+                String id = Util.getParam(params, "id", "");
+                return new Reject().reject(context, ReusableTypes.keywords, new String[]{id}, msg, null);
+            }
+        }
+        
         ThesaurusManager thesaurusMan = gc.getThesaurusManager();
         Thesaurus thesaurus = thesaurusMan.getThesaurusByName(sThesaurusName);
 

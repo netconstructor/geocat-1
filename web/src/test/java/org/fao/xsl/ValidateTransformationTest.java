@@ -15,7 +15,9 @@ import jeeves.utils.Xml;
 
 import org.jdom.Element;
 import org.jdom.filter.Filter;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -27,6 +29,20 @@ public class ValidateTransformationTest
 
     static final File data      = TransformationTestSupport.data;
     static final File outputDir = TransformationTestSupport.outputDir;
+    private static String transformer;
+    @BeforeClass
+    public static void setup() {
+        transformer = System.getProperty("javax.xml.transform.TransformerFactory");
+        System.setProperty("javax.xml.transform.TransformerFactory", "de.fzi.dbs.xml.transform.CachingTransformerFactory");
+    }
+    @AfterClass
+    public static void teardown() {
+        if(transformer == null) {
+        System.getProperties().remove("javax.xml.transform.TransformerFactory");
+        } else {
+            System.setProperty("javax.xml.transform.TransformerFactory", transformer);
+        }
+    }
 
     @Before
     public void deleteOutputDir()

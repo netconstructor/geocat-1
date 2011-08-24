@@ -25,11 +25,10 @@ package org.fao.geonet.services.extent;
 
 import static org.fao.geonet.services.extent.ExtentHelper.ID;
 import static org.fao.geonet.services.extent.ExtentHelper.SELECTION;
-import static org.fao.geonet.services.extent.ExtentHelper.TYPENAME;
 import static org.fao.geonet.services.extent.ExtentHelper.SOURCE;
+import static org.fao.geonet.services.extent.ExtentHelper.TYPENAME;
 import static org.fao.geonet.services.extent.ExtentHelper.getSelection;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -38,14 +37,15 @@ import java.util.Set;
 import jeeves.interfaces.Service;
 import jeeves.server.ServiceConfig;
 import jeeves.server.context.ServiceContext;
-
 import jeeves.utils.Util;
+
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.reusable.ReusableTypes;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.services.extent.Source.FeatureType;
 import org.fao.geonet.services.reusable.Reject;
-import org.fao.geonet.kernel.reusable.ReusableTypes;
+import org.fao.geonet.util.LangUtils;
 import org.geotools.data.FeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
@@ -77,15 +77,21 @@ public class Delete implements Service
             return deleteSelection(params, getSelection(context), extentMan, context);
         }
 
-        return deleteSingle(params, extentMan);
+        if(!Boolean.parseBoolean(Util.getParam(params, "forceDelete", "false"))) {
+            final String id = Util.getParamText(params, ID);
+            String msg = LangUtils.loadString("reusable.rejectDefaultMsg", context.getAppPath(), context.getLanguage());
+            return new Reject().reject(context, ReusableTypes.extents, new String[]{id}, msg, null);
+        } else {
+            return deleteSingle(params, extentMan);
+        }
     }
 
-    private Element deleteSingle(Element params, final ExtentManager extentMan) throws IOException
+    private Element deleteSingle(Element params, final ExtentManager extentMan) throws Exception
     {
         final String id = Util.getParamText(params, ID);
         final String wfsParam = Util.getParamText(params, SOURCE);
         final String typename = Util.getParamText(params, TYPENAME);
-
+        
         final Source wfs = extentMan.getSource(wfsParam);
         final FeatureType featureType = wfs.getFeatureType(typename);
         if (featureType == null) {
@@ -117,7 +123,7 @@ public class Delete implements Service
 
         FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
         Set<String> ids = new HashSet<String>();
-        ;
+        
         FeatureType currentType = null;
 
         synchronized (selection.ids) {
