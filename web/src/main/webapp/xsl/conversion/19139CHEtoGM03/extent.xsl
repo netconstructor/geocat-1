@@ -38,7 +38,7 @@
         <xsl:variable name="exploded">
             <xsl:apply-templates mode="explode-multipolygons" />
         </xsl:variable>
-        <xsl:for-each select="xalan:nodeset($exploded)/gmd:geographicElement">
+        <xsl:for-each select="gmd:geographicElement">
             <GM03_2Core.Core.EX_ExtentgeographicElement TID="x{util:randomId()}">
                 <BACK_REF name="EX_Extent"/>
                 <geographicElement REF="?">
