@@ -32,7 +32,7 @@
             <xsl:apply-templates mode="remove-namespace" select="/"/>
         </xsl:variable>
 
-        <xsl:apply-templates select="xalan:nodeset($noNamespace)"/>
+        <xsl:apply-templates select="$noNamespace"/>
     </xsl:template>
     <xsl:variable name="UPPER">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
     <xsl:variable name="LOWER">abcdefghijklmnopqrstuvwxyz</xsl:variable>
@@ -63,7 +63,7 @@
                 <xsl:variable name="resolvedText">
                     <xsl:apply-templates select="." mode="ResolveRefs"/>
                 </xsl:variable>
-                <xsl:variable name="resolved" select="xalan:nodeset($resolvedText)"/>
+                <xsl:variable name="resolved" select="$resolvedText"/>
 
                 <xsl:apply-templates select="$resolved" mode="root"/>
             </xsl:otherwise>

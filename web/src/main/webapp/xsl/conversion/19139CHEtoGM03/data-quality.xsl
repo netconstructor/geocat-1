@@ -65,10 +65,10 @@
         <xsl:variable name="report">
             <xsl:apply-templates mode="DataQuality"/>
         </xsl:variable>
-        <xsl:if test="count(xalan:nodeset($report)/*)>0">
+        <xsl:if test="count($report/*)>0">
             <GM03_2Comprehensive.Comprehensive.reportDQ_DataQuality TID="x{generate-id(.)}">
                 <report REF="?">
-                    <xsl:copy-of select="xalan:nodeset($report)"/>
+                    <xsl:copy-of select="$report"/>
                 </report>
                 <BACK_REF name="DQ_Qualitiy" />
             </GM03_2Comprehensive.Comprehensive.reportDQ_DataQuality>

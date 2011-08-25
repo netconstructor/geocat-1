@@ -5,6 +5,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +19,19 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import jeeves.utils.Log;
+import net.sf.saxon.om.Axis;
+import net.sf.saxon.om.AxisIterator;
+import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.SingletonIterator;
+import net.sf.saxon.om.UnfailingIterator;
+import net.sf.saxon.type.Type;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.fao.geonet.constants.Geonet;
@@ -395,94 +403,121 @@ public final class XslUtil {
         return "N" + Math.abs(RANDOM.nextLong());
     }
 
-    public static Object bbox(Object description, NodeIterator src) throws Exception {
-        return combineAndWriteGeom(description, src, new GeomWriter() {
+
+    public static Object bbox(Object description, Object src) throws Exception {
+
+        final NodeInfo ni = (NodeInfo) src;
+        return combineAndWriteGeom(description, SingletonIterator.makeIterator(ni), new GeomWriter() {
 
             public Object write(ExtentTypeCode code, MultiPolygon geometry) throws Exception {
 
                 Envelope bbox = geometry.getEnvelopeInternal();
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                Document doc = builder.newDocument();
-
-                Element wBL = doc.createElementNS(GCO_NAMESPACE.getURI(), "gco:Decimal");
-                wBL.setTextContent(String.valueOf(bbox.getMinX()));
-                Element eBL = doc.createElementNS(GCO_NAMESPACE.getURI(), "gco:Decimal");
-                eBL.setTextContent(String.valueOf(bbox.getMaxX()));
-                Element sBL = doc.createElementNS(GCO_NAMESPACE.getURI(), "gco:Decimal");
-                sBL.setTextContent(String.valueOf(bbox.getMinY()));
-                Element nBL = doc.createElementNS(GCO_NAMESPACE.getURI(), "gco:Decimal");
-                nBL.setTextContent(String.valueOf(bbox.getMaxY()));
-
-                Node bbox_El = doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:EX_GeographicBoundingBox");
-                bbox_El.appendChild(doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:westBoundLongitude")).appendChild(wBL);
-                bbox_El.appendChild(doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:eastBoundLongitude")).appendChild(eBL);
-                bbox_El.appendChild(doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:southBoundLatitude")).appendChild(sBL);
-                bbox_El.appendChild(doc.createElementNS(GMD_NAMESPACE.getURI(), "gmd:northBoundLatitude")).appendChild(nBL);
-
-                return bbox_El;
+                
+                String template = "<gmd:EX_GeographicBoundingBox xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\">"+
+                "<gmd:extentTypeCode>"+
+                  "<gco:Boolean>%s</gco:Boolean>"+
+                "</gmd:extentTypeCode>"+
+                "<gmd:westBoundLongitude>"+
+                  "<gco:Decimal>%s</gco:Decimal>"+
+                "</gmd:westBoundLongitude>"+
+                "<gmd:eastBoundLongitude>"+
+                "<gco:Decimal>%s</gco:Decimal>"+
+                "</gmd:eastBoundLongitude>"+
+                "<gmd:southBoundLatitude>"+
+                  "<gco:Decimal>%s</gco:Decimal>"+
+                "</gmd:southBoundLatitude>"+
+                "<gmd:northBoundLatitude>"+
+                  "<gco:Decimal>%s</gco:Decimal>"+
+                "</gmd:northBoundLatitude>"+
+              "</gmd:EX_GeographicBoundingBox>";
+                
+                String extentTypeCode = code == ExtentTypeCode.EXCLUDE ? "false" : "true";
+                String xml = String.format(template, extentTypeCode, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY());
+                
+                Source source = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+                DocumentInfo doc = ni.getConfiguration().buildDocument(source);
+                return SingletonIterator.makeIterator(doc);
             }
         });
     }
+    
+    
+    public static Object multipolygon(Object description, Object src) throws Exception {
 
-    public static Object multipolygon(Object description, NodeIterator src) throws Exception {
-        return combineAndWriteGeom(description, src, new GeomWriter() {
+        final NodeInfo ni = ((NodeInfo) src);
+        return combineAndWriteGeom(description, SingletonIterator.makeIterator(ni), new GeomWriter() {
 
             public Object write(ExtentTypeCode code, MultiPolygon geometry) throws Exception {
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 final Encoder encoder = new Encoder(GML3_CONFIG);
                 encoder.setIndenting(false);
+                encoder.setOmitXMLDeclaration(true);
+                encoder.setEncoding(Charset.forName("UTF-8"));
                 ExtentHelper.addGmlId(geometry);
                 encoder.encode(geometry, org.geotools.gml3.GML.geometryMember, outputStream);
-
-                Transformer transformer = TransformerFactory.newInstance().newTransformer();
-
-                Source xmlSource = new StreamSource(new ByteArrayInputStream(outputStream.toByteArray()));
-                DOMResult outputTarget = new DOMResult();
-                transformer.transform(xmlSource, outputTarget);
-                Document doc = (Document) outputTarget.getNode();
-
-                // create the extentTypeCode elements
-                Element codeElem = doc.createElementNS("http://www.isotc211.org/2005/gmd", "gmd:extentTypeCode");
-                Element boolElem = doc.createElementNS("http://www.isotc211.org/2005/gco", "gco:Boolean");
-                boolElem.setTextContent(code == ExtentTypeCode.EXCLUDE ? "false" : "true");
-                codeElem.appendChild(boolElem);
-
-                // create the extras for the geographic Element
-                Element bPolyElem = doc.createElementNS("http://www.isotc211.org/2005/gmd", "gmd:EX_BoundingPolygon");
-                Element polyElem = doc.createElementNS("http://www.isotc211.org/2005/gmd", "gmd:polygon");
-                Node geomMember = findElem(doc, "MultiSurface");
-
-                bPolyElem.appendChild(codeElem);
-                bPolyElem.appendChild(polyElem);
-                polyElem.appendChild(geomMember);
-
-                return bPolyElem;
+                
+                StringBuilder builder = new StringBuilder("<gmd:EX_BoundingPolygon xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"><gmd:extentTypeCode><gco:Boolean>").
+                    append(code == ExtentTypeCode.EXCLUDE ? "false" : "true").
+                    append("</gco:Boolean></gmd:extentTypeCode><gmd:polygon>");
+                
+                Source xml1 = new StreamSource(new ByteArrayInputStream(outputStream.toByteArray()));
+                DocumentInfo doc1 = ni.getConfiguration().buildDocument(xml1);
+                AxisIterator iter = doc1.iterateAxis(Axis.CHILD);
+                NodeInfo next = (NodeInfo) iter.next();
+                
+                while(next !=null) {
+                    AxisIterator iter2 = next.iterateAxis(Axis.CHILD);
+                    Item next2 = iter2.next();
+                    
+                    while(next2 !=null) {
+                        if (next2 instanceof NodeInfo & ((NodeInfo)next2).getNodeKind() == Type.ELEMENT) {
+                            NodeInfo info = (NodeInfo) next2;
+                            
+                            String nodeXml = writeXml(info);
+                            builder.append(nodeXml);
+                        }
+                        next2 = iter2.next();
+                    }
+                    next = (NodeInfo) iter.next();
+                }
+                
+                builder.append("</gmd:polygon></gmd:EX_BoundingPolygon>");
+                
+                Source xmlSource = new StreamSource(new ByteArrayInputStream(builder.toString().getBytes("UTF-8")));
+                DocumentInfo doc = ni.getConfiguration().buildDocument(xmlSource);
+                
+                return SingletonIterator.makeIterator(doc);
             }
         });
+
     }
 
     private interface GeomWriter {
         Object write(ExtentTypeCode code, MultiPolygon geometry) throws Exception;
     }
 
-    public static Object combineAndWriteGeom(Object description, NodeIterator src, GeomWriter writer) throws Exception {
+
+    public static Object combineAndWriteGeom(Object description, UnfailingIterator src, GeomWriter writer) throws Exception {
 
         try {
-            Node next = src.nextNode();
-
             Multimap<Boolean, Polygon> geoms = ArrayListMultimap.create();
+            
+            NodeInfo next = (NodeInfo) src.next();
+            
             while (next != null) {
-                if (!next.getLocalName().equalsIgnoreCase("geographicElement")) {
-                    NodeList childNodes = next.getChildNodes();
-                    for (int i = 0; i < childNodes.getLength(); i++) {
-                        Node node = childNodes.item(i);
-                        geoms.putAll(geometries(node));
-                    }
-                } else {
-                    geoms.putAll(geometries(next));
-                }
-                next = src.nextNode();
+            	if (!next.getLocalPart().equalsIgnoreCase("geographicElement"))
+            	{
+            		AxisIterator childNodes = next.iterateAxis(Axis.CHILD);
+
+            		NodeInfo nextChild = (NodeInfo) childNodes.next();
+            		while (nextChild != null)
+            		{
+            			geoms.putAll(geometries(nextChild));
+                    	nextChild = (NodeInfo) childNodes.next();  	
+            		}
+            		
+            	}
+            	next = (NodeInfo) src.next();
             }
 
             GeometryFactory fac = new GeometryFactory();
@@ -527,10 +562,10 @@ public final class XslUtil {
             return root;
         }
     }
-
-    private static Multimap<Boolean, Polygon> geometries(Node next) throws Exception {
-        if (!next.getLocalName().equalsIgnoreCase("geographicElement"))
-            throw new AssertionError(next.getLocalName() + " is not a geographic element as expected");
+    
+    private static Multimap<Boolean, Polygon> geometries(NodeInfo next) throws Exception {
+        if (!next.getLocalPart().equalsIgnoreCase("geographicElement"))
+            throw new AssertionError(next.getStringValue() + " is not a geographic element as expected");
         Boolean inclusion = inclusion(next);
         inclusion = inclusion == null ? true : inclusion;
         Polygon geom = geom(next);
@@ -539,6 +574,8 @@ public final class XslUtil {
         return geoms;
     }
 
+    
+    
     private static Node findElem(Node next, String name) {
         if (name.equals(next.getLocalName())) {
             return next;
@@ -554,24 +591,27 @@ public final class XslUtil {
         return null;
     }
 
-    private static Polygon geom(Node next) throws Exception {
+    private static Polygon geom(NodeInfo next) throws Exception {
 
-        if ("Polygon".equals(next.getLocalName())) {
+        if ("Polygon".equals(next.getLocalPart())) {
             return parsePolygon(next);
         }
-        NodeList childNodes = next.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            Node node = childNodes.item(i);
-            Polygon geom = geom(node);
-            if (geom != null) {
-                return geom;
-            }
+        AxisIterator childNodes = next.iterateAxis(Axis.CHILD);
+        NodeInfo curChildNode =  (NodeInfo) childNodes.next();
+        
+        while (curChildNode != null) {
+        	Polygon geom = geom(curChildNode);
+        	if (geom != null)
+        	{
+        		return geom;
+        	}
+        	curChildNode = (NodeInfo) childNodes.next();
         }
         return null;
     }
-
+    
     @SuppressWarnings("rawtypes")
-    private static Polygon parsePolygon(Node next) throws Exception {
+    private static Polygon parsePolygon(NodeInfo next) throws Exception {
         String writeXml = writeXml(next);
 
         Object value = gml3Parser().parse(new StringReader(writeXml));
@@ -595,36 +635,44 @@ public final class XslUtil {
             return (Polygon) value;
         }
     }
-
-    private static Boolean inclusion(Node next) {
-        if ("extentTypeCode".equals(next.getLocalName())) {
+    
+    private static Boolean inclusion(NodeInfo next) {
+        if ("extentTypeCode".equals(next.getLocalPart())) {
             return booleanText(next);
         }
-        NodeList childNodes = next.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            Node node = childNodes.item(i);
-            Boolean inclusion = inclusion(node);
+        AxisIterator childNodes = next.iterateAxis(Axis.CHILD);
+        NodeInfo nextChild = (NodeInfo) childNodes.next();
+        
+        while (nextChild != null)
+        {
+            Boolean inclusion = inclusion(nextChild);
             if (inclusion != null) {
                 return inclusion;
-            }
+            }    	
+        	nextChild = (NodeInfo) childNodes.next();
+        	
         }
         return null;
     }
-
-    private static Boolean booleanText(Node next) {
-        NodeList childNodes = next.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            Node node = childNodes.item(i);
-            if ("Boolean".equals(node.getLocalName())) {
-                if (node.getFirstChild() != null) {
-                    String textContent = node.getFirstChild().getTextContent();
-                    return "1".equals(textContent) || "true".equalsIgnoreCase(textContent);
-                }
-            }
-        }
+    
+    private static Boolean booleanText(NodeInfo next) {
+        AxisIterator childNodes = next.iterateAxis(Axis.CHILD);
+        
+        NodeInfo nextChild = (NodeInfo) childNodes.next();
+        
+        while (nextChild != null)
+        {
+        	 if ("Boolean".equals(nextChild.getLocalPart())) {
+                 Item firstChild = nextChild.iterateAxis(Axis.CHILD).next();
+                if (firstChild != null) {
+                     String textContent = firstChild.getStringValue();
+                     return "1".equals(textContent) || "true".equalsIgnoreCase(textContent);
+                 }
+             }
+        	 nextChild = (NodeInfo) childNodes.next();
+        }    
         return true;
     }
-
     public static String writeXml(Node doc) throws Exception {
         // Prepare the DOM document for writing
         Source source = new DOMSource(doc);
@@ -638,7 +686,20 @@ public final class XslUtil {
         xformer.transform(source, result);
         return out.toString("utf-8");
     }
+    
+    public static String writeXml(NodeInfo doc) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        // Prepare the output file
+        Result result = new StreamResult(out);
 
+        // Write the DOM document to the file
+        Transformer xformer = TransformerFactory.newInstance().newTransformer();
+        
+        xformer.transform(doc, result);
+        return out.toString("utf-8").replaceFirst("<\\?xml.+?>", "");
+    }
+
+    
     static Pattern LINK_PATTERN = Pattern.compile("(mailto:|https://|http://|ftp://|ftps://)[^\\s<>]*\\w");
     static Pattern NODE_PATTERN = Pattern.compile("<.+?>");
 

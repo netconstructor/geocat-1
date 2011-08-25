@@ -29,14 +29,14 @@
                             ../int:role |
                             ../../int:GM03_2Comprehensive.Comprehensive.MD_MaintenanceInformationcontact/int:role"/>
 
-            <xsl:for-each select="xalan:nodeset($roles)/int:GM03_2Core.Core.CI_RoleCode_[1]">
+            <xsl:for-each select="$roles/int:GM03_2Core.Core.CI_RoleCode_[1]">
                     <xsl:apply-templates mode="InnerRespParty" select="$resp-party">
                       <xsl:with-param name="role" select="."/>
                     </xsl:apply-templates>
             </xsl:for-each>
 
             <xsl:if test="count($roles) > 1">
-                <xsl:for-each select="xalan:nodeset($roles)/int:GM03_2Core.Core.CI_RoleCode_[ pos != 1]">
+                <xsl:for-each select="$roles/int:GM03_2Core.Core.CI_RoleCode_[ pos != 1]">
                         <xsl:element name="{name(..)}">
                             <xsl:apply-templates mode="InnerRespParty" select="$resp-party">
                               <xsl:with-param name="role" select="."/>

@@ -151,6 +151,7 @@
         </xsl:for-each>
     </xsl:template>
 
+
     <xsl:template mode="MetaData" match="GM03Core.Core.MD_Metadatacontact">
         <gmd:contact>
             <xsl:apply-templates select="." mode="RespParty"/>
@@ -211,13 +212,6 @@
             <xsl:apply-templates select="." mode="DataIdentification"/>
         </gmd:identificationInfo>
     </xsl:template>
-
-    <xsl:template match="GM03Core.Core.MD_Metadatacontact" mode="MetaData">
-        <gmd:contact>
-            <xsl:apply-templates select="." mode="RespParty"/>
-        </gmd:contact>
-    </xsl:template>
-
     <xsl:template match="GM03Comprehensive.Comprehensive.MD_MetadatalegislationInformation" mode="MetaData">
         <xsl:apply-templates mode="LegislationInfo"/>
     </xsl:template>
