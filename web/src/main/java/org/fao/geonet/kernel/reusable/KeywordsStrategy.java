@@ -404,9 +404,10 @@ public final class KeywordsStrategy extends ReplacementStrategy
                     try {
                         Integer.parseInt(id);
                         KeywordBean concept = searcher.existsResult(id);
-                        id = concept.getCode();
-                    } catch(NumberFormatException e) {}
-                    return  URLEncoder.encode(NAMESPACE+id, "utf-8");
+                        return URLEncoder.encode(concept.getCode(), "UTF-8");
+                    } catch(NumberFormatException e) {
+                        return  URLEncoder.encode(NAMESPACE+id, "utf-8");
+                    }
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
                 }
