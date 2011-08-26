@@ -1,6 +1,7 @@
 package org.fao.geonet.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -24,6 +25,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import jeeves.utils.Log;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.dom.DocumentWrapper;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.DocumentInfo;
@@ -51,6 +54,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -65,7 +69,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * These are all extension methods for calling from xsl docs. Note: All params
- * are objects because it is hard to determine what is passed in from XSLT. Most
+ * are Objects because it is hard to determine what is passed in from XSLT. Most
  * are converted to string by calling tostring.
  *
  * @author jesse
@@ -129,7 +133,7 @@ public final class XslUtil {
     }
 
     /**
-     * Returns 'true' if the pattern matche the src
+     * Returns 'true' if the pattern match the src
      */
     public static String countryMatch(Object src, Object pattern) {
         if (src.toString().trim().length() == 0) {
@@ -351,6 +355,7 @@ public final class XslUtil {
     }
 
     public static Object posListToGM03Coords(Object coords, Object dim) {
+
         String[] coordsString = coords.toString().split("\\s+");
 
         if (coordsString.length % 2 != 0) {
@@ -383,8 +388,26 @@ public final class XslUtil {
 
         results.append("</POLYLINE>");
         try {
-            Element e = loadXMLFromString(results.toString()).getDocumentElement();
-            return e;
+ //         Element e = loadXMLFromString(results.toString()).getDocumentElement();
+
+        	Document d = loadXMLFromString(results.toString());
+        	
+        	DocumentWrapper saxonDoc = new DocumentWrapper(d, null, new Configuration());
+        	
+        	AxisIterator test = saxonDoc.iterateAxis(Axis.DESCENDANT);
+        	Item current = test.next();
+        	while (current != null)
+        	{
+        		NodeInfo ni = (NodeInfo) current;
+        		System.out.println(ni.getDisplayName());
+        		current = test.next();
+        	}
+        	String blah = saxonDoc.getStringValue();
+        	//return saxonDoc.getRoot();
+        	return saxonDoc.iterateAxis(Axis.CHILD);
+        	//return saxonDoc.iterateAxis(Axis.DESCENDANT);
+        	//return SingletonIterator.makeIterator(saxonDoc);
+        	
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -396,7 +419,8 @@ public final class XslUtil {
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
 
-        return builder.parse(new ByteArrayInputStream(xml.getBytes()));
+        return builder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+
     }
 
     public static String randomId() {
