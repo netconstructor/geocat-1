@@ -131,7 +131,7 @@
     </xsl:template>
 
     <xsl:template mode="gml" match="gml:posList">
-        <xsl:variable name="line" select="util:posListToGM03Coords(string(.),'2')"/>
+        <xsl:variable name="line" select="util:posListToGM03Coords(node(),string(.),'2')"/>
         <xsl:copy-of select="$line"/>
     </xsl:template>
     

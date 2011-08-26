@@ -354,7 +354,7 @@ public final class XslUtil {
         return results.toString();
     }
 
-    public static Object posListToGM03Coords(Object coords, Object dim) {
+    public static Object posListToGM03Coords(Object node, Object coords, Object dim) {
 
         String[] coordsString = coords.toString().split("\\s+");
 
@@ -372,7 +372,7 @@ public final class XslUtil {
                 dimension = 2;
             }
         }
-        StringBuilder results = new StringBuilder("<POLYLINE>");
+        StringBuilder results = new StringBuilder("<POLYLINE  xmlns=\"http://www.interlis.ch/INTERLIS2.3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 
         for (int i = 0; i < coordsString.length; i++) {
             if (i % dimension == 0) {
@@ -388,13 +388,15 @@ public final class XslUtil {
 
         results.append("</POLYLINE>");
         try {
- //         Element e = loadXMLFromString(results.toString()).getDocumentElement();
+            Source source = new StreamSource(new ByteArrayInputStream(results.toString().getBytes("UTF-8")));
 
+            DocumentInfo d = ((NodeInfo)node).getConfiguration().buildDocument(source);
+/*
         	Document d = loadXMLFromString(results.toString());
         	
         	DocumentWrapper saxonDoc = new DocumentWrapper(d, null, new Configuration());
-        	
-        	AxisIterator test = saxonDoc.iterateAxis(Axis.DESCENDANT);
+*/        	
+        	AxisIterator test = d.iterateAxis(Axis.CHILD);
         	Item current = test.next();
         	while (current != null)
         	{
@@ -402,11 +404,14 @@ public final class XslUtil {
         		System.out.println(ni.getDisplayName());
         		current = test.next();
         	}
+        	/*
         	String blah = saxonDoc.getStringValue();
         	//return saxonDoc.getRoot();
         	return saxonDoc.iterateAxis(Axis.CHILD);
-        	//return saxonDoc.iterateAxis(Axis.DESCENDANT);
-        	//return SingletonIterator.makeIterator(saxonDoc);
+        	//return saxonDoc.iterateAxis(Axis.DESCENDANT);*/
+
+
+        	return SingletonIterator.makeIterator(d.iterateAxis(Axis.CHILD).next());
         	
         } catch (Exception e) {
             return e.getMessage();
