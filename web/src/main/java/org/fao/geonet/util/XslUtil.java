@@ -389,43 +389,11 @@ public final class XslUtil {
         results.append("</POLYLINE>");
         try {
             Source source = new StreamSource(new ByteArrayInputStream(results.toString().getBytes("UTF-8")));
-
             DocumentInfo d = ((NodeInfo)node).getConfiguration().buildDocument(source);
-/*
-        	Document d = loadXMLFromString(results.toString());
-        	
-        	DocumentWrapper saxonDoc = new DocumentWrapper(d, null, new Configuration());
-*/        	
-        	AxisIterator test = d.iterateAxis(Axis.CHILD);
-        	Item current = test.next();
-        	while (current != null)
-        	{
-        		NodeInfo ni = (NodeInfo) current;
-        		System.out.println(ni.getDisplayName());
-        		current = test.next();
-        	}
-        	/*
-        	String blah = saxonDoc.getStringValue();
-        	//return saxonDoc.getRoot();
-        	return saxonDoc.iterateAxis(Axis.CHILD);
-        	//return saxonDoc.iterateAxis(Axis.DESCENDANT);*/
-
-
-        	return SingletonIterator.makeIterator(d.iterateAxis(Axis.CHILD).next());
-        	
+            return SingletonIterator.makeIterator(d.iterateAxis(Axis.CHILD).next());
         } catch (Exception e) {
             return e.getMessage();
         }
-    }
-
-    private static Document loadXMLFromString(String xml) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        return builder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
-
     }
 
     public static String randomId() {
