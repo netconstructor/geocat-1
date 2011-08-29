@@ -23,45 +23,47 @@
 
 package jeeves.utils;
 
+import org.jdom.Element;
+import org.jdom.JDOMException;
+
 import java.io.File;
 import java.io.IOException;
 
 import jeeves.server.ConfigurationOverrides;
 import jeeves.server.sources.http.JeevesServlet;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
-
 //=============================================================================
 
 public class XmlFileCacher
 {
 	private JeevesServlet servlet;
+    private String appPath;
 
     //--------------------------------------------------------------------------
 	//---
 	//--- Constructor
 	//---
 	//--------------------------------------------------------------------------
-    public XmlFileCacher(File file)
+    public XmlFileCacher(File file, String appPath)
     {
-        this(file, null);
+        this(file, null, appPath);
     }
-	public XmlFileCacher(File file, JeevesServlet jeevesServlet)
+	public XmlFileCacher(File file, JeevesServlet jeevesServlet, String appPath)
 	{
 		//--- 10 seconds as default interval
-		this(file, 10, jeevesServlet);
+		this(file, 10, jeevesServlet, appPath);
 	}
 
 	//--------------------------------------------------------------------------
 	/**
 	 * @param jeevesServlet if non-null the config-overrides can be applied to the xml file when it is loaded
 	 */
-	public XmlFileCacher(File file, int interval, JeevesServlet jeevesServlet)
+	public XmlFileCacher(File file, int interval, JeevesServlet jeevesServlet, String appPath)
 	{
 		this.file     = file;
 		this.interval = interval;
 		this.servlet = jeevesServlet;
+		this.appPath = appPath;
 	}
 
 	//--------------------------------------------------------------------------
@@ -98,7 +100,6 @@ public class XmlFileCacher
 			}
 		}
 
-
 		return elem;
 	}
 
@@ -114,9 +115,7 @@ public class XmlFileCacher
 	protected Element load() throws JDOMException, IOException
 	{
 		Element xml = Xml.loadFile(file);
-		if(servlet!=null) {
-		    ConfigurationOverrides.updateWithOverrides(file.getPath(), servlet, xml);
-		}
+	    ConfigurationOverrides.updateWithOverrides(file.getPath(), servlet, appPath, xml);
         return xml;
 	}
 

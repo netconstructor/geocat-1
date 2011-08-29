@@ -41,6 +41,7 @@ import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
+import jeeves.server.sources.http.JeevesServlet;
 import jeeves.utils.BinaryFile;
 import jeeves.utils.Util;
 import jeeves.utils.ProxyInfo;
@@ -146,7 +147,7 @@ public class Geonetwork implements ApplicationHandler
 		String baseURL = context.getBaseUrl();
 		String webappName = baseURL.substring(1);
 
-		ServerLib sl = new ServerLib(path);
+		ServerLib sl = new ServerLib(context.getServlet(), path);
 		String version = sl.getVersion();
 		String subVersion = sl.getSubVersion();
 
@@ -227,7 +228,7 @@ public class Geonetwork implements ApplicationHandler
 		SettingManager settingMan = new SettingManager(dbms, context.getProviderManager());
 
 		// --- Migrate database if an old one is found
-		migrateDatabase(dbms, settingMan, version, subVersion);
+		migrateDatabase(context.getServlet(), dbms, settingMan, version, subVersion);
 		
 		//--- initialize ThreadUtils with setting manager and rm props
 		ThreadUtils.init(context.getResourceManager().getProps(Geonet.Res.MAIN_DB),
@@ -476,7 +477,7 @@ public class Geonetwork implements ApplicationHandler
 	 * @param version
 	 * @param subVersion
 	 */
-	private void migrateDatabase(Dbms dbms, SettingManager settingMan, String version, String subVersion) {
+	private void migrateDatabase(JeevesServlet jeevesServlet, Dbms dbms, SettingManager settingMan, String version, String subVersion) {
 		logger.info("  - Migration ...");
 		
 		// Get db version and subversion
@@ -517,7 +518,7 @@ public class Geonetwork implements ApplicationHandler
 					sqlScriptPath = script.getCanonicalPath();
 					// Run the SQL migration
 					logger.info("      Running SQL migration step ...");
-					Lib.db.runSQL(dbms, script);
+					Lib.db.runSQL(jeevesServlet, dbms, script);
 					
 					// Refresh setting manager in case the migration task added some new settings.
 					settingMan.refresh(dbms);
@@ -581,10 +582,10 @@ public class Geonetwork implements ApplicationHandler
 			logger.info("      " + dbURL + " is an empty database (Metadata table not found).");
 			
 			// Do we need to remove object before creating the database ?
-			Lib.db.removeObjects(dbms, path);
-			Lib.db.createSchema(dbms, path);
+			Lib.db.removeObjects(context.getServlet(), dbms, path);
+			Lib.db.createSchema(context.getServlet(), dbms, path);
 			dbms.commit();
-			Lib.db.insertData(dbms, path);
+			Lib.db.insertData(context.getServlet(), dbms, path);
 			
 			// Copy logo
 			String uuid = UUID.randomUUID().toString();

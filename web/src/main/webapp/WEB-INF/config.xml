@@ -4,8 +4,8 @@
 
 	<general>
 		<profiles>user-profiles.xml</profiles>
-		<uploadDir>${geonetwork.config.uploadDir}</uploadDir>
-		<maxUploadSize>${geonetwork.config.maxUploadSize}</maxUploadSize> <!-- Size must be in megabyte (integer), 100MB by default -->
+		<uploadDir>./data/tmp</uploadDir>
+		<maxUploadSize>100</maxUploadSize> <!-- Size must be in megabyte (integer), 100MB by default -->
 		<debug>true</debug>
 	</general>
 
@@ -18,7 +18,7 @@
 				 the appHandler org.fao.geonet.Geonetwork
 				 -->
 		<startupErrorService>main.error</startupErrorService>
-		<language>${geonetwork.language}</language>
+		<language>en</language>
 		<localized>true</localized>
 		<contentType>text/html; charset=UTF-8</contentType>
 
@@ -141,13 +141,13 @@
 	<resources>
 	  <resource enabled="true">
 	    <name>main-db</name>
-	    <provider>${geonetwork.config.dbms.pool}</provider>
+	    <provider>jeeves.resources.dbms.ApacheDBCPool</provider>
 	    <config>
-	      <user>${geonetwork.config.dbms.username}</user>
-	      <password>${geonetwork.config.dbms.password}</password>
-	      <driver>${geonetwork.config.dbms.driver}</driver>
-	      <url>${geonetwork.config.dbms.url}</url>
-	      <poolSize>${geonetwork.config.dbms.poolSize}</poolSize>
+	      <user>admin</user>
+	      <password>gnos</password>
+	      <driver>org.h2.Driver</driver>
+	      <url>jdbc:h2:geonetwork</url>
+	      <poolSize>33</poolSize>
 	    </config>
 	  </resource>
 	  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -303,22 +303,18 @@
 	<!-- ====================================================================== -->
 
 	<appHandler class="org.fao.geonet.Geonetwork">
-	  <param name="luceneDir" value="${geonetwork.config.luceneDir}" />
-	  <param name="dataDir" value="${geonetwork.config.dataDir}" />
+	  <param name="luceneDir" value="WEB-INF/lucene" />
+	  <param name="dataDir" value="WEB-INF/data" />
 
 		<!-- this must be a directory in web/geonetwork because html is served -->
 		<param name="htmlCacheDir" value="htmlCache" />
 		
-		<param name="schemaPluginsDir" value="${geonetwork.config.schemaPluginsDir}" />
+		<param name="schemaPluginsDir" value="../../schemaPlugins" />
 
 		<param name="licenseDir" value="WEB-INF/licenses" />
 	  <param name="summaryConfig" value="WEB-INF/config-summary.xml" />
     <param name="guiConfig" value="WEB-INF/config-gui.xml" />        
-    <param name="luceneConfig" value="WEB-INF/config-lucene.xml" />
-    <!-- The number of threads to use when indexing metadata asynchronously -->
-    <param name="indexThreadPoolSize" value="4" />
-    <!-- the priority of the threads in the index thread pool.  1 - 10 -->
-    <param name="indexThreadPoolPriority" value="5" />
+    <param name="luceneConfig" value="WEB-INF/config-lucene.xml" />        
 
 		<!-- Preferred schema parameter is used on import
 			when a ZIP or MEF file is imported with more than one
@@ -329,7 +325,7 @@
 			interested for having metadata in a specific
 			ISO profil.
 		-->
-		<param name="preferredSchema" value="${geonetwork.config.preferredSchema}" />
+		<param name="preferredSchema" value="iso19139" />
 		<param name="jzkitConfig" value="JZkitApplicationContext.xml" />
 		<param name="metadataNotifierConfig" value="WEB-INF/config-notifier.xml" />
 
