@@ -423,13 +423,13 @@
   					  </xsl:call-template>
             </xsl:if>
 					</xsl:variable>
-
+<!-- 
 					<xsl:call-template name="addTitle">
 						<xsl:with-param name="icon">book_addresses.png</xsl:with-param>
 						<xsl:with-param name="title" select="/root/gui/strings/classification"/>
 						<xsl:with-param name="content" select="$classification"/>
 					</xsl:call-template>
-
+ -->
 
 
 
@@ -533,6 +533,12 @@
                             <xsl:with-param name="desc" select="/root/gui/strings/userManagementDes"/>
                         </xsl:call-template>
                         
+	                    <xsl:call-template name="addrow">
+	                        <xsl:with-param name="service" select="'thesaurus.admin'"/>
+	                        <xsl:with-param name="title" select="/root/gui/strings/thesaurus/management"/>
+	                        <xsl:with-param name="desc" select="/root/gui/strings/thesaurus/manDes"/>
+	                    </xsl:call-template>
+	                    
                     </xsl:variable>
                     
                     <xsl:call-template name="addTitle">
@@ -540,7 +546,7 @@
                         <xsl:with-param name="title" select="/root/gui/strings/Shared"/>
                         <xsl:with-param name="content" select="$reusableObjects"/>
                     </xsl:call-template>
-					
+
 				</table>
 				<p/>
 			</xsl:with-param>

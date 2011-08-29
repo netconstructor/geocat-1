@@ -1,31 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-<xsl:include href="header.xsl"/>
-<xsl:include href="banner.xsl"/>
-<xsl:include href="utils.xsl"/>
-<xsl:include href="thesaurus-util.xsl"/>
-<xsl:include href="translate-widget.xsl" />
+
+    <xsl:include href="main.xsl" />
+    <xsl:include href="thesaurus-util.xsl"/>
+    <xsl:include href="translate-widget.xsl" />
 
 
-<xsl:template match="/">
-		<html>
-			<head>
-				<xsl:call-template name="header"/>
-				<xsl:apply-templates mode="script" select="/"/>
-			</head>
-			<body>
-				<!-- banner -->
-				<xsl:call-template name="bannerPopup"/>
-
-				<table width="100%">
-					<!-- content -->
-					<tr><td class="content" >
-						<xsl:call-template name="content"/>
-					</td></tr>
-				</table>
-			</body>
-		</html>
-</xsl:template>
 
 <!--additional scripts-->
 <xsl:template mode="script" match="/">
@@ -126,10 +106,7 @@ page content
 		<table><tr valign="top"><td>
 		<form action="{/root/gui/locService}/thesaurus.addelement" name="keywordForm" id="keywordForm">
 			<xsl:attribute name="action">
-			<xsl:choose>
-			<xsl:when test="string(/root/response/mode)='add'"><xsl:value-of select="concat(/root/gui/locService,'/thesaurus.addelement')"/></xsl:when>
-			<xsl:otherwise><xsl:value-of select="concat(/root/gui/locService,'/thesaurus.updateelement')"/></xsl:otherwise>
-			</xsl:choose>
+			 <xsl:value-of select="concat(/root/gui/locService,'/geocat.thesaurus.updateelement')"/>
 			</xsl:attribute>
 
 			<table width="60%" border="0">

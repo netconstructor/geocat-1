@@ -8,7 +8,7 @@
         <table width="100%">
 
             <!-- print banner -->
-            <tr class="banner doprint" style="display:none;white-space:nowrap">
+            <tr id="banner-img1" class="banner doprint" style="display:none;white-space:nowrap">
                 <td class="banner" colspan="2" width="100%"><div style="width:1024px">
                     <img src="{/root/gui/url}/images/geocat_logo_li.gif" alt="geocat.ch logo"/>
                     <img src="{/root/gui/url}/images/header-background-print.jpg" alt="geocat.ch logo"/>
@@ -17,7 +17,7 @@
             </tr>
 
             <!-- title -->
-            <tr class="banner noprint">
+            <tr id="banner-img2" class="banner noprint">
                 <td class="banner" colspan="2" width="100%">
                     <div style="width:100%; height:103; background-image:url('{/root/gui/url}/images/header-background.jpg');">
                         <img src="{/root/gui/url}/images/bg_kopf_geocat.gif" alt="geocat.ch logo" style="float: right;"/>

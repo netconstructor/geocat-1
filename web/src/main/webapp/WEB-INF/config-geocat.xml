@@ -418,5 +418,9 @@
         </output>
     </service>
 
+    <service name="geocat.thesaurus.updateelement">
+      <class name=".services.thesaurus.GeocatUpdateElement"/>
+    </service>
+
     </services>
 </geonet>

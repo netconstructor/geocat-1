@@ -149,6 +149,7 @@ function edit(){
 }
 
 Ext.onReady(function(){
+   Ext.get("banner-img2").remove();
    Ext.QuickTips.init();
     grid = createGrid();
     createContainer(Ext.get('grid-panel'), grid);
