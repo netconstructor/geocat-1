@@ -26,6 +26,7 @@ package org.fao.geonet.kernel.search;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
 import org.fao.geonet.kernel.KeywordBean;
+import org.fao.geonet.kernel.LocaleUtil;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
 import org.fao.geonet.util.LangUtils;
@@ -46,6 +47,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -89,7 +91,7 @@ public class KeywordsSearcher {
 
         if (lang.length()>2)
             lang=lang.substring(0, 2);
-
+        
 		_query = "SELECT prefLab, note, id, lowc, uppc, lang(prefLab) "
 			+ " FROM {id} rdf:type {skos:Concept}; "
 			+ " skos:prefLabel {prefLab};"
@@ -460,6 +462,48 @@ public class KeywordsSearcher {
 			});
 		}
 	}
+    @SuppressWarnings("unchecked")
+    public void sortResults(final String sort, final String language) {
+        if ("label".equals(sort)) {
+            // sort by label
+            Collections.sort((List) _results, new Comparator<KeywordBean>() {
+                public int compare(final KeywordBean kw1, final KeywordBean kw2) {
+                    if(language != null) {
+                        kw1.setLang(language);
+                        kw2.setLang(language);
+                    }
+                    String threeCharlocale1 = kw1.getDefaultLocale();
+                    String threeCharlocale2 = kw2.getDefaultLocale();
+
+                    if(language != null && threeCharlocale1.equalsIgnoreCase(language) && !threeCharlocale1.equalsIgnoreCase(language)) {
+                        return 1;
+                    }
+                    if(language != null && !threeCharlocale1.equalsIgnoreCase(language) && threeCharlocale1.equalsIgnoreCase(language)) {
+                        return -1;
+                    }
+
+                    Locale locale1 = LocaleUtil.toLocale(threeCharlocale1);
+                    Locale locale2 = LocaleUtil.toLocale(threeCharlocale2);
+                    String label1 = kw1.getDefaultPrefLabel().toLowerCase();
+                    String label2 = kw2.getDefaultPrefLabel().toLowerCase();
+                    LocalizedStringComparable cmp1 = new LocalizedStringComparable(label1.toLowerCase(locale1), locale1);
+                    LocalizedStringComparable cmp2 = new LocalizedStringComparable(label2.toLowerCase(locale2), locale2);
+                    return cmp1.compareTo(cmp2);
+                }
+            });
+        }
+        if ("definition".equals(sort)) {
+            // sort by def
+            Collections.sort((List) _results, new Comparator() {
+                public int compare(final Object o1, final Object o2) {
+                    final KeywordBean kw1 = (KeywordBean) o1;
+                    final KeywordBean kw2 = (KeywordBean) o2;
+                    return kw1.getDefinition().compareToIgnoreCase(
+                            kw2.getDefinition());
+                }
+            });
+        }
+    }
 
     /**
      * TODO javadoc.

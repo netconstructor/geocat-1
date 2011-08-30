@@ -198,7 +198,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
         for (Element element : results) {
             String id = element.getChildTextTrim("id");
             Element e = new Element(REPORT_ELEMENT);
-            String url = XLink.LOCAL_PROTOCOL+"thesaurus.editelement?mode=edit&ref="
+            String url = XLink.LOCAL_PROTOCOL+"geocat.thesaurus.editelement?mode=edit&ref="
                     + NON_VALID_THESAURUS_NAME + "&id=" + id;
             addChild(e, REPORT_ID, id);
             addChild(e, REPORT_URL, url);

@@ -121,6 +121,7 @@
 	        
             <allow service="thesaurus.editelement"/>
             <allow service="geocat.thesaurus.updateelement"/>
+            <allow service="geocat.thesaurus.editelement"/>
         </addXML>
         <replaceAtt xpath="profile[@name = 'Guest']" attName="extends" value="Shared"/>
         <addXML xpath="profile[@name = 'Guest']">

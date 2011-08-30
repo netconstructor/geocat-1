@@ -101,7 +101,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
 
     renderer : function(v, p, record){
         p.cellAttr = 'rowspan="2"';
-        return '<div class="x-grid3-row-expander">&#160;</div>';
+        return '<div id="row-'+record.id+'" class="x-grid3-row-expander">&#160;</div>';
     },
 
     beforeExpand : function(record, body, rowIndex){

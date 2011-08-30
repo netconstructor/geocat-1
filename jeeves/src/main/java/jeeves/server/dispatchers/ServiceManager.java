@@ -375,6 +375,9 @@ public class ServiceManager
 		context.setOutputMethod(req.getOutputMethod());
 		context.setHeaders(req.getHeaders());
 		context.setServlet(servlet);
+		
+		updateLanguage(context);
+		
 		if (startupError) context.setStartupErrors(startupErrors);
 
 		//--- invoke service and build result
@@ -474,7 +477,22 @@ public class ServiceManager
 		}
 	}
 
-	//---------------------------------------------------------------------------
+	private void updateLanguage(ServiceContext context) {
+        String language = context.getLanguage();
+        if(language.length() < 3) {
+            if("en".equals(language)) {
+                context.setLanguage("eng");
+            } else if("de".equals(language)) {
+                context.setLanguage("deu");
+            } else if("fr".equals(language)) {
+                context.setLanguage("fra");
+            } if("it".equals(language)) {
+                context.setLanguage("ita");
+            }
+        }
+        
+    }
+    //---------------------------------------------------------------------------
 	//--- Handle error
 	//---------------------------------------------------------------------------
 
