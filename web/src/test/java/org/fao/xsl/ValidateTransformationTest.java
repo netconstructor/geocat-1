@@ -696,7 +696,7 @@ public class ValidateTransformationTest
         rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/begin/TimeInstant/timePosition", new EqualText("0200-01-01T00:00:00"));
         rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/end/TimeInstant/timePosition", new EqualText("2000-12-31T00:00:00"));
 
-        testFile(file, Control.GM03_2_ISO, rules, false);
+        testFile(iso, Control.GM03_2_ISO, rules, false);
     }
 
     /**

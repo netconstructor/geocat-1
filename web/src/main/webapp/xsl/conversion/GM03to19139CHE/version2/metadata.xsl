@@ -153,6 +153,13 @@
         </xsl:for-each>
     </xsl:template>
 
+
+    <xsl:template mode="MetaData" match="int:GM03_2Core.Core.MD_Metadatacontact">
+        <gmd:contact>
+            <xsl:apply-templates select="." mode="RespParty"/>
+        </gmd:contact>
+    </xsl:template>
+
     <xsl:template mode="MetaData" match="int:dateStamp">
         <gmd:dateStamp>
             <xsl:apply-templates mode="dateTime" select="."/>
@@ -207,13 +214,6 @@
             <xsl:apply-templates select="." mode="DataIdentification"/>
         </gmd:identificationInfo>
     </xsl:template>
-
-    <xsl:template match="int:GM03_2Core.Core.MD_Metadatacontact" mode="MetaData">
-        <gmd:contact>
-            <xsl:apply-templates select="." mode="RespParty"/>
-        </gmd:contact>
-    </xsl:template>
-
     <xsl:template match="int:GM03_2Comprehensive.Comprehensive.MD_MetadatalegislationInformation" mode="MetaData">
         <xsl:apply-templates mode="LegislationInfo"/>
     </xsl:template>

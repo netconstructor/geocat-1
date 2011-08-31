@@ -53,7 +53,7 @@
                 <gmd:extent>
                     <gmd:EX_Extent>
                         <xsl:apply-templates mode="Extent" select="description"/>
-                        <xsl:apply-templates mode="Extent" select="*[not(.//GM03Core.Core.EX_BoundingPolygon or .//GM03Core.Core.EX_GeographicBoundingBox)]"/>
+                        <xsl:apply-templates mode="Extent" select="GM03Core.Core.EX_ExtentgeographicElement[not(.//GM03Core.Core.EX_BoundingPolygon or .//GM03Core.Core.EX_GeographicBoundingBox)]"/>
                     </gmd:EX_Extent>
                 </gmd:extent>
             </xsl:otherwise>
@@ -127,7 +127,7 @@
     <xsl:template mode="Extent" match="GM03Core.Core.EX_BoundingPolygon">
         <gmd:EX_BoundingPolygon>
             <xsl:apply-templates mode="BoundingPoly"/>
-        </gmd:EX_BoundingPolygon> 
+        </gmd:EX_BoundingPolygon>
     </xsl:template>
 
     <xsl:template mode="Extent" match="GM03Core.Core.EX_GeographicBoundingBox[not(ancestor::GM03Core.Core.EX_Extent//GM03Core.Core.EX_BoundingPolygon)]">
@@ -151,7 +151,7 @@
             <gmd:EX_TemporalExtent>
                 <xsl:apply-templates mode="Extent"/>
             </gmd:EX_TemporalExtent>
-        </gmd:temporalElement> 
+        </gmd:temporalElement>
     </xsl:template>
 
     <xsl:template mode="Extent" match="GM03Core.Core.EX_TemporalExtent">
@@ -159,7 +159,7 @@
             <gml:TimePeriod gml:id="{util:randomId()}">
                 <xsl:apply-templates mode="TimePeriod"/>
             </gml:TimePeriod>
-        </gmd:extent> 
+        </gmd:extent>
     </xsl:template>
 
     <xsl:template mode="TimePeriod" match="begin">

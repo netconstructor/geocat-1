@@ -6,7 +6,7 @@ val Excludes = """[:\(\)\.-]""".r
 case class Expr(expr:Regex) {
   def replace(line:String) = expr.replaceAllIn(line, {
     (_:Regex.Match) match {
-      case m if m.group(2) != null && Excludes.findFirstIn(m.source).isEmpty=>
+      case m if m.group(2) != null && Excludes.findFirstIn(m.group(2)).isEmpty=>
         m.matched.patch(m.start(2) - m.start,"int:",0)
       case m =>
         m.matched
@@ -25,13 +25,15 @@ val specifics = Map(
     "xmlns:comp=\"http://www.geocat.ch/2003/05/gateway/GM03Comprehensive\"" -> "xmlns:comp=\"http://toignore\""
   ),
   "extent.xsl" -> Map(
-    "string(description" -> "string(int:description"
+    "string(description" -> "string(int:description",
+    "Core.Core.EX_Extent/description" -> "Core.Core.EX_Extent/int:description",
+    "EX_ExtenttemporalElement/temporalElement" -> "EX_ExtenttemporalElement/int:temporalElement"
   ),
   "content.xsl" -> Map(
      "|baseDomain" -> "|int:baseDomain",
      "|processingLevelCode" -> "|int:processingLevelCode",
      "GenericName_/value" -> "GenericName_/int:value",
-     "document(\"units.xml\")" -> "document(\"../units.xml\")",
+     "document('units.xml')" -> "document('../units.xml')",
      "MD_Type/type" -> "MD_Type/int:type"
    ),
   "legislation.xsl" -> Map(
@@ -89,7 +91,8 @@ val specifics = Map(
      "Resolution/equivalentScale" -> "Resolution/int:equivalentScale",
      "Identification/revision" -> "Identification/revision",
      "GM03Comprehensive.Comprehensive.formatDistributordistributorFormat[distributorFormat" -> "GM03Comprehensive.Comprehensive.formatDistributordistributorFormat[int:distributorFormat",
-     "Identification/revision" -> "Identification/int:revision"
+     "Identification/revision" -> "Identification/int:revision",
+     "and basicGeodataID" -> "and int:basicGeodataID"
   )
 )
 
@@ -106,9 +109,9 @@ rmtree(dir)
 dir.mkdirs
 
 val exprs = List(
-  Expr("""select\s*=\s*"\s*(int:)?([\w'+excludes+']+)""".r),
-  Expr("""match\s*=\s*"\s*(int:)?([\w'+excludes+']+)""".r),
-  Expr("""test\s*=\s*"\s*(int:)?([\w'+excludes+']+)""".r)
+  Expr(("""select\s*=\s*"\s*(int:)?([\w"""+Excludes+"""]+)""").r),
+  Expr(("""match\s*=\s*"\s*(int:)?([\w"""+Excludes+"""]+)""").r),
+  Expr(("""test\s*=\s*"\s*(int:)?([\w"""+Excludes+"""]+)""").r)
 )
 
 for (file <- new File(".").listFiles;
@@ -126,7 +129,7 @@ for (file <- new File(".").listFiles;
     if (line contains "<xsl:stylesheet") styleSheetTag = true
     if (line contains "exclude-result-prefixes") {
       val Array(prefix, att) = line split ("\"",2)
-      line = "{0}\"int {1}".format(prefix,att)
+      line = "%s\"int %s".format(prefix,att)
       wroteExcludes = true
     }
 

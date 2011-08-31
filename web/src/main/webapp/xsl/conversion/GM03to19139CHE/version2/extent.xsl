@@ -59,6 +59,13 @@
                 </gmd:extent>
             </xsl:otherwise>
         </xsl:choose>
+        <xsl:if test="*[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox or .//int:GM03_2Core.Core.EX_GeographicDescription)]">
+	       <gmd:extent>
+	           <gmd:EX_Extent>
+	               <xsl:apply-templates mode="Extent" select="*[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox or .//int:GM03_2Core.Core.EX_GeographicDescription)]"/>
+	           </gmd:EX_Extent>
+	       </gmd:extent>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template mode="Extent" match="int:description">
@@ -138,6 +145,45 @@
         <gco:Decimal><xsl:value-of select="."/></gco:Decimal>
     </xsl:template>
 
+    <!-- ================================================================================= -->
+
+    <xsl:template mode="Extent" match="int:GM03_2Core.Core.EX_ExtenttemporalElement/int:temporalElement">
+        <gmd:temporalElement>
+            <gmd:EX_TemporalExtent>
+                <xsl:apply-templates mode="Extent"/>
+            </gmd:EX_TemporalExtent>
+        </gmd:temporalElement>
+    </xsl:template>
+
+    <xsl:template mode="Extent" match="int:GM03_2Core.Core.EX_TemporalExtent">
+        <gmd:extent>
+            <gml:TimePeriod gml:id="{util:randomId()}">
+                <xsl:apply-templates mode="TimePeriod"/>
+            </gml:TimePeriod>
+        </gmd:extent>
+    </xsl:template>
+
+    <xsl:template mode="TimePeriod" match="int:begin">
+        <gml:begin>
+            <xsl:apply-templates mode="TimeInstant" select="."/>
+        </gml:begin>
+    </xsl:template>
+    <xsl:template mode="TimePeriod" match="int:end">
+        <gml:end>
+            <xsl:apply-templates mode="TimeInstant" select="."/>
+        </gml:end>
+    </xsl:template>
+    
+    <xsl:template mode="TimeInstant" match="*">
+        <xsl:variable name="time">
+            <xsl:apply-templates mode="dateTime"/>
+        </xsl:variable>
+		<gml:TimeInstant gml:id="{util:randomId()}">
+		    <gml:timePosition>
+		        <xsl:value-of select="normalize-space($time//text())"/>
+		    </gml:timePosition>
+		</gml:TimeInstant>
+    </xsl:template>
     <!-- ================================================================================= -->
 
     <xsl:template mode="BoundingPoly" match="int:extentTypeCode">
