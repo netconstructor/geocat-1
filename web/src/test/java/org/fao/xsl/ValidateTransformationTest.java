@@ -669,6 +669,35 @@ public class ValidateTransformationTest
 
         testFile(iso, Control.ISO_GM03, rules, true);
     }
+    
+    @Test
+    public void temporalExtent() throws Throwable
+    {
+        File file = new File(data, "gm03/home_temporalExt.xml");
+
+        Multimap<String, Requirement> rules = ArrayListMultimap.create();
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod", Requirement.ACCEPT);
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/begin/TimeInstant/timePosition", Requirement.ACCEPT);
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/end/TimeInstant/timePosition", Requirement.ACCEPT);
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/begin/TimeInstant/timePosition", new EqualText("0200-01-01T00:00:00"));
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/end/TimeInstant/timePosition", new EqualText("2000-12-31T00:00:00"));
+        File iso = testFile(file, Control.GM03_1_ISO, rules, false);
+
+        rules.clear();
+        rules.put("GM03_2Core.Core.EX_TemporalExtent/extent/GM03_2Core.Core.TM_Primitive/begin", Requirement.ACCEPT);
+        rules.put("GM03_2Core.Core.EX_TemporalExtent/extent/GM03_2Core.Core.TM_Primitive/end", Requirement.ACCEPT);
+
+        iso = testFile(iso, Control.ISO_GM03, rules, false);
+
+        rules.clear();
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod", Requirement.ACCEPT);
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/begin/TimeInstant/timePosition", Requirement.ACCEPT);
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/end/TimeInstant/timePosition", Requirement.ACCEPT);
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/begin/TimeInstant/timePosition", new EqualText("0200-01-01T00:00:00"));
+        rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod/end/TimeInstant/timePosition", new EqualText("2000-12-31T00:00:00"));
+
+        testFile(file, Control.GM03_2_ISO, rules, false);
+    }
 
     /**
      *

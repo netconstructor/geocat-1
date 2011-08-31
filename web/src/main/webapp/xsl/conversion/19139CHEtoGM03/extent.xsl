@@ -34,6 +34,28 @@
         </GM03_2Core.Core.EX_ExtentgeographicElement>
     </xsl:template>
 
+    <xsl:template mode="Extent" match="gmd:temporalElement">
+        <GM03_2Core.Core.EX_ExtenttemporalElement TID="x{generate-id(.)}">
+            <BACK_REF name="EX_Extent"/>
+            <temporalElement REF="?">
+	            <GM03_2Core.Core.EX_TemporalExtent TID="x{util:randomId()}">
+		            <extent>
+		                <GM03_2Core.Core.TM_Primitive>
+		                    <xsl:apply-templates mode="TimePeriod"/>
+		                </GM03_2Core.Core.TM_Primitive>
+		            </extent>
+	            </GM03_2Core.Core.EX_TemporalExtent>
+            </temporalElement>
+        </GM03_2Core.Core.EX_ExtenttemporalElement>
+    </xsl:template>
+    
+    <xsl:template mode="TimePeriod" match="gml:begin">
+        <begin><xsl:value-of select=".//text()"/></begin>
+    </xsl:template>
+    <xsl:template mode="TimePeriod" match="gml:end">
+        <end><xsl:value-of select=".//text()"/></end>
+    </xsl:template>
+
     <xsl:template mode="Extent" match="gmd:geographicElement[gmd:EX_BoundingPolygon]" priority="10">
         <xsl:variable name="exploded">
             <xsl:apply-templates mode="explode-multipolygons" />
