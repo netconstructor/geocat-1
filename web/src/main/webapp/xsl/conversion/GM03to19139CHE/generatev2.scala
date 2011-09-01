@@ -17,12 +17,10 @@ case class Expr(expr:Regex) {
 val specifics = Map(
   "CHE03-to-19139.xsl" -> Map(
     "match=\"CodeISO.LanguageCodeISO_" -> "match=\"int:CodeISO.LanguageCodeISO_",
-    "Group[language" -> "Group[int:language",
-    "Group/language" -> "Group/int:language",
     "Metadata/language" -> "Metadata/int:language",
-    "ge or not(language)]/plainText" -> "ge or not(int:language)]/int:plainText",
     "translate(language" -> "translate(int:language",
-    "xmlns:comp=\"http://www.geocat.ch/2003/05/gateway/GM03Comprehensive\"" -> "xmlns:comp=\"http://toignore\""
+    "xmlns:comp=\"http://www.geocat.ch/2003/05/gateway/GM03Comprehensive\"" -> "xmlns:comp=\"http://toignore\"",
+    "Core.Core.PT_FreeText/textGroup/" -> "Core.Core.PT_FreeText/int:textGroup/"
   ),
   "extent.xsl" -> Map(
     "string(description" -> "string(int:description",

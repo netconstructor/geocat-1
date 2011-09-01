@@ -561,8 +561,6 @@ public final class XslUtil {
     }
     
     private static Multimap<Boolean, Polygon> geometries(NodeInfo next) throws Exception {
-        if (!next.getLocalPart().equalsIgnoreCase("geographicElement"))
-            throw new AssertionError(next.getStringValue() + " is not a geographic element as expected");
         Boolean inclusion = inclusion(next);
         inclusion = inclusion == null ? true : inclusion;
         Polygon geom = geom(next);

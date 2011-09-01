@@ -2049,11 +2049,11 @@
             <textGroup>
               <GM03Core.Core.PT_Group>
                 <language>DE</language>
-                <plainText>geocat.ch II testen</plainText>
+                <plainText>de geocat.ch II testen</plainText>
               </GM03Core.Core.PT_Group>
               <GM03Core.Core.PT_Group>
                 <language>FR</language>
-                <plainText>geocat.ch II testen</plainText>
+                <plainText>fr geocat.ch II testen</plainText>
               </GM03Core.Core.PT_Group>
             </textGroup>
           </GM03Core.Core.PT_FreeText>

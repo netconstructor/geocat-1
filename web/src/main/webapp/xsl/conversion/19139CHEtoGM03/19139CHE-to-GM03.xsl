@@ -244,7 +244,7 @@
             <xsl:when test=".='#EN'">en</xsl:when>
             <xsl:when test=".='#RM'">rm</xsl:when>
             <xsl:when test=".='#AA'">aa</xsl:when>
-            <xsl:otherwise><xsl:value-of select="@locale"/></xsl:otherwise>
+            <xsl:otherwise><xsl:value-of select="./@locale"/></xsl:otherwise>
         </xsl:choose></language>
     </xsl:template>
 

@@ -59,13 +59,25 @@
                 </gmd:extent>
             </xsl:otherwise>
         </xsl:choose>
-        <xsl:if test="*[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox or .//int:GM03_2Core.Core.EX_GeographicDescription)]">
-	       <gmd:extent>
-	           <gmd:EX_Extent>
-	               <xsl:apply-templates mode="Extent" select="*[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox or .//int:GM03_2Core.Core.EX_GeographicDescription)]"/>
-	           </gmd:EX_Extent>
-	       </gmd:extent>
+        <xsl:for-each select=".//int:GM03_2Core.Core.EX_ExtenttemporalElement[not(temporalElement/int:GM03_2Core.Core.EX_SpatialTemporalExtent)]">
+           <gmd:extent>
+               <gmd:EX_Extent>
+                   <xsl:apply-templates mode="Temporal"/>
+               </gmd:EX_Extent>
+           </gmd:extent>
+        </xsl:for-each>
+        <xsl:if test=".//int:GM03_2Core.Core.EX_ExtenttemporalElement[temporalElement/int:GM03_2Core.Core.EX_SpatialTemporalExtent]">
+           <xsl:comment>TODO int:GM03_2Core.Core.EX_ExtenttemporalElement without TM_Primitive</xsl:comment>
+           <!-- Remove the not(temporalElement/int:GM03_2Core.Core.EX_SpatialTemporalExtent) from previous for-each and fix the spatial temporal.  
+           It seems to be that XslUtil mutlipolygon and bbox expect the normal extent and cannot handle spatialExtent -->
         </xsl:if>
+        <xsl:for-each select=".//int:GM03_2Core.Core.EX_VerticalExtent">
+           <gmd:extent>
+               <gmd:EX_Extent>
+                   <xsl:apply-templates mode="Extent"/>
+               </gmd:EX_Extent>
+           </gmd:extent>
+        </xsl:for-each>
     </xsl:template>
 
     <xsl:template mode="Extent" match="int:description">
@@ -147,20 +159,115 @@
 
     <!-- ================================================================================= -->
 
-    <xsl:template mode="Extent" match="int:GM03_2Core.Core.EX_ExtenttemporalElement/int:temporalElement">
+    <xsl:template mode="Temporal" match="int:GM03_2Core.Core.EX_ExtenttemporalElement/int:temporalElement">
         <gmd:temporalElement>
-            <gmd:EX_TemporalExtent>
-                <xsl:apply-templates mode="Extent"/>
-            </gmd:EX_TemporalExtent>
+                <xsl:apply-templates mode="Temporal"/>
         </gmd:temporalElement>
     </xsl:template>
 
-    <xsl:template mode="Extent" match="int:GM03_2Core.Core.EX_TemporalExtent">
-        <gmd:extent>
-            <gml:TimePeriod gml:id="{util:randomId()}">
-                <xsl:apply-templates mode="TimePeriod"/>
-            </gml:TimePeriod>
-        </gmd:extent>
+    <xsl:template mode="Temporal" match="int:GM03_2Core.Core.EX_TemporalExtent">
+        <gmd:EX_TemporalExtent>
+	        <gmd:extent>
+	            <gml:TimePeriod gml:id="{util:randomId()}">
+	                <xsl:apply-templates mode="TimePeriod"/>
+	            </gml:TimePeriod>
+	        </gmd:extent>
+        </gmd:EX_TemporalExtent>
+    </xsl:template>
+
+    <xsl:template mode="Temporal" match="int:GM03_2Core.Core.EX_SpatialTemporalExtent">
+                <xsl:comment>Need to implement spatialExtent import</xsl:comment>
+        <!-- <gmd:EX_SpatialTemporalExtent>
+	        <gmd:extent>
+	            <gml:TimePeriod gml:id="{util:randomId()}">
+	                <xsl:apply-templates mode="TimePeriod" select="int:extent"/>
+	            </gml:TimePeriod>
+	        </gmd:extent>
+            <xsl:apply-templates mode="Temporal" select="int:GM03_2Core.Core.spatialExtentEX_SpatialTemporalExtent"/>
+        </gmd:EX_SpatialTemporalExtent> -->
+    </xsl:template>
+
+	<xsl:template mode="TemporalExtent"
+		match="int:GM03_2Core.Core.spatialExtentEX_SpatialTemporalExtent">
+        <xsl:comment>Need to implement spatialExtent import</xsl:comment>
+		<xsl:choose>
+			<xsl:when test="int:spatialExtent[.//int:GM03_2Core.Core.EX_BoundingPolygon]">
+				<gmd:spatialExtent>
+					<xsl:comment>
+						spatialExtent[.//int:GM03_2Core.Core.EX_BoundingPolygon]
+					</xsl:comment>
+					<xsl:apply-templates mode="Extent" select="int:description" />
+
+					<xsl:variable name="polygon">
+						<xsl:if test="int:spatialExtent[.//int:GM03_2Core.Core.EX_BoundingPolygon]">
+							<xsl:apply-templates mode="Extent"
+								select="int:spatialExtent[.//int:GM03_2Core.Core.EX_BoundingPolygon]" />
+						</xsl:if>
+					</xsl:variable>
+					<xsl:if test="normalize-space($polygon) != ''">
+							<xsl:copy-of select="util:multipolygon(string(int:description), $polygon)" />
+						<xsl:if test="int:spatialExtent[.//int:GM03_2Core.Core.EX_GeographicBoundingBox]">
+								<xsl:copy-of select="util:bbox(string(int:description), $polygon)" />
+						</xsl:if>
+					</xsl:if>
+					<xsl:apply-templates mode="Extent"
+						select="int:spatialExtent[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox)]" />
+				</gmd:spatialExtent>
+			</xsl:when>
+			<xsl:when test="int:spatialExtent[.//int:GM03_2Core.Core.EX_GeographicBoundingBox]">
+				<xsl:for-each
+					select="int:spatialExtent//int:GM03_2Core.Core.EX_GeographicBoundingBox">
+					<gmd:spatialExtent>
+						<xsl:comment>
+							spatialExtent//int:GM03_2Core.Core.EX_GeographicBoundingBox
+						</xsl:comment>
+						<xsl:apply-templates mode="Extent"
+							select="ancestor::int:GM03_2Core.Core.EX_Extent/int:description" />
+						<gmd:geographicElement>
+							<xsl:apply-templates mode="Extent" select="." />
+						</gmd:geographicElement>
+						<xsl:apply-templates mode="Extent"
+							select="int:GM03_2Core.Core.EX_ExtentgeographicElement[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox)]|spatialExtent[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox)]" />
+					</gmd:spatialExtent>
+				</xsl:for-each>
+			</xsl:when>
+			<xsl:otherwise>
+				<gmd:spatialExtent>
+					<xsl:comment>
+						otherwise
+					</xsl:comment>
+					<xsl:apply-templates mode="Extent" select="int:description" />
+					<xsl:apply-templates mode="Extent"
+						select="int:GM03_2Core.Core.EX_ExtentgeographicElement[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox)]|spatialExtent[not(.//int:GM03_2Core.Core.EX_BoundingPolygon or .//int:GM03_2Core.Core.EX_GeographicBoundingBox)]" />
+				</gmd:spatialExtent>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:for-each select=".//int:GM03_2Core.Core.EX_ExtenttemporalElement">
+			<gmd:spatialExtent>
+				<xsl:comment>
+					.//int:GM03_2Core.Core.EX_ExtenttemporalElement
+				</xsl:comment>
+				<xsl:apply-templates mode="Temporal" />
+			</gmd:spatialExtent>
+		</xsl:for-each>
+		<xsl:for-each select=".//int:GM03_2Core.Core.EX_VerticalExtent">
+			<gmd:spatialExtent>
+				<xsl:comment>
+					.//int:GM03_2Core.Core.EX_VerticalExtent
+				</xsl:comment>
+				<xsl:apply-templates mode="Extent" />
+			</gmd:spatialExtent>
+		</xsl:for-each>
+	</xsl:template>
+
+    <xsl:template mode="Temporal" match="int:GM03_2Core.Core.spatialExtentEX_SpatialTemporalExtent">
+        <xsl:apply-templates mode="TemporalExtent" select="."/>
+    </xsl:template>
+
+    <xsl:template mode="Temporal" match="text()">
+        <xsl:call-template name="UnMatchedText">
+            <xsl:with-param name="mode">Temporal</xsl:with-param>
+        </xsl:call-template>
     </xsl:template>
 
     <xsl:template mode="TimePeriod" match="int:begin">

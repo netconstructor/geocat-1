@@ -42,7 +42,7 @@ public class PolygonValidator implements Filter
     public static final Finder   BBOX_FINDER      = new Finder("EX_GeographicBoundingBox");
     public static final Finder   EXTERIOR_FINDER  = new Finder("exterior");
     public static final Finder   INTERIOR_FINDER  = new Finder("interior");
-    public static final Finder   DESC_FINDER      = new Finder("description/CharacterString");
+    public static final Finder   DESC_FINDER      = new Finder("description/PT_FreeText/textGroup/LocalisedCharacterString");
     public static final Finder   EXTENT_TYPE_CODE_FINDER      = new Finder("extentTypeCode/Boolean");
 
     private final String         _id;

@@ -89,6 +89,29 @@
     <xsl:template match="*" mode="root">
         <ERROR mode="root" tag="{name(..)}/{name(.)}"/>
     </xsl:template>
+    
+    <xsl:template name="mainLanguage">
+        <xsl:choose>
+            <xsl:when test="//GM03Core.Core.MD_Metadata/language">
+                <xsl:value-of select="//GM03Core.Core.MD_Metadata/language"/>
+            </xsl:when>
+            <xsl:otherwise>de</xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template name="locale">
+        <xsl:variable name="mainLanguage">
+            <xsl:call-template name="mainLanguage"/>
+        </xsl:variable>
+        <xsl:choose>
+            <xsl:when test="language">
+                <xsl:value-of select="translate(language, $LOWER, $UPPER)"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="translate($mainLanguage, $LOWER, $UPPER)"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
     <xsl:template match="text()" mode="root">
         <xsl:call-template name="UnMatchedText">
@@ -99,31 +122,24 @@
     <!-- ====================================================================================== -->
 
     <xsl:variable name="mainLanguage">
-        <xsl:choose>
-            <xsl:when test="//GM03Core.Core.MD_Metadata/language">
-                <xsl:value-of select="//GM03Core.Core.MD_Metadata/language"/>
-            </xsl:when>
-            <xsl:otherwise>de</xsl:otherwise>
-        </xsl:choose>
+        <xsl:call-template name="mainLanguage"/>
     </xsl:variable>
 
     <xsl:template match="GM03Core.Core.PT_FreeURL" mode="language">
         <xsl:attribute name="xsi:type">che:PT_FreeURL_PropertyType</xsl:attribute>
 
-        <xsl:for-each select="URLGroup/GM03Core.Core.PT_URLGroup[language=$mainLanguage]">
-            <gmd:URL><xsl:value-of select="plainURL"/></gmd:URL>
-        </xsl:for-each>
-
-        <xsl:if test="URLGroup/GM03Core.Core.PT_URLGroup/language != $mainLanguage">
-            <che:PT_FreeURL>
-                <xsl:apply-templates mode="language" select="URLGroup/GM03Core.Core.PT_URLGroup[language!=$mainLanguage]"/>
-            </che:PT_FreeURL>
+        <xsl:if test="URLGroup/GM03_2Core.Core.PT_URLGroup/language">
+	        <che:PT_FreeURL>
+	            <xsl:apply-templates mode="language" select="URLGroup/GM03Core.Core.PT_URLGroup"/>
+	        </che:PT_FreeURL>
         </xsl:if>
     </xsl:template>
 
     <xsl:template match="GM03Core.Core.PT_URLGroup" mode="language">
 
-        <xsl:variable name="lang" select="translate(language, $LOWER, $UPPER)"/>
+        <xsl:variable name="lang">
+            <xsl:call-template name="locale"/>
+        </xsl:variable>
         <che:URLGroup>
             <che:LocalisedURL locale="#{$lang}">
                 <xsl:value-of select="plainURL"/>
@@ -139,11 +155,9 @@
                      namespace="http://www.isotc211.org/2005/gmd">
             <xsl:attribute name="xsi:type">gmd:PT_FreeText_PropertyType</xsl:attribute>
 
-            <xsl:apply-templates select="*[local-name()=$element]/GM03Core.Core.PT_FreeText/textGroup/GM03Core.Core.PT_Group[language=$mainLanguage]/plainText" mode="string"/>
-
-            <xsl:if test="*[local-name()=$element]/GM03Core.Core.PT_FreeText/textGroup/GM03Core.Core.PT_Group[language!=$mainLanguage]">
+            <xsl:if test="*[local-name()=$element]/GM03Core.Core.PT_FreeText/textGroup/GM03Core.Core.PT_Group">
                 <gmd:PT_FreeText>
-                    <xsl:apply-templates select="*[local-name()=$element]/GM03Core.Core.PT_FreeText/textGroup/GM03Core.Core.PT_Group[language!=$mainLanguage]" mode="language"/>
+                    <xsl:apply-templates select="*[local-name()=$element]/GM03Core.Core.PT_FreeText/textGroup/GM03Core.Core.PT_Group" mode="language"/>
                 </gmd:PT_FreeText>
             </xsl:if>
            </xsl:element>
@@ -152,17 +166,17 @@
     <xsl:template match="GM03Core.Core.PT_FreeText" mode="language">
         <xsl:attribute name="xsi:type">gmd:PT_FreeText_PropertyType</xsl:attribute>
 
-        <xsl:apply-templates select="textGroup/GM03Core.Core.PT_Group[language=$mainLanguage or not(language)]/plainText" mode="string"/>
-
-        <xsl:if test="textGroup/GM03Core.Core.PT_Group[language!=$mainLanguage]">
+        <xsl:if test="textGroup/GM03Core.Core.PT_Group">
             <gmd:PT_FreeText>
-                <xsl:apply-templates select="textGroup/GM03Core.Core.PT_Group[language!=$mainLanguage]" mode="language"/>
+                <xsl:apply-templates select="textGroup/GM03Core.Core.PT_Group" mode="language"/>
             </gmd:PT_FreeText>
         </xsl:if>
     </xsl:template>
 
     <xsl:template match="GM03Core.Core.PT_Group" mode="language">
-        <xsl:variable name="lang" select="translate(language, $LOWER, $UPPER)"/>
+        <xsl:variable name="lang">
+            <xsl:call-template name="locale"/>
+        </xsl:variable>
         <gmd:textGroup>
             <gmd:LocalisedCharacterString locale="#{$lang}">
                 <xsl:value-of select="plainText"/>
@@ -180,7 +194,6 @@
             <xsl:when test="$lang='IT'">ita</xsl:when>
             <xsl:when test="$lang='EN'">eng</xsl:when>
             <xsl:when test="$lang='RM'">rhe</xsl:when>
-            <xsl:when test="$lang='AA'">aar</xsl:when>
             <xsl:otherwise>ERROR_<xsl:value-of select="$lang"/></xsl:otherwise>
         </xsl:choose>
     </xsl:template>

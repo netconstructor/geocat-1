@@ -59,6 +59,38 @@ public class ValidateTransformationTest
     }
 
     @Test
+    public void exportPurpose() throws Throwable
+    {
+        File file = new File(data, "gm03/AllComprehensiveAttributes.xml");
+        Multimap<String, Requirement> rules = ArrayListMultimap.create();
+        rules.put("che:CHE_MD_DataIdentification/purpose",new Exists(
+                new Finder("LocalisedCharacterString",new And(new Exists(new Attribute("LocalisedCharacterString","locale","#DE")), new EqualText("de geocat.ch II testen")))));
+        rules.put("che:CHE_MD_DataIdentification/purpose",new Exists(
+                new Finder("LocalisedCharacterString",new And(new Exists(new Attribute("LocalisedCharacterString","locale","#FR")), new EqualText("fr geocat.ch II testen")))));
+        file = testFile(file, Control.GM03_1_ISO, rules, true);
+        
+        rules.clear();
+        rules.put("GM03_2Comprehensive.Comprehensive.MD_DataIdentification/purpose",new Exists(new Finder("GM03_2Core.Core.PT_Group", 
+                new And(new Exists(new Finder("language",new EqualText("de"))),
+                        new Exists(new Finder("plainText",new EqualText("de geocat.ch II testen")))
+        ))));
+        rules.put("GM03_2Comprehensive.Comprehensive.MD_DataIdentification/purpose",new Exists(new Finder("GM03_2Core.Core.PT_Group", 
+                new And(new Exists(new Finder("language",new EqualText("fr"))),
+                        new Exists(new Finder("plainText",new EqualText("fr geocat.ch II testen")))
+                        ))));
+        file = testFile(file, Control.ISO_GM03, rules, true);
+
+        rules.clear();
+        rules.put("che:CHE_MD_DataIdentification/purpose",new Exists(
+                new Finder("LocalisedCharacterString",new And(new Exists(new Attribute("LocalisedCharacterString","locale","#DE")), new EqualText("de geocat.ch II testen")))));
+        rules.put("che:CHE_MD_DataIdentification/purpose",new Exists(
+                new Finder("LocalisedCharacterString",new And(new Exists(new Attribute("LocalisedCharacterString","locale","#FR")), new EqualText("fr geocat.ch II testen")))));
+        file = testFile(file, Control.GM03_2_ISO, rules, true);
+        
+
+    }
+    
+    @Test
     public void doNotCreateEmptyBasicGeoId() throws Throwable
     {
         File file = new File(data, "gm03V2/noBasicGeoId.xml");
@@ -105,7 +137,7 @@ public class ValidateTransformationTest
 		Multimap<String, Requirement> rules = ArrayListMultimap.create();
         rules.put("che:CHE_CI_ResponsibleParty",
                 new Exists(new Finder("organisationName",
-                new Exists(new Finder("CharacterString",
+                new Exists(new Finder("LocalisedCharacterString",
                            new EqualText("Kanton Thurgau, Amt fur Geoinformation"))))));
         rules.put("che:CHE_MD_DataIdentification", new Exists(new Finder("basicGeodataID")));
         rules.put("che:CHE_MD_DataIdentification", new Exists(new Finder("basicGeodataIDType")));
@@ -234,7 +266,7 @@ public class ValidateTransformationTest
         File file = new File(data, "gm03/Bug17465_Missing_Responsible_In_FeatureCatalogCitation.xml");
         Multimap<String, Requirement> rules = ArrayListMultimap.create();
         rules.put("DQ_ConformanceResult/specification/CI_Citation",
-                new Exists(new Finder("title/CharacterString", new EqualText("Perfekt") )));
+                new Exists(new Finder("title/PT_FreeText/textGroup/LocalisedCharacterString", new EqualText("Perfekt") )));
         file = testFile(file, Control.GM03_1_ISO, rules, true);
 
         file = testFile(file, Control.ISO_GM03, ArrayListMultimap.<String, Requirement>create(), true);
@@ -442,7 +474,7 @@ public class ValidateTransformationTest
         Requirement hasExpectedQuantitativeChildren =
             new And(new Exists(new Finder("gmd:valueType/gco:RecordType")),
                     new Exists(new Finder("gmd:valueUnit")),
-                    new Exists(new Finder("gmd:errorStatistic/gco:CharacterString")),
+                    new Exists(new Finder("gmd:errorStatistic/CharacterString")),  // may need to be changed to PT_FreeText/textGroup/LocalisedCharacterString in future
                     new Exists(new Finder("gmd:value/gco:Record/arbitrary/c1")),
                     new Exists(new Finder("gmd:value/gco:Record/arbitrary/another"))
                     );
@@ -565,8 +597,8 @@ public class ValidateTransformationTest
         rules.put("identificationInfo", new Exists(new PolygonValidator("EX_13", INCLUDE, 1, 1, 0)));
         rules.put("identificationInfo", new Exists(new PolygonValidator("EX_15", INCLUDE, 1, 1, 0)));
 
-        rules.put("identificationInfo", new Count(2, new Finder("EX_Extent/description/CharacterString", new StartsWithText("EX_11"))));
-        rules.put("identificationInfo", new Count(2, new Finder("EX_Extent/description/CharacterString", new StartsWithText("EX_12"))));
+        rules.put("identificationInfo", new Count(2, new Finder("EX_Extent/description/PT_FreeText/textGroup/LocalisedCharacterString", new StartsWithText("EX_11"))));
+        rules.put("identificationInfo", new Count(2, new Finder("EX_Extent/description/PT_FreeText/textGroup/LocalisedCharacterString", new StartsWithText("EX_12"))));
 
         rules.put("EX_Extent", new And(new Exists(new Finder("geographicElement/EX_GeographicDescription")),
                                        new Count(1, new Finder("geographicElement"))));
@@ -673,7 +705,7 @@ public class ValidateTransformationTest
     @Test
     public void temporalExtent() throws Throwable
     {
-        File file = new File(data, "gm03/home_temporalExt.xml");
+        File file = new File(data, "non_validating/gm03/home_temporalExt.xml");
 
         Multimap<String, Requirement> rules = ArrayListMultimap.create();
         rules.put("EX_Extent/temporalElement/EX_TemporalExtent/extent/TimePeriod", Requirement.ACCEPT);
@@ -820,7 +852,7 @@ public class ValidateTransformationTest
                 } else {
                     boolean result = _expected.equals(e.getAttributeValue(_attName));
                     if (_elemName != null && !result) {
-                        System.out.println("Expected " + toString() + " but got " + e.getAttributeValue(_attName));
+                        //System.out.println("Expected " + toString() + " but got " + e.getAttributeValue(_attName));
                     }
                     return result;
                 }
@@ -900,7 +932,7 @@ public class ValidateTransformationTest
 
         public boolean eval(Element e)
         {
-            return e.getText()!=null && e.getText().startsWith(_expected);
+            return e.getTextTrim()!=null && e.getTextTrim().startsWith(_expected);
         }
 
         @Override
@@ -931,8 +963,6 @@ public class ValidateTransformationTest
                 count++;
                 descendants.next();
             }
-
-            System.out.println(_filter + " " + count);
 
             return _expected == count;
         }
