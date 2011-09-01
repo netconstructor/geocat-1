@@ -6,15 +6,23 @@ import static org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode.NA;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 import jeeves.utils.Xml;
 
+import org.fao.xsl.support.And;
+import org.fao.xsl.support.Attribute;
+import org.fao.xsl.support.Count;
+import org.fao.xsl.support.EqualText;
+import org.fao.xsl.support.Exists;
+import org.fao.xsl.support.Finder;
+import org.fao.xsl.support.Not;
+import org.fao.xsl.support.PolygonValidator;
+import org.fao.xsl.support.Prefix;
+import org.fao.xsl.support.Requirement;
+import org.fao.xsl.support.StartsWithText;
 import org.jdom.Element;
-import org.jdom.filter.Filter;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -106,6 +114,21 @@ public class ValidateTransformationTest
 		Multimap<String, Requirement> rules = ArrayListMultimap.create();
 	    file = testFile(file, Control.ISO_GM03, rules, true);
         rules.put("identificationInfo",new Not(new Exists(new Finder("basicGeodataID"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("extent", new Prefix("srv"))));
+        // Doesn't seem to be in GM03 model 
+        //rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("restrictions", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("serviceTypeVersion", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("serviceType", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Count(2, new Finder("coupledResource", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("coupledResource/SV_CoupledResource", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("coupledResource/SV_CoupledResource/operationName", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("couplingType", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Count(3, new Finder("containsOperations", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("containsOperations/SV_OperationMetadata", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("containsOperations/SV_OperationMetadata/operationName", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("containsOperations/SV_OperationMetadata/DCP", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("containsOperations/SV_OperationMetadata/connectPoint", new Prefix("srv"))));
+        rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("operatesOn", new Prefix("srv"))));
 	    file = testFile(file, Control.GM03_2_ISO, rules, true);
     }
 
@@ -818,206 +841,5 @@ public class ValidateTransformationTest
          * Indicates a transform from GM03 1.8 to ISO to GM03 2.0
          */
         GMO_1_ISO_GM03
-    }
-
-    private static class Attribute implements Filter
-    {
-        private static final long serialVersionUID = 1L;
-        private final String      _elemName;
-        private final String      _attName;
-        private final String      _expected;
-
-        public Attribute(String elemName, String attName, String expectedValue)
-        {
-            super();
-            _elemName = elemName;
-            _attName = attName;
-            _expected = expectedValue;
-        }
-
-        public Attribute(String attName)
-        {
-            this(null, attName, null);
-        }
-
-        public boolean matches(Object arg0)
-        {
-            if (arg0 instanceof Element) {
-                Element e = (Element) arg0;
-                if (_elemName!=null && !e.getName().equals(_elemName)) {
-                    return false;
-                }
-                if (_expected == null) {
-                    return e.getAttributeValue(_attName) != null;
-                } else {
-                    boolean result = _expected.equals(e.getAttributeValue(_attName));
-                    if (_elemName != null && !result) {
-                        //System.out.println("Expected " + toString() + " but got " + e.getAttributeValue(_attName));
-                    }
-                    return result;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public String toString()
-        {
-            String e = _elemName == null ? "" : _elemName;
-            if (_expected == null) {
-                return e + "@" + _attName;
-            } else {
-                return e + "@" + _attName + " = " + _expected;
-            }
-        }
-
-    }
-
-    public static class Not implements Requirement
-    {
-        private final Requirement _req;
-
-        public Not(Requirement req)
-        {
-            super();
-            _req = req;
-        }
-
-        public boolean eval(Element e)
-        {
-            return !_req.eval(e);
-        }
-
-        @Override
-        public String toString()
-        {
-            return "not(" + _req + ")";
-        }
-    }
-
-    private static class EqualText implements Requirement
-    {
-
-        private final String _expected;
-
-        public EqualText(String expected)
-        {
-            if (expected == null)
-                throw new IllegalArgumentException("expected cannot be null");
-            _expected = expected;
-        }
-
-        public boolean eval(Element e)
-        {
-            return _expected.equals(e.getText());
-        }
-
-        @Override
-        public String toString()
-        {
-            return "text() = " + _expected;
-        }
-    }
-    private static class StartsWithText implements Requirement
-    {
-
-        private final String _expected;
-
-        public StartsWithText(String expected)
-        {
-            if (expected == null)
-                throw new IllegalArgumentException("expected cannot be null");
-            _expected = expected;
-        }
-
-        public boolean eval(Element e)
-        {
-            return e.getTextTrim()!=null && e.getTextTrim().startsWith(_expected);
-        }
-
-        @Override
-        public String toString()
-        {
-            return "startsWith(text()) = " + _expected;
-        }
-    }
-
-    private static class Count implements Requirement
-    {
-
-        private final int    _expected;
-        private final Filter _filter;
-
-        public Count(int expected, Filter filter)
-        {
-            this._filter = filter;
-            _expected = expected;
-        }
-
-        @SuppressWarnings("rawtypes")
-        public boolean eval(Element e)
-        {
-            Iterator descendants = e.getDescendants(_filter);
-            int count = 0;
-            while (descendants.hasNext()) {
-                count++;
-                descendants.next();
-            }
-
-            return _expected == count;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "count[" + _filter + "] = " + _expected;
-        }
-    }
-
-    private static class Exists implements Requirement
-    {
-
-        private final Filter _filter;
-
-        public Exists(Filter filter)
-        {
-            this._filter = filter;
-        }
-
-        public boolean eval(Element e)
-        {
-            return _filter.matches(e) || e.getDescendants(_filter).hasNext();
-        }
-
-        public String toString()
-        {
-            return "Exists[" + _filter + "]";
-        }
-    }
-
-    private static class And implements Requirement
-    {
-
-        private final Requirement[] _filters;
-
-        public And(Requirement... filter)
-        {
-            this._filters = filter;
-        }
-
-        public boolean eval(Element e)
-        {
-            for (Requirement f : _filters) {
-                if (!f.eval(e)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public String toString()
-        {
-            return "Exists[" + Arrays.toString(_filters) + "]";
-        }
     }
 }

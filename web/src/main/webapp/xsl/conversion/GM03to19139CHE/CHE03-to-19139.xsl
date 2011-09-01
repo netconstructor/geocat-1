@@ -2,6 +2,7 @@
 <xsl:stylesheet version="1.0"
                 xmlns:comp="http://www.geocat.ch/2003/05/gateway/GM03Comprehensive"
                 xmlns:che="http://www.geocat.ch/2008/che"
+                xmlns:srv="http://www.isotc211.org/2005/srv"
                 xmlns:gmd="http://www.isotc211.org/2005/gmd"
                 xmlns:gco="http://www.isotc211.org/2005/gco"
                 xmlns:gml="http://www.opengis.net/gml"
@@ -278,16 +279,17 @@
     <!-- ====================================================================================== -->
 
     <xsl:template mode="text" match="*">
+       <xsl:param name="prefix">gmd</xsl:param>
         <xsl:choose>
             <xsl:when test="GM03Core.Core.PT_FreeText">
                 <xsl:for-each select="GM03Core.Core.PT_FreeText">
-                    <xsl:element name="gmd:{local-name(..)}">
+                    <xsl:element name="{$prefix}:{local-name(..)}">
                         <xsl:apply-templates mode="language" select="."/>
                     </xsl:element>
                 </xsl:for-each>
             </xsl:when>
             <xsl:when test="GM03Core.Core.CharacterString_">
-                <xsl:element name="gmd:{local-name(.)}">
+                <xsl:element name="{$prefix}:{local-name(.)}">
                     <xsl:for-each select="GM03Core.Core.CharacterString_">
                         <gco:CharacterString>
                             <xsl:value-of select="value"/>
@@ -296,7 +298,7 @@
                 </xsl:element>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:element name="gmd:{local-name(.)}">
+                <xsl:element name="{$prefix}:{local-name(.)}">
                     <xsl:apply-templates mode="string"/>
                 </xsl:element>
             </xsl:otherwise>

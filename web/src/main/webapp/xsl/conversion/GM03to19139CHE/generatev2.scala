@@ -90,7 +90,8 @@ val specifics = Map(
      "Identification/revision" -> "Identification/revision",
      "GM03Comprehensive.Comprehensive.formatDistributordistributorFormat[distributorFormat" -> "GM03Comprehensive.Comprehensive.formatDistributordistributorFormat[int:distributorFormat",
      "Identification/revision" -> "Identification/int:revision",
-     "and basicGeodataID" -> "and int:basicGeodataID"
+     "and basicGeodataID" -> "and int:basicGeodataID",
+     "<xsl:for-each select=\".//value\">" -> "<xsl:for-each select=\".//int:value\">"
   )
 )
 

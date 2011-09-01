@@ -30,7 +30,7 @@
     </xsl:template>
 
     <!-- back references are dropped -->
-    <xsl:template match="*[@REF and (starts-with(name(.), 'CI_') or starts-with(name(.), 'DQ_') or starts-with(name(.), 'EX_') or starts-with(name(.), 'LI_') or starts-with(name(.), 'MD_'))]" mode="ResolveRefs"/>
+    <xsl:template match="*[@REF and (starts-with(name(.), 'CI_') or starts-with(name(.), 'DQ_') or starts-with(name(.), 'EX_') or starts-with(name(.), 'LI_') or starts-with(name(.), 'MD_') or starts-with(name(.), 'SV_'))]" mode="ResolveRefs"/>
 
     <!-- this one does a huge loop in the model, it will be managed manually -->
     <xsl:template match="int:GM03_2Comprehensive.Comprehensive.formatDistributordistributorFormat" mode="ResolveRefs">
@@ -50,7 +50,7 @@
                 <xsl:variable name="myTID" select="@TID"/>
                 <xsl:for-each select="/int:TRANSFER/int:DATASECTION/int:GM03_2Comprehensive.Comprehensive/*|/int:TRANSFER/int:DATASECTION/int:GM03_2Core.Core/*">
                     <xsl:for-each select="*[@REF=$myTID]">
-                        <xsl:if test="$parent!=name(..) and (starts-with(name(.), 'CI_') or starts-with(name(.), 'DQ_') or starts-with(name(.), 'EX_') or starts-with(name(.), 'LI_') or starts-with(name(.), 'MD_'))">
+                        <xsl:if test="$parent!=name(..) and (starts-with(name(.), 'CI_') or starts-with(name(.), 'DQ_') or starts-with(name(.), 'EX_') or starts-with(name(.), 'LI_') or starts-with(name(.), 'MD_') or starts-with(name(.), 'SV_'))">
                             <xsl:apply-templates select=".." mode="ResolveRefs">
                                 <xsl:with-param name="parent" select="$selfName"/>
                             </xsl:apply-templates>

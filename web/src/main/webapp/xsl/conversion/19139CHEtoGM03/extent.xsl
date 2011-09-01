@@ -56,7 +56,7 @@
         <end><xsl:value-of select=".//text()"/></end>
     </xsl:template>
 
-    <xsl:template mode="Extent" match="gmd:geographicElement[gmd:EX_BoundingPolygon]" priority="10">
+    <xsl:template mode="Extent" match="gmd:geographicElement[gmd:EX_BoundingPolygon//gml:MultiSurface]" priority="10">
         <xsl:variable name="exploded">
             <xsl:apply-templates mode="explode-multipolygons" />
         </xsl:variable>

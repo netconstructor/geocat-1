@@ -26,10 +26,10 @@
             <xsl:apply-templates mode="DataIdentification" select="serviceTypeVersion"/>
             <xsl:apply-templates mode="DataIdentification" select="restrictions"/>
             <xsl:apply-templates mode="DataIdentification" select="GM03Core.Core.descriptiveKeywordsMD_Identification"/>
-            <xsl:apply-templates mode="DataIdentification" select="extent/GM03Core.Core.EX_Extent"/>
-            <xsl:apply-templates mode="DataIdentification" select="coupledResource"/>
+            <xsl:apply-templates mode="DataIdentification" select="GM03Comprehensive.Comprehensive.extentSV_ServiceIdentification"/>
+            <xsl:apply-templates mode="DataIdentification" select="coupledResource/GM03Comprehensive.Comprehensive.SV_CoupledResource"/>
             <xsl:apply-templates mode="DataIdentification" select="couplingType"/>
-            <xsl:apply-templates mode="DataIdentification" select="containsOperations"/>
+            <xsl:apply-templates mode="DataIdentification" select="GM03Comprehensive.Comprehensive.containsOperationsSV_ServiceIdentification"/>
             <xsl:apply-templates mode="DataIdentification" select="operatesOn"/>
         </che:CHE_SV_ServiceIdentification>
     </xsl:template>
@@ -42,17 +42,73 @@
             </xsl:if>
         </srv:serviceType>
     </xsl:template>
+    <xsl:template mode="DataIdentification" match="GM03Comprehensive.Comprehensive.extentSV_ServiceIdentification">
+        <srv:extent>
+            <gmd:EX_Extent>
+            <xsl:apply-templates mode="Extent" select="extent/GM03Core.Core.EX_Extent/*"/>
+            </gmd:EX_Extent>
+        </srv:extent>
+    </xsl:template>
 
+    <xsl:template mode="DataIdentification" match="GM03Comprehensive.Comprehensive.SV_CoupledResource">
+        <srv:coupledResource>
+	        <srv:SV_CoupledResource>
+	            <xsl:apply-templates mode="text" select="operationName"><xsl:with-param name="prefix">srv</xsl:with-param></xsl:apply-templates>
+	            <xsl:apply-templates mode="text" select="identifier"><xsl:with-param name="prefix">srv</xsl:with-param></xsl:apply-templates>
+	            <xsl:apply-templates mode="text" select="ScopedName"><xsl:with-param name="prefix">srv</xsl:with-param></xsl:apply-templates>
+	        </srv:SV_CoupledResource>
+        </srv:coupledResource>
+    </xsl:template>
+    
     <xsl:template mode="DataIdentification" match="couplingType">
         <srv:couplingType>
             <srv:SV_CouplingType codeList="http://www.isotc211.org/2005/iso19119/resources/Codelist/gmxCodelists.xml#SV_CouplingType" codeListValue="{text()}"/>
         </srv:couplingType>
+    </xsl:template>
+    <xsl:template mode="DataIdentification" match="operatesOn">
+        <srv:operatesOn xmlns:date="http://exslt.org/dates-and-times" 
+            xmlns:xlink="http://www.w3.org/1999/xlink" 
+            xmlns:gts="http://www.isotc211.org/2005/gts" 
+            uuidref="{.//value/text()}"/>
     </xsl:template>
 
     <xsl:template mode="DataIdentification" match="serviceTypeVersion">
         <srv:serviceTypeVersion>
             <gco:CharacterString><xsl:value-of select="."/></gco:CharacterString>
         </srv:serviceTypeVersion>
+    </xsl:template>
+    <xsl:template mode="DataIdentification" match="containsOperations">
+        <srv:containsOperations>
+            <xsl:apply-templates mode="DataIdentification"/>
+        </srv:containsOperations>
+    </xsl:template>
+    <xsl:template mode="DataIdentification" match="DCP">
+        <xsl:for-each select=".//value">
+	        <srv:DCP>
+	           <srv:DCPList codeList="http://www.isotc211.org/2005/iso19119/resources/Codelist/gmxCodelists.xml#DCPList" codeListValue="{text()}"/>     
+	        </srv:DCP>
+        </xsl:for-each>
+        
+    </xsl:template>
+    <xsl:template mode="DataIdentification" match="GM03Comprehensive.Comprehensive.SV_OperationMetadata">
+        <srv:SV_OperationMetadata>
+                <xsl:apply-templates mode="text" select="operationName"><xsl:with-param name="prefix">srv</xsl:with-param></xsl:apply-templates>
+                <xsl:apply-templates mode="DataIdentification" select="DCP"/>
+                <xsl:apply-templates mode="text" select="operationDescription"><xsl:with-param name="prefix">srv</xsl:with-param></xsl:apply-templates>
+                <xsl:apply-templates mode="text" select="invocationName"><xsl:with-param name="prefix">srv</xsl:with-param></xsl:apply-templates>
+                <xsl:apply-templates mode="DataIdentification" select="GM03Comprehensive.Comprehensive.SV_OperationMetadataconnectPoint"/>
+        </srv:SV_OperationMetadata>
+    </xsl:template>
+    <xsl:template mode="DataIdentification" match="GM03Comprehensive.Comprehensive.containsOperationsSV_ServiceIdentification">
+        <xsl:apply-templates mode="DataIdentification"/>
+    </xsl:template>
+    <xsl:template mode="DataIdentification" match="GM03Comprehensive.Comprehensive.SV_OperationMetadataconnectPoint">
+        <xsl:apply-templates mode="DataIdentification"/>
+    </xsl:template>
+    <xsl:template mode="DataIdentification" match="connectPoint">
+        <srv:connectPoint>
+	        <xsl:apply-templates mode="OnlineResource"/>
+        </srv:connectPoint>
     </xsl:template>
 
     <xsl:template mode="DataIdentification" match="GM03Core.Core.EX_Extent">

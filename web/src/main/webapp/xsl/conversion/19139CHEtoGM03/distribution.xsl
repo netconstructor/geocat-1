@@ -57,6 +57,7 @@
     </xsl:template>
 
     <xsl:template mode="distribution" match="gmd:CI_OnlineResource">
+        <xsl:param name="backRef">true</xsl:param>
         <GM03_2Core.Core.CI_OnlineResource TID="x{generate-id(.)}">
             <xsl:apply-templates mode="text" select="gmd:protocol"/>
             <xsl:apply-templates mode="text" select="gmd:applicationProfile"/>
@@ -64,7 +65,9 @@
             <xsl:apply-templates mode="textGroup" select="gmd:description"/>
             <xsl:apply-templates mode="textGroup" select="gmd:name"/>
             <xsl:apply-templates mode="text" select="gmd:linkage"/>
-            <BACK_REF name="MD_DigitalTransferOptions"/>
+            <xsl:if test="$backRef = 'true'">
+                <BACK_REF name="MD_DigitalTransferOptions"/>
+            </xsl:if>
         </GM03_2Core.Core.CI_OnlineResource>
     </xsl:template>
     <xsl:template mode="distribution" match="gmd:offLine">

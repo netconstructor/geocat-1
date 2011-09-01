@@ -229,7 +229,7 @@
 					<gco:ScopedName>-- Nom de la couche --</gco:ScopedName>
 				</srv:SV_CoupledResource>
 			</srv:coupledResource>
-			<srv:coupledResource xmlns:date="http://exslt.org/dates-and-times" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gts="http://www.isotc211.org/2005/gts">
+		<srv:coupledResource xmlns:date="http://exslt.org/dates-and-times" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gts="http://www.isotc211.org/2005/gts">
 				<srv:SV_CoupledResource>
 					<srv:operationName>
 						<gco:CharacterString>GetCapabilities</gco:CharacterString>
