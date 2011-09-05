@@ -271,7 +271,7 @@ var geocat = {
             },
             buttons: [
                 //geocat.baseUrl + "srv/" + translate('language') + "/main.search.embedded"
-                searchTools.createSearchButton('searchForm', geocat.baseUrl + "srv/" + translate('languageIso3') + "/csw",
+                searchTools.createSearchButton('searchForm', geocat.baseUrl + "srv/" + geocat.language + "/csw",
                         geocat.startSearch,
                         geocat.processSearchResults,
                         geocat.failedSearch,
@@ -365,7 +365,7 @@ var geocat = {
     refinementWithNoResultsDisplay: function() {
     	// Search
         searchTools.doCSWQueryFromForm('searchForm',
-                geocat.baseUrl + "srv/" + translate('languageIso3') + "/csw", 1,
+                geocat.baseUrl + "srv/" + geocat.language + "/csw", 1,
                 geocat.processRefinement,   //success
                 function() {                //failure
             	    alert ("Search failed.");
@@ -1194,7 +1194,7 @@ var geocat = {
                 id: '@name'
             }, Keyword),
             proxy: new Ext.data.HttpProxy({
-                url: geocat.baseUrl + "srv/" + translate('languageIso3') + "/portal.search?resultType=results",
+                url: geocat.baseUrl + "srv/" + geocat.language + "/portal.search?resultType=results",
                 method:'post'
             })
         });
@@ -1614,7 +1614,7 @@ var geocat = {
 
     gotoPage: function(recordNum) {
         geocat.startSearch();
-        var url = geocat.baseUrl + "srv/" + translate('languageIso3') + "/csw";
+        var url = geocat.baseUrl + "srv/" + geocat.language + "/csw";
         searchTools.doCSWQueryFromForm('searchForm', url, recordNum,
                 geocat.processSearchResults,
                 geocat.failedSearch,
@@ -1635,7 +1635,7 @@ var geocat = {
             //add to the map
             geocat.addLayer(protocol, link.url, link.name, link.title, link.uuid);
         } else if (protocol == "KML") {
-            window.open(geocat.baseUrl + "srv/" + translate('languageIso3') + "/google.kml?uuid=" + link.uuid + "&layers=" + link.name, "_blank");
+            window.open(geocat.baseUrl + "srv/" + geocat.language + "/google.kml?uuid=" + link.uuid + "&layers=" + link.name, "_blank");
         } else if (protocol.contains("show")) {
             Ext.MessageBox.show({
                 title: translate("show"),
@@ -1755,8 +1755,8 @@ var geocat = {
 				var xmlString = response.responseText;
 				var xmlobject = searchTools.loadXMLString(xmlString);
 				var root = xmlobject.getElementsByTagName('response')[0];
+                var item = document.getElementById('nbselected');
 				var nbSelected = root.getElementsByTagName('Selected')[0].firstChild.nodeValue;
-				var item = document.getElementById('nbselected');
 				if (item != null) {
 					item.innerHTML = nbSelected;
 					if (nbSelected == 0)
@@ -2031,9 +2031,9 @@ var geocat = {
                 '              <xsl:for-each select="dc:URI[not(contains(@protocol,\'image/\'))]">\n' +
                 '                <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
                 '              </xsl:for-each>\n' +
-//                '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-//                '              <li proto="_delete" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-//                '              <li proto="_duplicate" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+//                '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+//                '              <li proto="_delete" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+//                '              <li proto="_duplicate" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
                 '            </ul>\n' +
                 '           </div>' +
                 '          </xsl:if>\n' +
@@ -2066,14 +2066,14 @@ var geocat = {
             '          </xsl:if>\n' +
             '          <br/>\n' +
             '          <ul class="URIButtons" uuid="{dc:identifier}">\n' +
-//            Turn off metadata button, as a link on title is available '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
+//            Turn off metadata button, as a link on title is available '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
             '          <xsl:for-each select="dc:URI">\n' +
             '            <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
             '          </xsl:for-each>\n' +
             '          <xsl:if test="geonet:info/edit=\'true\'">\n' +
-            '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-            '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-            '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '          </xsl:if>\n' +
             '          </ul><br/><br/>\n' +
             '		 </td><td>' +
@@ -2114,14 +2114,14 @@ var geocat = {
             '          </xsl:if>\n' +
             '          <br/>\n' +
             '          <ul style="padding-top:4px" class="URIButtons" uuid="{dc:identifier}">\n' +
-            '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
+            '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
             '          <xsl:for-each select="dc:URI">\n' +
             '            <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
             '          </xsl:for-each>\n' +
             '          <xsl:if test="geonet:info/edit=\'true\'">\n' +
-            '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-            '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-            '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '          </xsl:if>\n' +
             '          </ul><br/>\n' +
             '        </td></tr>\n' +

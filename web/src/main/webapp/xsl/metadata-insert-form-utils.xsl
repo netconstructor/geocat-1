@@ -3,7 +3,7 @@
 
     <xsl:template name="metadata-insert-common-form">
 
-        <xsl:variable name="lang" select="/root/gui/language"/>
+        <xsl:variable name="lang" select="substring(/root/gui/language/text(),0,3)"/>
 
         <!-- uuid constraints -->
         <tr id="gn.uuidAction">
@@ -82,6 +82,7 @@
 
         <!-- groups -->
         <tr id="gn.groups">
+                LANG: <xsl:value-of select="$lang"/><br/>
             <th class="padded">
                 <xsl:value-of select="/root/gui/strings/group"/>
             </th>

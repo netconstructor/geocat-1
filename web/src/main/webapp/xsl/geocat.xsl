@@ -58,6 +58,7 @@
             Ext.onReady(function() {
                 geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', Env.proxy+'url=<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
                 geocat.language = '<xsl:value-of select="root/gui/language"/>';
+                translations.languageIso3 = geocat.language;
             });
         </script>
         

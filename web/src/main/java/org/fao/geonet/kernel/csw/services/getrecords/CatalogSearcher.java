@@ -478,7 +478,7 @@ public class CatalogSearcher {
 		Pair<TopDocs,Element> searchResults = LuceneSearcher.doSearchAndMakeSummary(
 				numHits, startPosition - 1, maxRecords, Integer.MAX_VALUE, 
 				_lang, resultType.toString(), _summaryConfig, 
-				_reader, query, cFilter, sort, buildSummary,
+				_reader, query, _filter, _sort, buildSummary,
 				
 				_luceneConfig.isTrackDocScores(), _luceneConfig.isTrackMaxScore(), _luceneConfig.isDocsScoredInOrder()		
 		);
