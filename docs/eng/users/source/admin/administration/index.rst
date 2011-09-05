@@ -23,24 +23,24 @@ and Water, Health etcetera.
 To create new groups you should be logged on with an account that has Administrative privileges.
 
 #. Select the *Administration* button in the menu. On the Administration page, select *Group management*.
-    
-      .. figure:: admin-group-management.png
-    
+
+    .. figure:: admin-group-management.png
+
         *Administration page - Group management*
 
 #. Select *Add a new group*. You may want to remove the *Sample* group;
-  
-      .. figure:: GroupManag.png
-    
+
+    .. figure:: GroupManag.png
+
         *Group management*
 
 #. Fill out the details. The email address will be used to send feedback on data downloads when they occur for resources that are part of the Group.
-    
-.. warning:: 
-    The Name should *NOT* contain spaces! You can use the Localization panel to provide localized names for groups.
-    
-      .. figure:: addGroup.png
-      
+
+    .. warning:: 
+        The Name should *NOT* contain spaces! You can use the Localization panel to provide localized names for groups.
+
+    .. figure:: addGroup.png
+
         *Group edit form*
 
 #. Click on *Save*
