@@ -20,13 +20,6 @@
         <include>geoserver.war</include>
       </includes>
     </fileSet>
-    <fileSet>
-      <directory>web-client/src/main/resources</directory>
-      <outputDirectory>web-client/apps</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-   </fileSet>
    <!-- licenses -->
    <fileSet>
      <directory>release</directory>

@@ -508,6 +508,8 @@ class Harvester
 		} else if (name.equals("MD_Metadata")) {
             try {
                 XPath xpath = XPath.newInstance("gmd:fileIdentifier/gco:CharacterString");
+                xpath.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+                xpath.addNamespace("gco", "http://www.isotc211.org/2005/gco");
                 Element identif = (Element) xpath.selectSingleNode(record);
 
                 if (identif == null)
@@ -515,11 +517,15 @@ class Harvester
                     log.warning("Skipped record with no 'gmd:fileIdentifier' element : "+ name);
                     return null;
                 }
-
+                
                 xpath = XPath.newInstance("gmd:dateStamp/gco:DateTime");
+                xpath.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+                xpath.addNamespace("gco", "http://www.isotc211.org/2005/gco");
                 Element modified = (Element) xpath.selectSingleNode(record);
                 if (modified == null) {
                     xpath = XPath.newInstance("gmd:dateStamp/gco:Date");
+                    xpath.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+                    xpath.addNamespace("gco", "http://www.isotc211.org/2005/gco");
                     modified = (Element) xpath.selectSingleNode(record);
                 }
                 log.debug("Record info: " +  identif + ", " + ((modified!=null)?modified.getText():null));

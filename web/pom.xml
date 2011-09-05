@@ -674,7 +674,7 @@
           </execution>
           <execution>
             <id>ant-schematrons</id>
-            <phase>generate-sources</phase>
+            <phase>prepare-package</phase>
             <goals>
               <goal>exec</goal>
             </goals>
@@ -799,7 +799,7 @@ Python and Latex are required to build the documentation. -->
             </connector>
           </connectors>
           <webApp>${project.build.directory}/geonetwork</webApp>
-          <webXml>${build.webapp.resources}/WEB-INF/web.xml</webXml>
+<!--          <webXml>${build.webapp.resources}/WEB-INF/web.xml</webXml> -->
 <!--      <webAppSourceDirectory>${build.webapp.resources}</webAppSourceDirectory> -->
           <webAppConfig>
             <contextPath>/geonetwork</contextPath>
@@ -858,7 +858,7 @@ Python and Latex are required to build the documentation. -->
     <profile>
       <id>widgets</id>
       <properties>
-        <web.xml.widget.config.overrides>,/WEB-INF/config-overrides-widget.xml</web.xml.widget.config.overrides>
+        <web.xml.widget.config.overrides>/WEB-INF/config-overrides-widget.xml</web.xml.widget.config.overrides>
         <widgets.webapp.resources>,../web-client/src/main/resources/</widgets.webapp.resources>
       </properties>
     </profile>
@@ -881,7 +881,7 @@ Python and Latex are required to build the documentation. -->
     <geonetwork.webapp.js.dir>${geonetwork.webapp.dir}/scripts</geonetwork.webapp.js.dir>
     <geonetwork.build.dir>${project.build.directory}/${project.build.finalName}</geonetwork.build.dir>
     <geonetwork.webapp.css.dir>${geonetwork.webapp.dir}</geonetwork.webapp.css.dir>
-    <minify.verbose>true</minify.verbose>
+    <minify.verbose>false</minify.verbose>
     <build.webapp.resources>${project.build.directory}/webapp</build.webapp.resources>
     <web.xml.main.config.overrides>/WEB-INF/config-overrides-${env}.xml</web.xml.main.config.overrides>
     <web.xml.widget.config.overrides></web.xml.widget.config.overrides>

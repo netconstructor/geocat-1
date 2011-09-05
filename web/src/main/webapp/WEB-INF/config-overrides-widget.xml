@@ -24,5 +24,8 @@ if the widgets profile is not active
 		<replaceAtt xpath="client" attName="url" value="../../apps/search/"/>
 		<replaceAtt xpath="client" attName="createParameter" value="#create"/>
 	</file>
+<<<<<<< HEAD
 	
+=======
+>>>>>>> 831598f4f2fe6fd3ebec4a3d55d06a4144d0020e
 </overrides>

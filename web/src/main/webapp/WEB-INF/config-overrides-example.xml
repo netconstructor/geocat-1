@@ -9,7 +9,8 @@
 	 http://trac.osgeo.org/geonetwork/wiki/ConfigOverride
 	 The API has changed slightly since it was written but the principals remain the same 
 -->
-<overrides>
+<overrides xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="config-overrides.xsd">
 	<!-- an import can be used if many of the overrides are common between your different configurations -->
 	<import file="/WEB-INF/server-props-overrides.xml"/>
 	
@@ -17,6 +18,10 @@
 		<db.user>admin</db.user>
 		<db.pass>gnos</db.pass>
 	</properties>
+	<file name="">
+		<replaceAtt attName="" value="" xpath=""/>
+		<replaceText xpath=""></replaceText>
+	</file>
 	<file name=".*/WEB-INF/config.xml">
 		<replaceText xpath="general/uploadDir">../../data/tmp</replaceText>
 		<replaceText xpath="general/maxUploadSize">100</replaceText>

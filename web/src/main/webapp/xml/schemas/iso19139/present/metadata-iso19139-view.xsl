@@ -296,15 +296,37 @@
                 <li>
                   <a href="{gmd:CI_OnlineResource/gmd:linkage/gmd:URL}">
                     <xsl:choose>
-                      <xsl:when test="normalize-space($desc)!=''">
-                        <xsl:value-of select="$desc"/>
-                      </xsl:when>
-                      <xsl:when
-                        test="normalize-space(gmd:CI_OnlineResource/gmd:name/gco:CharacterString)!=''">
-                        <xsl:value-of select="gmd:CI_OnlineResource/gmd:name/gco:CharacterString"/>
+                      <xsl:when test="contains(current-grouping-key(), 'OGC') or contains(current-grouping-key(), 'DOWNLOAD')">
+                        <!-- Name contains layer, feature type, coverage ... -->
+                        <xsl:choose>
+                          <xsl:when test="normalize-space($desc)!=''">
+                            <xsl:value-of select="$desc"/>
+                            <xsl:if test="gmd:CI_OnlineResource/gmd:name/gmx:MimeFileType/@type">
+                              (<xsl:value-of select="gmd:CI_OnlineResource/gmd:name/gmx:MimeFileType/@type"/>)
+                            </xsl:if>
+                          </xsl:when>
+                          <xsl:when
+                            test="normalize-space(gmd:CI_OnlineResource/gmd:name/gco:CharacterString)!=''">
+                            <xsl:value-of select="gmd:CI_OnlineResource/gmd:name/gco:CharacterString"/>
+                          </xsl:when>
+                          <xsl:otherwise>
+                            <xsl:value-of select="gmd:CI_OnlineResource/gmd:linkage/gmd:URL"/>
+                          </xsl:otherwise>
+                        </xsl:choose>
                       </xsl:when>
                       <xsl:otherwise>
-                        <xsl:value-of select="gmd:CI_OnlineResource/gmd:linkage/gmd:URL"/>
+                        <xsl:if test="normalize-space($desc)!=''">
+                          <xsl:attribute name="title"><xsl:value-of select="$desc"/></xsl:attribute>
+                        </xsl:if>
+                        <xsl:choose>
+                          <xsl:when
+                            test="normalize-space(gmd:CI_OnlineResource/gmd:name/gco:CharacterString)!=''">
+                            <xsl:value-of select="gmd:CI_OnlineResource/gmd:name/gco:CharacterString"/>
+                          </xsl:when>
+                          <xsl:otherwise>
+                            <xsl:value-of select="gmd:CI_OnlineResource/gmd:linkage/gmd:URL"/>
+                          </xsl:otherwise>
+                        </xsl:choose>
                       </xsl:otherwise>
                     </xsl:choose>
                   </a>
@@ -332,15 +354,17 @@
   <!-- Extract logo -->
   <xsl:template mode="logo" match="gmd:graphicOverview">
     <xsl:variable name="fileName" select="gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString"/>
-    <xsl:variable name="url"
-      select="if (contains($fileName, '://')) 
-      then $fileName 
-      else geonet:get-thumbnail-url($fileName, //geonet:info, /root/gui/locService)"/>
-
-    <a href="{$url}" rel="lightbox-viewset">
-      <img class="logo" src="{$url}" alt="thumbnail"
-        title="{gmd:MD_BrowseGraphic/gmd:fileDescription/gco:CharacterString}"/>
-    </a>
+    <xsl:if test="normalize-space($fileName)!=''">
+      <xsl:variable name="url"
+        select="if (contains($fileName, '://')) 
+        then $fileName 
+        else geonet:get-thumbnail-url($fileName, //geonet:info, /root/gui/locService)"/>
+  
+      <a href="{$url}" rel="lightbox-viewset">
+        <img class="logo" src="{$url}" alt="thumbnail"
+          title="{gmd:MD_BrowseGraphic/gmd:fileDescription/gco:CharacterString}"/>
+      </a>
+    </xsl:if>
   </xsl:template>
 
 

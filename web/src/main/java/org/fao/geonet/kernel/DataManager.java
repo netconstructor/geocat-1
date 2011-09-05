@@ -91,7 +91,7 @@ import org.jdom.filter.ElementFilter;
  */
 public class DataManager {
 
-    //--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
 	//---
 	//--- Constructor
 	//---
@@ -119,6 +119,7 @@ public class DataManager {
      * @param baseURL
      * @param htmlCacheDir
      * @param dataDir
+     * @param thesaurusDir TODO
      * @param appPath
      * @throws Exception
      */
@@ -136,6 +137,7 @@ public class DataManager {
 		this.validator = new Validator(htmlCacheDir);
 		this.baseURL = baseURL;
         this.dataDir = dataDir;
+        this.thesaurusDir = thesaurusDir;
 		this.appPath = appPath;
 		int corePoolSize = Util.getParam(params, "indexThreadPoolSize", 4);
 		ThreadFactory threadFactory = new ThreadFactory() {
@@ -854,7 +856,7 @@ public class DataManager {
 				Map<String,String> params = new HashMap<String,String>();
 				params.put("lang", lang);
 				params.put("rule", rule);
-				params.put("dataDir", this.dataDir);
+				params.put("thesaurusDir", this.thesaurusDir);
 				Element xmlReport = Xml.transform(md, schemaTronXmlXslt, params);
 				if (xmlReport != null) {
 					report.addContent(xmlReport);
@@ -2873,6 +2875,7 @@ public class DataManager {
     private final Stack<Boolean> indexing = new Stack<Boolean>();
     private final ThesaurusManager thesaurusMan;
     private String dataDir;
+	private String thesaurusDir;
     private ServiceContext servContext;
 	private String appPath;
 	private boolean rebuilding = false;

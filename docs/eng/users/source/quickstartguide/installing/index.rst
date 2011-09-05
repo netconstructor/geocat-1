@@ -151,7 +151,7 @@ backends are supported (listed in alphabetical order):
 Configure config.xml
 ````````````````````
 
-The database backend used is configured in **GEONETWERK_INSTALL_DIR/WEB-INF/config.xml**. The following xml element is of interest::
+The database backend used is configured in **INSTALL_DIR/WEB-INF/config.xml**. The following xml element is of interest::
 
 
                 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

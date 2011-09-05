@@ -1,4 +1,5 @@
 <overrides>
+<<<<<<< HEAD
     <!-- import values.  The imported values are put at top of sections -->
     <import file="./imported-config-overrides.xml" />
     <!-- The logging section allows logging configuration files to be specified -->
@@ -60,3 +61,7 @@
          <replaceText xpath="default/language">de</replaceText>
      </file>
  </overrides>
+=======
+  <override>/WEB-INF/overrides-config.xml</override>
+</overrides>
+>>>>>>> 831598f4f2fe6fd3ebec4a3d55d06a4144d0020e

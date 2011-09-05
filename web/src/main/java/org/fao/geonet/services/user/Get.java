@@ -89,7 +89,6 @@ public class Get implements Service
 
 			Element elGroups = new Element(Geonet.Elem.GROUPS);
 
-			
 			java.util.List list =dbms.select("SELECT groupId FROM UserGroups WHERE userId=?",Integer.valueOf(id)).getChildren();
 
 			for(int i=0; i<list.size(); i++)

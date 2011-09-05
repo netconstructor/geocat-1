@@ -209,7 +209,7 @@
 	<axsl:include href="../../../xsl/utils-fn.xsl"/>
    
     <axsl:param name="lang" />
-	<axsl:param name="dataDir" />
+    <axsl:param name="thesaurusDir" />
     <axsl:param name="rule"/>
    
     <axsl:variable name="loc" select="document(concat('loc/', $lang, '/', substring-before($rule, '.xsl'), '.xml'))"/> 
@@ -546,19 +546,21 @@
 				<xsl:value-of select=" $id " />
 			</axsl:attribute>
 		</xsl:if>
-		<xsl:if test=" string( $name )">
-			<axsl:attribute name="name">
-				<xsl:choose>
-					<xsl:when test="contains($name, '$loc')">
-						<xsl:attribute name="select"><xsl:value-of select="$name" /></xsl:attribute>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select=" $name " />
-					</xsl:otherwise>
-				</xsl:choose>
-			</axsl:attribute>
-		</xsl:if> 
-		 
+	  <xsl:if test=" string( $name )">
+  	  <axsl:attribute name="name">
+  	    <xsl:choose>
+  	      <xsl:when test="starts-with($name, '$loc')">
+  	        <axsl:value-of>
+  	        <xsl:attribute name="select"><xsl:value-of select="$name" /></xsl:attribute>
+  	        </axsl:value-of>
+  	      </xsl:when>
+  	      <xsl:otherwise>
+  	        <xsl:value-of select=" $name " />
+  	      </xsl:otherwise>
+  	    </xsl:choose>
+  	  </axsl:attribute>
+	  </xsl:if>
+	  
 		<xsl:call-template name='richParms'>
 			<xsl:with-param name="fpi" select="$fpi"/>
 			<xsl:with-param name="icon" select="$icon"/>
