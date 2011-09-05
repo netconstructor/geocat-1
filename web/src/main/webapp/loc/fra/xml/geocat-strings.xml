@@ -1,0 +1,137 @@
+<strings>
+    <nav>
+        <home>Page d'accueil</home>
+        <overview>Vue d'ensemble</overview>
+        <news>Actualités</news>
+        <metasearch>Catalogue</metasearch>
+        <metainput>Gestion de métadonnées</metainput>
+        <doc>Documentation</doc>
+        <about>Autour de geocat</about>
+    </nav>
+    <replaceSharedObjects js="true">Remplacer par des objets réutilisables</replaceSharedObjects>
+    <spatialRepresentation js="true">Représentation spatiale</spatialRepresentation>
+    <selectedElementsAction js="true">Actions sur la sélection</selectedElementsAction>
+    <resolution js="true">Résolution spatiale</resolution>
+    <mainpageTitle js="true">Recherche de géodonnées et géoservices</mainpageTitle>
+    <refinements js="true">Affinage</refinements>
+    <refineSearch.title js="true">Précisez votre recherche</refineSearch.title>
+    <keyword js="true">Mot-clé</keyword>
+    <theme js="true">Sujet ISO</theme>
+    <contact js="true">Nom de famille</contact>
+    <rtitle js="true">Titre</rtitle>
+    <organizationName js="true">Organisation</organizationName>
+    <kantone js="true">Canton(s)</kantone>
+    <theme js="true">Thématique</theme>
+    <formatTxt js="true">Format</formatTxt>
+    <toEdit js="true">A éditer</toEdit>
+    <toPublish js="true">A publier</toPublish>
+    <bbox js="true">BBOX</bbox>
+    <wherenone js="true">Partout</wherenone>
+    <adminUnit js="true">Unité administrative</adminUnit>
+    <drawOnMap js="true">Dessiner sur la carte</drawOnMap>
+    <startNewPolygon js="true">Dessiner un nouveau polygone</startNewPolygon>
+    <startNewPolygonHelp js="true">Dessiner un polygone (Double clique pour terminer)</startNewPolygonHelp>
+    <valid js="true">Valide</valid>
+    <yes js="true">Oui</yes>
+    <no js="true">Non</no>
+    <intersectGeo js="true">au moins partiellement à l\'intérieur</intersectGeo>
+    <withinGeo js="true">complètement à l\'intérieur ou égal</withinGeo>
+    <containsGeo js="true">comprend au moins</containsGeo>
+    <layerTree js="true">Arbre des couches</layerTree>
+    <nothingFound js="true">Pas de résultat</nothingFound>
+    <source js="true">Provenance?</source>
+    <catalog js="true">Catalogue(s)</catalog>
+    <dataType id="dataset">Données</dataType>
+    <dataType id="basicgeodata">Geodonnées de base</dataType>
+    <dataType id="basicgeodata-federal"> + Geodonnées de base - fédérales</dataType>
+    <dataType id="basicgeodata-cantonal"> + Geodonnées de base - cantonales</dataType>
+    <dataType id="basicgeodata-communal"> + Geodonnées de base - communales</dataType>
+    <dataType id="basicgeodata-other"> + Geodonnées de base - autres</dataType>
+    <dataType id="service">Services</dataType>
+    <dataType id="service-OGC:WMS"> + Services WMS</dataType>
+    <dataType id="service-OGC:WFS"> + Services WFS</dataType>
+    <extended js="true">Recherche avancée</extended>
+    <hideAdvancedOptions js="true">Recherche simple</hideAdvancedOptions>
+    <highlights js="true">Epinglés</highlights>
+    <hitsPerPage js="true">Résultats par page</hitsPerPage>
+    <hitsPerPageChoice value="10">10</hitsPerPageChoice>
+    <hitsPerPageChoice value="20">20</hitsPerPageChoice>
+    <hitsPerPageChoice value="50">50</hitsPerPageChoice>
+    <hitsPerPageChoice value="100">100</hitsPerPageChoice>
+	<metadata.expired>
+		<recipient>Email du bénéficiaire</recipient>
+		<numExpiredElements>Nombre de dossiers trop vieux</numExpiredElements>
+		<owner>propriétaire</owner>
+		<formTitle>Recherche les métadonnées non mises à jour</formTitle>
+		<limit>Limite de dernière modification :</limit>
+		<email>Alerte email</email>
+		<unpublish>Dépublier</unpublish>
+		<email.desc>Envoyer un email aux auteurs qui n'ont pas modifiée leurs métadonnées depuis la date limite</email.desc>
+		<unpublish.desc>Dépublier les métadonnées qui n'ont pas été modifiée depuis la date limite</unpublish.desc>
+		<email.action>Email</email.action>
+		<unpublish.action>Dépublier</unpublish.action>
+		<unsentNotifications>email non envoyé : information manquante</unsentNotifications>
+		<sentNotifications>Notification envoyée à l'auteur</sentNotifications>
+		<unpublished>dépublié</unpublished>
+	</metadata.expired>
+	<monitoring>Rapport du Monitoring</monitoring>
+    <monitoringDes>Rapport du Monitoring du statut des services de GeoNetwork</monitoringDes>
+    <monitoring.service.db>Connection Base de données</monitoring.service.db>
+    <monitoring.service.csw>Service CSW</monitoring.service.csw>
+    <monitoring.service.csw.capabilities>Capabilities</monitoring.service.csw.capabilities>
+    <monitoring.service.csw.getrecords>GetRecords</monitoring.service.csw.getrecords>
+    <monitoring.service.print>Service d'impression</monitoring.service.print>
+    <monitoring.service.index>Service d'index</monitoring.service.index>
+    <monitoring.url>URL</monitoring.url>
+    <monitoring.status>Statut</monitoring.status>
+    <monitoring.error.code>Code de l'erreur</monitoring.error.code>
+    <monitoring.error.description>Description de l'erreur</monitoring.error.description>
+    <monitoring.responsetime>Temps de réponse</monitoring.responsetime>
+    <monitoring.metadatarecords>Entrées de métadonnées</monitoring.metadatarecords>
+    <monitoring.connectionsuccess>Connection établie</monitoring.connectionsuccess>
+    <monitoring.connectionerror>Erreur</monitoring.connectionerror>
+    <monitoring.enabled>Activé</monitoring.enabled>
+    <monitoring.disabled>Desactivé</monitoring.disabled>
+    <monitoring.refresh>Actualiser</monitoring.refresh>
+    <monitoring.indexing>Indexation</monitoring.indexing>
+    <monitoring.idle>Idle</monitoring.idle>
+    <monitoring.service.disk>Monitor du disque</monitoring.service.disk>
+    <monitoring.freespace>Espace libre</monitoring.freespace>
+
+    <reject>Refuser</reject>
+    <replaceSharedObjects>Remplacer par des objets réutilisables</replaceSharedObjects>
+    <format>
+        <management>Gestion des formats de distribution</management>
+        <manDes>Ajouter/modifier/supprimer des formats de distribution</manDes>
+    </format>
+    <formats>Formats</formats>
+    <extents>Etendues</extents>
+    <deleted>Supprimé</deleted>
+    <insufficient.privileges.import.replace>Une métadonnée avec le même identifiant existe déjà. Vos privilèges ne suffisent pas pour la remplacer.</insufficient.privileges.import.replace>
+    <updateDatasetTitle>Mettre à jour une MDD</updateDatasetTitle>
+    <updateDatasetMsg>Il faut cocher \'Mettre à jour une MDD\' pour ajouter une section "ressource online" si on n\'a pas droit d\'édition sur la MDS</updateDatasetMsg>
+    <reusable>
+        <validated>validé</validated>
+        <nonValidated>non validé</nonValidated>
+        <nonValidTitle>Gérer les objets réutilisables non validés</nonValidTitle>
+        <nonValidDesc>Valider/rejeter les objets réutilisables non validés</nonValidDesc>
+        <rejectTitle>Message de rejet</rejectTitle>
+        <rejectDefaultMsg>Choisissez un autre objet réutilisable...</rejectDefaultMsg>
+    </reusable>
+    <deletedSharedObject>
+        <msg>Cher partenaire geocat.ch,
+Des objets réutilisables que vous utilisez dans vos métadonnées ont été rejetés. Vous trouverez ci-contre la liste des métadonnées concernées et la raison du rejet. Nous vous prions de bien vouloir adapter ces métadonnées et de les republier. N&apos;hésitez pas à prendre contact avec nous en cas de questions: geocat@swisstopo.ch
+Merci beaucoup de votre collaboration et meilleures salutations.
+Votre équipe geocat.ch</msg>
+        <subject>Objet réutilisable rejeté</subject>
+    </deletedSharedObject>
+    <Shared>Objet réutilisable</Shared>
+    <extents>
+        <deselectAll>Tout déselectionner</deselectAll>
+        <selectAll>Tout selectionner</selectAll>
+        <management>Gérer les étendues</management>
+        <confirmDelete>Etes-vous sur de vouloir suprimmer les étendues sélectionnées</confirmDelete>
+        <manDes>Gestion des objets géographiques</manDes>
+    </extents>
+    <page>Page</page>
+</strings>

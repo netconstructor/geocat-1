@@ -1557,7 +1557,7 @@ var geocat = {
                 layerFilter = "KANTONSNR";
             } else if (values.country) {
                 ids = values.country;
-                layer = ':countries';
+                layer = 'chtopo:countries';
                 layerFilter = "LAND";
             }
             if (ids) {
@@ -2204,5 +2204,3 @@ var geocat = {
     dateLabelFormat: '<xsl:value-of select="@name" /> (<xsl:value-of select="@count" />)'
 
 };
-
-

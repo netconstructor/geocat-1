@@ -1,0 +1,38 @@
+This scripaculous has been tweaked: the Ajax.Autocompleter handle requests
+aborting before starting a new request. See patch below:
+
+Index: controls.js
+===================================================================
+--- controls.js (revision 4246)
++++ controls.js (working copy)
+@@ -352,22 +352,25 @@
+   },
+
+   getUpdatedChoices: function() {
++    if (this.xhr) this.xhr.transport.abort();
++
+     this.startIndicator();
+-
+-    var entry = encodeURIComponent(this.options.paramName) + '=' +
++
++    var entry = encodeURIComponent(this.options.paramName) + '=' +
+       encodeURIComponent(this.getToken());
+
+     this.options.parameters = this.options.callback ?
+       this.options.callback(this.element, entry) : entry;
+
+-    if(this.options.defaultParams)
++    if(this.options.defaultParams)
+       this.options.parameters += '&' + this.options.defaultParams;
+-
+-    new Ajax.Request(this.url, this.options);
++
++    this.xhr = new Ajax.Request(this.url, this.options);
+   },
+
+   onComplete: function(request) {
+     this.updateChoices(request.responseText);
++    delete(this.xhr);
+   }
+ });
+

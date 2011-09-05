@@ -4,7 +4,7 @@
 	<services package="org.fao.geonet">
 
         <service name="geocat">
-            <output sheet="geocat.xsl">
+            <output sheet="not-migrated/geocat.xsl">
             	<call name="sources" class=".guiservices.util.Sources" />
             	<call name="groups" class=".guiservices.groups.GetAll" />
 				<call name="latestUpdated" class=".guiservices.metadata.GetLatestUpdated">
