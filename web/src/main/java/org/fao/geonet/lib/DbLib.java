@@ -288,7 +288,7 @@ public class DbLib {
 		
 		Log.debug(Geonet.DB, "  Loading script:" + file);
 
-        String gcFile = checkFilePath(appPath, "create/create-db-geocat-", getDBType(dbms));
+        String gcFile = checkFilePath(filePath, "create-db-geocat-", getDBType(dbms));
         Log.debug(Geonet.DB, "Geocat Database creation script is:" + gcFile);
 
 		// --- load the dbms schema
@@ -324,19 +324,11 @@ public class DbLib {
 	
 	private List<String> loadSqlDataFile(JeevesServlet jeevesServlet, Dbms dbms, String appPath, String filePath, String filePrefix)
 			throws FileNotFoundException, IOException {
-		// --- find out which dbms data file to load
-		String file = checkFilePath(appPath, "data/data-db-", getDBType(dbms));
-
-        ArrayList<String> sql = new ArrayList<String>(Lib.text.load(jeevesServlet, appPath, file, "UTF-8"));
-        File extrasDir = new File(new File(file).getParentFile(), "extras-" + getDBType(dbms));
-        if(extrasDir.exists()) {
-            File[] extras = extrasDir.listFiles();
-            for(File f: extras) {
-                sql.addAll(Lib.text.load(jeevesServlet, appPath, f.getPath(), "UTF-8"));
-            }
-        }
-		// --- load the sql data
-		return sql;
+        // --- find out which dbms data file to load
+        String file = checkFilePath(filePath, filePrefix, getDBType(dbms));
+        
+        // --- load the sql data
+        return Lib.text.load(jeevesServlet, appPath, file, "UTF-8");
 	}
 
 	private String getObjectName(String createStatem) {

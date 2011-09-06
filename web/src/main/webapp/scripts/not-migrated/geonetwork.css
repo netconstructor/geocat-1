@@ -188,7 +188,7 @@ tr.banner {
 td.banner {
 	font-size: 8pt;
 	color: #ffffff;
-	background-image: url('images/blue-background.gif');
+	background-image: url('/geonetwork/images/blue-background.gif');
 	border-bottom: 1px solid #ffffff; /* moved here from tr since IE accepts it only here */
 }
 

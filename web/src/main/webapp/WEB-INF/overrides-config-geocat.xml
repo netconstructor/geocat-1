@@ -1,4 +1,6 @@
 <overrides>
+    <import file="/WEB-INF/server-props-overrides.xml"/>
+    
     <properties>
         <postgis.user>www-data</postgis.user>
         <postgis.pass>www-data</postgis.pass>
