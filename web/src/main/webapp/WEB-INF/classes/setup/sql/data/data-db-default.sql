@@ -1008,3 +1008,5 @@ INSERT INTO Settings VALUES (921,920,'maxthreads','1');
 -- ======================================================================
 
 INSERT INTO Users VALUES  (1,'admin','d033e22ae348aeb566fc214aec3585c4da997','admin','admin','Administrator','','','','','','','','');
+INSERT INTO Settings VALUES (1000,1,'lucene',NULL);
+INSERT INTO Settings VALUES (1001,1000,'ignorechars',E'-/\\_,.\'"');
