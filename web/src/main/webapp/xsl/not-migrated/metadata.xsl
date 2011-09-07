@@ -287,9 +287,12 @@
 
         <!-- when an ancestor contains an xlink then all is readonly -->
         <xsl:variable name="xlinkedAncestor"><xsl:call-template name="validatedXlink"/></xsl:variable>
-        <xsl:if test="$xlinkedAncestor = 'true'">
-            <xsl:variable name="edit" select="false()"/>
-        </xsl:if>
+        <xsl:variable name="edit">
+            <xsl:choose>
+                <xsl:when test="$xlinkedAncestor = 'true'"><xsl:value-of select="false()"/> </xsl:when>
+                <xsl:otherwise><xsl:value-of select="$edit"/></xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
 
         <xsl:choose>
 			<xsl:when test="$edit=true()">
@@ -547,7 +550,7 @@
 				</xsl:choose>
 			</xsl:if>
 		</xsl:variable>
-		<xsl:variable name="newBrother" select="xalan:nodeset($nb)"/>
+		<xsl:variable name="newBrother" select="$nb"/>
 
 		<xsl:if test="$newBrother/* and not($newBrother/*/geonet:choose or $subtemplates)">
 			<xsl:choose>
@@ -583,7 +586,7 @@
                 </xsl:choose>
             </xsl:if>
         </xsl:variable>
-        <xsl:variable name="newBrother" select="xalan:nodeset($nb)"/>
+        <xsl:variable name="newBrother" select="$nb"/>
 
         <xsl:if test="($newBrother/* and not($newBrother/*/geonet:choose)) or $name='gmd:distributorContact'">
             <xsl:choose>

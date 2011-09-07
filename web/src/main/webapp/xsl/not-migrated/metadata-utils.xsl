@@ -18,7 +18,7 @@
 	<xsl:variable name="geonetNodeSet"><geonet:dummy/></xsl:variable>
 
 	<xsl:variable name="geonetUri">
-		<xsl:value-of select="namespace-uri(xalan:nodeset($geonetNodeSet)/*)"/>
+		<xsl:value-of select="namespace-uri($geonetNodeSet/*)"/>
 	</xsl:variable>
 
 	<xsl:variable name="currTab">

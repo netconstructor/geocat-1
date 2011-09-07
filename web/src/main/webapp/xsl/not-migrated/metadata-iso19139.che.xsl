@@ -166,7 +166,7 @@
                     <xsl:call-template name="PT_FreeURL_Tree" />
                 </xsl:variable>
 
-                <xsl:variable name="ptFreeURLTree" select="xalan:nodeset($tmpFreeURL)" />
+                <xsl:variable name="ptFreeURLTree" select="$tmpFreeURL" />
 
                 <xsl:variable name="mainLang"
                     select="string(/root/*/gmd:language/gco:CharacterString)" />

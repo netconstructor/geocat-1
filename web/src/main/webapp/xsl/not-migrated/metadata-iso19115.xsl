@@ -433,7 +433,7 @@
 				<xsl:variable name="md">
 					<xsl:apply-templates mode="brief" select="."/>
 				</xsl:variable>
-				<xsl:variable name="metadata" select="xalan:nodeset($md)/*[1]"/>
+				<xsl:variable name="metadata" select="$md/*[1]"/>
 				<xsl:call-template name="thumbnail">
 					<xsl:with-param name="metadata" select="$metadata"/>
 				</xsl:call-template>
@@ -607,7 +607,7 @@
 					<xsl:variable name="md">
 						<xsl:apply-templates mode="brief" select=".."/>
 					</xsl:variable>
-					<xsl:variable name="metadata" select="xalan:nodeset($md)/*[1]"/>
+					<xsl:variable name="metadata" select="$md/*[1]"/>
 					<xsl:if test="$embedded = false()">
 						<xsl:call-template name="thumbnail">
 							<xsl:with-param name="metadata" select="$metadata"/>
@@ -1466,7 +1466,7 @@
 				<xsl:variable name="md">
 					<xsl:apply-templates mode="brief" select="../.."/>
 				</xsl:variable>
-				<xsl:variable name="metadata" select="xalan:nodeset($md)/*[1]"/>
+				<xsl:variable name="metadata" select="$md/*[1]"/>
 				<td width="100" height="100" align="center">
 					<!--xsl:call-template name="thumbnail">
 						<xsl:with-param name="metadata" select="$metadata"/>

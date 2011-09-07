@@ -1,6 +1,8 @@
 package org.fao.geonet.kernel.search;
 
 import jeeves.utils.Log;
+
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.FSDirectory;
@@ -89,5 +91,10 @@ public class LuceneIndexReaderFactory {
 														// be here or when other threads using it finish
 														// and call releaseReader
     currentReader = newReader;
+  }
+
+  public synchronized boolean isUpToDateReader(IndexReader reader) throws IOException, InterruptedException {
+    maybeReopen();
+    return reader == currentReader;
   }
 }

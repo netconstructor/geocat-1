@@ -170,11 +170,13 @@
     </file>
     
     
-    <file name=".*/WEB-INF/config-metadata.xml">
+    <!-- <file name=".*/WEB-INF/config-metadata.xml">
     	<addXml xpath="*//service[@name='metadata.show.embedded']/output">
 			<preSheet sheet="metadata-order-complex-elements.xsl"/>
     	</addXml>
-    </file>
+    	<replaceAtt xpath="*//service[@name='metadata.show']/output" attName="sheet" value="not-migrated/metadata-show.xsl"/>
+    	<replaceAtt xpath="*//service[@name='metadata.show.embedded']/output" attName="sheet" value="not-migrated/metadata-show-embedded.xsl"/>
+    </file> -->
     <file name=".*/WEB-INF/config-gui.xml">
         <replaceAtt xpath="client" attName="url" value="geocat"/>
         <replaceAtt xpath="client" attName="parameters"/>

@@ -122,7 +122,7 @@
 								<fo:table-cell>
 									<fo:block>
 										<xsl:variable name="n"
-											select="xalan:nodeset($content)" />
+											select="$content" />
 										<xsl:if test="$n/node()">
 											<fo:table
 												table-layout="fixed" width="100%"
@@ -159,7 +159,7 @@
 		    <xsl:variable name="md">
                 <xsl:apply-templates mode="brief" select="."/>
             </xsl:variable>
-            <xsl:variable name="metadata" select="xalan:nodeset($md)/*[1]"/>
+            <xsl:variable name="metadata" select="$md/*[1]"/>
             
             <xsl:if test="$metadata/geonet:info/id != ''">
 			<fo:table-row>

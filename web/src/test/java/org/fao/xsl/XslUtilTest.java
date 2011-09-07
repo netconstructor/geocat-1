@@ -2,6 +2,8 @@ package org.fao.xsl;
 
 import static org.junit.Assert.*;
 
+import net.sf.saxon.Configuration;
+
 import org.fao.geonet.util.XslUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -45,18 +47,18 @@ public class XslUtilTest
     @Test
 	public void toHyperlinks() throws Exception {
 		String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>hello I am some http://testdata.net. aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaélaksdjflékajsflékajsdfélkajsélfkjaslékfjaslékfjasasldjflsakjflasjfasFFFF<br/>JJJJksajfaSSSSS<br/>LLLLkjsaflkjasFFFFF<br/><p>NNNNnndjhasdfJJJ</p>. ftp://ftpsite.com";
-        String result = XslUtil.toHyperlinksSplitNodes(data).toString();
+        String result = XslUtil.toHyperlinksSplitNodes(data, Configuration.makeConfiguration(null, null)).toString();
         assertEquals(3, result.split("<a").length);
         assertEquals(2, result.split("<p>").length);
         assertEquals(2, result.split("</p>").length);
         assertEquals(4, result.split("<br/>").length);
-        assertNotNull(XslUtil.parse(result, true));
+        assertNotNull(XslUtil.parse(Configuration.makeConfiguration(null, null), result, true));
 	}
 
     @Test
 	public void toHyperlinks2() throws Exception {
 		String data = "<a target=\"_new\" href=\"http://www.swisstopo.ch\">http://www.swisstopo.ch</a>";
-        String result = XslUtil.toHyperlinksSplitNodes(data).toString();
+        String result = XslUtil.toHyperlinksSplitNodes(data, Configuration.makeConfiguration(null, null)).toString();
         assertEquals(data, result);
 	}
 

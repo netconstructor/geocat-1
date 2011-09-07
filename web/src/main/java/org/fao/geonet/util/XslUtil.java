@@ -24,6 +24,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import jeeves.exceptions.JeevesException;
 import jeeves.utils.Log;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.dom.DocumentWrapper;
@@ -37,6 +38,8 @@ import net.sf.saxon.om.UnfailingIterator;
 import net.sf.saxon.type.Type;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.fao.geonet.Geonetwork;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.LuceneSearcher;
 import org.fao.geonet.kernel.search.spatial.Pair;
@@ -47,6 +50,7 @@ import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xml.Encoder;
 import org.geotools.xml.Parser;
 import org.jdom.Namespace;
+import org.json.XML;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -701,17 +705,16 @@ public final class XslUtil {
     /**
      * For all text split the lines to a specified size and add hyperlinks when appropriate
      */
-    public static Object toHyperlinks(NodeIterator text) throws Exception {
+    public static Object toHyperlinks(NodeInfo text) throws Exception {
 
         String textString = writeXml(text.getRoot());
 
-        String linked = toHyperlinksSplitNodes(textString);
+        String linked = toHyperlinksSplitNodes(textString, text.getConfiguration());
 
         if (linked.equals(text)) {
             return text;
         }
-        NodeList nodes;
-        nodes = parse(linked, true);
+        Object nodes = parse(text.getConfiguration(), linked, true);
 
         if (nodes == null) {
             return text;
@@ -724,8 +727,9 @@ public final class XslUtil {
      * Sometimes nodes can have urls in their attributes (namespace declarations)
      * So nodes themselves should not be processed.  Also if a node is a
      * anchor node then the text within should not be processed.
+     * @param configuration 
      */
-    public static String toHyperlinksSplitNodes(String textString) throws Exception {
+    public static String toHyperlinksSplitNodes(String textString, Configuration configuration) throws Exception {
         Matcher nodes = NODE_PATTERN.matcher(textString);
         if (nodes.find()) {
             StringBuilder builder = new StringBuilder();
@@ -737,7 +741,7 @@ public final class XslUtil {
                     // node is an anchor so just break lines
                     builder.append(insertBR(beforeNode));
                 } else {
-                    builder.append(toHyperlinksFromText(beforeNode));
+                    builder.append(toHyperlinksFromText(configuration,beforeNode));
                 }
 
                 if (!nodes.group().startsWith("<?xml")) {
@@ -757,18 +761,19 @@ public final class XslUtil {
                 i = nodes.end();
             } while (nodes.find());
 
-            builder.append(toHyperlinksFromText(textString.substring(i)));
+            builder.append(toHyperlinksFromText(configuration,textString.substring(i)));
 
             return builder.toString();
         } else {
-            return toHyperlinksFromText(textString);
+            return toHyperlinksFromText(configuration,textString);
         }
     }
 
     /**
      * Add hyperlinks and split long lines
+     * @param configuration 
      */
-    private static String toHyperlinksFromText(String textString) throws Exception {
+    private static String toHyperlinksFromText(Configuration configuration, String textString) throws Exception {
         StringBuilder builder = new StringBuilder();
 
         int i = 0;
@@ -783,7 +788,7 @@ public final class XslUtil {
             String tag = "<a href=\"" + matcher.group() + "\" target=\"_newtab\">" + insertBR(matcher.group()) + "</a>";
 
             // do a test to make sure the new text makes a valid document
-            if (parse(builder.toString() + tag + textString.substring(matcher.end()), false) != null) {
+            if (parse(configuration, builder.toString() + tag + textString.substring(matcher.end()), false) != null) {
                 builder.append(tag);
             } else {
                 builder.append(insertBR(textString.substring(matcher.start(), matcher.end())));
@@ -817,36 +822,20 @@ public final class XslUtil {
         return word;
     }
 
-    public static NodeList parse(String string, boolean printError)
+    public static UnfailingIterator parse(Configuration configuration, String string, boolean printError)
             throws Exception {
         String resultString = "<div>" + string + "</div>";
 
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            if (!printError) {
-                builder.setErrorHandler(new ErrorHandler() {
-                    public void warning(SAXParseException exception) throws SAXException {
-                        // do nothing
-                    }
-
-                    public void fatalError(SAXParseException exception) throws SAXException {
-                        // do nothing
-                    }
-
-                    public void error(SAXParseException exception) throws SAXException {
-                        // do nothing
-                    }
-                });
-            }
-            Document resultXML = builder.parse(new ByteArrayInputStream(resultString.getBytes("UTF-8")));
-            return resultXML.getChildNodes();
+            Source xmlSource = new StreamSource(new ByteArrayInputStream(resultString.getBytes("UTF-8")));
+            DocumentInfo doc = configuration.buildDocument(xmlSource);
+            return SingletonIterator.makeIterator(doc);
         } catch (Exception e) {
-            if (printError) {
-                e.printStackTrace();
-            }
+            org.jdom.Element error = JeevesException.toElement(e);
+            Log.warning(Log.SERVICE, e.getMessage() + XML.toString(error));
             return null;
         }
+        
     }
     
     public static String getUrlStatus(String url){

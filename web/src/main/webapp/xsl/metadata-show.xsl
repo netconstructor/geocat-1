@@ -14,6 +14,7 @@
 	
 	<xsl:include href="main.xsl"/>
 	<xsl:include href="metadata.xsl"/>
+	<xsl:include href="metadata-geocat-utils.xsl"/>
 
     <xsl:variable name="protocol" select="/root/gui/env/server/protocol" />
 	<xsl:variable name="host" select="/root/gui/env/server/host" />
@@ -84,7 +85,7 @@
 							<xsl:variable name="buttons">
 								<tr><td class="padded-content" height="100%" align="center" valign="top">
 									<xsl:call-template name="buttons">
-										<xsl:with-param name="metadata" select="$metadata"/>
+										<xsl:with-param name="metadata" select="."/>
 									</xsl:call-template>
 								</td></tr>
 							</xsl:variable>
@@ -94,59 +95,10 @@
 							<tr>
 								<td align="center" valign="left" class="padded-content">
 									<table width="100%">
-										<tr>
-											<td align="left" valign="middle" class="padded-content" height="40">
-												<xsl:variable name="source" select="string(geonet:info/source)"/>
-												<xsl:choose>
-													<!-- //FIXME does not point to baseURL yet-->
-													<xsl:when test="/root/gui/sources/record[string(siteid)=$source]">
-														<a href="{/root/gui/sources/record[string(siteid)=$source]/baseURL}" target="_blank">
-															<img src="{/root/gui/url}/images/logos/{$source}.gif" width="40"/>
-														</a>
-													</xsl:when>
-													<xsl:otherwise>
-														<img src="{/root/gui/url}/images/logos/{$source}.gif" width="40"/>
-													</xsl:otherwise>
-												</xsl:choose>
-											</td>
-											<td class="padded" width="90%">
-												<h1 align="left">
-													<xsl:value-of select="$metadata/title"/>
-												</h1>
-											</td>
-											
-											<!-- Export links (XML, PDF, ...) -->
-										  <td align="right" class="padded-content" height="16" nowrap="nowrap">
-										    <xsl:choose>
-  												<xsl:when test="contains(geonet:info/schema,'dublin-core')">
-  														<a href="{/root/gui/locService}/dc.xml?id={geonet:info/id}" target="_blank" title="Download Dublin Core metadata in XML">
-  															<img src="{/root/gui/url}/images/xml.png" alt="Dublin Core XML" title="Save Dublin Core metadata as XML" border="0"/>
-  														</a>
-  												</xsl:when>
-  												<xsl:when test="contains(geonet:info/schema,'fgdc-std')">
-  														<a href="{/root/gui/locService}/fgdc.xml?id={geonet:info/id}" target="_blank" title="Download FGDC metadata in XML">
-  															<img src="{/root/gui/url}/images/xml.png" alt="FGDC XML" title="Save FGDC metadata as XML" border="0"/>
-  														</a>
-  												</xsl:when>
-  												<xsl:when test="contains(geonet:info/schema,'iso19115')">
-  														<a href="{/root/gui/locService}/iso19115to19139.xml?id={geonet:info/id}" target="_blank" title="Save ISO19115/19139 metadata as XML">
-  															<img src="{/root/gui/url}/images/xml.png" alt="IISO19115/19139 XML" title="Save ISO19115/19139 metadata as XML" border="0"/>
-  														</a>
-  														<a href="{/root/gui/locService}/iso_arccatalog8.xml?id={geonet:info/id}" target="_blank" title="Download ISO19115 metadata in XML for ESRI ArcCatalog">
-  															<img src="{/root/gui/url}/images/ac.png" alt="ISO19115 XML for ArcCatalog" title="Save ISO19115 metadata in XML for ESRI ArcCatalog" border="0"/>
-  														</a>
-  												</xsl:when>
-  												<xsl:when test="contains(geonet:info/schema,'iso19139')">
-  														<a href="{/root/gui/locService}/iso19139.xml?id={geonet:info/id}" target="_blank" title="Download ISO19115/19139 metadata in XML">
-  															<img src="{/root/gui/url}/images/xml.png" alt="ISO19115/19139 XML" title="Save ISO19115/19139 metadata as XML" border="0"/>
-  														</a>
-  												</xsl:when>
-										    </xsl:choose>
-										    <a href="{/root/gui/locService}/pdf?id={geonet:info/id}" title="PDF">
-										      <img src="{/root/gui/url}/images/pdf.gif" alt="PDF" title="PDF" style="border:0px;max-height:16px;"/>
-										    </a>
-										  </td>
-										</tr>
+										<xsl:call-template name="geocatButtons">
+			                                 <xsl:with-param name="metadata" select="$metadata"/>
+			                                 <xsl:with-param name="baseURL" select="$baseURL" /> <!-- The base URL of the local GeoNetwork site -->
+			                             </xsl:call-template>
 									</table>
 								</td>
 							</tr>

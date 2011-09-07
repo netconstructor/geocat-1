@@ -752,7 +752,7 @@
                     <xsl:call-template name="PT_FreeText_Tree" />
                 </xsl:variable>
 
-                <xsl:variable name="ptFreeTextTree" select="xalan:nodeset($tmpFreeText)" />
+                <xsl:variable name="ptFreeTextTree" select="$tmpFreeText" />
 
                 <xsl:variable name="mainLang"
                     select="string(/root/*/gmd:language/gco:CharacterString)" />
@@ -2207,7 +2207,7 @@
                         <xsl:variable name="md">
                             <xsl:apply-templates mode="brief" select="."/>
                         </xsl:variable>
-                        <xsl:variable name="metadata" select="xalan:nodeset($md)/*[1]"/>
+                        <xsl:variable name="metadata" select="$md/*[1]"/>
                         <xsl:call-template name="thumbnail">
                             <xsl:with-param name="metadata" select="$metadata"/>
                         </xsl:call-template>
@@ -2229,7 +2229,7 @@
                         <xsl:variable name="md">
                             <xsl:apply-templates mode="brief" select="."/>
                         </xsl:variable>
-                        <xsl:variable name="metadata" select="xalan:nodeset($md)/*[1]"/>
+                        <xsl:variable name="metadata" select="$md/*[1]"/>
                         <xsl:call-template name="thumbnail">
                             <xsl:with-param name="metadata" select="$metadata"/>
                         </xsl:call-template>
@@ -2350,7 +2350,7 @@
                         <xsl:variable name="md">
                             <xsl:apply-templates mode="brief" select="."/>
                         </xsl:variable>
-                        <xsl:variable name="metadata" select="xalan:nodeset($md)/*[1]"/>
+                        <xsl:variable name="metadata" select="$md/*[1]"/>
                         <xsl:call-template name="thumbnail">
                             <xsl:with-param name="metadata" select="$metadata"/>
                         </xsl:call-template>

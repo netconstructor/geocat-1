@@ -44,7 +44,7 @@
                         <xsl:variable name="md">
                             <xsl:apply-templates mode="brief" select="."/>
                         </xsl:variable>
-                        <xsl:variable name="metadata" select="xalan:nodeset($md)/*[1]"/>
+                        <xsl:variable name="metadata" select="$md/*[1]"/>
                         
                         <table width="100%">
                             

@@ -1161,6 +1161,20 @@ public class SearchManager
 
 	//-----------------------------------------------------------------------------
 
+	/**
+	 * check if the reader is current or the index has been updated since it was obtained
+	 *
+	 * @param reader
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+    public boolean isUpToDateReader(IndexReader reader) throws IOException, InterruptedException {
+        return _indexReader.isUpToDateReader(reader);
+    }
+
+	//-----------------------------------------------------------------------------
+
     /**
      * TODO javadoc.
      *

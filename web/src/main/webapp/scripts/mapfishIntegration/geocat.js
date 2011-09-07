@@ -1705,7 +1705,7 @@ var geocat = {
     },
 
     openMetadataWindow: function(uuid) {
-        this.openLink(0, 'showFromUrl', 'metadata.show.embedded?uuid=' + uuid + '&currTab=simple');
+        this.openLink(0, 'showFromUrl', 'metadata.show.embedded?uuid=' + uuid + '&currTab=simple&geocat');
     },
 
     addLayer: function(protocol, url, name, title, uuid) {
