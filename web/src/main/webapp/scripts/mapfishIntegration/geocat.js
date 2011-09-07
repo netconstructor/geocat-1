@@ -1,6 +1,18 @@
 /**
- * Geocat specific stuff (was stored into scripts/geocat.js before)
+ * Geocat specific stuff
  */
+var geocatConf = {
+    header : {
+        region : 'north',
+        contentEl : 'header',
+        border : false
+    },
+    extraSetup : function() {
+        Ext.get("mapMap").setHeight(Ext.get("map").dom.parentNode.getHeight())
+    },
+    loadingElemId : "loading"
+};
+
 var geocat = {
     map: null,
     mapMinWidth: 275,
@@ -103,8 +115,6 @@ var geocat = {
 
         Ext.getBody().createChild({id:'map'});
 //        var map = geocat.map = createMap('map', false);
-        
-
         var mapCmp = new MapComponent('map', {drawPanel: false, displayLayertree: false});
         var map = geocat.map = mapCmp.map;
 
@@ -152,11 +162,7 @@ var geocat = {
 
         this.viewPort = new Ext.Viewport({
             layout: 'border',
-            items: [{
-                region:'north',
-                contentEl :'header',
-                border:false
-            },{
+            items: [geocatConf.header,{
                 region: 'west',
                 id: 'westRegion',
                 split: true,
@@ -214,7 +220,7 @@ var geocat = {
             listeners: {
                 render: function() {
                     //get rid of the loading mask
-                    Ext.get("loading").remove();
+                    Ext.get(geocatConf.loadingElemId).remove();
 
                     Ext.get("searchResults").show(); //search results where with "display:none" to avoid having the loading screen with a scrollbar
                 }
@@ -272,7 +278,7 @@ var geocat = {
             },
             buttons: [
                 //geocat.baseUrl + "srv/" + translate('language') + "/main.search.embedded"
-                searchTools.createSearchButton('searchForm', geocat.baseUrl + "srv/" + translate('languageIso3') + "/csw",
+                searchTools.createSearchButton('searchForm', geocat.baseUrl + "srv/" + geocat.language + "/csw",
                         geocat.startSearch,
                         geocat.processSearchResults,
                         geocat.failedSearch,
@@ -366,7 +372,7 @@ var geocat = {
     refinementWithNoResultsDisplay: function() {
     	// Search
         searchTools.doCSWQueryFromForm('searchForm',
-                geocat.baseUrl + "srv/" + translate('languageIso3') + "/csw", 1,
+                geocat.baseUrl + "srv/" + geocat.language + "/csw", 1,
                 geocat.processRefinement,   //success
                 function() {                //failure
             	    alert ("Search failed.");
@@ -1161,7 +1167,7 @@ var geocat = {
         form.doLayout();
         form.doLayout();
         geocat.updateComboSizes.defer(0, this, [form, form.body.dom.clientWidth]);
-        Ext.get("mapMap").setHeight(Ext.get("map").dom.parentNode.getHeight())
+        geocatConf.extraSetup();
     },
 
     createCountryStore: function() {
@@ -1196,7 +1202,7 @@ var geocat = {
                 id: '@name'
             }, Keyword),
             proxy: new Ext.data.HttpProxy({
-                url: geocat.baseUrl + "srv/" + translate('languageIso3') + "/portal.search?resultType=results",
+                url: geocat.baseUrl + "srv/" + geocat.language + "/portal.search?resultType=results",
                 method:'post'
             })
         });
@@ -1616,7 +1622,7 @@ var geocat = {
 
     gotoPage: function(recordNum) {
         geocat.startSearch();
-        var url = geocat.baseUrl + "srv/" + translate('languageIso3') + "/csw";
+        var url = geocat.baseUrl + "srv/" + geocat.language + "/csw";
         searchTools.doCSWQueryFromForm('searchForm', url, recordNum,
                 geocat.processSearchResults,
                 geocat.failedSearch,
@@ -1637,7 +1643,7 @@ var geocat = {
             //add to the map
             geocat.addLayer(protocol, link.url, link.name, link.title, link.uuid);
         } else if (protocol == "KML") {
-            window.open(geocat.baseUrl + "srv/" + translate('languageIso3') + "/google.kml?uuid=" + link.uuid + "&layers=" + link.name, "_blank");
+            window.open(geocat.baseUrl + "srv/" + geocat.language + "/google.kml?uuid=" + link.uuid + "&layers=" + link.name, "_blank");
         } else if (protocol.contains("show")) {
             Ext.MessageBox.show({
                 title: translate("show"),
@@ -1941,8 +1947,8 @@ var geocat = {
                '        </xsl:otherwise>\n' +
                '      </xsl:choose>\n' +
                '      <br />' +
-               '      <xsl:if test="@nextRecord - @numberOfRecordsReturned > 1">&#160;<a href="javascript:geocat.gotoPage({@nextRecord - @numberOfRecordsReturned - ' + geocat.nbResultPerPage + '})">&lt; ' + translate('previous') + '</a> |&#160;</xsl:if>\n' + //TODO: add anti-XSS protections
-               '      <xsl:if test="@nextRecord &gt; 0 and @nextRecord &lt; @numberOfRecordsMatched"><a href="javascript:geocat.gotoPage({@nextRecord})">' + translate('next') + ' &gt;</a></xsl:if>\n' + //TODO: add anti-XSS protections
+               '      <xsl:if test="1=2 and @nextRecord - @numberOfRecordsReturned > 1">&#160;<a href="javascript:geocat.gotoPage({@nextRecord - @numberOfRecordsReturned - ' + geocat.nbResultPerPage + '})">&lt; ' + translate('geocatPrevious') + '</a> |&#160;</xsl:if>\n' + //TODO: add anti-XSS protections
+               '      <xsl:if test="@nextRecord &gt; 0 and @nextRecord &lt; @numberOfRecordsMatched + 1"><a id="gotoNextPageButton" href="javascript:geocat.gotoPage({@nextRecord})">' + translate('geocatNext') + ' &gt;</a></xsl:if>\n' + //TODO: add anti-XSS protections
                '      <xsl:if test="@numberOfRecordsMatched &gt; 0">\n' +
                '&#160;|&#160;<span id="nbselected"></span> ' + translate("selected") +
                '&#160;|&#160;' + translate("select") + ' ' + '<a href="javascript:geocat.metadataSelect(0, \'add-all\')" title="' + translate('selectAll') + '" alt="' + translate('selectAll') + '">' + translate('all') + '</a>,' +
@@ -1963,8 +1969,8 @@ var geocat = {
 
                '      <hr/>\n' +
                '      <p align="center">\n' +
-               '        <xsl:if test="@nextRecord - @numberOfRecordsReturned > 1">&#160;<a href="javascript:geocat.gotoPage({@nextRecord - @numberOfRecordsReturned - ' + geocat.nbResultPerPage + '})">' + translate('previous') + '</a></xsl:if>\n' + //TODO: add anti-XSS protections
-               '        <xsl:if test="@nextRecord &gt; 0 and @nextRecord &lt; @numberOfRecordsMatched">&#160;<a href="javascript:geocat.gotoPage({@nextRecord})">' + translate('next') + '</a></xsl:if>\n' + //TODO: add anti-XSS protections
+               '        <xsl:if test="@nextRecord - @numberOfRecordsReturned > 1">&#160;<a href="javascript:geocat.gotoPage({@nextRecord - @numberOfRecordsReturned - ' + geocat.nbResultPerPage + '})">' + translate('geocatPrevious') + '</a></xsl:if>\n' + //TODO: add anti-XSS protections
+               '        <xsl:if test="@nextRecord &gt; 0 and @nextRecord &lt; @numberOfRecordsMatched">&#160;<a href="javascript:geocat.gotoPage({@nextRecord})">' + translate('geocatNext') + '</a></xsl:if>\n' + //TODO: add anti-XSS protections
                '      </p>\n' +
                '  </xsl:template>\n';
 
@@ -2033,9 +2039,9 @@ var geocat = {
                 '              <xsl:for-each select="dc:URI[not(contains(@protocol,\'image/\'))]">\n' +
                 '                <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
                 '              </xsl:for-each>\n' +
-//                '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-//                '              <li proto="_delete" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-//                '              <li proto="_duplicate" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+//                '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+//                '              <li proto="_delete" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+//                '              <li proto="_duplicate" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
                 '            </ul>\n' +
                 '           </div>' +
                 '          </xsl:if>\n' +
@@ -2068,14 +2074,14 @@ var geocat = {
             '          </xsl:if>\n' +
             '          <br/>\n' +
             '          <ul class="URIButtons" uuid="{dc:identifier}">\n' +
-//            Turn off metadata button, as a link on title is available '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
+//            Turn off metadata button, as a link on title is available '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
             '          <xsl:for-each select="dc:URI">\n' +
             '            <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
             '          </xsl:for-each>\n' +
             '          <xsl:if test="geonet:info/edit=\'true\'">\n' +
-            '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-            '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-            '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '          </xsl:if>\n' +
             '          </ul><br/><br/>\n' +
             '		 </td><td>' +
@@ -2116,14 +2122,14 @@ var geocat = {
             '          </xsl:if>\n' +
             '          <br/>\n' +
             '          <ul style="padding-top:4px" class="URIButtons" uuid="{dc:identifier}">\n' +
-            '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
+            '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
             '          <xsl:for-each select="dc:URI">\n' +
             '            <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
             '          </xsl:for-each>\n' +
             '          <xsl:if test="geonet:info/edit=\'true\'">\n' +
-            '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-            '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
-            '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + translate('languageIso3') + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
+            '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '          </xsl:if>\n' +
             '          </ul><br/>\n' +
             '        </td></tr>\n' +

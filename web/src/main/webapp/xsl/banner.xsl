@@ -115,7 +115,7 @@
                                 <xsl:text> </xsl:text>
                                 <xsl:value-of select="/root/gui/session/surname"/>
                                 <xsl:text> </xsl:text>
-                                <button class="banner" onclick="goSubmit('logout')"><xsl:value-of select="/root/gui/strings/logout"/></button>
+                                <button id="logoutButton" class="banner" onclick="goSubmit('logout')"><xsl:value-of select="/root/gui/strings/logout"/></button>
                             </form>
                         </td>
                     </xsl:when>
@@ -127,7 +127,7 @@
                                 <input class="banner" type="text" id="username" name="username" size="10" onkeypress="return entSub('login')"/>
                                 <xsl:value-of select="/root/gui/strings/password"/>
                                 <input class="banner" type="password" id="password" name="password" size="10" onkeypress="return entSub('login')"/>
-                                <button class="banner" onclick="goSubmit('login')"><xsl:value-of select="/root/gui/strings/login"/></button>
+                                <button id="loginButton" class="banner" onclick="goSubmit('login')"><xsl:value-of select="/root/gui/strings/login"/></button>
                             </form>
                         </td>
                     </xsl:otherwise>

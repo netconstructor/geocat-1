@@ -61,6 +61,7 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
@@ -771,27 +772,44 @@ public class LuceneSearcher extends MetaSearcher
             }
 
             if(StringUtils.hasLength(analyzedString)) {
-            // no wildcards
-            if(string.indexOf('*') < 0 && string.indexOf('?') < 0) {
-                // similarity is not set or is 1
-                if(similarity == null || similarity.equals("1")) {
-                        query = new TermQuery(new Term(luceneIndexField, analyzedString));
-                }
-                // similarity is not null and not 1
-                else {
-                    Float minimumSimilarity = Float.parseFloat(similarity);
-                        query = new FuzzyQuery(new Term(luceneIndexField, analyzedString), minimumSimilarity);
-                }
-            }
-            // wildcards
-            else {
-                    query = new WildcardQuery(new Term(luceneIndexField, analyzedString));
+                if(analyzedString.contains(" ")) {
+                    // if analyzer creates spaces (by converting ignored characters like -) then make boolean query
+                    String[] terms = analyzedString.split(" ");
+                    BooleanQuery booleanQuery = new BooleanQuery();
+                    query = booleanQuery;
+                    for (String term : terms) {
+                        booleanQuery.add(createTermQuery(luceneIndexField, similarity, term, term), Occur.MUST);
+                    }
+                } else {
+                    query = createTermQuery(luceneIndexField, similarity, string, analyzedString);
                 }
             }
             return query;
         }
 
-	//--------------------------------------------------------------------------------
+	private static Query createTermQuery(String luceneIndexField, String similarity, String string, String analyzedString) {
+	    Query query;
+        if(string.indexOf('*') < 0 && string.indexOf('?') < 0) {
+            // no wildcards
+               
+           // similarity is not set or is 1
+           if(similarity == null || similarity.equals("1")) {
+                   query = new TermQuery(new Term(luceneIndexField, analyzedString));
+           }
+           // similarity is not null and not 1
+           else {
+               Float minimumSimilarity = Float.parseFloat(similarity);
+                   query = new FuzzyQuery(new Term(luceneIndexField, analyzedString), minimumSimilarity);
+           }
+       }
+       // wildcards
+       else {
+               query = new WildcardQuery(new Term(luceneIndexField, analyzedString));
+           }
+        return query;
+    }
+
+    //--------------------------------------------------------------------------------
 
 	private static HashMap<String,HashMap<String,Object>> getSummaryConfig(Element summaryConfig, String resultType, int maxSummaryKeys) throws Exception {
 

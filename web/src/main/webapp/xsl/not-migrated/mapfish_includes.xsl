@@ -168,7 +168,7 @@
         </script>
 
         <script type="text/javascript"
-                src="{/root/gui/url}/scripts/not-migrated/mapfishIntegration/searchTools.js"/>
+                src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/>
         <script type="text/javascript"
                 src="{/root/gui/url}/scripts/not-migrated/mapfishIntegration/EMailPDFAction.js"/>
         <script type="text/javascript"

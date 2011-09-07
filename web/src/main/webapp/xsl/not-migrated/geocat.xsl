@@ -67,7 +67,7 @@
                 <xsl:call-template name="mapfish_includes"/>
 
                 <script type="text/javascript"
-                        src="{/root/gui/url}/scripts/not-migrated/mapfishIntegration/geocat.js"/>
+                        src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js"/>
                 <script type="text/javascript"
                         src="{/root/gui/url}/scripts/not-migrated/geonetwork.js"/>
 
@@ -89,8 +89,18 @@
                     }
 
                     Ext.onReady(function() {
-                        geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', '../../proxy?url=<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
+	                    geocatConf = {
+						    header : {
+				                region: 'north',
+				                contentEl: 'north',
+				                autoHeight: true,
+				                border: false
+				            },
+						    extraSetup : function() {},
+						    loadingElemId : "loadingMask"
+						};
                         geocat.language = '<xsl:value-of select="root/gui/language"/>';
+                        geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', '../../proxy?url=<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
                     });
                 </script>
             </body>

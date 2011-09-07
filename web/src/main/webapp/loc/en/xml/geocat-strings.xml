@@ -1,4 +1,6 @@
 <strings>
+    <geocatNext>Next</geocatNext>
+    <geocatPrevious>Previous</geocatPrevious>
     <nav>
         <home>Homepage</home>
         <overview>Overview</overview>
