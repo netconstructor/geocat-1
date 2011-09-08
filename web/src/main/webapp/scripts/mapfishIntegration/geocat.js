@@ -2000,13 +2000,10 @@ var geocat = {
 			'   <xsl:when test="$groupLogoUuid != \'\'">' +
 			'   	<img src="' + geocat.baseUrl + 'images/logos/{$groupLogoUuid}.png" width="40" title="{$groupLabel}"/>' +
 			'   </xsl:when>' +
-			'   <xsl:when test="/root/gui/sources/record[string(siteid)=$source]">' +
-			'   	<a href="{/root/gui/sources/record[string(siteid)=$source]/baseURL}" target="_blank">' +
-			'   		<img src="' + geocat.baseUrl + 'images/logos/{$source}.gif" width="40" title="{$groupLabel}"/>' +
-			'   	</a>' +
-			'   </xsl:when>' +
 			'   <xsl:otherwise>' +
-			'   	<img src="' + geocat.baseUrl + 'images/logos/{$source}.gif" width="40" title="{$groupLabel}"/>' +
+            '       <a style="cursor:pointer;cursor:hand" onclick="geocat.openSource(\'{$source}\')" target="_blank">' +
+			'   	    <img src="' + geocat.baseUrl + 'images/logos/{$source}.gif" width="40" title="{$groupLabel}"/>' +
+            '       </a>' +
 			'   </xsl:otherwise>' +
 			'</xsl:choose>';
 
@@ -2218,6 +2215,12 @@ var geocat = {
         
         end.splice(0,0,array[0]);
         return end;
+    },
+    openSource: function(sourceId) {
+        var source = sources[sourceId];
+        if(source) {
+            window.open(source.url,"_blank");
+        }
     }
 
 };

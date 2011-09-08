@@ -5,7 +5,6 @@
 
         <service name="geocat">
             <output sheet="not-migrated/geocat.xsl">
-            	<call name="sources" class=".guiservices.util.Sources" />
             	<call name="groups" class=".guiservices.groups.GetAll" />
 				<call name="latestUpdated" class=".guiservices.metadata.GetLatestUpdated">
                     <param name="maxItems" value="10" />
@@ -23,6 +22,7 @@
             		<param name="db" value="main-db" />
             		<param name="query" value="select name,version from formats" />
             	</call>
+                <call name="sources"       class =".guiservices.util.Sources"/>
                 <!--<xml name="countries" file="xml/countries.xml" />                -->
             </output>
         </service>

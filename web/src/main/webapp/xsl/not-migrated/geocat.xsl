@@ -27,7 +27,13 @@
     <xsl:template match="record" mode="js-translations-formats">
         ,["<xsl:value-of select="name"/><xsl:if test="version != '-'">_<xsl:value-of select="version"/></xsl:if>", "<xsl:value-of select="name"/> (<xsl:value-of select="version"/>)"]</xsl:template>
 
-
+    <xsl:template name="sources">
+        <xsl:text>{</xsl:text>
+        <xsl:for-each select="/root/gui/sources/record">
+            "<xsl:value-of select="siteid"/>":{"name":"<xsl:value-of select="name"/>","url":"<xsl:value-of select="url"/>"}<xsl:if test="following-sibling::record">,</xsl:if>
+        </xsl:for-each>
+        <xsl:text>}</xsl:text>
+    </xsl:template>
 
     <xsl:template match="/">
         <html width="100%" height="100%">
@@ -72,6 +78,8 @@
                         src="{/root/gui/url}/scripts/not-migrated/geonetwork.js"/>
 
                 <script type="text/javascript">
+                   var sources = <xsl:call-template name="sources"/>;
+                
                     var translations = {
                         <xsl:apply-templates select="/root/gui/strings/*" mode="js-translations"/>
                         'sortByTypes':[<xsl:apply-templates select="/root/gui/strings/sortByType" mode="js-translations-combo"/>],
@@ -83,6 +91,7 @@
                         test="count(/root/gui/groups/record) > 0 and count(/root/gui/sources/record) > 0">,</xsl:if><xsl:apply-templates select="/root/gui/sources/record" mode="js-translations-sources-groups"><xsl:sort select="label/*[name()=/root/gui/language]"/><xsl:sort select="name"/></xsl:apply-templates>],
                         'formats': [['', '<xsl:value-of select="/root/gui/strings/any"/>']<xsl:apply-templates select="/root/gui/formats/record" mode="js-translations-formats"/>]
                     };
+                    
 
                     function translate(text) {
                         return translations[text] || text;
