@@ -1,3 +1,49 @@
+/** copied from metadata-show.js for massive updates */
+
+function setAll(id) {
+    var list = Ext.get(id).select('input').elements;
+
+    for ( var i = 0; i < list.length; i++) {
+        list[i].checked = true;
+    }
+};
+
+function clearAll(id) {
+    var list = Ext.get(id).select('input').elements;
+
+    for ( var i = 0; i < list.length; i++) {
+        list[i].checked = false;
+    }
+};
+
+function checkBoxModalUpdate(div, service, modalbox, title) {
+    var boxes = Ext.get(div).select('input[type="checkbox"]').elements;
+    var pars = "?id=" + $('metadataid').value;
+    
+    for ( var i = 0; i < boxes.length; i++) {
+        var s = boxes[i];
+        if (s.checked) {
+            pars += "&" + s.name + "=on";
+        }
+    }
+    
+    OpenLayers.Request.GET({
+        url: service+pars,
+        failure: function(req) {
+            alert(translate("error") + service + " / status " + req.status
+                    + " text: " + req.statusText + " - "
+                    + translate("tryAgain"));
+        },
+        success: function() {}
+    });
+    
+    geocat.massiveOpWindow.close();
+    Ext.get("actionOnSelection").dom.selectedIndex = 0;
+};
+
+
+
+
 /**
  * Geocat specific stuff
  */
@@ -1806,21 +1852,56 @@ var geocat = {
         	document.location.href = 'mef.export?format=full&version=2';
         	select.selectedIndex=0;
             break;
-		case 'DEL':
-			if(!confirm(translate('confirmMassiveDelete')))
-				return;
-			document.location.href = 'metadata.massiveDelete';
-		    break;
+        case 'DEL':
+            if(!confirm(translate('confirmMassiveDelete')))
+                return;
+            document.location.href = 'metadata.massiveDelete';
+            break;
+        case 'CATEGORIES':
+            geocat.openMassiveOp(translate('updateCategories'),"metadata.batch.category.form");
+            break;
+        case 'PRIVILEGES':
+            geocat.openMassiveOp(translate('updatePrivileges'),"metadata.batch.admin.form");
+            break;
 		}
-
     },
-
+    openMassiveOp: function(title, request) {
+        OpenLayers.Request.GET({
+            url: request,
+            failure: function() {alert ("Unable to perform operation");},
+            success: function(response) {
+                geocat.massiveOpWindow = new Ext.Window({
+                    modal: true,
+                    title: title,
+                    maximizable: false,
+                    html: response.responseText,
+                    autoScroll: true,
+                    constrain: true,
+//                    width: geocat.metadataPopupWidth,
+//                    height: geocat.metadataPopupHeight,
+                    onEsc: function(){
+                        geocat.massiveOpWindow.close();
+                    },
+                    listeners: {
+                        close: function() {
+                            geocat.massiveOpWindow = null;
+                        }
+                    }
+                });
+                geocat.massiveOpWindow.show();
+            }
+        });
+    },
+    openMassiveDialog:function(html) {
+        
+    },
     metadataSelectionAction: function() {
     	// TODO : switch to ext.js ?
     	var list = '<select id="actionOnSelection" onchange="geocat.metadataGroupAction (this);">' +
     			'<option value=""></option><option value="EXP">'+translate('export')+'</option>';
     	if (geocat.authentified){
     		list += '<option value="DEL">'+translate('delete')+'</option>';
+    		list += '<option value="PRIVILEGES">'+translate('updatePrivileges')+'</option>';
     	}
     	list += '</select>';
     	return list;

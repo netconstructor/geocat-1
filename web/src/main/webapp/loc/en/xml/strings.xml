@@ -841,7 +841,7 @@
 	<updateCategories>Update categories</updateCategories>
 	<updateCategory>Update category</updateCategory>
 	<updateGroup>Update group</updateGroup>
-	<updatePrivileges>Update privileges</updatePrivileges>
+	<updatePrivileges js="true">Update privileges</updatePrivileges>
 	<updateUserAccount>Update User Account </updateUserAccount>
 	<upload js="true">Upload </upload>
 	<user>User</user>

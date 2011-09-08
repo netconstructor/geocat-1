@@ -14,7 +14,7 @@
 			<xsl:with-param name="title" select="/root/gui/strings/privileges"/>
 			<xsl:with-param name="content">
 			
-				<xsl:variable name="lang" select="/root/gui/language"/>
+				<xsl:variable name="lang" select="substring(/root/gui/language,0,3)"/>
 				<xsl:variable name="disabled" select="(/root/response/owner='false')"/>
 
 				<div id="privileges">
