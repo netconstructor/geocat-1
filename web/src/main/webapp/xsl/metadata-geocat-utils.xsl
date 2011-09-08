@@ -133,9 +133,8 @@
             <xsl:when test="$groupLogoUuid != ''">
                 <img src="{/root/gui/url}/images/logos/{$groupLogoUuid}.png" width="40"/>
             </xsl:when>
-            <!-- //FIXME does not point to baseURL yet-->
             <xsl:when test="/root/gui/sources/record[string(siteid)=$source]">
-                <a href="{/root/gui/sources/record[string(siteid)=$source]/baseURL}" target="_blank">
+                <a href="{/root/gui/sources/record[string(siteid)=$source]/url}" target="_blank">
                     <img src="{/root/gui/url}/images/logos/{$source}.gif" width="40"/>
                 </a>
             </xsl:when>
