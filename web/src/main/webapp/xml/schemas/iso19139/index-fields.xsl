@@ -298,7 +298,7 @@
 
 		<xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution">
 			<xsl:for-each select="gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString">
-				<Field name="format" string="{string(.)}" store="true" index="true"/>
+				<Field name="format" string="{string(.)}" store="true" index="false"/>
 			</xsl:for-each>
 
 			<!-- index online protocol -->

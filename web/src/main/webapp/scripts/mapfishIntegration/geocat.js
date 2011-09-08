@@ -840,10 +840,11 @@ var geocat = {
                 name: 'S_basicgeodataid',
                 width: '100%'
             },{
-                xtype: 'combo',
+                xtype: 'boxselect',
+                id: 'formatCombo',
                 fieldLabel: translate("formatTxt"),
                 name: 'E1.0_format',
-                store: translate("formats"),
+                store: geocat.sortArryAsc(translate("formats")),
                 mode: 'local',
                 displayField: 'label',
                 valueField: 'name',
@@ -1805,11 +1806,6 @@ var geocat = {
         	document.location.href = 'mef.export?format=full&version=2';
         	select.selectedIndex=0;
             break;
-        case 'REUSABLE':
-            if(!confirm("Replace known shared objects in selected metadata?"))
-                return;
-            document.location.href = 'metadata.reusable.replace';
-            break;
 		case 'DEL':
 			if(!confirm(translate('confirmMassiveDelete')))
 				return;
@@ -1825,7 +1821,6 @@ var geocat = {
     			'<option value=""></option><option value="EXP">'+translate('export')+'</option>';
     	if (geocat.authentified){
     		list += '<option value="DEL">'+translate('delete')+'</option>';
-    		list += '<option value="REUSABLE">'+translate('replaceSharedObjects')+'</option>';
     	}
     	list += '</select>';
     	return list;
@@ -2207,6 +2202,22 @@ var geocat = {
 
     basicLabelFormat: '<xsl:value-of select="@name" /> (<xsl:value-of select="@count" />)',
     denominatorLabelFormat: '1/<xsl:value-of select="@name" /> (<xsl:value-of select="@count" />)',
-    dateLabelFormat: '<xsl:value-of select="@name" /> (<xsl:value-of select="@count" />)'
+    dateLabelFormat: '<xsl:value-of select="@name" /> (<xsl:value-of select="@count" />)',
+    sortArryAsc: function(array) {
+        var end = array.slice(1).sort(function(a,b){
+            var al = a[0].toLowerCase()+a[1].toLowerCase();
+            var bl = b[0].toLowerCase()+b[1].toLowerCase();
+           if(al < bl) {
+               return -1;
+           } else if (al == bl) {
+               return 0;
+           } else {
+               return 1;
+           }
+        });
+        
+        end.splice(0,0,array[0]);
+        return end;
+    }
 
 };

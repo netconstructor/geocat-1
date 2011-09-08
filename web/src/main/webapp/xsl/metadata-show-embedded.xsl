@@ -59,12 +59,10 @@
 						</xsl:call-template>
 												
 						<table width="100%">
-							<xsl:if test="/root/request/geocat">
 							 <xsl:call-template name="geocatButtons">
 							     <xsl:with-param name="metadata" select="$metadata"/>
 							     <xsl:with-param name="baseURL" select="$baseURL" /> <!-- The base URL of the local GeoNetwork site -->
 						     </xsl:call-template>
-							</xsl:if>
 							<xsl:if test="/root/request/control">
 								<tr><td class="padded-content" height="100%" align="center" valign="top">
 									<xsl:call-template name="buttons">
