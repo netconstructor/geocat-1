@@ -102,7 +102,7 @@ public class SearchController
 		}	
 	}
 	session.setProperty(Geonet.Session.SEARCH_REQUEST_ID, requestId);
-	
+    
 	List<ResultItem> resultsList = summaryAndSearchResults.two();
 	int counter = 0;
     for (int i=0; (i<maxRecords) && (i<resultsList.size()); i++) {

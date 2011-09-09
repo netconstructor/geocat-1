@@ -72,6 +72,7 @@ public final class TransformationTestSupport
         try {
             TranslateAndValidate transformer = new TranslateAndValidate();
             transformer.outputDir = outputDir;
+            transformer.debug = true;
             transformer.run(new File(TransformationTestSupport.geonetworkWebapp, "xsl/conversion/import/GM03_2-to-ISO19139CHE.xsl"), TransformationTestSupport.isoXsd, new String[] { src.getAbsolutePath() });
         } catch (AssertionError e) {
             if(testValidity) throw e;

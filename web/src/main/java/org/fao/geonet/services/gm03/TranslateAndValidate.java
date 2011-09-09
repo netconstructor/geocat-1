@@ -25,6 +25,8 @@ public class TranslateAndValidate {
 
 	public File outputDir = new File("output");
 
+    public boolean debug = false;
+
 	public static void main(String[] args) throws SAXException, IOException,
 			TransformerConfigurationException {
 		final String xslFilename = args[0];
@@ -36,50 +38,89 @@ public class TranslateAndValidate {
 				xmlFilenames);
 	}
 
-	/**
-	 * 
-	 * @param xslFilename
-	 * @param schemaFilename
-	 *            if null, does not validate transformed document.
-	 * @param xmlFilenames
-	 * @throws SAXException
-	 * @throws TransformerConfigurationException
-	 * @throws IOException
-	 */
-	public void run(String xslFilename, String schemaFilename,
-			String[] xmlFilenames) throws SAXException,
-			TransformerConfigurationException, IOException {
+    /**
+     * 
+     * @param xslFilename
+     * @param schemaFilename
+     *            if null, does not validate transformed document.
+     * @param xmlFilenames
+     * @throws SAXException
+     * @throws TransformerConfigurationException
+     * @throws IOException
+     */
+    public void run(String xslFilename, String schemaFilename,
+            String[] xmlFilenames) throws SAXException,
+            TransformerConfigurationException, IOException {
 
-		// Compile the schema.
-		// Here the schema is loaded from a java.io.File, but you could use
-		// a java.net.URL or a javax.xml.transform.Source instead.
-		File schemaLocation = new File(schemaFilename);
-		Schema schema = null;
+        // Compile the schema.
+        // Here the schema is loaded from a java.io.File, but you could use
+        // a java.net.URL or a javax.xml.transform.Source instead.
+        File schemaLocation = new File(schemaFilename);
+        Schema schema = null;
 
-		// Only validate if a schemafile is provided
-		if (schemaFilename != null)
-			schema = SCHEMA_FACTORY.newSchema(schemaLocation);
+        // Only validate if a schemafile is provided
+        if (schemaFilename != null)
+            schema = SCHEMA_FACTORY.newSchema(schemaLocation);
 
-		Transformer xslt = TRANSFORMER_FACTORY.newTransformer(new StreamSource(
-				xslFilename));
+        Transformer xslt = TRANSFORMER_FACTORY.newTransformer(new StreamSource(
+                xslFilename));
 
-		for (int i = 0; i < xmlFilenames.length; i++) {
-			String xmlFilename = xmlFilenames[i];
-			final String xmlFilenameOnly = new File(xmlFilename).getName();
-			StringBuffer doc = translate(xmlFilename, xslt, false);
-			saveFile(doc, "result_" + xmlFilenameOnly);
-			saveFile(translate(xmlFilename, xslt, true), "intermediate_"
-					+ xmlFilenameOnly);
-			if (schema != null)
-				validate(schema, xmlFilename, doc, xslt);
-		}
-	}
+        for (int i = 0; i < xmlFilenames.length; i++) {
+            String xmlFilename = xmlFilenames[i];
+            final String xmlFilenameOnly = new File(xmlFilename).getName();
+            final StreamSource source = new StreamSource(xmlFilename);
+            
+            StringBuffer doc = translate(xmlFilename, source, xslt, false);
+            saveFile(doc, "result_" + xmlFilenameOnly);
+            if(debug ) {
+                saveFile(translate(xmlFilename, source, xslt, true), "intermediate_"
+                    + xmlFilenameOnly);
+            }
+            if (schema != null)
+                validate(schema, xmlFilename, doc, xslt);
+        }
+    }
+    /**
+     * 
+     * @param xslFilename
+     * @param schemaFilename
+     *            if null, does not validate transformed document.
+     * @param xmlFilenames
+     * @throws SAXException
+     * @throws TransformerConfigurationException
+     * @throws IOException
+     */
+    public void run(String xslFilename, String schemaFilename,
+            Source source) throws SAXException,
+            TransformerConfigurationException, IOException {
 
-	private StringBuffer translate(String xmlFilename, Transformer xslt,
+        // Compile the schema.
+        // Here the schema is loaded from a java.io.File, but you could use
+        // a java.net.URL or a javax.xml.transform.Source instead.
+        Schema schema = null;
+        if (schemaFilename != null) {
+            File schemaLocation = new File(schemaFilename);
+    
+            // Only validate if a schemafile is provided
+            schema = SCHEMA_FACTORY.newSchema(schemaLocation);
+        }
+
+        Transformer xslt = TRANSFORMER_FACTORY.newTransformer(new StreamSource(
+                xslFilename));
+
+        StringBuffer doc = translate("unknown", source, xslt, false);
+        saveFile(doc, "result_");
+        if(debug ) {
+            saveFile(translate("unknown", source, xslt, true), "intermediate_");
+        }
+        if (schema != null)
+            validate(schema, "", doc, xslt);
+    }
+
+	private StringBuffer translate(String xmlFilename, Source source, Transformer xslt,
 			boolean debug) {
 		final StringWriter result = new StringWriter();
 		StreamResult transformed = new StreamResult(result);
-		final StreamSource source = new StreamSource(xmlFilename);
 		xslt.setParameter("DEBUG", debug ? "1" : "0");
 		try {
 			xslt.transform(source, transformed);
@@ -150,10 +191,12 @@ public class TranslateAndValidate {
 	private void generateTempFiles(StringBuffer doc, Transformer xslt,
 			String xmlFilename) throws IOException {
 		saveFile(doc, "errorResult.xml");
-		saveFile(translate(xmlFilename, xslt, true), "errorDebug.xml");
+       final StreamSource source = new StreamSource(xmlFilename);
+
+		saveFile(translate(xmlFilename, source, xslt, true), "errorDebug.xml");
 	}
 
-	private void saveFile(StringBuffer doc, String fileName) throws IOException {
+	protected void saveFile(StringBuffer doc, String fileName) throws IOException {
 		outputDir.mkdirs();
 		Writer writer = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream(new File(outputDir, fileName)), "UTF8"));

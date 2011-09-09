@@ -73,7 +73,8 @@ public abstract class ISO19139CHEtoGM03Base {
         final Document doc = (Document) transformed.getNode();
 
         if (wantIntermediate() && intermediateFile!=null) {
-            saveDom(doc, intermediateFile);
+            OutputStream outputStream = new FileOutputStream(intermediateFile);
+            saveDom(doc, outputStream);
         }
 
         flatten(doc);
@@ -91,9 +92,18 @@ public abstract class ISO19139CHEtoGM03Base {
         Document doc = doTransform(group, source, parent + "/intermediate_" + xmlFile.getName());
 
         final String resultFilename = parent + "/result_" + xmlFile.getName();
-        saveDom(doc, resultFilename);
+        OutputStream outputStream = new FileOutputStream(resultFilename);
+        saveDom(doc, outputStream);
         validate(resultFilename, doc);
 
+    }
+
+    public void convert(Source source, String group, OutputStream outputStream) throws FlattenerException, IOException, TransformerException, SAXException {
+        
+        Document doc = doTransform(group, source, null);
+        
+        saveDom(doc, outputStream);
+        
     }
 
     protected abstract boolean wantIntermediate();
@@ -159,8 +169,7 @@ public abstract class ISO19139CHEtoGM03Base {
         }
     }
 
-    private static void saveDom(Document node, String filename) throws IOException {
-        OutputStream outputStream = new FileOutputStream(filename);
+    private static void saveDom(Document node, OutputStream outputStream) throws IOException {
         try {
             OutputFormat format = new OutputFormat();
             format.setIndent(2);
