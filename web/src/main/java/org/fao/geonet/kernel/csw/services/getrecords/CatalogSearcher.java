@@ -421,10 +421,10 @@ public class CatalogSearcher {
 
 		if (sort == null) {
 			sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)));
- 	        ArrayList<SortField> sortFields = new ArrayList<SortField>(Arrays.asList(sort.getSort()));
-	        sortFields.add(0,new LangSortField(context.getLanguage()));
-	        sort.setSort(sortFields.toArray(new SortField[sortFields.size()]));
-		}
+		} 
+		ArrayList<SortField> sortFields = new ArrayList<SortField>(Arrays.asList(sort.getSort()));
+		sortFields.add(0, new LangSortField(context.getLanguage()));
+		sort.setSort(sortFields.toArray(new SortField[sortFields.size()]));
 		
 		
 		// --- put query on groups in AND with lucene query

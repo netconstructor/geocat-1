@@ -584,6 +584,9 @@ public class LuceneSearcher extends MetaSearcher
             sortBy = "_" + sortBy;
         }
         Log.debug(Geonet.SEARCH_ENGINE, "Sort by: " + sortBy + " order: " + sortOrder + " type: " + sortType);
+        if(sortType == SortField.STRING) {
+            return new SortField(sortBy, CaseInsensitiveFieldComparatorSource.instance(),sortOrder);
+        }
         return new SortField(sortBy, sortType, sortOrder);
     }
     

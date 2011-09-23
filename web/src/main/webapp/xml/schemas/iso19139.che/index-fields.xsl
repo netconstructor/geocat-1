@@ -49,7 +49,6 @@
 			<Field name="_defaultTitle" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
 			<!-- not tokenized title for sorting -->
 			<Field name="_title" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
-			<Field name="title" string="{string($_defaultTitle)}" store="true" index="true" token="true" />
 			
 			<xsl:apply-templates select="che:CHE_MD_Metadata" mode="metadata"/>
 		</Document>

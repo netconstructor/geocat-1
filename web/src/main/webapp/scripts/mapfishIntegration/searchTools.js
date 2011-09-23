@@ -236,7 +236,7 @@ var searchTools = {
         rating: {name: 'rating', order: 'D'},
         popularity: {name: 'popularity', order: 'D'},
         date: {name: 'date', order: 'D'},
-        title: {name: 'title', order: 'A'}
+        title: {name: '_defaultTitle', order: 'A'}
     },
 
     buildCSWQueryPOST: function(filter, startRecord, sortBy) {

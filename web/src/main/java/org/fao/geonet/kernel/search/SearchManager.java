@@ -1010,7 +1010,6 @@ public class SearchManager
             Map<String,String> params = new HashMap<String, String>();
             params.put("inspire", Boolean.toString(_inspireEnabled));
             params.put("dataDir", _dataDir);
-            
             Element defaultLang = Xml.transform(xml, defaultStyleSheet, params);
             if(new File(otherLocalesStyleSheet).exists()) {
                 @SuppressWarnings("unchecked")

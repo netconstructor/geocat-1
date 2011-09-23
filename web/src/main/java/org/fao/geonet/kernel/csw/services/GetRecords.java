@@ -512,10 +512,10 @@ public class GetRecords extends AbstractOperation implements CatalogService
             String luceneField = FieldMapper.map(field);
 
             if (luceneField != null) {
-                al.add(Pair.read(luceneField, "DESC".equals(order)));
+                al.add(Pair.read(luceneField, "D".equals(order.substring(0,1))));
             }
             else {
-                al.add(Pair.read(field, "DESC".equals(order)));
+                al.add(Pair.read(field, "D".equals(order.substring(0,1))));
             }
         }
 
