@@ -435,7 +435,7 @@
         <!-- Service to export a CSW query in a text file output.
         To be used with outputSchema=own in order to be able to produce
         specific output according to schema. -->
-        <service name="csw.txt">
+        <service name="csw.csv">
             <class name=".services.main.CswDispatcher" />
 
             <output sheet="csv-search.xsl" contentType="text/plain; charset=UTF-8" />

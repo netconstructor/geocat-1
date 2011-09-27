@@ -1981,7 +1981,7 @@ var geocat = {
         for (var i=0; i<geocat.exportResultModes.length; i++) {
         	   var link = '';
         	   if (geocat.exportResultModes[i]=='txt')
-        		   link = 'csw.txt';
+        		   link = 'csw.csv';
         	   else
         		   link = 'csw.' + geocat.exportResultModes[i];
 

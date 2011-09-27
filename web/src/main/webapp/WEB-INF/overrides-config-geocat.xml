@@ -159,7 +159,7 @@
             <allow service="che.keyword.get"/>
             
             <allow service="csw.pdf"/>
-            <allow service="csw.txt"/>
+            <allow service="csw.csv"/>
 
         </addXML>
         <addXML xpath="">
