@@ -1403,7 +1403,7 @@ var geocat = {
     fillSearchToolbar: function(toolbar) {
 //        fillStdToolbar(toolbar); // defined in resizableMap.js
 
-        toolbar.add(new Ext.Toolbar.Separator());
+/*        toolbar.add(new Ext.Toolbar.Separator());
 
         toolbar.add({
             iconCls: 'layerTreeButton',
@@ -1437,7 +1437,7 @@ var geocat = {
             configUrl: geocat.baseUrl + "pdf/info.json",
             geocat: this,
             tooltip: OpenLayers.Lang.translate('mf.print.print-tooltip-email')
-        }));
+        }));*/
     },
 
     createLayerTree: function() {
