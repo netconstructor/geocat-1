@@ -452,6 +452,7 @@ var geocat = {
             renderTo: target,
             store: translate('sortByTypes'),
             mode: 'local',
+			id:'sortByCombo',
             forceSelection: true,
             triggerAction: 'all',
             editable: false,

@@ -235,7 +235,7 @@ var searchTools = {
         relevance: {name:'relevance', order: 'D'},
         rating: {name: 'rating', order: 'D'},
         popularity: {name: 'popularity', order: 'D'},
-        date: {name: 'date', order: 'D'},
+        changeDate: {name: 'changeDate', order: 'D'},
         title: {name: '_defaultTitle', order: 'A'}
     },
 
