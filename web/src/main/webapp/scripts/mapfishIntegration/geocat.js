@@ -60,6 +60,11 @@ var geocatConf = {
 };
 
 var geocat = {
+	session: {
+		userId: "",
+		profile: "",
+		groups: []
+	},
     map: null,
     mapMinWidth: 275,
     mapMinHeight: 220,
@@ -337,6 +342,7 @@ var geocat = {
     startSearch: function() {
         var target = OpenLayers.Util.getElement("searchResults");
         target.innerHTML = translate("searching");
+		target.classList.add("searching");
         OpenLayers.Util.getElement("refineRemove").innerHTML="";
         OpenLayers.Util.getElement("refineAdd").innerHTML="";
         // Resizes map
@@ -350,11 +356,13 @@ var geocat = {
     failedSearch: function(result) {
         var target = OpenLayers.Util.getElement("searchResults");
         target.innerHTML = "Search failed: <br />" + result.responseText;
+		target.classList.remove("searching");
     },
 
     processSearchResults: function(result, getQuery) {
         var target = OpenLayers.Util.getElement("searchResults");
         geocat.showContours(result.responseXML);
+		target.classList.remove("searching");
         searchTools.transformXML(result.responseXML, geocat.getResultsTemplate(getQuery), target);
         geocat.transformSortBy();
         geocat.transformURIButtons(target);
@@ -818,10 +826,12 @@ var geocat = {
         },{
             fieldLabel: translate('rtitle'),
             name: 'T_title',
+			id: 'TitleField',
             width: '100%'
         },{
             fieldLabel: translate('abstract'),
             name: 'T_abstract',
+			id: 'AbstractField',
             width: '100%'
         },{
             xtype: 'boxselect',
@@ -947,10 +957,12 @@ var geocat = {
             },{
                 xtype: 'checkbox',
                 fieldLabel: translate('toEdit'),
+				id: 'toEdit',
                 name: 'B_toEdit'
             },{
                 xtype: 'checkbox',
                 fieldLabel: translate('toPublish'),
+				id: 'toPublish',
                 name: 'B_toPublish'
             }]);
         }
@@ -1856,7 +1868,7 @@ var geocat = {
         case 'DEL':
             if(!confirm(translate('confirmMassiveDelete')))
                 return;
-            document.location.href = 'metadata.massiveDelete';
+            document.location.href = 'metadata.batch.delete';
             break;
         case 'CATEGORIES':
             geocat.openMassiveOp(translate('updateCategories'),"metadata.batch.category.form");

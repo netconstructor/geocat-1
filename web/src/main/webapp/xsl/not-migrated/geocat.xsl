@@ -108,7 +108,15 @@
 						    extraSetup : function() {},
 						    loadingElemId : "loadingMask"
 						};
-                        geocat.language = '<xsl:value-of select="root/gui/language"/>';
+                        geocat.language = '<xsl:value-of select="/root/gui/language"/>';
+						<xsl:variable name="userid" select="normalize-space(root/gui/session/userId)"/>
+						<xsl:variable name="profile" select="normalize-space(root/gui/session/profile)"/>
+						geocat.session.userId = '<xsl:value-of select="$userid"/>';
+						geocat.session.profile = '<xsl:value-of select="$profile"/>';
+						<xsl:for-each select="/root/gui/usergroups/record[normalize-space(userid) = $userid or $profile = 'Administrator' ]">
+							geocat.session.groups.push('<xsl:value-of select="normalize-space(groupid)"/>');
+						</xsl:for-each>
+
                         geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', '../../proxy?url=<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
                     });
                 </script>

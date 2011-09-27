@@ -44,7 +44,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 import jeeves.constants.Jeeves;
 import jeeves.exceptions.JeevesException;
@@ -484,12 +483,18 @@ public class DataManager {
                                 .select("SELECT groupId, operationId FROM OperationAllowed WHERE metadataId = ? ORDER BY operationId ASC", id$)
                                     .getChildren();
 
+            boolean toPublish = true;
             for (Object operation1 : operations) {
                 Element operation = (Element) operation1;
                 String groupId = operation.getChildText("groupid");
                 String operationId = operation.getChildText("operationid");
                 moreFields.add(makeField("_op" + operationId, groupId, true, true, false));
+                if(groupId.equals("1") && operationId.equals("0")) {
+                    toPublish = false;
+                }
             }
+            moreFields.add(makeField("toPublish", toPublish?"y":"n", true, true, false));
+
             // get categories
             List categories = dbms
                                 .select("SELECT id, name FROM MetadataCateg, Categories WHERE metadataId = ? AND categoryId = id ORDER BY id", id$)

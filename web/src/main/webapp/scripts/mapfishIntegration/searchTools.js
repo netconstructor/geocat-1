@@ -204,11 +204,15 @@ var searchTools = {
                 }));
             }
         } else if (type == 'B') {    //boolean
-            filters.push(new OpenLayers.Filter.Comparison({
-                type: OpenLayers.Filter.Comparison.EQUAL_TO,
-                property: name,
-                value: value ? 1 : 0
-            }));
+			if(name == 'toEdit') {
+				searchTools.toEditFilter(filters);
+			} else {
+	            filters.push(new OpenLayers.Filter.Comparison({
+	                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+	                property: name,
+	                value: value ? 'y' : 'n'
+	            }));
+			}
         } else if (type == 'V') { //field name specified in the value, separated by a '/' with the value
             var subField = value.match("^([^/]+)/(.*)$");
             filters.push(new OpenLayers.Filter.Comparison({
@@ -230,7 +234,27 @@ var searchTools = {
             alert("Cannot parse " + type);
         }
     },
-
+	toEditFilter: function(filters) {
+		var toEditFilters = [];
+		toEditFilters.push(new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "_owner",
+            value: geocat.session.userId
+        }));
+		
+		for(i=0; geocat.session.groups.length > i; i++) {
+			toEditFilters.push(new OpenLayers.Filter.Comparison({
+	            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+	            property: "_op2",
+	            value: geocat.session.groups[i]
+	        }));
+		}
+		
+		filters.push(new OpenLayers.Filter.Logical({
+            type: OpenLayers.Filter.Logical.OR,
+            filters: toEditFilters
+        }));
+	},
     sortByMappings: {
         relevance: {name:'relevance', order: 'D'},
         rating: {name: 'rating', order: 'D'},

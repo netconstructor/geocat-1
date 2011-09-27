@@ -22,6 +22,10 @@
             		<param name="db" value="main-db" />
             		<param name="query" value="select name,version from formats" />
             	</call>
+            	<call name="usergroups" class="jeeves.services.db.Select">
+            		<param name="db" value="main-db" />
+            		<param name="query" value="select groupId,userId from usergroups" />
+            	</call>
                 <call name="sources"       class =".guiservices.util.Sources"/>
                 <!--<xml name="countries" file="xml/countries.xml" />                -->
             </output>
