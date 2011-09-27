@@ -422,5 +422,23 @@
 	        </output>
 	    </service>
 
+        <!-- Service to export a CSW query in a pdf document.
+        To be used with no outputSchema (ie. default ogc) to return
+        search result in a pdf. Replace existing pdf.search service. -->
+        <service name="csw.pdf">
+            <class name=".services.main.CswDispatcher" />
+
+            <output sheet="csw-pdf-fop.xsl" file="true" contentType="application/pdf">
+                <call name="siteURL" class=".guiservices.util.GetSiteURL" />
+            </output>
+        </service>
+        <!-- Service to export a CSW query in a text file output.
+        To be used with outputSchema=own in order to be able to produce
+        specific output according to schema. -->
+        <service name="csw.txt">
+            <class name=".services.main.CswDispatcher" />
+
+            <output sheet="csv-search.xsl" contentType="text/plain; charset=UTF-8" />
+        </service>
     </services>
 </geonet>

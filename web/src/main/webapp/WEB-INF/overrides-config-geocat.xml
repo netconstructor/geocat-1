@@ -157,6 +157,10 @@
             <allow service="shared.user.list"/>
 
             <allow service="che.keyword.get"/>
+            
+            <allow service="csw.pdf"/>
+            <allow service="csw.txt"/>
+
         </addXML>
         <addXML xpath="">
             <profile name="Shared"/>
