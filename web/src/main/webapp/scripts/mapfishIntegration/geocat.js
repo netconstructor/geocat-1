@@ -1264,8 +1264,8 @@ var geocat = {
 
     createKeywordsStore: function() {
         var Keyword = Ext.data.Record.create([
-            {name: 'name', mapping:'@name', sortDir: null},
-            {name: 'value', mapping:'@value', sortDir: "ASC"}
+            {name: 'name', mapping:'@name', sortDir: "ASC"},
+            {name: 'value', mapping:'@name'}
         ]);
         var keywordStore = new Ext.data.Store({
             reader: new Ext.data.XmlReader({
@@ -1273,7 +1273,7 @@ var geocat = {
                 id: '@name'
             }, Keyword),
             proxy: new Ext.data.HttpProxy({
-                url: geocat.baseUrl + "srv/" + geocat.language + "/portal.search?resultType=results",
+                url: geocat.baseUrl + "srv/" + geocat.language + "/portal.search",
                 method:'post'
             })
         });
