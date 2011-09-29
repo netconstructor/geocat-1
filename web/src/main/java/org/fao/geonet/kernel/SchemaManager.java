@@ -490,7 +490,10 @@ public class SchemaManager
  		* @param md the imported metadata file
  		*/
 
-	public String autodetectSchema(Element md) {			
+	public String autodetectSchema(Element md) {
+		return autodetectSchema(md,defaultSchema);
+	}
+	public String autodetectSchema(Element md, String defaultSchema) {			
 
 		beforeRead();
 		try {
@@ -1254,6 +1257,10 @@ public class SchemaManager
 		String appPath = context.getAppPath().replace('\\','/');
 		String relativePath = StringUtils.substringAfter(schemaDir,context.getAppPath()); 
 		return si.getSiteUrl() + context.getBaseUrl() + "/" + relativePath;
+	}
+
+	public String getDefaultSchema() {
+		return defaultSchema;
 	}
 
 	//--------------------------------------------------------------------------
