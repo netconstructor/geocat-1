@@ -341,9 +341,10 @@ var geocat = {
     },
 
     startSearch: function() {
-        var target = OpenLayers.Util.getElement("searchResults");
-        target.innerHTML = translate("searching");
-		target.classList.add("searching");
+        var target = Ext.get("searchResults");
+
+        target.dom.innerHTML = translate("searching");
+		target.addClass("searching");
         OpenLayers.Util.getElement("refineRemove").innerHTML="";
         OpenLayers.Util.getElement("refineAdd").innerHTML="";
         // Resizes map
@@ -355,18 +356,19 @@ var geocat = {
     },
 
     failedSearch: function(result) {
-        var target = OpenLayers.Util.getElement("searchResults");
-        target.innerHTML = "Search failed: <br />" + result.responseText;
-		target.classList.remove("searching");
+        var target = Ext.get("searchResults");
+        target.dom.innerHTML = "Search failed: <br />" + result.responseText;
+		target.removeClass("searching");
     },
 
     processSearchResults: function(result, getQuery) {
-        var target = OpenLayers.Util.getElement("searchResults");
+        var target = Ext.get("searchResults");
+		target.removeClass("searching");
+		
         geocat.showContours(result.responseXML);
-		target.classList.remove("searching");
-        searchTools.transformXML(result.responseXML, geocat.getResultsTemplate(getQuery), target);
+        searchTools.transformXML(result.responseXML, geocat.getResultsTemplate(getQuery), target.dom);
         geocat.transformSortBy();
-        geocat.transformURIButtons(target);
+        geocat.transformURIButtons(target.dom);
         geocat.metadataSelectInfo('selected=status');
         geocat.processRefinement(result);
 
@@ -496,6 +498,9 @@ var geocat = {
     createLinkButton: function(curProto, byProto, id) {
         var cur;
 
+		if (byProto.length == 0) {
+			return ;
+		}
         // Button with drop down list
         if (byProto[0].url != null && ((byProto[0].url.indexOf('metadata.edit')==-1
         		&& byProto[0].url.indexOf('metadata.delete')==-1
@@ -575,13 +580,17 @@ var geocat = {
                 var proto = uri.attributes.getNamedItem("proto").value;
                 if (proto.toLowerCase().contains('wms')) proto = "WMS";
                 var array = byProtos[proto] || [];
+				var url = uri.firstChild ? uri.firstChild.nodeValue : null;
+				var title = uri.attributes.getNamedItem("title") ? uri.attributes.getNamedItem("title").value : url;
                 var cur = {
-                    title: uri.attributes.getNamedItem("title") ? uri.attributes.getNamedItem("title").value : null,
-                    name: uri.attributes.getNamedItem("name") ? uri.attributes.getNamedItem("name").value : null,
-                    url: uri.firstChild ? uri.firstChild.nodeValue : null,
+                    title: title,
+                    name: uri.attributes.getNamedItem("name") ? uri.attributes.getNamedItem("name").value : title,
+                    url: url,
                     uuid: uuid
                 };
-                array.push(cur);
+				if(cur.url != null && cur.url.trim().length > 0) {
+                	array.push(cur);
+				}
                 byProtos[proto] = array;
             }
             uriList.innerHTML = "";
