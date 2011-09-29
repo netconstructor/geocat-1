@@ -1075,3 +1075,8 @@ h2.monitoring_title {
     color: #555;
     font-style: italic;
 }
+
+.uriButtonMenu {
+	height: 200px;
+	overflow: auto;
+}

@@ -250,6 +250,7 @@ var geocat = {
                 ]
             },{
                 region: 'center',
+				id: 'searchResultsPanel',
                 autoScroll: true,
                 contentEl: 'searchResults',
                 bodyStyle: "padding:1em"
@@ -524,14 +525,24 @@ var geocat = {
             	tooltip += " (" + translate("Google KML") + ")";
             }
 
-            new Ext.Button({
-                renderTo: id,
-                text: name,
-                tooltip: tooltip,
-                icon: first.icon,
-                cls: first.buttonClass,
-                menu: {items: items}
-            });
+			if(items.length > 0) {
+	            new Ext.Button({
+	                renderTo: id,
+	                text: name,
+	                tooltip: tooltip,
+	                icon: first.icon,
+	                cls: first.buttonClass,
+	                menu: {
+						shadow:'drop',
+						items: items,
+						listeners: {
+							beforeshow: function(menu) {
+								menu.el.addClass("uriButtonMenu")
+							}
+						}
+					}
+	            });
+			}
         } else {
             cur = byProto[0];
 
@@ -2210,7 +2221,7 @@ var geocat = {
             '          <ul style="padding-top:4px" class="URIButtons" uuid="{dc:identifier}">\n' +
             '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
             '          <xsl:for-each select="dc:URI">\n' +
-            '            <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
+            '              <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
             '          </xsl:for-each>\n' +
             '          <xsl:if test="geonet:info/edit=\'true\'">\n' +
             '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +

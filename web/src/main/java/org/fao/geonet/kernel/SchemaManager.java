@@ -493,7 +493,7 @@ public class SchemaManager
 	public String autodetectSchema(Element md) {
 		return autodetectSchema(md,defaultSchema);
 	}
-	public String autodetectSchema(Element md, String defaultSchema) {			
+	public String autodetectSchema(Element md, String defaultSchema) {
 
 		beforeRead();
 		try {

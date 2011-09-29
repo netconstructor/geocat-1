@@ -1098,3 +1098,8 @@ li.blue-content {
 li.blue-content a {
 	color: #ffffff;
 }
+
+.uriButtonMenu {
+	height: 500px;
+	overflow: auto;
+}
