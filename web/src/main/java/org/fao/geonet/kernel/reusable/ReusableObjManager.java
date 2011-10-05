@@ -127,9 +127,7 @@ public class ReusableObjManager
                 }
             }
 
-            if (sendEmail) {
-                logger.sendEmail(context);
-            }
+            logger.sendEmail(context, sendEmail);
             return count;
         } finally {
             lock.unlock();

@@ -71,14 +71,15 @@ public class Reject implements Service
         String page = Util.getParamText(params, "type");
         String[] ids = Util.getParamText(params, "id").split(",");
         String msg = Util.getParamText(params, "msg");
-
-        Element results = reject(context, ReusableTypes.valueOf(page), ids, msg, null);
+        boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
+        
+        Element results = reject(context, ReusableTypes.valueOf(page), ids, msg, null, testing);
 
         return results;
     }
 
     public Element reject(ServiceContext context, ReusableTypes reusableType, String[] ids, String msg,
-            String strategySpecificData) throws Exception
+            String strategySpecificData, boolean testing) throws Exception
     {
         Log.debug(Geocat.Module.REUSABLE, "Starting to reject following reusable objects: \n"
                 + reusableType + " (" + Arrays.toString(ids) + ")\nRejection message is:\n" + msg);
@@ -91,7 +92,7 @@ public class Reject implements Service
         Element results = new Element("results");
         if (strategy != null) {
             results.addContent(performReject(ids, strategy, context, gc, dbms, session, baseUrl, msg,
-                    strategySpecificData));
+                    strategySpecificData, testing));
         }
         Log.info(Geocat.Module.REUSABLE, "Successfully rejected following reusable objects: \n"
                 + reusableType + " (" + Arrays.toString(ids) + ")\nRejection message is:\n" + msg);
@@ -101,7 +102,7 @@ public class Reject implements Service
 
     private List<Element> performReject(String[] ids, final ReplacementStrategy strategy, ServiceContext context,
             GeonetContext gc, Dbms dbms, final UserSession session, String baseURL, String msg,
-            String strategySpecificData) throws Exception
+            String strategySpecificData, boolean testing) throws Exception
     {
 
         final Function<String,String> idConverter = strategy.numericIdToConcreteId(session);
@@ -129,7 +130,7 @@ public class Reject implements Service
         }
 
         if (!emailInfo.isEmpty()) {
-            emailNotifications(strategy, context, dbms, session, msg, emailInfo, baseURL, strategySpecificData);
+            emailNotifications(strategy, context, dbms, session, msg, emailInfo, baseURL, strategySpecificData, testing);
         }
         strategy.performDelete(ids, dbms, session, strategySpecificData);
 
@@ -181,7 +182,7 @@ public class Reject implements Service
 
     private void emailNotifications(final ReplacementStrategy strategy, ServiceContext context, Dbms dbms,
             final UserSession session, String msg, Multimap<String, String> emailInfo, String baseURL,
-            String strategySpecificData) throws Exception
+            String strategySpecificData, boolean testing) throws Exception
     {
         if (msg == null) {
             msg = "";
@@ -191,7 +192,7 @@ public class Reject implements Service
         String subject = Utils.translate(context.getAppPath(), context.getLanguage(), "deletedSharedObject/subject",
                 " / ");
 
-        Utils.sendEmail(new SendEmailParameter(context, dbms, msg, emailInfo, baseURL, msgHeader, subject));
+        Utils.sendEmail(new SendEmailParameter(context, dbms, msg, emailInfo, baseURL, msgHeader, subject, testing));
     }
 
     public void init(String appPath, ServiceConfig params) throws Exception

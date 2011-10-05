@@ -15,9 +15,10 @@ public class SendEmailParameter
     public final String                   baseURL;
     public final String                   msgHeader;
     public final String                   subject;
+    public final boolean                  testing;
 
     public SendEmailParameter(ServiceContext context, Dbms dbms, String msg, Multimap<String, String> emailInfo,
-            String baseURL, String msgHeader, String subject)
+            String baseURL, String msgHeader, String subject, boolean testing)
     {
         this.context = context;
         this.dbms = dbms;
@@ -26,5 +27,6 @@ public class SendEmailParameter
         this.baseURL = baseURL;
         this.msgHeader = msgHeader;
         this.subject = subject;
+        this.testing = testing;
     }
 }

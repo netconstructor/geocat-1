@@ -55,7 +55,8 @@ public class Delete implements Service
 
     public Element exec(Element params, ServiceContext context) throws Exception
     {
-        String[] ids = Util.getParamText(params, "id").split(",");
+    	boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
+    	String[] ids = Util.getParamText(params, "id").split(",");
 
         // PMT c2c : fixing potential security flaw by
         // sanitazing user inputs : every entries here should
@@ -98,7 +99,7 @@ public class Delete implements Service
             String subject = Utils.translate(context.getAppPath(), context.getLanguage(), "unpublishMetadata/subject",
                     " / ");
 
-            SendEmailParameter args = new SendEmailParameter(context, dbms, msg, emailInfo, baseUrl, msgHeader, subject);
+            SendEmailParameter args = new SendEmailParameter(context, dbms, msg, emailInfo, baseUrl, msgHeader, subject, testing);
             Utils.sendEmail(args);
         }
 

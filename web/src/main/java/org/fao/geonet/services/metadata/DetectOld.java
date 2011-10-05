@@ -83,7 +83,8 @@ public class DetectOld implements Service
     public Element exec(Element params, ServiceContext context) throws Exception
     {
 
-        Email connection = new Email(context);
+    	boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
+        Email connection = new Email(context, testing);
         int limit;
         Multimap<String, EmailInfo> results;
         switch (serviceType)
@@ -309,7 +310,6 @@ public class DetectOld implements Service
         if (!failedNotifications.getChildren().isEmpty()) {
             connection.sendEmail(connection.feedbackAddress, ADMIN_FAILED_EMAIL_SUBJECT, failedMessage.toString());
         }
-
         return xmlResponse;
 
     }

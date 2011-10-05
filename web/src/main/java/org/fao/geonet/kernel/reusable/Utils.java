@@ -427,7 +427,7 @@ public final class Utils {
 				+ mkString(args.emailInfo.keySet(), " OR id=");
 		Element emailRecords = args.dbms.select(query);
 		org.fao.geonet.services.util.Email emailService = new org.fao.geonet.services.util.Email(
-				args.context);
+				args.context, args.testing);
 
 		try {
 			Set<String> unnotifiedIds = new HashSet<String>();

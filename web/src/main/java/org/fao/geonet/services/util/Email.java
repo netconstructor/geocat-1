@@ -47,6 +47,7 @@ public final class Email
     public final String feedbackAddress;
     private final String smtpServer;
     private final String portNo;
+	private boolean testing;
 
     public Email(String feedbackAddr, String smtpServer, String portNo)
     {
@@ -55,19 +56,22 @@ public final class Email
         this.portNo = portNo;
     }
 
-    public Email(ServiceContext context)
+    public Email(ServiceContext context, boolean testing)
     {
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         SettingManager settings = gc.getSettingManager();
         smtpServer = settings.getValue("system/feedback/mailServer/host");
         portNo = settings.getValue("system/feedback/mailServer/port");
         feedbackAddress = settings.getValue("system/feedback/email");
+        this.testing = testing;
     }
 
     public void sendEmail(String emailTo, final String emailSubject,
             final String emailBody) throws MessagingException, AddressException
     {
 
+    	if(testing) return;
+    	
         String[] languages = {"de","fr","en","it","eng","deu","fra","ita"};
         final Properties props = System.getProperties();
         props.put("mail.smtp.host", smtpServer);

@@ -82,7 +82,7 @@ public class ReusableObjectLogger
                 }
 
                 @Override
-                public void sendEmail(ServiceContext arg0)
+                public void sendEmail(ServiceContext arg0, boolean testing)
                         throws AddressException, MessagingException
                 {
                     throw new MethodNotSupportedException(
@@ -159,14 +159,14 @@ public class ReusableObjectLogger
         return record.type().logger();
     }
 
-    public void sendEmail(ServiceContext context) throws AddressException, MessagingException
+    public void sendEmail(ServiceContext context, boolean testing) throws AddressException, MessagingException
     {
 
         if (messages.isEmpty()) {
             return;
         }
 
-        Email email = new Email(context);
+        Email email = new Email(context, testing);
         String emailSubject = "New potential shared metadata elements";
 
         String start = SimpleDateFormat.getDateTimeInstance().format(new Date(startTime));
