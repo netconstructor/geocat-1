@@ -104,7 +104,9 @@ public class Remove implements Service
 
     @SuppressWarnings("unchecked")
     private Element handleSharedUser(String id, Element params, ServiceContext context) throws Exception {
-        Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
+    	boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
+
+    	Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
         Element profileQuery = dbms.select("Select profile from users where id=?",Integer.parseInt(id));
         
         if(!profileQuery.getChildren().isEmpty()) {
@@ -116,7 +118,7 @@ public class Remove implements Service
         
         if(type != Type.NORMAL && !Boolean.parseBoolean(Util.getParam(params, "forceDelete", "false"))) {
             String msg = LangUtils.loadString("reusable.rejectDefaultMsg", context.getAppPath(), context.getLanguage());
-            return new Reject().reject(context, ReusableTypes.contacts, new String[]{id}, msg, null);
+            return new Reject().reject(context, ReusableTypes.contacts, new String[]{id}, msg, null, testing);
         }
         return null;
     }

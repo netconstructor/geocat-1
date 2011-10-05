@@ -69,7 +69,8 @@ public class Manager implements Service {
 		String id = params.getChildText(Params.ID);
 		String name = params.getChildText(Params.NAME);
 		String version = params.getChildText(Params.VERSION);
-
+		boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
+		
 		Dbms dbms = (Dbms) context.getResourceManager()
 				.open(Geonet.Res.MAIN_DB);
 
@@ -79,7 +80,7 @@ public class Manager implements Service {
 		if (action.equals("DELETE")) {
 	        if(!Boolean.parseBoolean(Util.getParam(params, "forceDelete", "false"))) {
 	            String msg = LangUtils.loadString("reusable.rejectDefaultMsg", context.getAppPath(), context.getLanguage());
-	            return new Reject().reject(context, ReusableTypes.formats, new String[]{id}, msg, null);
+	            return new Reject().reject(context, ReusableTypes.formats, new String[]{id}, msg, null, testing);
 	        } else {
     			dbms.execute("DELETE FROM Formats WHERE id=" + id);
     			elRes.addContent(new Element(Jeeves.Elem.OPERATION)

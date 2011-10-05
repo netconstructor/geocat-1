@@ -70,7 +70,7 @@ public class Delete implements Service
     {
         final GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         final ExtentManager extentMan = gc.getExtentManager();
-
+        boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
         final String selection = Util.getParamText(params, SELECTION);
 
         if (selection != null && Boolean.parseBoolean(selection)) {
@@ -80,7 +80,7 @@ public class Delete implements Service
         if(!Boolean.parseBoolean(Util.getParam(params, "forceDelete", "false"))) {
             final String id = Util.getParamText(params, ID);
             String msg = LangUtils.loadString("reusable.rejectDefaultMsg", context.getAppPath(), context.getLanguage());
-            return new Reject().reject(context, ReusableTypes.extents, new String[]{id}, msg, null);
+            return new Reject().reject(context, ReusableTypes.extents, new String[]{id}, msg, null, testing);
         } else {
             return deleteSingle(params, extentMan);
         }
@@ -119,6 +119,7 @@ public class Delete implements Service
     private Element deleteSelection(Element params, ExtentSelection selection, ExtentManager extentMan,
             ServiceContext context) throws Exception
     {
+    	boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
         Element element = new Element("success");
 
         FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
@@ -147,7 +148,7 @@ public class Delete implements Service
 
                 if (!featureType.equals(currentType)) {
                     if (currentType != null) {
-                        doDelete(filterFactory, currentType, ids, context);
+                        doDelete(filterFactory, currentType, ids, context, testing);
                     }
                     ids = new HashSet<String>();
                     currentType = featureType;
@@ -156,7 +157,7 @@ public class Delete implements Service
                 ids.add(id.two());
             }
             if (currentType != null) {
-                doDelete(filterFactory, currentType, ids, context);
+                doDelete(filterFactory, currentType, ids, context, testing);
             }
             ids.clear();
             element.setText("Deleted " + array.length + " extents");
@@ -165,12 +166,12 @@ public class Delete implements Service
         return element;
     }
 
-    private void doDelete(FilterFactory2 filterFactory, FeatureType currentType, Set<String> ids, ServiceContext context)
+    private void doDelete(FilterFactory2 filterFactory, FeatureType currentType, Set<String> ids, ServiceContext context, boolean testing)
             throws Exception
     {
 
         String msg = "";// TODO
-        new Reject().reject(context, ReusableTypes.extents, ids.toArray(new String[0]), msg, currentType.typename);
+        new Reject().reject(context, ReusableTypes.extents, ids.toArray(new String[0]), msg, currentType.typename, testing);
         // java.util.List<Filter> filters = new ArrayList<Filter>();
         // for (String id : ids) {
         // filters.add(currentType.createFilter(id));

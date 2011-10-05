@@ -57,7 +57,8 @@ public class DeleteElement implements Service {
     public Element exec(Element params, ServiceContext context) throws Exception {
         GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         UserSession session = context.getUserSession();
-
+        boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
+        
         // Retrieve thesaurus
         String sThesaurusName = Util.getParam(params, "pThesaurus");
         
@@ -66,7 +67,7 @@ public class DeleteElement implements Service {
                 String msg = LangUtils.loadString("reusable.rejectDefaultMsg", context.getAppPath(), context.getLanguage());
 
                 String id = Util.getParam(params, "id", "");
-                return new Reject().reject(context, ReusableTypes.keywords, new String[]{id}, msg, null);
+                return new Reject().reject(context, ReusableTypes.keywords, new String[]{id}, msg, null, testing);
             }
         }
         
