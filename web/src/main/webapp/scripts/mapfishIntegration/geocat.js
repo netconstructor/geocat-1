@@ -1283,7 +1283,8 @@ var geocat = {
             }, Keyword),
             proxy: new Ext.data.HttpProxy({
                 url: geocat.baseUrl + "srv/" + geocat.language + "/portal.search",
-                method:'post'
+                method:'GET',
+				disableCaching: false
             })
         });
         keywordStore.add(new Keyword({name: translate('any'), value: ''}));
@@ -1756,7 +1757,11 @@ var geocat = {
                                     geocat.metadataWindow = null;
                                 },
                                 show: function(){
-                                    searchTools.initMapDiv();
+                                    if(extentMap) {
+										extentMap.initMapDiv();
+									} else {
+										searchTools.initMapDiv();
+									}
                                 }
                             }
                         });

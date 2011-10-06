@@ -105,6 +105,7 @@
 				                autoHeight: true,
 				                border: false
 				            },
+							initMapDivs: searchTools.initMapDiv,
 						    extraSetup : function() {},
 						    loadingElemId : "loadingMask"
 						};
