@@ -32,14 +32,14 @@ var searchTools = {
     doCSWQueryFromForm: function(formId, url, recordNum, onSuccess, onFailure, addFilters) {
         OpenLayers.Request.GET({
             url: 'metadata.select?selected=remove-all',
-            success: searchTools.execCswQuery(formId,url,recordNum, onSuccess, onFailure, addFilters),
-            failure: searchTools.execCswQuery(formId,url,recordNum, onSuccess, onFailure, addFilters)
+            success: function(){searchTools.execCswQuery(formId,url,recordNum, onSuccess, onFailure, addFilters)},
+            failure: function(){searchTools.execCswQuery(formId,url,recordNum, onSuccess, onFailure, addFilters)}
         });
     },
     execCswQuery: function(formId, url, recordNum, onSuccess, onFailure, addFilters) {
         var query = searchTools.buildCSWQueryFromForm(searchTools.cswMethod, Ext.getCmp(formId), recordNum, geocat.sortBy, addFilters);
         if (searchTools.cswMethod == 'POST') {
-            var getQuery = searchTools.buildCSWQueryFromForm('GET', Ext.getCmp(formId), recordNum, geocat.sortBy, addFilters);
+            var getQuery = searchTools.buildCSWQueryFromForm('POST', Ext.getCmp(formId), recordNum, geocat.sortBy, addFilters);
             OpenLayers.Request.POST({
                 url: url,
                 data: query,

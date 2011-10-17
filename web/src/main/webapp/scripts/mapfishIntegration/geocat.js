@@ -2311,7 +2311,7 @@ var geocat = {
                '    </xsl:if>' +
                '  </xsl:template>' +
                '  <xsl:template match="' + elem + '[/csw:GetRecordsResponse/geonet:Summary/@count != @count ]" mode="' + elem + '">' +
-               '    <xsl:variable name="xname"><xsl:call-template name="unquote"><xsl:with-param name="val" select="@value"/></xsl:call-template></xsl:variable>'+
+               '    <xsl:variable name="xname"><xsl:call-template name="unquote"><xsl:with-param name="val" select="@name"/></xsl:call-template></xsl:variable>'+
                '    <li><a href=\'javascript:geocat.refine("' + translate(categoryLabel) + '","' + queryTerm + '", "{$xname}")\'>' + labelFormat + '</a></li>' +
                '  </xsl:template>';
     },
