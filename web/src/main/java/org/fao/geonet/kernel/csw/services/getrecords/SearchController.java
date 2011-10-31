@@ -169,13 +169,15 @@ public class SearchController
         }
 		Element info = res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE);
 		String schema = info.getChildText(Edit.Info.Elem.SCHEMA);
-
+		String fullSchema = schema;
+		
+    boolean isCHE = schema.equals("iso19139.che") && OutputSchema.CHE_PROFILE == outSchema;
 			// PMT GeoCat c2c : Backported from old geocat
 			if (schema.contains("iso19139"))
 				schema = "iso19139";
 
-			// Return metadata in their own schema
-			if (outSchema != OutputSchema.OWN) {
+			// convert metadata to outputSchema
+			if (outSchema != OutputSchema.OWN && !isCHE) {
 
 				String FS = File.separator;
 
@@ -192,6 +194,15 @@ public class SearchController
 							+ "ISO19115-to-ISO19139.xsl");
 					schema = "iso19139";
 				}
+
+				if (fullSchema.equals("iso19139.che")) {
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("lang", context.getLanguage());
+					params.put("includeInfo", "true");
+
+					res = Xml.transform(res, context.getAppPath() + "xsl" + FS
+							+ "conversion" + FS + "export" + FS + "xml_iso19139.xsl", params);
+			  }
 
 				// --- skip metadata with wrong schemas
 				if (schema.equals("fgdc-std") || schema.equals("dublin-core")

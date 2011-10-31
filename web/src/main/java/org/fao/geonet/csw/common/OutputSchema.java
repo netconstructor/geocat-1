@@ -33,7 +33,7 @@ public enum OutputSchema
 		if (schema.equals(ISO_PROFILE.toString())) return ISO_PROFILE;
 		if (schema.equals(GM03_PROFILE.toString())) return GM03_PROFILE;
 		if (schema.equals("http://www.geocat.ch/2008/gm03_2")) return GM03_PROFILE;
-        if (schema.equals(OWN.toString()))		return OWN;
+        if (schema.equalsIgnoreCase(OWN.toString()))		return OWN;
         //
 		if (schema.equals("csw:Record"))		return OGC_CORE;
 		if (schema.equals("csw:IsoRecord")) return ISO_PROFILE;

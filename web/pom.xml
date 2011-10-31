@@ -888,4 +888,18 @@ Python and Latex are required to build the documentation. -->
     <widgets.webapp.resources></widgets.webapp.resources>
     <system.specific.overrides></system.specific.overrides>
   </properties>
+
+  <repositories>
+	<repository>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>localGeoNetwork_web</id>
+      <name>GeoNetwork local repository</name>
+      <url>file://${basedir}/../maven_repo</url>
+    </repository>
+  </repositories>
 </project>
