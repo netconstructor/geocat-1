@@ -1,0 +1,11 @@
+== How-to build doc ? ==
+
+easy_install Sphynx
+easy_install JSTools
+ant
+
+== More information ==
+
+Based on http://heron-mc.org/ build doc mechanism.
+
+
