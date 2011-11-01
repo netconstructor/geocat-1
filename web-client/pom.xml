@@ -81,7 +81,7 @@
           <nomunge>true</nomunge>
           <jswarn>${minify.verbose}</jswarn>
           <excludes>
-            <exclude>src/main/resources/apps/js/GeoNetwork-mini.js</exclude>
+            <exclude>src/main/resources/apps/js/GeoNetwork-mini*.js</exclude>
             <exclude>src/main/resources/apps/search/js/App-mini.js</exclude>
             <exclude>**/GeoExt/examples/*.js</exclude>
             <exclude>**/ext/**/*.js</exclude>
@@ -90,7 +90,7 @@
           </excludes>
           <aggregations>
             <aggregation>
-              <output>src/main/resources/apps/js/GeoNetwork-mini.js</output>
+              <output>src/main/resources/apps/js/GeoNetwork-mini-nomap.js</output>
               <includes>
                 <include>${project.build.directory}/classes/apps/js/ext-ux/TwinTriggerComboBox/TwinTriggerComboBox.js</include>
                 <include>${project.build.directory}/classes/apps/js/ext-ux/Rating/RatingItem.js</include>
@@ -100,7 +100,7 @@
                 <include>${project.build.directory}/classes/apps/js/ext-ux/MultiselectItemSelector-3.0/DDView.js</include>
                 <include>${project.build.directory}/classes/apps/js/ext-ux/MultiselectItemSelector-3.0/Multiselect.js</include>
                 <include>${project.build.directory}/classes/apps/js/ext-ux/LightBox/lightbox.js</include>
-
+                <include>${project.build.directory}/classes/apps/js/ext-ux/SuperBoxSelect/SuperBoxSelect.js</include>
 
                 <include>${project.build.directory}/classes/apps/js/proj4js-compressed.js</include>
 
@@ -276,13 +276,19 @@
 
                 <include>${project.build.directory}/classes/apps/js/GeoExt-ux/LayerOpacitySliderPlugin/LayerOpacitySliderPlugin.js</include>
 
-
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/SingleFile.js</include>
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/lang/de.js</include>
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/lang/en.js</include>
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/lang/fr.js</include>
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/lang/nl.js</include>
+                
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/Util.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/Catalogue.js</include>
 
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/HelpTools.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/SearchTools.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/Old.js</include>
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/INSPIRESearchFormTools.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/SearchFormTools.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/CSWSearchTools.js</include>
 
@@ -312,11 +318,6 @@
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/form/GeometryMapField.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/form/OpenSearchSuggestionTextField.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/form/SearchField.js</include>
-
-                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/lang/de.js</include>
-                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/lang/en.js</include>
-                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/lang/fr.js</include>
-                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/lang/nl.js</include>
 
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/widgets/LoginForm.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/widgets/MetadataMenu.js</include>
@@ -353,11 +354,17 @@
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/widgets/OGCServiceQuickRegister.js</include>
 
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/ExtentMap.js</include>
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/Control/ZoomWheel.js</include>
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/Control/ExtentBox.js</include>
+              </includes>
+            </aggregation>
+            <aggregation>
+              <output>src/main/resources/apps/js/GeoNetwork-mini.js</output>
+              <includes>
+                <include>GeoNetwork-mini-nomap.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/core/OGCUtil.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/core/CatalogueInterface.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/core/WMCManager.js</include>
-                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/Control/ExtentBox.js</include>
-                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/Control/ZoomWheel.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/widgets/tree/WMSListGenerator.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/widgets/tree/WMSTreeGenerator.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/widgets/wms/BrowserPanel.js</include>
@@ -381,7 +388,7 @@
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/windows/LayerStyles.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/windows/WmsLayerMetadata.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/map/windows/WMSTime.js</include>
-
+                
               </includes>
             </aggregation>
             <aggregation>

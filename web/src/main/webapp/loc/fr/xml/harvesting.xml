@@ -67,9 +67,17 @@
 		<long>Moissonnage de système de fichier local</long>
 	</info>
 	
+	<info type="z3950Config">
+		<short>Z3950 Server Config Harvesting</short>
+		<long>Z3950 Server Configuration Harvesting</long>
+	</info>
+
     <!-- Editing form - - - - - - - - - - - - - - - - - - - - - - -->
 	
 	<site>Site</site>
+
+	<category>Category</category>
+	<clearConfig>Clear Z3950 Server Configuration</clearConfig>
 
 	<wxstype>Type of OGC webservice</wxstype>
     <wxstypes>
@@ -96,6 +104,10 @@
     <serviceCategory>Catégorie pour les métadonnées de services</serviceCategory>
     <datasetCategory>Catégorie pour les métadonnées de données</datasetCategory>
     
+	<returnedSets>OAI provider sets</returnedSets>
+	<returnedPrefixes>OAI provider prefixes</returnedPrefixes>
+	<retrieveSetsPrefixes>Retrieve Sets/Prefixes</retrieveSetsPrefixes>
+    
 	<host>Hôte</host>
 	<port>Port</port>
 	<servlet>Servlet</servlet>
@@ -108,7 +120,8 @@
   
   <createRemoteCategory>Attribuer les catégories si elles existent localement</createRemoteCategory>
   <mefFormatFull>Utiliser le format MEF complet</mefFormatFull>
-  
+	
+	<xslfilter>Nom du filtre XSL</xslfilter>
 	<freeText>Texte libre</freeText>
 	<title>Titre</title>
 	<abstract>Résumé</abstract>
@@ -175,6 +188,8 @@
 	<run>Lancer</run>
 	<remove>Supprimer</remove>
 	<refresh>Rafraîchir</refresh>
+	<history>Historique</history>
+	<clone>Dupliquer</clone>
 	
 	<days>jours</days>
 	<hours>heures</hours>
@@ -269,6 +284,26 @@
 		<op id="6">Epingler</op>
 	</oper>
 	
+	<!-- history messages -->
+  <harvesterHistory>Harvester History</harvesterHistory>
+  <noHistory>No History</noHistory>
+  <dateDesc>Date (most recent first)</dateDesc>
+  <date>Date</date>
+  <detail>Detail</detail>
+  <grandTotal>Grand Total</grandTotal>
+  <counter>of</counter>
+  <totalHistory>Total history records:</totalHistory>
+  <viewAll>View All</viewAll>
+  <deleteHistory>Delete History</deleteHistory>
+  <harvestedNothing>Harvested Nothing</harvestedNothing>
+  <sortBy>Sort by:</sortBy>
+  <ok>Success</ok>
+  <deleted>Deleted</deleted>
+  <historyDeleted>Harvesting History Records Deleted:</historyDeleted>
+  <historyDeletedTitle>Harvesting History Record Delete Results</historyDeletedTitle>
+	<historyDeleteConfirm>Delete selected harvester history entries?</historyDeleteConfirm>
+  <backToHarvestManager>Back to Harvest Manager</backToHarvestManager>
+	
 	<!-- tooltips - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	
 	<statusTip>
@@ -303,6 +338,8 @@
 		<fragmentsReturned>Fragments Returned</fragmentsReturned>
 		<fragmentsMatched>Fragments Matched</fragmentsMatched>
 		<recordsBuilt>Records Built</recordsBuilt>
+		<incompatible>Incompatible</incompatible>
+		<couldNotInsert>Could not insert</couldNotInsert>
 	</tipHeader>
 	
 	<notRun>En attente du premier lancement</notRun>
@@ -311,13 +348,18 @@
 		<!-- geonetwork harvesting type - - - - - - - - - - - - - - - - - - - - - - -->
 		
 		<tip id="gn.name">
-			Generic name to identify the harvesting node
+			Nom générique pour identifier le point de moissonnage
 		</tip>
 		
 		<tip id="gn.host">
-			The remote host you want to connect to
+			Le nom d'hôte (www.monorganisation.org) ou son IP
 		</tip>
 		
+		<tip id="gn.xslfilter">
+			Le nom du filtre XSL à appliquer aux métadonnées moissonnées. Le filtre doit être
+			enregistré dans les processus des schémas par l'administrateur du catalogue. 
+			Si le filtre n'est pas trouvé, aucun filtre n'est appliqué.
+		</tip>
 		<tip id="gn.retrieveSources">
 			Specify <i>host</i>, <i>port</i> and <i>servlet</i> parameters and then press this button to 
 			retrieve all sources known to the remote node.

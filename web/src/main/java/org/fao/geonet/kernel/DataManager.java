@@ -81,6 +81,7 @@ import org.fao.geonet.util.ThreadUtils;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.filter.ElementFilter;
 
@@ -440,20 +441,20 @@ public class DataManager {
             if (XmlSerializer.resolveXLinks()) {
                 List<Attribute> xlinks = Processor.getXLinks(md);
                 if (xlinks.size() > 0) {
-                    moreFields.add(makeField("_hasxlinks", "1", true, true, false));
+                    moreFields.add(SearchManager.makeField("_hasxlinks", "1", true, true));
                     StringBuilder sb = new StringBuilder();
                     for (Attribute xlink : xlinks) {
                         sb.append(xlink.getValue()); sb.append(" ");
                     }
-                    moreFields.add(makeField("_xlink", sb.toString(), true, true, false));
+                    moreFields.add(SearchManager.makeField("_xlink", sb.toString(), true, true));
                     Processor.processXLink(md,servContext); 
                 }
                 else {
-                    moreFields.add(makeField("_hasxlinks", "0", true, true, false));
+                    moreFields.add(SearchManager.makeField("_hasxlinks", "0", true, true));
                 }
             }
             else {
-                moreFields.add(makeField("_hasxlinks", "0", true, true, false));
+                moreFields.add(SearchManager.makeField("_hasxlinks", "0", true, true));
             }
 
             
@@ -461,22 +462,22 @@ public class DataManager {
             Log.debug(Geonet.DATA_MANAGER, "record schema (" + schema + ")"); //DEBUG
             Log.debug(Geonet.DATA_MANAGER, "record createDate (" + createDate + ")"); //DEBUG
 
-            moreFields.add(makeField("_root",        root,        true, true, false));
-            moreFields.add(makeField("_schema",      schema,      true, true, false));
-            moreFields.add(makeField("_createDate",  createDate,  true, true, false));
-            moreFields.add(makeField("_changeDate",  changeDate,  true, true, false));
-            moreFields.add(makeField("_source",      source,      true, true, false));
-            moreFields.add(makeField("_isTemplate",  isTemplate,  true, true, false));
-            moreFields.add(makeField("_title",       title,       true, true, false));
-            moreFields.add(makeField("_uuid",        uuid,        true, true, true));
-            moreFields.add(makeField("_isHarvested", isHarvested, true, true, false));
-            moreFields.add(makeField("_owner",       owner,       true, true, false));
-            moreFields.add(makeField("_dummy",       "0",        false, true, false));
-            moreFields.add(makeField("_popularity",  popularity,  true, true, false));
-            moreFields.add(makeField("_rating",      rating,      true, true, false));
+            moreFields.add(SearchManager.makeField("_root",        root,        true, true));
+            moreFields.add(SearchManager.makeField("_schema",      schema,      true, true));
+            moreFields.add(SearchManager.makeField("_createDate",  createDate,  true, true));
+            moreFields.add(SearchManager.makeField("_changeDate",  changeDate,  true, true));
+            moreFields.add(SearchManager.makeField("_source",      source,      true, true));
+            moreFields.add(SearchManager.makeField("_isTemplate",  isTemplate,  true, true));
+            moreFields.add(SearchManager.makeField("_title",       title,       true, true));
+            moreFields.add(SearchManager.makeField("_uuid",        uuid,        true, true));
+            moreFields.add(SearchManager.makeField("_isHarvested", isHarvested, true, true));
+            moreFields.add(SearchManager.makeField("_owner",       owner,       true, true));
+            moreFields.add(SearchManager.makeField("_dummy",       "0",        false, true));
+            moreFields.add(SearchManager.makeField("_popularity",  popularity,  true, true));
+            moreFields.add(SearchManager.makeField("_rating",      rating,      true, true));
 
             if (groupOwner != null)
-                moreFields.add(makeField("_groupOwner", groupOwner, true, true, false));
+                moreFields.add(SearchManager.makeField("_groupOwner", groupOwner, true, true));
 
             // get privileges
             List operations = dbms
@@ -488,12 +489,12 @@ public class DataManager {
                 Element operation = (Element) operation1;
                 String groupId = operation.getChildText("groupid");
                 String operationId = operation.getChildText("operationid");
-                moreFields.add(makeField("_op" + operationId, groupId, true, true, false));
+                moreFields.add(SearchManager.makeField("_op" + operationId, groupId, true, true));
                 if(groupId.equals("1") && operationId.equals("0")) {
                     toPublish = false;
                 }
             }
-            moreFields.add(makeField("toPublish", toPublish?"y":"n", true, true, false));
+            moreFields.add(SearchManager.makeField("toPublish", toPublish?"y":"n", true, true));
 
             // get categories
             List categories = dbms
@@ -503,7 +504,7 @@ public class DataManager {
             for (Object category1 : categories) {
                 Element category = (Element) category1;
                 String categoryName = category.getChildText("name");
-                moreFields.add(makeField("_cat", categoryName, true, true, false));
+                moreFields.add(SearchManager.makeField("_cat", categoryName, true, true));
             }
 
             // getValidationInfo
@@ -514,7 +515,7 @@ public class DataManager {
                                              .select("SELECT valType, status FROM Validation WHERE metadataId = ?", id$)
                                                  .getChildren();
             if (validationInfo.size() == 0) {
-                moreFields.add(makeField("_valid", "-1", true, true, false));
+                moreFields.add(SearchManager.makeField("_valid", "-1", true, true));
             }
             else {
                 String isValid = "1";
@@ -525,9 +526,9 @@ public class DataManager {
                     if ("0".equals(status)) {
                         isValid = "0";
                     }
-                    moreFields.add(makeField("_valid_" + type, status, true, true, false));
+                    moreFields.add(SearchManager.makeField("_valid_" + type, status, true, true));
                 }
-                moreFields.add(makeField("_valid", isValid, true, true, false));
+                moreFields.add(SearchManager.makeField("_valid", isValid, true, true));
             }
             if (indexGroup) {
                 searchMan.indexGroup(schemaMan.getSchemaDir(schema), md, id, moreFields, isTemplate, title);
@@ -565,27 +566,7 @@ public class DataManager {
 		searchMan.disableOptimizer();
 	}
 
-    /**
-     *
-     * @param name
-     * @param value
-     * @param store
-     * @param index
-     * @param token
-     * @return
-     */
-	private static Element makeField(String name, String value, boolean store,
-												boolean index, boolean token) {
-		Element field = new Element("Field");
 
-		field.setAttribute("name",   name);
-		field.setAttribute("string", value);
-		field.setAttribute("store",  store+"");
-		field.setAttribute("index",  index+"");
-		field.setAttribute("token",  token+"");
-
-		return field;
-	}
 
 	//--------------------------------------------------------------------------
 	//---
@@ -904,7 +885,7 @@ public class DataManager {
      * @return
      * @throws Exception
      */
-	private synchronized Element getXSDXmlReport(String schema, Element md) throws Exception {
+	private synchronized Element getXSDXmlReport(String schema, Element md) {
 		// NOTE: this method assumes that enumerateTree has NOT been run on the metadata
 		ErrorHandler errorHandler = new ErrorHandler();
 		errorHandler.setNs(Edit.NAMESPACE);
@@ -932,7 +913,13 @@ public class DataManager {
 				message = "\\n" + message;
 
 				//-- get the element from the xpath and add the error message to it 
-				Element elem = Xml.selectElement(md, xpath, schemaNamespaces);
+				Element elem = null;
+				try {
+					elem = Xml.selectElement(md, xpath, schemaNamespaces);
+				} catch (JDOMException je) {
+					je.printStackTrace();
+					Log.error(Geonet.DATA_MANAGER,"Attach xsderror message to xpath "+xpath+" failed: "+je.getMessage());
+				}
 				if (elem != null) {
 					String existing = elem.getAttributeValue("xsderror",Edit.NAMESPACE);
 					if (existing != null) message = existing + message;
@@ -976,6 +963,26 @@ public class DataManager {
 		md.detach();
 
 		return uuid;
+	}
+
+
+    /**
+     *
+     * @param schema
+     * @param md
+     * @return
+     * @throws Exception
+     */
+	public String extractDateModified(String schema, Element md) throws Exception {
+		String styleSheet = getSchemaDir(schema) + Geonet.File.EXTRACT_DATE_MODIFIED;
+		String dateMod    = Xml.transform(md, styleSheet).getText().trim();
+
+		Log.debug(Geonet.DATA_MANAGER, "Extracted Date Modified '"+ dateMod +"' for schema '"+ schema +"'");
+
+		//--- needed to detach md from the document
+		md.detach();
+
+		return dateMod;
 	}
 
     /**
@@ -1370,9 +1377,9 @@ public class DataManager {
 		//--- generate a new metadata id
 		int serial = sf.getSerial(dbms, "Metadata");
 		
-		// Update fixed info for metadata record only
+		// Update fixed info for metadata record only, not for subtemplates
 		Element xml = Xml.loadString(data, false);
-		if (isTemplate.equals('n')) {
+		if (!isTemplate.equals("s")) {
 		    xml = updateFixedInfo(schema, Integer.toString(serial), uuid, xml, parentUuid, DataManager.UpdateDatestamp.yes, dbms);
 		}
 		
@@ -1690,6 +1697,79 @@ public class DataManager {
     }
 
 	/**
+	 * Used by harvesters that need to validate metadata.
+	 * 
+	 * @param dbms connection to database
+	 * @param schema name of the schema to validate against
+	 * @param id metadata id - used to record validation status
+	 * @param doc metadata document as JDOM Document not JDOM Element
+	 * @param lang Language from context
+	 * @return
+	 */
+	public boolean doValidate(Dbms dbms, String schema, String id, Document doc, String lang) {
+		HashMap <String, Integer[]> valTypeAndStatus = new HashMap<String, Integer[]>();
+		boolean valid = true;
+
+		if (doc.getDocType() != null) {
+      Log.debug(Geonet.DATA_MANAGER, "Validating against dtd " + doc.getDocType());
+			
+			// if document has a doctype then validate using that (assuming that the
+			// dtd is either mapped locally or will be cached after first validate)
+			try {
+				Xml.validate(doc);
+				Integer[] results = {1, 0, 0};
+				valTypeAndStatus.put("dtd", results);
+      	Log.debug(Geonet.DATA_MANAGER, "Valid.");
+			} catch (Exception e) {
+				e.printStackTrace();
+				Integer[] results = {0, 0, 0};
+				valTypeAndStatus.put("dtd", results);
+      	Log.debug(Geonet.DATA_MANAGER, "Invalid.");
+				valid = false;
+			}
+		} else {                    
+      Log.debug(Geonet.DATA_MANAGER, "Validating against XSD " + schema);
+			// do XSD validation
+			Element md = doc.getRootElement();
+    	Element xsdErrors = getXSDXmlReport(schema,md);
+    	if (xsdErrors != null && xsdErrors.getContent().size() > 0) {
+     		Integer[] results = {0, 0, 0};
+     		valTypeAndStatus.put("xsd", results);
+      	Log.debug(Geonet.DATA_MANAGER, "Invalid.");
+				valid = false;
+    	} else {
+     		Integer[] results = {1, 0, 0};
+     		valTypeAndStatus.put("xsd", results);
+      	Log.debug(Geonet.DATA_MANAGER, "Valid.");
+    	}	
+			// then do schematron validation
+			Element schematronError = null;
+			try {
+				editLib.enumerateTree(md);
+     		schematronError = getSchemaTronXmlReport(schema, md, lang, valTypeAndStatus);
+     		editLib.removeEditingInfo(md);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Log.error(Geonet.DATA_MANAGER, "Could not run schematron validation on metadata "+id+": "+e.getMessage());
+				valid = false;
+			}
+			if (schematronError != null && schematronError.getContent().size() > 0) {
+				valid = false;
+			}
+		}
+
+		// now save the validation status
+		try {
+			saveValidationStatus(dbms, id, valTypeAndStatus, new ISODate().toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.error(Geonet.DATA_MANAGER, "Could not save validation status on metadata "+id+": "+e.getMessage());
+		}
+
+		return valid;
+	}
+
+	/**
 	 * Used by the validate embedded service. The validation report is stored in the session.
 	 * 
 	 * @param session
@@ -1947,7 +2027,7 @@ public class DataManager {
      * @param file
      * @throws Exception
      */
-	public void setThumbnail(Dbms dbms, String id, boolean small, String file) throws Exception {
+	public void setThumbnail(ServiceContext context, String id, boolean small, String file) throws Exception {
 		int    pos = file.lastIndexOf('.');
 		String ext = (pos == -1) ? "???" : file.substring(pos +1);
 
@@ -1955,7 +2035,7 @@ public class DataManager {
 		env.addContent(new Element("file").setText(file));
 		env.addContent(new Element("ext").setText(ext));
 
-		manageThumbnail(dbms, id, small, env, Geonet.File.SET_THUMBNAIL);
+		manageThumbnail(context, id, small, env, Geonet.File.SET_THUMBNAIL);
 	}
 
     /**
@@ -1965,10 +2045,10 @@ public class DataManager {
      * @param small
      * @throws Exception
      */
-	public void unsetThumbnail(Dbms dbms, String id, boolean small) throws Exception {
+	public void unsetThumbnail(ServiceContext context, String id, boolean small) throws Exception {
 		Element env = new Element("env");
 
-		manageThumbnail(dbms, id, small, env, Geonet.File.UNSET_THUMBNAIL);
+		manageThumbnail(context, id, small, env, Geonet.File.UNSET_THUMBNAIL);
 	}
 
     /**
@@ -1980,15 +2060,18 @@ public class DataManager {
      * @param styleSheet
      * @throws Exception
      */
-	private void manageThumbnail(Dbms dbms, String id, boolean small, Element env,
+	private void manageThumbnail(ServiceContext context, String id, boolean small, Element env,
 										  String styleSheet) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
+		
+        boolean forEditing = false, withValidationErrors = false, keepXlinkAttributes = true;
+        Element md = getMetadata(context, id, forEditing, withValidationErrors, keepXlinkAttributes);
 
 		if (md == null)
 			return;
 
 		md.detach();
-
+		
+		Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
 		String schema = getMetadataSchema(dbms, id);
 
 		//--- remove thumbnail from metadata

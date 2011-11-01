@@ -35,6 +35,13 @@ GeoNetwork.Settings.editor = {
 //    defaultViewMode : 'inspire'
 };
 
+// Define if default mode should be used for HTML print output instead of tabs only
+GeoNetwork.printDefaultForTabs = false;
+
+// Define if label needs to be displayed for login form next to username/password fields
+GeoNetwork.hideLoginLabels = true;
+
+
 // Define which type of search to use
 // Default mode
 GeoNetwork.Settings.mdStore = GeoNetwork.data.MetadataResultsStore();

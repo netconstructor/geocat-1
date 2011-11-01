@@ -27,14 +27,16 @@ Ext.namespace('GeoNetwork.data');
  *  class = ThesaurusStore
  */
 /** api: method[ThesaurusStore]
- *   A pre-configured `Ext.data.Store <http://extjs.com/deploy/dev/docs/?class=Ext.data.Store>`_
- *   for GeoNetwork thesaurus.
+ *  A pre-configured `Ext.data.Store <http://extjs.com/deploy/dev/docs/?class=Ext.data.Store>`_
+ *  for GeoNetwork SKOS thesaurus.
  *
  *  :param url: ``String`` Usually the xml.thesaurus.getList service URL.
  */
 GeoNetwork.data.ThesaurusStore = function(config){
     var DataRecord = Ext.data.Record.create([{
         name: 'filename'
+    }, {
+        name: 'title'
     }, {
         name: 'theme',
         mapping: 'dname'
@@ -56,7 +58,7 @@ GeoNetwork.data.ThesaurusStore = function(config){
             field: 'id',
             direction: 'ASC'
         },
-        fields: ['filename', 'theme', 'id', 'type', 'activated']
+        fields: ['filename', 'theme', 'id', 'title', 'type', 'activated']
     });
     
     if (config.allOption) {

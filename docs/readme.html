@@ -74,9 +74,11 @@
 	
 	<h3>Database system </h3>
 
-	<p>GeoNetwork desktop comes with an internal DBMS server, the <a href="http://mckoi.com/database/">McKoi</a> SQL database.</p>
+	<p>GeoNetwork desktop comes with an internal DBMS server, the <a href="http://www.h2database.com">H2</a> Java SQL database.</p>
 	
-	<p>If you plan to use another DBMS you can use GAST to setup the database and migrate the content from the McKoi embedded database. Make sure that the DBMS is already up and running with a database schema and a user. Select the DBMS using the GAST tool. Oracle, MySQL and PostgreSQL are currently supported. GeoNetwork uses the JDBC interface to work with the DBMS, so other DBMS systems may also work.</p>
+	<p>If you plan to use another DBMS you can simply change the database connection using GAST. The tables will automatically be created in the new database schema if it is still empty. If you are upgrading a Geonetwork instance, the required changes to tables will also automatically be applied on startup of GeoNetwork.</p>
+
+	<p>Select the DBMS using the GAST tool. Oracle, MySQL and PostgreSQL are currently supported. GeoNetwork uses the JDBC interface to work with the DBMS, so other DBMS systems may also work.</p>
 	
 	<p>You can also configure the DBMS manually, although this is more complex (See the community website for details)</p>
 

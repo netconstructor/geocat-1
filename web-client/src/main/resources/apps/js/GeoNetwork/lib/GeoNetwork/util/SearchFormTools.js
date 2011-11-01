@@ -37,9 +37,6 @@ Ext.namespace("GeoNetwork.util");
  *                items : GeoNetwork.SearchFormTools.getAdvancedFormFields(catalogue.services),
  *               ...
  *
- *
- *
- *  TODO : Add INSPIRE fields
  *  TODO : Add distributed search
  *
  */
@@ -60,14 +57,25 @@ GeoNetwork.util.SearchFormTools = {
                 minChars: 2,
                 loadingText: '...',
                 hideTrigger: true,
-                url: services.opensearchSuggest
+                url: services.opensearchSuggest,
+                listeners: {
+//                      TODO : Unable field tooltips
+//                    'afterrender': function () {
+//                        new Ext.ToolTip({
+//                            target: "E_any",
+//                            anchor: 'bottom',
+//                            anchorOffset: 15,
+//                            html: OpenLayers.i18n('anyTT')
+//                        });
+//                    }
+                }
             }));
         } else {
             fields.push(GeoNetwork.util.SearchFormTools.getFullTextField());
         }
         
         if (withTypes) {
-            fields.push(GeoNetwork.util.SearchFormTools.getTypesField(typeCodelist));
+            fields.push(GeoNetwork.util.SearchFormTools.getTypesField(typeCodelist, true));
         }
         
         if (layers) {
@@ -78,7 +86,9 @@ GeoNetwork.util.SearchFormTools = {
         return fields;
     },
     /** api:method[getAdvancedFormFields]
+     *  
      *  :param services: Optional GeoNetwork services URL used for OpenSearch suggestion URL. If not defined, no suggestion fields.
+     *  
      *  :return: A GeoNetwork advanced form
      *
      *  Create a advanced form
@@ -205,7 +215,7 @@ GeoNetwork.util.SearchFormTools = {
         var catalogueField = GeoNetwork.util.SearchFormTools.getCatalogueField(services.getSources, services.logoUrl);
         var groupField = GeoNetwork.util.SearchFormTools.getGroupField(services.getGroups);
         var metadataTypeField = GeoNetwork.util.SearchFormTools.getMetadataTypeField();
-        var categoryField = GeoNetwork.util.SearchFormTools.getCategoryField(services.getCategories);
+        var categoryField = GeoNetwork.util.SearchFormTools.getCategoryField(services.getCategories, null, true);
         
         var options = GeoNetwork.util.SearchFormTools.getOptions();
         
@@ -216,8 +226,9 @@ GeoNetwork.util.SearchFormTools = {
         return fields;
     },
     /** api:method[getSimpleMap]
+     *  
      *  :return: An array of component with a hidden geometry field
-     *  and a simple map.
+     *    and a simple map.
      *
      *  Create simple map search field.
      *
@@ -251,7 +262,9 @@ GeoNetwork.util.SearchFormTools = {
         return fields;
     },
     /** api:method[getOptions]
+     *  
      *  :param hitsPerPageOptions: ``Array(String)``    List of options for hits per page field
+     *  
      *  :return: An options fieldset
      *
      *  Create option fields
@@ -292,6 +305,10 @@ GeoNetwork.util.SearchFormTools = {
         
         return options;
     },
+    /** api:method[getSortByCombo]
+     *  
+     *  Return a combo box with sort options
+     */
     getSortByCombo: function(){
         var sortByField = new Ext.form.TextField({
             name: 'E_sortBy',
@@ -323,6 +340,10 @@ GeoNetwork.util.SearchFormTools = {
         });
         return [sortByField, sortOrderField, combo];
     },
+    /** api:method[getSortByStore]
+     *  
+     *  Return an ArrayStore of sort options
+     */
     getSortByStore: function(){
         return new Ext.data.ArrayStore({
             id: 0,
@@ -398,82 +419,107 @@ GeoNetwork.util.SearchFormTools = {
     /** api:method[getCatalogueField]
      *  :return:
      *
-     *  Create catalogue combo
-     *  DataView
-     *  TODO : list from server
+     *  Create a combo for catalogue field
      */
-    getCatalogueField: function(url, logoUrl){
-        // TODO : make multiple selection
-        
-        var catStore = GeoNetwork.data.CatalogueSourceStore(url);
+    getCatalogueField: function(url, logoUrl, multi){
+        var catStore = GeoNetwork.data.CatalogueSourceStore(url),
+            tpl = '<tpl for="."><div class="x-combo-list-item logo"><img src="' + logoUrl + '{id}.gif"/>{name}</div></tpl>';
         catStore.load();
         
-        return new Ext.form.ComboBox({
-            name: 'E_siteId',
-            mode: 'local',
-            triggerAction: 'all',
-            fieldLabel: OpenLayers.i18n('catalogue'),
-            store: catStore,
-            valueField: 'id',
-            displayField: 'name',
-            tpl: '<tpl for="."><div class="x-combo-list-item logo"><img src="' + logoUrl + '{id}.gif"/>{name}</div></tpl>'
-        });
+        var config = {
+                name: 'E_siteId',
+                mode: 'local',
+                triggerAction: 'all',
+                fieldLabel: OpenLayers.i18n('catalogue'),
+                store: catStore,
+                valueField: 'id',
+                displayField: 'name',
+                tpl: tpl
+            };
+        
+        if (multi) {
+            Ext.apply(config, {
+                valueDelimiter: ' or ',
+                stackItems: true,
+                displayFieldTpl: '<img style="max-width:16px;" src="' + logoUrl + '{id}.gif"/>{name}'});
+            return new Ext.ux.form.SuperBoxSelect(config);
+        } else {
+            return new Ext.form.ComboBox(config);
+        }
     },
     /** api:method[getGroupField]
      *  :return: A group combo
      *
-     *  Create a list of group
-     *
-     *  TODO : list from server
+     *  Create a combo for group field
      */
-    getGroupField: function(url){
-        var groupStore = GeoNetwork.data.GroupStore(url);
+    getGroupField: function(url, multi){
+        var groupStore = GeoNetwork.data.GroupStore(url),
+            tpl = '<tpl for="."><div class="x-combo-list-item">{[values.label.' + OpenLayers.Lang.getCode() + ']}</div></tpl>';
         groupStore.load();
-        
-        return new Ext.form.ComboBox({
-            name: 'E_group',
-            mode: 'local',
-            triggerAction: 'all',
-            fieldLabel: OpenLayers.i18n('group'),
-            store: groupStore,
-            valueField: 'id',
-            displayField: 'name',
-            tpl: '<tpl for="."><div class="x-combo-list-item">{[values.label.' + OpenLayers.Lang.getCode() + ']}</div></tpl>'
-        });
+        var config = {
+                name: 'E_group',
+                mode: 'local',
+                triggerAction: 'all',
+                fieldLabel: OpenLayers.i18n('group'),
+                store: groupStore,
+                valueField: 'id',
+                displayField: 'name',
+                tpl: tpl
+            };
+        if (multi) {
+            Ext.apply(config, {
+                valueDelimiter: ' or ',
+                stackItems: true,
+                displayFieldTpl: '{[values.label.' + OpenLayers.Lang.getCode() + ']}'});
+            return new Ext.ux.form.SuperBoxSelect(config);
+        } else {
+            return new Ext.form.ComboBox(config);
+        }
     },
     /** api:method[getMetadataTypeField]
      *  :return: A metadata type combo
      *
      *  Create a combo with template or metadata options
      */
-    getMetadataTypeField: function(){
-        return new Ext.form.ComboBox({
-            name: 'E_template',
-            mode: 'local',
-            triggerAction: 'all',
-            fieldLabel: OpenLayers.i18n('kind'),
-            store: new Ext.data.ArrayStore({
-                id: 0,
-                fields: ['id', 'name'],
-                data: [['n', OpenLayers.i18n('md')], ['y', OpenLayers.i18n('tpl')]]
-            }),
-            valueField: 'id',
-            displayField: 'name'
-        });
+    getMetadataTypeField: function(multi){
+        var config = {
+                name: 'E_template',
+                mode: 'local',
+                triggerAction: 'all',
+                fieldLabel: OpenLayers.i18n('kind'),
+                store: new Ext.data.ArrayStore({
+                    id: 0,
+                    fields: ['id', 'name'],
+                    data: [['n', OpenLayers.i18n('md')], ['y', OpenLayers.i18n('tpl')]]
+                }),
+                valueField: 'id',
+                displayField: 'name'
+            };
+        if (multi) {
+            Ext.apply(config, {
+                valueDelimiter: ' or '
+                    });
+            return new Ext.ux.form.SuperBoxSelect(config);
+        } else {
+            return new Ext.form.ComboBox(config);
+        }
     },
     /** api:method[getCategoryField]
      *  :return: A category combobox
      *
      *  Create category combo
      *
-     *  TODO : retrieve from server
      */
-    getCategoryField: function(url, imgUrl){
+    getCategoryField: function(url, imgUrl, multi){
         var store = GeoNetwork.data.CategoryStore(url);
         
         store.load();
         
-        return new Ext.form.ComboBox({
+        var tpl = (imgUrl ?
+                '<tpl for="."><div class="x-combo-list-item"><img src="' + imgUrl + '{name}.png"/>{[values.label.' + OpenLayers.Lang.getCode() + ']}</div></tpl>':
+                '<tpl for="."><div class="x-combo-list-item">{[values.label.' + OpenLayers.Lang.getCode() + ']}</div></tpl>');
+        
+        var config = {
             name: 'E_category',
             mode: 'local',
             fieldLabel: OpenLayers.i18n('category'),
@@ -481,10 +527,20 @@ GeoNetwork.util.SearchFormTools = {
             store: store,
             valueField: 'name',
             displayField: 'name',
-            tpl: (imgUrl ?
-                '<tpl for="."><div class="x-combo-list-item"><img src="' + imgUrl + '{name}.png"/>{[values.label.' + OpenLayers.Lang.getCode() + ']}</div></tpl>':
-                '<tpl for="."><div class="x-combo-list-item">{[values.label.' + OpenLayers.Lang.getCode() + ']}</div></tpl>')
-        });
+            tpl: tpl
+        };
+        if (multi) {
+            var displaytpl = (imgUrl ?
+                    '<img src="' + imgUrl + '{name}.png"/>{[values.label.' + OpenLayers.Lang.getCode() + ']}':
+                    '{[values.label.' + OpenLayers.Lang.getCode() + ']}');
+            Ext.apply(config, {
+                valueDelimiter: ' or ',
+                stackItems: true,
+                displayFieldTpl: displaytpl});
+            return new Ext.ux.form.SuperBoxSelect (config);
+        } else {
+                return new Ext.form.ComboBox(config);
+        }
     },
     /** api:method[getAdvancedTextFields]
      *  :return: A fieldset with advanced text search
@@ -803,7 +859,7 @@ GeoNetwork.util.SearchFormTools = {
      *
      */
     getMapTypesField: function(){
-        var spatialTypes = GeoNetwork.util.SearchFormTools.getSpatialRepresentationTypeField();
+        var spatialTypes = GeoNetwork.util.SearchFormTools.getSpatialRepresentationTypeField(null, true);
         
         return [{
             hideLabel: true,
@@ -828,51 +884,63 @@ GeoNetwork.util.SearchFormTools = {
      *  :return: Validation status field
      *
      */
-    getValidField: function(){
-        var metadataType = new Ext.form.ComboBox({
-            name: 'E__valid',
-            mode: 'local',
-            autoSelect: false,
-            triggerAction: 'all',
-            fieldLabel: OpenLayers.i18n('validationStatus'),
-            store: new Ext.data.ArrayStore({
-                id: 0,
-                fields: ['id', 'name'],
-                data: [['1', OpenLayers.i18n('valid')], 
-                        ['0', OpenLayers.i18n('notValid')],
-                        ['-1', OpenLayers.i18n('notDetermined')]]
-            }),
-            valueField: 'id',
-            displayField: 'name'
-        });
-        return metadataType;
-        
+    getValidField: function(multi){
+        var config = {
+                name: 'E__valid',
+                mode: 'local',
+                autoSelect: false,
+                triggerAction: 'all',
+                fieldLabel: OpenLayers.i18n('validationStatus'),
+                store: new Ext.data.ArrayStore({
+                    id: 0,
+                    fields: ['id', 'name'],
+                    data: [['1', OpenLayers.i18n('valid')], 
+                            ['0', OpenLayers.i18n('notValid')],
+                            ['-1', OpenLayers.i18n('notDetermined')]]
+                }),
+                valueField: 'id',
+                displayField: 'name'
+            };
+        if (multi) {
+            Ext.apply(config, {
+                valueDelimiter: ' or '
+                });
+            return new Ext.ux.form.SuperBoxSelect(config);
+        } else {
+            return new Ext.form.ComboBox(config);
+        }
     },
     /** api:method[getTypesField]
      *  :return: Type selection using combo box based
-     *  on hierarchy level values.
+     *   on hierarchy level values.
      */
-    getTypesField: function(codeList){
+    getTypesField: function(codeList, multi){
         var defaultCodeList = [['dataset', OpenLayers.i18n('dataset')], 
                                ['series', OpenLayers.i18n('series')],
-                               ['service', OpenLayers.i18n('service')]];
+                               ['service', OpenLayers.i18n('service')]],
+            config = {
+                    name: 'E_type',
+                    mode: 'local',
+                    autoSelect: false,
+                    triggerAction: 'all',
+                    fieldLabel: OpenLayers.i18n('resourceType'),
+                    store: new Ext.data.ArrayStore({
+                        id: 0,
+                        fields: ['id', 'name'],
+                        data: codeList || defaultCodeList
+                    }),
+                    valueField: 'id',
+                    displayField: 'name'
+                };
         
-        var metadataType = new Ext.form.ComboBox({
-            name: 'E_type',
-            mode: 'local',
-            autoSelect: false,
-            triggerAction: 'all',
-            fieldLabel: OpenLayers.i18n('resourceType'),
-            store: new Ext.data.ArrayStore({
-                id: 0,
-                fields: ['id', 'name'],
-                data: codeList || defaultCodeList
-            }),
-            valueField: 'id',
-            displayField: 'name'
-        });
-        return metadataType;
-        
+        if (multi) {
+            Ext.apply(config, {
+                valueDelimiter: ' or '
+                });
+            return new Ext.ux.form.SuperBoxSelect(config);
+        } else {
+            return new Ext.form.ComboBox(config);
+        }
     },
     /** api:method[getSpatialRepresentationTypeField]
      *  :param codeList: ``Array`` of values 
@@ -882,30 +950,35 @@ GeoNetwork.util.SearchFormTools = {
      *  gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue
      *  ISO19115 codelist. Applying such a filter will not return non ISO records. 
      */
-    getSpatialRepresentationTypeField: function(codeList){
+    getSpatialRepresentationTypeField: function(codeList, multi){
         var defaultCodeList = [['grid', OpenLayers.i18n('grid')], 
                        ['stereoModel', OpenLayers.i18n('stereoModel')], 
                        ['tin', OpenLayers.i18n('tin')], 
                        ['textTabled', OpenLayers.i18n('textTable')], 
                        ['vector', OpenLayers.i18n('vector')], 
-                       ['video', OpenLayers.i18n('video')]];
+                       ['video', OpenLayers.i18n('video')]],
+            config = {
+                    name: 'E_spatialRepresentationType',
+                    mode: 'local',
+                    autoSelect: false,
+                    triggerAction: 'all',
+                    fieldLabel: OpenLayers.i18n('spatialRepType'),
+                    store: new Ext.data.ArrayStore({
+                        id: 0,
+                        fields: ['id', 'name'],
+                        data: codeList || defaultCodeList
+                    }),
+                    valueField: 'id',
+                    displayField: 'name'
+                };
         
-         var spatialRepresentationType = new Ext.form.ComboBox({
-            name: 'E_spatialRepresentationType',
-            mode: 'local',
-            autoSelect: false,
-            triggerAction: 'all',
-            fieldLabel: OpenLayers.i18n('spatialRepType'),
-            store: new Ext.data.ArrayStore({
-                id: 0,
-                fields: ['id', 'name'],
-                data: codeList || defaultCodeList
-            }),
-            valueField: 'id',
-            displayField: 'name'
-        });
-        
-        return spatialRepresentationType;
-        
+        if (multi) {
+            Ext.apply(config, {
+                valueDelimiter: ' or '
+                });
+            return new Ext.ux.form.SuperBoxSelect(config);
+        } else {
+            return new Ext.form.ComboBox(config);
+        }
     }
 };

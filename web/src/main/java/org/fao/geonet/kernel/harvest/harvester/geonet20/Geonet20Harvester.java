@@ -223,9 +223,21 @@ public class Geonet20Harvester extends AbstractHarvester
 			add(site, "unchanged", ar.unchangedMetadata);
 			add(site, "skipped",   ar.schemaSkipped+ ar.uuidSkipped);
 			add(site, "removed",   ar.locallyRemoved);
+            add(site, "doesNotValidate",ar.doesNotValidate);
 
 			info.addContent(site);
 		}
+	}
+
+	//---------------------------------------------------------------------------
+	//---
+	//--- GetResult
+	//---
+	//---------------------------------------------------------------------------
+
+	protected Element getResult() {
+		return new Element("result"); // HarvestHistory not supported for this 
+		                              // old harvester
 	}
 
 	//---------------------------------------------------------------------------

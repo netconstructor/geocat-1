@@ -26,7 +26,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.SpatialIndex;
 import jeeves.exceptions.JeevesException;
 import jeeves.resources.dbms.Dbms;
+import jeeves.server.ConfigurationOverrides;
 import jeeves.server.context.ServiceContext;
+import jeeves.server.sources.http.JeevesServlet;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
@@ -332,16 +334,21 @@ public class SearchManager
    * @param luceneTermsToExclude
 	 * @param dataStore
 	 * @param si
+	 * @param scm
+	 * @param servlet
 	 * @throws Exception
 	 */
 	public SearchManager(String appPath, String luceneDir, String htmlCacheDir, String dataDir, 
 			String summaryConfigXmlFile, LuceneConfig lc, 
 			boolean logAsynch, boolean logSpatialObject, String luceneTermsToExclude, 
-			DataStore dataStore, int maxWritesInTransaction, SettingInfo si, SchemaManager scm) throws Exception
+			DataStore dataStore, int maxWritesInTransaction, SettingInfo si, SchemaManager scm, JeevesServlet servlet) throws Exception
 	{
 		_scm = scm;
 		_dataDir = dataDir;
 		_summaryConfig = Xml.loadStream(new FileInputStream(new File(appPath,summaryConfigXmlFile)));
+		if (servlet != null) {
+			ConfigurationOverrides.updateWithOverrides(summaryConfigXmlFile, servlet, appPath, _summaryConfig);
+		}
 
 		_luceneConfig = lc;
         _settingInfo = si;
@@ -708,8 +715,8 @@ public class SearchManager
 
 			StringBuffer sb = new StringBuffer();
 			allText(metadata, sb);
-			addField(defaultDoc, "title", title, true, true, true);
-			addField(defaultDoc, "any", sb.toString(), true, true, true);
+			addField(xmlDoc, "title", title, true, true);
+			addField(xmlDoc, "any", sb.toString(), true, true);
 		} else {
 			Log.debug(Geonet.INDEX_ENGINE, "Metadata to index:\n" + Xml.getString(metadata));
 
@@ -724,7 +731,7 @@ public class SearchManager
         List<Document> documents = new ArrayList<Document>();
         for (Element doc : documentElements) {
         	// add _id field
-            addField(doc, "_id", id, true, true, false);
+            addField(doc, "_id", id, true, true);
 
 			// add more fields
 	        for (Element moreField : moreFields) {
@@ -739,26 +746,39 @@ public class SearchManager
 	}
 
 	/**
-	 * Creates a new field for the Lucene index.
+	 * Creates a new XML field for the Lucene index and add it to the document.
      *
 	 * @param xmlDoc
 	 * @param name
 	 * @param value
 	 * @param store
 	 * @param index
-	 * @param token
 	 */
-	private void addField(Element xmlDoc, String name, String value, boolean store, boolean index, boolean token)
+	private static void addField(Element xmlDoc, String name, String value, boolean store, boolean index)
 	{
+		Element field = makeField(name, value, store, index);
+		xmlDoc.addContent(field);
+	}
+    /**
+    * Creates a new XML field for the Lucene index
+    * 
+    * @param name
+    * @param value
+    * @param store
+    * @param index
+    * @return
+    */
+	public static Element makeField(String name, String value, boolean store,
+												boolean index) {
 		Element field = new Element("Field");
+
 		field.setAttribute("name",   name);
 		field.setAttribute("string", value);
 		field.setAttribute("store",  store+"");
 		field.setAttribute("index",  index+"");
-		field.setAttribute("token",  token+"");
-		xmlDoc.addContent(field);
-	}
 
+		return field;
+	}
 	/**
 	 * Extracts text from metadata record.
 	 *

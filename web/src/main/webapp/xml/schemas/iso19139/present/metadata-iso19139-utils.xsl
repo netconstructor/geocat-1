@@ -58,11 +58,14 @@
             <!-- PMT GC2 modification : 3char lang codes in GeoCat  -->
             <!--
                 <xsl:when test="$langGui='ar'">ara</xsl:when>
+                <xsl:when test="$langGui='ca'">cat</xsl:when>
                 <xsl:when test="$langGui='cn'">chi</xsl:when>
                 <xsl:when test="$langGui='de'">ger</xsl:when>
                 <xsl:when test="$langGui='es'">spa</xsl:when>
+                <xsl:when test="$langGui='fi'">fin</xsl:when>
                 <xsl:when test="$langGui='fr'">fre</xsl:when>
                 <xsl:when test="$langGui='nl'">dut</xsl:when>
+                <xsl:when test="$langGui='no'">nor</xsl:when>
                 <xsl:when test="$langGui='ru'">rus</xsl:when>
                 <xsl:when test="$langGui='pt'">por</xsl:when>
                 <xsl:when test="$langGui='no'">nor</xsl:when>
@@ -71,6 +74,12 @@
                 <xsl:when test="$langGui='eng'">eng</xsl:when>
                 <xsl:when test="$langGui='fra'">fra</xsl:when>
                 <xsl:when test="$langGui='ita'">ita</xsl:when>
+                <xsl:when test="$langGui='de'">deu</xsl:when>
+                <xsl:when test="$langGui='en'">eng</xsl:when>
+                <xsl:when test="$langGui='fr'">fra</xsl:when>
+                <xsl:when test="$langGui='it'">ita</xsl:when>
+                <xsl:when test="$langGui='ge'">deu</xsl:when>
+                <xsl:when test="$langGui='fre'">fra</xsl:when>
                 <xsl:otherwise>eng</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -415,12 +424,13 @@
       <xsl:when test="text()!=''">txt</xsl:when>
       <!-- empty element -->
       <xsl:otherwise>
-        <!-- attributes? -->
-        <xsl:for-each select="@*">
-          <xsl:if test="string-length(.)!=0">att</xsl:if>
-        </xsl:for-each>
       </xsl:otherwise>
     </xsl:choose>
+  
+    <!-- attributes? -->
+    <xsl:for-each select="@*">
+      <xsl:if test="string-length(.)!=0">att</xsl:if>
+    </xsl:for-each>
   </xsl:template>
 
 	<!-- Create a service URL for a service metadata record. -->

@@ -58,6 +58,11 @@
 		    <td class="padded"><input id="gn.mefFormatFull" type="checkbox"/></td>
 		  </tr>
 		  
+		    <tr>
+		        <td class="padded"><xsl:value-of select="/root/gui/harvesting/xslfilter"/></td>
+		        <td class="padded"><input id="gn.xslfilter" class="content" type="text" value="" size="30"/></td>
+		    </tr>
+		  
 			<tr>
 				<td class="padded"><xsl:value-of select="/root/gui/harvesting/useAccount"/></td>
 				<td class="padded"><input id="gn.useAccount" type="checkbox" checked="on"/></td>
@@ -127,11 +132,11 @@
 	<!-- ============================================================================================= -->
 
 	<xsl:template name="content-GN">
-	<div style="display:none;"> <!-- UNUSED -->
+	<div>
 		<h1 align="left"><xsl:value-of select="/root/gui/harvesting/content"/></h1>
 
 		<table border="0">
-			<tr>
+			<tr style="display:none;"> <!-- UNUSED -->
 				<td class="padded"><xsl:value-of select="/root/gui/harvesting/importxslt"/></td>
 				<td class="padded">
 					&#160;

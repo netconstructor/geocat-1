@@ -56,7 +56,7 @@
 		<xsl:param name="schema"/>
 		<xsl:param name="edit" select="false()"/>
 		<xsl:param name="embedded" />
-		
+
 		<!-- draw child element place holder if
 			- child is an OR element or
 			- there is no other element with the name of this placeholder 
@@ -103,11 +103,18 @@
 							<xsl:if test="$isXLinked">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>
+
+                            <xsl:variable name="defaultSelection" select="/root/gui/config/editor-default-substitutions/element[@name=$name]/@default" />
+
 							<xsl:for-each select="geonet:choose">
 								<!-- FIXME : here we should sort by title ? -->
 								<xsl:sort select="@name"/>
 								<option value="{@name}">
-									<xsl:call-template name="getTitle">
+								    <xsl:if test="@name = $defaultSelection">
+									<xsl:attribute name="selected">selected</xsl:attribute>
+									</xsl:if>
+
+								    <xsl:call-template name="getTitle">
 										<xsl:with-param name="name"   select="@name"/>
 										<xsl:with-param name="schema" select="$schema"/>
 									</xsl:call-template>
@@ -1071,9 +1078,13 @@
         <xsl:param name="name"/>
         <xsl:param name="schema"/>
 
+				<!-- <xsl:message>Running getTitle on <xsl:value-of select="concat($name,' from ',$schema)"/></xsl:message> -->
+
         <xsl:variable name="fullContext">
             <xsl:call-template name="getXPath" />
         </xsl:variable>
+
+				<!-- <xsl:message>XPath <xsl:value-of select="$fullContext"/></xsl:message> -->
 
         <xsl:variable name="context" select="name(parent::node())"/>
         <xsl:variable name="contextIsoType" select="parent::node()/@gco:isoType"/>
@@ -1093,6 +1104,7 @@
                     <!-- Name in current schema -->
                     <xsl:variable name="schematitle" select="string(/root/gui/schemas/*[name(.)=$schema]/labels/element[@name=$name and not(@context)]/label)"/>
 
+										<!-- <xsl:message>Names <xsl:value-of select="concat($schematitleWithContext,' | ',$schematitleWithContextIso,' | ',$schematitle)"/></xsl:message> -->
                     <xsl:choose>
 
                         <xsl:when test="normalize-space($schematitle)='' and
@@ -1103,6 +1115,10 @@
                         <xsl:when test="normalize-space($schematitleWithContext)='' and
                                         normalize-space($schematitleWithContextIso)=''">
                                 <xsl:value-of select="$schematitle"/>
+                        </xsl:when>
+                        <xsl:when test="normalize-space($schematitleWithContext)='' and
+                                        normalize-space($schematitle)=''">
+                                <xsl:value-of select="$schematitleWithContextIso"/>
                         </xsl:when>
                         <xsl:otherwise>
                                 <xsl:value-of select="$schematitleWithContext"/>
@@ -1957,6 +1973,7 @@
     <xsl:param name="eValue"/>
     <xsl:param name="descId"/>
     <xsl:param name="id"/>
+    <xsl:param name="places"/>
     
     
     <xsl:variable name="eltRef">
@@ -2001,6 +2018,7 @@
           </xsl:apply-templates>
         </td>
         <td >
+          <xsl:copy-of select="$places"/>
         </td>
       </tr>
       <tr>

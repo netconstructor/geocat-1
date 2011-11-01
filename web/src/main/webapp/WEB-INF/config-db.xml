@@ -50,12 +50,14 @@
       <file path="WEB-INF/classes/setup/sql/migrate/263" filePrefix="migrate-"/>
     </version>
     <version id="264">
+      <file path="WEB-INF/classes/setup/sql/migrate/264" filePrefix="migrate-db-"/>
       <file path="WEB-INF/classes/setup/sql/migrate/264" filePrefix="migrate-"/>
     </version>
     <version id="265">
       <file path="WEB-INF/classes/setup/sql/migrate/265" filePrefix="migrate-"/>
     </version>
     <version id="270">
+      <file path="WEB-INF/classes/setup/sql/migrate/270" filePrefix="migrate-db-"/>
       <file path="WEB-INF/classes/setup/sql/migrate/270" filePrefix="migrate-"/>
     </version>
   </migrate>

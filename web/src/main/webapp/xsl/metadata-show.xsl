@@ -23,8 +23,10 @@
 	<xsl:variable name="serverUrl" select="concat($protocol,'://',$host,':',$port,/root/gui/locService)" />
 
 	<xsl:template mode="css" match="/">
-		<xsl:call-template name="geoCssHeader"/>
-		<xsl:call-template name="ext-ux-css"/>
+		<xsl:if test="$currTab!='xml'">
+			<xsl:call-template name="geoCssHeader"/>
+			<xsl:call-template name="ext-ux-css"/>
+		</xsl:if>
 	</xsl:template>
 
 	<!--
@@ -139,5 +141,5 @@
 			<tr><td class="blue-content" colspan="3"/></tr>
 		</table>
 	</xsl:template>
-	
+
 </xsl:stylesheet>

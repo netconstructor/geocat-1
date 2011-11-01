@@ -3,7 +3,9 @@
 //=== SchemaManager
 //===
 //=============================================================================
-//===	Copyright (C) Free Software Foundation
+//=== Copyright (C) 2001-2011 Food and Agriculture Organization of the
+//=== United Nations (FAO-UN), United Nations World Food Programme (WFP)
+//=== and United Nations Environment Programme (UNEP)
 //===
 //===	This program is free software; you can redistribute it and/or modify
 //===	it under the terms of the GNU General Public License as published by
@@ -529,7 +531,9 @@ public class SchemaManager
 			// -- If nothing has matched by this point choose defaultSchema from 
 			// -- config.xml
 			if (schema == null) {
-				Log.debug(Geonet.SCHEMA_MANAGER, "  No schema detected using default schema "+defaultSchema);
+				if (defaultSchema != null) {
+					Log.warning(Geonet.SCHEMA_MANAGER, "  Autodetecting schema failed. Using default schema: " + defaultSchema);
+				}
 				schema = defaultSchema;
 			}
 
@@ -721,19 +725,18 @@ public class SchemaManager
 			}
 		}
 
-		// -- add any oasis catalog files to xml.catalog.files system property
-		// -- for resolver to pick up
+		// -- add any oasis catalog files to Jeeves.XML_CATALOG_FILES system 
+		// -- property for resolver to pick up
 
 		if (new File(oasisCatFile).exists()) {
-			String catalogProp = System.getProperty("xml.catalog.files");
+			String catalogProp = System.getProperty(Jeeves.XML_CATALOG_FILES);
 			if (catalogProp == null) catalogProp = ""; // shouldn't happen
 			if (catalogProp.equals("")) {
 				catalogProp = oasisCatFile;
 			} else {
 				catalogProp = catalogProp + ";" + oasisCatFile;
 			}
-			System.setProperty("xml.catalog.files", catalogProp);
-			System.setProperty("xml.catalog.staticCatalog", "no");
+			System.setProperty(Jeeves.XML_CATALOG_FILES, catalogProp);
 		}
 
 		Pair<String, String> idInfo = extractIdInfo(xmlIdFile, name);
@@ -749,7 +752,7 @@ public class SchemaManager
 									isPluginSchema,
 									extractSchemaLocation(xmlIdFile));
 
-		Log.debug(Geonet.SCHEMA_MANAGER, "Property xml.catalog.files is "+System.getProperty("xml.catalog.files"));
+		Log.debug(Geonet.SCHEMA_MANAGER, "Property "+Jeeves.XML_CATALOG_FILES+" is "+System.getProperty(Jeeves.XML_CATALOG_FILES));
 
 		// -- Add entry for presentation xslt to schemaPlugins catalog
 		// -- if this schema is a plugin schema

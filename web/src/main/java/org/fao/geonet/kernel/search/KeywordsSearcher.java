@@ -143,7 +143,7 @@ public class KeywordsSearcher {
 					sUri = uri.toString();
 				}
 
-				KeywordBean kb = new KeywordBean(idKeyword, sValue, "", sUri, "", "", "", "", sThesaurusName, false, _lang, thesaurus.getTitle());
+				KeywordBean kb = new KeywordBean(idKeyword, sValue, "", sUri, "", "", "", "", sThesaurusName, false, _lang, thesaurus.getTitle(), thesaurus.getDate());
 				idKeyword++;
 
 				return kb;
@@ -419,7 +419,7 @@ public class KeywordsSearcher {
 				sUri = uri.toString();
 			}
 
-			KeywordBean kb = new KeywordBean(idKeyword, sValue, "", sUri, "", "", "", "", sThesaurusName, false, _lang, thesaurus.getTitle());
+			KeywordBean kb = new KeywordBean(idKeyword, sValue, "", sUri, "", "", "", "", sThesaurusName, false, _lang, thesaurus.getTitle(), thesaurus.getDate());
 			_results.add(kb);
 			idKeyword++;
 		}
@@ -758,7 +758,8 @@ public class KeywordsSearcher {
 
         KeywordBean kb = new KeywordBean(idKeyword, sValue,
         		sDefinition, sUri, sEast, sWest, sSouth, sNorth,
-        		sThesaurusName, false, sLang, thesaurus.getTitle() );
+        		sThesaurusName, false, sLang, thesaurus.getTitle(), 
+        		thesaurus.getDate() );
         return kb;
     }
 

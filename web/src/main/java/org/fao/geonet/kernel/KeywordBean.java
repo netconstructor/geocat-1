@@ -26,6 +26,7 @@ import org.fao.geonet.util.LangUtils;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -43,6 +44,8 @@ public class KeywordBean {
 	private String thesaurus;	
 	private boolean selected;
     private String thesaurusTitle;
+	private String thesaurusDate;
+
     /**
      * A Hashmap of all the languages available in this keyword
      *
@@ -70,7 +73,7 @@ public class KeywordBean {
 	public KeywordBean(int id, String value, String definition, String code, 
 				String coordEast, String coordWest, 
 				String coordSouth, String coordNorth, 
-				String thesaurus, boolean selected, String lang, String thesaurusTitle) {
+				String thesaurus, boolean selected, String lang, String thesaurusTitle, String thesaurusDate) {
 		super();
 		this.id = id;
 		this.value = value;
@@ -85,6 +88,7 @@ public class KeywordBean {
 		this.thesaurus = thesaurus;
 		this.selected = selected;
         this.thesaurusTitle = thesaurusTitle;
+        this.thesaurusDate = thesaurusDate;
 	}
 
 	/**
@@ -361,8 +365,31 @@ public class KeywordBean {
 		Element title = new Element("title", NS_GMD);
 		Element cs = new Element("CharacterString", NS_GCO);
 		Element date = new Element("date", NS_GMD);
-		date.setAttribute("nilReason", "unknown",NS_GCO);
-		cs.setText(kb.thesaurusTitle);
+
+        cs.setText(kb.thesaurusTitle);
+
+        if (StringUtils.hasLength(kb.thesaurusDate)) {
+            Element ciDateEl = new Element("CI_Date", NS_GMD);
+            Element ciDateDateEl = new Element("date", NS_GMD);
+            Element ciDateDateGcoDateEl = new Element("Date", NS_GCO);
+
+            ciDateDateGcoDateEl.setText(kb.thesaurusDate);
+
+            Element ciDateDatetypeEl = new Element("dateType", NS_GMD);
+            Element ciDateDatetypeCodeEl = new Element("CI_DateTypeCode", NS_GMD);
+            ciDateDatetypeCodeEl.setAttribute("codeList","http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode");
+            ciDateDatetypeCodeEl.setAttribute("codeListValue", "publication");
+
+            ciDateDatetypeEl.addContent(ciDateDatetypeCodeEl);
+            ciDateDateEl.addContent(ciDateDateGcoDateEl);
+            ciDateEl.addContent(0, ciDateDateEl);
+            ciDateEl.addContent(1, ciDateDatetypeEl);
+            date.addContent(ciDateEl);
+
+        } else {
+            date.setAttribute("nilReason", "unknown",NS_GCO);
+        }
+
 		title.addContent((Content) cs.clone());
 		citation.addContent(0,title);
 		citation.addContent(1, date);

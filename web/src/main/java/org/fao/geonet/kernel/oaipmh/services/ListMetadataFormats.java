@@ -24,6 +24,7 @@
 package org.fao.geonet.kernel.oaipmh.services;
 
 import jeeves.server.context.ServiceContext;
+import jeeves.server.ConfigurationOverrides;
 import jeeves.utils.Xml;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
@@ -77,7 +78,7 @@ public class ListMetadataFormats implements OaiPmhService
 				res.addFormat(getSchemaInfo(context, sm, schema));
 		}
 
-		for (MetadataFormat mdf : getDefaultFormats(context)) {
+		for (MetadataFormat mdf : getConvertFormats(context)) {
 			res.addFormat(mdf);
 		}
 
@@ -115,10 +116,14 @@ public class ListMetadataFormats implements OaiPmhService
 
 	//---------------------------------------------------------------------------
 
-	private List<MetadataFormat> getDefaultFormats(ServiceContext context) throws IOException, JDOMException
+	private List<MetadataFormat> getConvertFormats(ServiceContext context) throws IOException, JDOMException
 	{
 	
-		Element elem = Xml.loadFile(context.getAppPath() + DEFAULT_SCHEMAS_FILE);
+		Element elem = Xml.loadFile(context.getAppPath() + DEFAULT_PREFIXES_FILE);
+		if (context.getServlet() != null) {
+			ConfigurationOverrides.updateWithOverrides(DEFAULT_PREFIXES_FILE, context.getServlet(), context.getAppPath(), elem);
+		}
+
 		List<Element> defaultSchemas = elem.getChildren();
 
 		List <MetadataFormat> defMdfs = new ArrayList<MetadataFormat>();
@@ -134,7 +139,7 @@ public class ListMetadataFormats implements OaiPmhService
 	//---
 	//---------------------------------------------------------------------------
 
-	private static final String DEFAULT_SCHEMAS_FILE = "xml/validation/oai/schemas.xml";
+	private static final String DEFAULT_PREFIXES_FILE = "WEB-INF/config-oai-prefixes.xml";
 }
 
 //=============================================================================

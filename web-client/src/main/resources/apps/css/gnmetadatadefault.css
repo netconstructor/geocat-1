@@ -79,13 +79,6 @@ li.thumbnail-selected,
 li.suggestion-selected {
   background-color : #7EADD9;
 }
-
-div.help .title {
-  font-size : 120%;
-  font-weight : bold;
-}
-
-
 /* Tab navigation - start */
 div#tabs ul li ul {
   list-style-type : none;
@@ -129,7 +122,7 @@ div#tabs ul li ul li.active {
   clear : both;
 }
 .metadata * div.el label {
-  margin-right: 2px;
+  margin-right: 5px;
 }
 .metadata * label {
   color : #767676;
@@ -142,7 +135,7 @@ label + span {
 }
 */
 .metadata * fieldset {
-  border-top : 1px solid black;
+  border-top : 1px solid #8c8c8c;
   border-bottom : none;
   border-left : none;
   border-right : none;
@@ -173,7 +166,7 @@ label + span {
 }
 
 .metadata * select {
-  max-width : 60%
+  max-width : 200px
 }
 
 .metadata * input.error,
@@ -250,6 +243,7 @@ label + span {
 }
 .metadata * table.gn > tbody > tr > td.col {
   padding : 0px;
+  width: 50%;
 }
 
 .metadata * table.gn > tbody > tr > td.main,
@@ -257,6 +251,9 @@ label + span {
   width : 25%;
 }
 
+.metadata * table.gn p {
+    margin-bottom: 5px;
+}
 
 table.related {
   border-collapse: collapse;
@@ -504,3 +501,12 @@ div.button {
   background-image : url(../images/default/category/proceedings.png) !important;
 }
 /* Icon and button - end */
+
+
+
+
+/* Codelist have a class attribute which could
+be use for custom styling in view mode */
+.topSecret *, .confidential *, .restricted *, .secret * {
+    color: #ff0a0f !important;
+}

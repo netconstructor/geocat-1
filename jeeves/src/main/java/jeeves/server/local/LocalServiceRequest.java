@@ -81,12 +81,19 @@ public class LocalServiceRequest extends ServiceRequest
 
 	public String getResultString()
 	{
-		return outputBuffer.toString();
+		String string = outputBuffer.toString().trim();
+		if(string.matches("<\\?xml\\s+version=[^>]+\\s+encoding=[^>]+\\?>")) {
+			return "";
+		}
+		return string;
 	}
 
 	public Element getResult() throws IOException, JDOMException
 	{
-		return Xml.loadString(getResultString(), false);
+		
+		String resultString = getResultString();
+		if(resultString.trim().isEmpty()) return null;
+		else return Xml.loadString(resultString, false);
 	}
 
 	//---------------------------------------------------------------------------

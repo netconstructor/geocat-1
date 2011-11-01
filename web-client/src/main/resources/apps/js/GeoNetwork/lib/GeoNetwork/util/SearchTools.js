@@ -169,7 +169,7 @@ GeoNetwork.util.SearchTools = {
      *
      *  Populate form fields based on a list of parameters.
      *  Parameters name must be equal to field name.
-     *  Prefix 'E_' could be ommitted.
+     *  Prefix E_ could be ommitted.
      *
      *  Search field may not be visible if in a collapsed fieldset (TODO)
      *  Test with radio, dates and geometry (TODO)
@@ -256,6 +256,10 @@ GeoNetwork.util.SearchTools = {
             filters.push(name + "=" + escape(value) + "");
         } else if (type === 'B') { //boolean
             filters.push(name + "=" + (value ? 'on' : 'off') + "");
+        } else if (type === 'O') { //optional boolean
+            if (value) {
+                filters.push(name + "=" + 'on');
+            }
         } else {
             alert("Cannot parse " + type);
         }

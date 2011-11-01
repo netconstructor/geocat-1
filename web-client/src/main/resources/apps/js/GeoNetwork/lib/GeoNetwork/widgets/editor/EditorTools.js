@@ -96,7 +96,7 @@ GeoNetwork.editor.EditorTools = {
         
         // Create a window to choose the template and the group
         if (!scope.newMetadataWindow) {
-            var newMetadataPanel = new GeoNetwork.editor.NewMetadataPanel({
+        	var newMetadataPanel = new GeoNetwork.editor.NewMetadataPanel({
                 selectedTpl: id,
                 isChild: isChild,
                 filter: filter,
@@ -661,7 +661,11 @@ function setAddControls(el, orElement){
             prevDescs[2 + prevIndex].hide();
         else 
             prevDescs[2 + prevIndex].show();
-        prevDescs[3 + prevIndex].show();
+        
+        var el = prevDescs[3 + prevIndex];
+        if (el) {
+        	el.show();
+        }
     }
 }
 

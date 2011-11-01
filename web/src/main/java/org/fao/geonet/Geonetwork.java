@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import jeeves.constants.Jeeves;
 import jeeves.JeevesJCS;
 import jeeves.JeevesProxyInfo;
 import jeeves.interfaces.ApplicationHandler;
@@ -81,7 +82,6 @@ import org.fao.geonet.services.util.z3950.Server;
 import org.fao.geonet.util.ThreadPool;
 import org.fao.geonet.util.ThreadUtils;
 import org.geotools.data.DataStore;
-import org.geotools.data.postgis.PostgisDataStoreFactory;
 import org.geotools.data.shapefile.indexed.IndexType;
 import org.geotools.data.shapefile.indexed.IndexedShapefileDataStore;
 import org.geotools.factory.GeoTools;
@@ -120,11 +120,12 @@ public class Geonetwork implements ApplicationHandler
 	private SearchManager 		searchMan;
 	private ThesaurusManager 	thesaurusMan;
 	private MetadataNotifierControl metadataNotifierControl;
-	private String						SPATIAL_INDEX_FILENAME    = "spatialindex";
-	static final String				IDS_ATTRIBUTE_NAME        = "id";
 	private ThreadPool        threadPool;
 	private String   FS         = File.separator;
 	private Element dbConfiguration;
+
+	private static final String       SPATIAL_INDEX_FILENAME    = "spatialindex";
+	private static final String       IDS_ATTRIBUTE_NAME        = "id";
 
 	//---------------------------------------------------------------------------
 	//---
@@ -252,22 +253,6 @@ public class Geonetwork implements ApplicationHandler
 
 		thesaurusMan = ThesaurusManager.getInstance(path, thesauriDir);
 
-        //--- Initialize Extent Dict
-        DataStore dataStore = createDataStore(context.getResourceManager().getProps(Geonet.Res.MAIN_DB), luceneDir);
-
-        logger.info("  - ExtentManager");
-
-        List<Element> extentConfig = handlerConfig.getChildren(Geocat.Config.EXTENT_CONFIG);
-
-        ExtentManager extentMan = new ExtentManager(dataStore, extentConfig);
-
-		//-------------------------------------------------------------------------
-		//--- ReusableObjectManager
-
-        List<Element> reusableConfig = handlerConfig.getChildren(Geocat.Config.REUSABLE_OBJECT_CONFIG);
-		ReusableObjManager reusableObjMan = new ReusableObjManager(path, reusableConfig, context.getSerialFactory());
-
-		//------------------------------------------------------------------------
 		//--- initialize Z39.50
 
 		logger.info("  - Z39.50...");
@@ -331,10 +316,18 @@ public class Geonetwork implements ApplicationHandler
         
 		String luceneTermsToExclude = "";
 		luceneTermsToExclude = handlerConfig.getMandatoryValue(Geonet.Config.STAT_LUCENE_TERMS_EXCLUDE);
-		LuceneConfig lc = new LuceneConfig(path, luceneConfigXmlFile);
+		LuceneConfig lc = new LuceneConfig(path, context.getServlet(), luceneConfigXmlFile);
         logger.info("  - Lucene configuration is:");
         logger.info(lc.toString());
-        
+       
+		DataStore dataStore = context.getResourceManager().getDataStore(Geonet.Res.MAIN_DB);
+		if (dataStore == null) dataStore = createShapefileDatastore(luceneDir);
+
+		//--- no datastore for spatial indexing means that we can't continue
+		if (dataStore == null) {
+			throw new IllegalArgumentException("GeoTools datastore creation failed - check logs for more info/exceptions");
+		}
+
 		String maxWritesInTransactionStr = handlerConfig.getMandatoryValue(Geonet.Config.MAX_WRITES_IN_TRANSACTION);
 		int maxWritesInTransaction = SpatialIndexWriter.MAX_WRITES_IN_TRANSACTION;
 		try {
@@ -347,7 +340,22 @@ public class Geonetwork implements ApplicationHandler
 		searchMan = new SearchManager(path, luceneDir, htmlCacheDir, dataDir, summaryConfigXmlFile, lc, 
 				logAsynch, logSpatialObject, luceneTermsToExclude, 
 				dataStore, maxWritesInTransaction, 
-				new SettingInfo(settingMan), schemaMan);
+				new SettingInfo(settingMan), schemaMan, context.getServlet());
+
+		//------------------------------------------------------------------------
+        //--- Initialize Extent Dict
+
+        logger.info("  - ExtentManager");
+
+        List<Element> extentConfig = handlerConfig.getChildren(Geocat.Config.EXTENT_CONFIG);
+
+        ExtentManager extentMan = new ExtentManager(dataStore, extentConfig);
+
+		//-------------------------------------------------------------------------
+		//--- ReusableObjectManager
+
+        List<Element> reusableConfig = handlerConfig.getChildren(Geocat.Config.REUSABLE_OBJECT_CONFIG);
+		ReusableObjManager reusableObjMan = new ReusableObjManager(path, reusableConfig, context.getSerialFactory());
 
 		//------------------------------------------------------------------------
 		//--- extract intranet ip/mask and initialize AccessManager
@@ -622,11 +630,11 @@ public class Geonetwork implements ApplicationHandler
 		try {
 			dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
 		} catch (Exception e) {
-			logger.info("    Failed to open database connection, Check config.xml db file configuration."
-					+ "Error is: " + e.getMessage());
-			e.printStackTrace();
+			logger.error("    Failed to open database connection, Check config.xml db file configuration.");
+			logger.error(Util.getStackTrace(e));
+			throw new IllegalArgumentException("No database connection");
 		}
-		
+	
 		String dbURL = dbms.getURL();
 		logger.info("  - Database connection on " + dbURL + " ...");
 		
@@ -709,16 +717,16 @@ public class Geonetwork implements ApplicationHandler
 
 		String webapp = path + "WEB-INF" + FS;
 
-		//--- Set xml.catalog.files property
+		//--- Set jeeves.xml.catalog.files property
 		//--- this is critical to schema support so must be set correctly
-		String catalogProp = System.getProperty("xml.catalog.files");
+		String catalogProp = System.getProperty(Jeeves.XML_CATALOG_FILES);
 		if (catalogProp == null) catalogProp = "";
 		if (!catalogProp.equals("")) {
-			logger.info("Overriding xml.catalog.files property (was set to "+catalogProp+")");
+			logger.info("Overriding "+Jeeves.XML_CATALOG_FILES+" property (was set to "+catalogProp+")");
 		} 
 		catalogProp = webapp + "oasis-catalog.xml" + ";" + webapp + "schemaplugin-uri-catalog.xml";
-		System.setProperty("xml.catalog.files", catalogProp);
-		logger.info("xml.catalog.files property set to "+catalogProp);
+		System.setProperty(Jeeves.XML_CATALOG_FILES, catalogProp);
+		logger.info(Jeeves.XML_CATALOG_FILES+" property set to "+catalogProp);
 
 		//--- Set mime-mappings
 		String mimeProp = System.getProperty("mime-mappings");
@@ -774,91 +782,22 @@ public class Geonetwork implements ApplicationHandler
 		Server.end();
 	}
 
-	
-	
 	//---------------------------------------------------------------------------
 
-	private DataStore createDataStore(Map<String,String> props, String luceneDir) throws Exception {
-		String url = props.get("url");
-		String user = props.get("user");
-		String passwd = props.get("password");
+	private DataStore createShapefileDatastore(String indexDir) throws Exception {
 
-		DataStore ds = null;
-		try {
-			if (url.contains("postGIS")) {
-				ds = createPostgisDatastore(user, passwd, url);
-			} else if (url.contains("oracle")) {
-				ds = createOracleDatastore(user, passwd, url);
-			}
-		} catch (Exception e) {
-			logger.error("Failed to create datastore for "+url+". Will use shapefile instead.");
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-
-		if (ds != null) return ds;
-		else return createShapefileDatastore(luceneDir);
-	}
-
-	//---------------------------------------------------------------------------
-
-	private DataStore createPostgisDatastore(String user, String passwd, String url) throws Exception {
-
-		String[] values = url.split("/");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(PostgisDataStoreFactory.DBTYPE.key, PostgisDataStoreFactory.DBTYPE.sample);
-		params.put(PostgisDataStoreFactory.DATABASE.key, getDatabase(url, values));
-		params.put(PostgisDataStoreFactory.USER.key, user);
-		params.put(PostgisDataStoreFactory.PASSWD.key, passwd);
-		params.put(PostgisDataStoreFactory.HOST.key, getHost(url, values));
-		params.put(PostgisDataStoreFactory.PORT.key, getPort(url, values));
-		//logger.info("Connecting using "+params); - don't show unless we need it
-
-		PostgisDataStoreFactory factory = new PostgisDataStoreFactory();
-		DataStore ds = factory.createDataStore(params);
-		logger.info("NOTE: Using POSTGIS for spatial index");
-
-		return ds;
-	}
-
-	//---------------------------------------------------------------------------
-
-	private DataStore createOracleDatastore(String user, String passwd, String url) throws Exception {
-
-/*
-		String[] values = url.split(":");
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(OracleDataStoreFactory.DBTYPE.key, OracleDataStoreFactory.DBTYPE.sample);
-		params.put(OracleDataStoreFactory.DATABASE.key, getDatabase(url, values));
-		params.put(OracleDataStoreFactory.USER.key, user);
-		params.put(OracleDataStoreFactory.PASSWD.key, passwd);
-		params.put(OracleDataStoreFactory.HOST.key, getHost(url, values));
-		params.put(OracleDataStoreFactory.PORT.key, getPort(url, values));
-
-		OracleDataStoreFactory factory = new OracleDataStoreFactory();
-		DataStore ds = factory.createDataStore(params);
-
-		return ds;
-*/
-		return null;
-	}
-
-	//---------------------------------------------------------------------------
-
-	private DataStore createShapefileDatastore(String luceneDir) throws Exception {
-		File file = new File(luceneDir + "/spatial/" + SPATIAL_INDEX_FILENAME + ".shp");
+		File file = new File(indexDir + "/" + SPATIAL_INDEX_FILENAME + ".shp");
 		file.getParentFile().mkdirs();
 		if (!file.exists()) {
 			logger.info("Creating shapefile "+file.getAbsolutePath());
 		} else {
 			logger.info("Using shapefile "+file.getAbsolutePath());
 		}
-		IndexedShapefileDataStore ds = new IndexedShapefileDataStore(file.toURI().toURL(), new URI("http://geonetwork.org"), true, true, IndexType.QIX, Charset.defaultCharset());
+		IndexedShapefileDataStore ids = new IndexedShapefileDataStore(file.toURI().toURL(), new URI("http://geonetwork.org"), true, true, IndexType.QIX, Charset.defaultCharset());
 		CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
 
 		if (crs != null) {
-			ds.forceSchemaCRS(crs);
+			ids.forceSchemaCRS(crs);
 		}
 
 		if (!file.exists()) {
@@ -867,50 +806,13 @@ public class Geonetwork implements ApplicationHandler
 			builder.setName(SPATIAL_INDEX_FILENAME);
 			builder.add(geomDescriptor);
 			builder.add(IDS_ATTRIBUTE_NAME, String.class);
-			ds.createSchema(builder.buildFeatureType());
+			ids.createSchema(builder.buildFeatureType());
 		}	
 
 		logger.info("NOTE: Using shapefile for spatial index, this can be slow for larger catalogs");
-		return ds;
+		return ids;
 	}
 
-	//---------------------------------------------------------------------------
-
-	private String getDatabase(String url, String[] values) throws Exception {
-		if (url.contains("postGIS")) {
-			return values[3];
-		} else if (url.contains("oracle")) {
-			return values[5];
-		} else {
-			throw new Exception("Unknown database in url "+url);
-		}
-	}
-
-	//---------------------------------------------------------------------------
-
-	private String getHost(String url, String[] values) throws Exception {
-		if (url.contains("postGIS")) {
-			String value = values[2];
-			return value.substring(0,value.indexOf(':'));
-		} else if (url.contains("oracle")) {
-			return values[3];
-		} else {
-			throw new Exception("Unknown database in url "+url);
-		}
-	}
-
-	//---------------------------------------------------------------------------
-
-	private String getPort(String url, String values[]) throws Exception {
-		if (url.contains("postGIS")) {
-			String value = values[2];
-			return value.substring(value.indexOf(':')+1);
-		} else if (url.contains("oracle")) {
-			return values[4];
-		} else {
-			throw new Exception("Unknown database in url "+url);
-		}
-	}
 }
 
 //=============================================================================

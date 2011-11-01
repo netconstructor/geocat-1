@@ -38,6 +38,9 @@ public final class Jeeves
 
 	public static final String CONFIG_FILE = "config.xml";
 
+	public static final String XML_CATALOG_FILES = "jeeves.xml.catalog.files";
+	public static final String XML_CATALOG_VERBOSITY = "jeeves.xml.catalog.verbosity";
+
 	//--------------------------------------------------------------------------
 	//---
 	//--- Url prefixes
@@ -254,6 +257,7 @@ public final class Jeeves
 			public static final String NUM_TESTS_PER_EVICTION_RUN = "numTestsPerEvictionRun";
 			public static final String CONTEXT = "context";
 			public static final String RESOURCE_NAME = "resourceName";
+			public static final String PROVIDE_DATA_STORE = "provideDataStore";
 		}
 	}
 

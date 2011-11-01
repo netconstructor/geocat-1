@@ -35,7 +35,7 @@
     <xsl:param name="schema"/>
     <xsl:param name="edit" select="false()"/>
     <xsl:param name="embedded"/>
-    
+
     <xsl:apply-templates mode="iso19139" select="." >
       <xsl:with-param name="schema" select="$schema"/>
       <xsl:with-param name="edit"   select="$edit"/>
@@ -98,7 +98,13 @@
   <!-- these elements should be boxed -->
   <!-- ===================================================================== -->
 
-  <xsl:template mode="iso19139" match="gmd:identificationInfo|gmd:distributionInfo|gmd:descriptiveKeywords|gmd:thesaurusName|gmd:spatialRepresentationInfo|gmd:pointOfContact|gmd:dataQualityInfo|gmd:referenceSystemInfo|gmd:equivalentScale|gmd:projection|gmd:ellipsoid|gmd:extent[name(..)!='gmd:EX_TemporalExtent']|gmd:geographicBox|gmd:EX_TemporalExtent|gmd:MD_Distributor|srv:containsOperations|srv:SV_CoupledResource|gmd:metadataConstraints">
+  <xsl:template mode="iso19139" match="gmd:identificationInfo|gmd:distributionInfo|gmd:descriptiveKeywords|gmd:thesaurusName|
+              *[name(..)='gmd:resourceConstraints']|gmd:spatialRepresentationInfo|gmd:pointOfContact|
+              gmd:dataQualityInfo|gmd:contentInfo|gmd:distributionFormat|
+              gmd:referenceSystemInfo|gmd:equivalentScale|gmd:projection|gmd:ellipsoid|gmd:extent[name(..)!='gmd:EX_TemporalExtent']|
+              gmd:geographicBox|gmd:EX_TemporalExtent|gmd:MD_Distributor|
+              srv:containsOperations|srv:SV_CoupledResource|
+              gmd:metadataConstraints">
     <xsl:param name="schema"/>
     <xsl:param name="edit"/>
     
@@ -137,7 +143,7 @@
         <xsl:variable name="text">
           <xsl:variable name="ref" select="gco:Distance/geonet:element/@ref"/>
           
-          <input type="text" class="md" name="_{$ref}" id="_{$ref}"  
+          <input type="number" class="md" name="_{$ref}" id="_{$ref}"  
             onkeyup="validateNumber(this,true,true);"
             onchange="validateNumber(this,true,true);"
             value="{gco:Distance}" size="30"/>
@@ -186,22 +192,26 @@
     to current user. In such a situation, clicking the link will return
     a privileges exception.
     -->
-  <xsl:template mode="iso19139" match="srv:operatesOn" priority="99">
+  <xsl:template mode="iso19139" match="srv:operatesOn|gmd:featureCatalogueCitation|gmd:source[name(parent::node())='gmd:LI_ProcessStep' or name(parent::node())='gmd:LI_Lineage']" priority="99">
     <xsl:param name="schema"/>
     <xsl:param name="edit"/>
     <xsl:variable name="text">
       
+      
       <xsl:choose>
         <xsl:when test="$edit=true()">
           <xsl:variable name="ref" select="geonet:element/@ref"/>
+          <xsl:variable name="typeOfLink" select="if (local-name(.)='featureCatalogueCitation') then 'iso19110' else 'uuidref'"/>
+          
           <input type="text" name="_{$ref}_uuidref" id="_{$ref}_uuidref" value="{./@uuidref}" size="20"
-            onfocus="javascript:Ext.getCmp('editorPanel').showLinkedMetadataSelectionPanel('{$ref}', 'uuidref');"/>
+            onfocus="javascript:Ext.getCmp('editorPanel').showLinkedMetadataSelectionPanel('{$ref}', 'uuidref', '{$typeOfLink}');"/>
           <img src="../../images/find.png" alt="{/root/gui/strings/search}" title="{/root/gui/strings/search}"
-            onclick="javascript:Ext.getCmp('editorPanel').showLinkedMetadataSelectionPanel('{$ref}', 'uuidref');" onmouseover="this.style.cursor='pointer';"/>
+            onclick="javascript:Ext.getCmp('editorPanel').showLinkedMetadataSelectionPanel('{$ref}', 'uuidref', '{$typeOfLink}');" 
+            onmouseover="this.style.cursor='pointer';"/>
         </xsl:when>
         <xsl:otherwise>
-          <a href="metadata.show?uuid={@uuidref}">
-                     <xsl:call-template name="getMetadataTitle">
+          <a href="#" onclick="javascript:catalogue.metadataShow('{@uuidref}');return false;">
+            <xsl:call-template name="getMetadataTitle">
               <xsl:with-param name="uuid" select="@uuidref"/>
             </xsl:call-template>
           </a>
@@ -214,6 +224,10 @@
       <xsl:with-param name="text"   select="$text"/>
       <xsl:with-param name="editAttributes" select="false()"/>
     </xsl:apply-templates>
+<!--<xsl:apply-templates mode="iso19139" select="*">
+      <xsl:with-param name="schema" select="$schema"/>
+      <xsl:with-param name="edit"   select="$edit"/>
+    </xsl:apply-templates>-->
   </xsl:template>
 
 
@@ -244,7 +258,7 @@
                             <xsl:value-of select="/root/gui/strings/noOperatesOn"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <select onchange="javascript:$('_{$ref}').value=this.options[this.selectedIndex].value;" class="md">
+                            <select onchange="javascript:Ext.getDom('_{$ref}').value=this.options[this.selectedIndex].value;" class="md">
                                 <option></option>
                                 <xsl:for-each select="//srv:operatesOn[@uuidref!='']">
                                     <option value="{@uuidref}">
@@ -271,10 +285,10 @@
                 <xsl:apply-templates mode="simpleElement" select=".">
                     <xsl:with-param name="schema"  select="$schema"/>
                     <xsl:with-param name="text">
-                      <a href="metadata.show?uuid={gco:CharacterString}">
-                       <xsl:call-template name="getMetadataTitle">
-                <xsl:with-param name="uuid" select="gco:CharacterString"/>
-              </xsl:call-template>
+                      <a href="#" onclick="javascript:catalogue.metadataShow('{gco:CharacterString}');return false;">
+                        <xsl:call-template name="getMetadataTitle">
+                          <xsl:with-param name="uuid" select="gco:CharacterString"/>
+                        </xsl:call-template>
                       </a>
                     </xsl:with-param>
                 </xsl:apply-templates>
@@ -1025,6 +1039,16 @@
       <xsl:otherwise>
         <xsl:apply-templates mode="simpleElement" select=".">
           <xsl:with-param name="schema" select="$schema"/>
+          <xsl:with-param name="title">
+            <xsl:call-template name="getTitle">
+              <xsl:with-param name="name" select="name(.)"/>
+              <xsl:with-param name="schema" select="$schema"/>
+            </xsl:call-template>
+            <xsl:if test="gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString">
+              (<xsl:value-of
+                select="gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString"/>)
+            </xsl:if>
+          </xsl:with-param>
           <xsl:with-param name="text">
             <xsl:variable name="value">
               <xsl:for-each select="gmd:MD_Keywords/gmd:keyword">
@@ -2364,9 +2388,11 @@
           <xsl:with-param name="text">
             <xsl:variable name="value" select="string(gco:CharacterString)"/>
             <xsl:variable name="ref" select="gco:CharacterString/geonet:element/@ref"/>
+            <xsl:variable name="isXLinked" select="count(ancestor-or-self::node()[@xlink:href]) > 0"/>
             <xsl:variable name="fref" select="../gmd:name/gco:CharacterString/geonet:element/@ref|../gmd:name/gmx:MimeFileType/geonet:element/@ref"/>
             <input type="hidden" id="_{$ref}" name="_{$ref}" value="{$value}"/>
             <select id="s_{$ref}" name="s_{$ref}" size="1" onchange="checkForFileUpload('{$fref}', '{$ref}', '{$value}');" class="md">
+              <xsl:if test="$isXLinked"><xsl:attribute name="disabled">disabled</xsl:attribute></xsl:if>
               <xsl:if test="$value=''">
                 <option value=""/>
               </xsl:if>
@@ -2526,8 +2552,15 @@
         </xsl:choose>
       </xsl:variable>
       
+      <xsl:variable name="title">
+        <xsl:apply-templates mode="escapeXMLEntities" select="/root/gmd:MD_Metadata/gmd:identificationInfo/*/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
+      </xsl:variable>
+    
       <button type="button" class="content repository" 
-        onclick="javascript:Ext.getCmp('editorPanel').showGeoPublisherPanel('{/root/*/geonet:info/id}', '{$layer}', 
+        onclick="javascript:Ext.getCmp('editorPanel').showGeoPublisherPanel('{/root/*/geonet:info/id}',
+        '{/root/*/geonet:info/uuid}', 
+        '{$title}',
+        '{$layer}', 
         '{$access}', 'gmd:onLine', '{ancestor::gmd:MD_DigitalTransferOptions/geonet:element/@ref}', [{$bbox}]);" 
         alt="{/root/gui/strings/publishHelp}" 
         title="{/root/gui/strings/geopublisherHelp}"><xsl:value-of select="/root/gui/strings/geopublisher"/></button>
@@ -2743,7 +2776,7 @@
           </xsl:apply-templates>
         </keyword>
       </xsl:for-each>
-
+    
       <xsl:for-each select="gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox">
         <geoBox>
           <westBL><xsl:value-of select="gmd:westBoundLongitude"/></westBL>
@@ -3014,7 +3047,7 @@
             <xsl:if test="not($isXLinked)">
               <xsl:text> </xsl:text>
               <select class="md"
-                onchange="$('_{gco:CharacterString/geonet:element/@ref}').value = this.options[this.selectedIndex].value;"
+                onchange="Ext.getDom('_{gco:CharacterString/geonet:element/@ref}').value = this.options[this.selectedIndex].value;"
                 size="1">
                 <option name="" />
                 <xsl:for-each select="/root/gui/regions/record">
@@ -3079,7 +3112,7 @@
                                 <xsl:with-param name="uuid" select="gco:CharacterString"></xsl:with-param>
                             </xsl:call-template>
                         </xsl:variable>
-                        <a href="metadata.show?uuid={gco:CharacterString}">
+                        <a href="#" onclick="javascript:catalogue.metadataShow('{gco:CharacterString}');return false;">
                             <xsl:value-of select="$metadataTitle"/>
                         </a>
                     </xsl:with-param>

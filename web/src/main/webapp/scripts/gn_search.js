@@ -90,6 +90,7 @@ function resetWherePars() {
 	setParam('region',null);
 	setParam('region_remote',null);
     
+  setParam('relation_simple','overlaps');	
   setParam('relation','overlaps');	
   setParam('relation_remote','overlaps');	
 
@@ -1015,7 +1016,8 @@ function setBoolParam(p, val)
   }
 
   /**
-   * TODO : remove / Not sure this function is used anywhere
+   * Used for fields other than themekey that would like to pop up a 
+	 * selector of values retrieved from the index
    */
   function selectorCheck(k, check, input, prep){
 	k = '"'+ k + '"';

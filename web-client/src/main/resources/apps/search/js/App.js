@@ -136,8 +136,10 @@ GeoNetwork.app = function(){
      */
     function createLoginForm(){
         var loginForm = new GeoNetwork.LoginForm({
-            renderTo: 'login-form',
-            catalogue: catalogue
+        	renderTo: 'login-form',
+            catalogue: catalogue,
+            layout: 'hbox',
+            hideLoginLabels: GeoNetwork.hideLoginLabels
         });
         
         catalogue.on('afterBadLogin', loginAlert, this);
@@ -170,24 +172,79 @@ GeoNetwork.app = function(){
                 // Add advanced mode criteria to simple form - start
         var advancedCriteria = [];
         var services = catalogue.services;
-        var orgNameField = new GeoNetwork.form.OpenSearchSuggestionTextField({
-            hideLabel: false,
-            minChars: 1,
-            hideTrigger: false,
+//        var orgNameField = new GeoNetwork.form.OpenSearchSuggestionTextField({
+//            hideLabel: false,
+//            minChars: 0,
+//            hideTrigger: false,
+//            url: services.opensearchSuggest,
+//            field: 'orgName', 
+//            name: 'E_orgName', 
+//            fieldLabel: OpenLayers.i18n('org')
+//        });
+        // Multi select organisation field 
+        var orgNameStore = new GeoNetwork.data.OpenSearchSuggestionStore({
             url: services.opensearchSuggest,
-            field: 'orgName', 
-            name: 'E_orgName', 
+            rootId: 1,
+            baseParams: {
+                field: 'orgName'
+            }
+        });
+        var orgNameField = new Ext.ux.form.SuperBoxSelect({
+            hideLabel: false,
+            minChars: 0,
+            queryParam: 'q',
+            hideTrigger: false,
+            id: 'E_orgName',
+            name: 'E_orgName',
+            store: orgNameStore,
+            valueField: 'value',
+            displayField: 'value',
+            valueDelimiter: ' or ',
+//            tpl: tpl,
             fieldLabel: OpenLayers.i18n('org')
         });
-        var themekeyField = new GeoNetwork.form.OpenSearchSuggestionTextField({
-            hideLabel: false,
-            minChars: 1,
-            hideTrigger: false,
+        
+        
+        
+        
+        // Multi select keyword
+        var themekeyStore = new GeoNetwork.data.OpenSearchSuggestionStore({
             url: services.opensearchSuggest,
-            field: 'keyword', 
-            name: 'E_themekey', 
-            fieldLabel: OpenLayers.i18n('keyword')
+            rootId: 1,
+            baseParams: {
+                field: 'keyword'
+            }
         });
+//        FIXME : could not underline current search criteria in tpl
+//        var tpl = '<tpl for="."><div class="x-combo-list-item">' + 
+//            '{[values.value.replace(Ext.getDom(\'E_themekey\').value, \'<span>\' + Ext.getDom(\'E_themekey\').value + \'</span>\')]}' + 
+//          '</div></tpl>';
+        var themekeyField = new Ext.ux.form.SuperBoxSelect({
+            hideLabel: false,
+            minChars: 0,
+            queryParam: 'q',
+            hideTrigger: false,
+            id: 'E_themekey',
+            name: 'E_themekey',
+            store: themekeyStore,
+            valueField: 'value',
+            displayField: 'value',
+            valueDelimiter: ' or ',
+//            tpl: tpl,
+            fieldLabel: OpenLayers.i18n('keyword')
+//            FIXME : Allow new data is not that easy
+//            allowAddNewData: true,
+//            addNewDataOnBlur: true,
+//            listeners: {
+//                newitem: function(bs,v, f){
+//                    var newObj = {
+//                            value: v
+//                        };
+//                    bs.addItem(newObj, true);
+//                }
+//            }
+        });
+        
         
         var when = new Ext.form.FieldSet({
             title: OpenLayers.i18n('when'),
@@ -200,12 +257,12 @@ GeoNetwork.app = function(){
         });
         
         
-        var catalogueField = GeoNetwork.util.SearchFormTools.getCatalogueField(services.getSources, services.logoUrl);
-        var groupField = GeoNetwork.util.SearchFormTools.getGroupField(services.getGroups);
-        var metadataTypeField = GeoNetwork.util.SearchFormTools.getMetadataTypeField();
-        var categoryField = GeoNetwork.util.SearchFormTools.getCategoryField(services.getCategories, '../images/default/category/');
-        var validField = GeoNetwork.util.SearchFormTools.getValidField();
-        var spatialTypes = GeoNetwork.util.SearchFormTools.getSpatialRepresentationTypeField();
+        var catalogueField = GeoNetwork.util.SearchFormTools.getCatalogueField(services.getSources, services.logoUrl, true);
+        var groupField = GeoNetwork.util.SearchFormTools.getGroupField(services.getGroups, true);
+        var metadataTypeField = GeoNetwork.util.SearchFormTools.getMetadataTypeField(true);
+        var categoryField = GeoNetwork.util.SearchFormTools.getCategoryField(services.getCategories, '../images/default/category/', true);
+        var validField = GeoNetwork.util.SearchFormTools.getValidField(true);
+        var spatialTypes = GeoNetwork.util.SearchFormTools.getSpatialRepresentationTypeField(null, true);
         var denominatorField = GeoNetwork.util.SearchFormTools.getScaleDenominatorField(true);
         
         advancedCriteria.push(themekeyField, orgNameField, categoryField, 
@@ -304,10 +361,12 @@ GeoNetwork.app = function(){
     function search(){
         searching = true;
         catalogue.search('searchForm', app.loadResults, null, catalogue.startRecord, true);
-        
+    }
+    
+    function initPanels(){
         var infoPanel = Ext.getCmp('infoPanel'), 
-            resultsPanel = Ext.getCmp('resultsPanel'),
-            tagCloudPanel = Ext.getCmp('tagCloudPanel');
+        resultsPanel = Ext.getCmp('resultsPanel'),
+        tagCloudPanel = Ext.getCmp('tagCloudPanel');
         if (infoPanel.isVisible()) {
             infoPanel.hide();
         }
@@ -325,7 +384,6 @@ GeoNetwork.app = function(){
             initMap();
         }
     }
-    
     /**
      * Bottom bar
      *
@@ -700,6 +758,9 @@ GeoNetwork.app = function(){
          * @return
          */
         loadResults: function(response){
+            
+            initPanels();
+            
             // FIXME : result panel need to update layout in case of slider
             // Ext.getCmp('resultsPanel').syncSize();
             Ext.getCmp('previousBt').setDisabled(catalogue.startRecord === 1);

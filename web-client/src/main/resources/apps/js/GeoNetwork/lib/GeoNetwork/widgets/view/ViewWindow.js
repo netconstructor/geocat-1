@@ -31,7 +31,14 @@ Ext.namespace('GeoNetwork.view');
  *  .. class:: ViewWindow(config)
  *
  *     Create a GeoNetwork metadata view window
- *
+ *     to display a metadata record. The metadata view use the view service.
+ *     
+ *     A toolbar is provided with:
+ *      
+ *      * a view mode selector 
+ *      * a metadata menu (:class:`GeoNetwork.MetadataMenu`)
+ *      * a print mode menu (for pretty HTML printing)
+ *      * a menu to turn off tooltips (on metadata descriptors)
  *
  */
 GeoNetwork.view.ViewWindow = Ext.extend(Ext.Window, {
@@ -40,33 +47,60 @@ GeoNetwork.view.ViewWindow = Ext.extend(Ext.Window, {
         width: 700,
         height: 740,
         border: false,
+        /** api: config[lang] 
+         *  The language to use to call GeoNetwork services in the print mode (which is opened in a new window).
+         */
+        lang: 'en',
         autoScroll: true,
         closeAction: 'destroy',
-        currTab: 'simple'
+        /** api: config[currTab] 
+         *  The default view mode to use. Default is 'simple'.
+         */
+        currTab: 'simple',
+        /** api: config[displayTooltip] 
+         *  Display tooltips or not. Default is true.
+         */
+        displayTooltip: true,
+        /** api: config[printDefaultForTabs]
+         *  Define if default mode should be used for HTML print output instead of tabs
+         *  (eg. metadata tag in advanced view will be replaced by default view)
+         */
+        printDefaultForTabs: false,
+        printMode: undefined,
+        /** api: config[relationTypes] 
+         *  List of types of relation to be displayed in header. 
+         *  Do not display feature catalogues (gmd:contentInfo) and sources (gmd:lineage) by default. 
+         *  Set to '' to display all.
+         */
+        relationTypes: 'service|children|related|parent|dataset',
+        maximizable: true,
+        maximized: false,
+        collapsible: true,
+        collapsed: false
     },
-    maximizable: true,
-    maximized: false,
-    collapsible: true,
-    collapsed: false,
     serviceUrl: undefined,
     catalogue: undefined,
     metadataUuid: undefined,
     record: undefined,
     resultsView: undefined,
     actionMenu: undefined,
-    /** 
+    tipTpl: undefined,
+    metadataSchema: undefined,
+    cache: {},
+    tooltips: [],
+    /** api: method[getLinkedData]
      *  Get related metadata records for current metadata using xml.relation service.
      */
     getLinkedData : function() {
-        var store = new GeoNetwork.data.MetadataRelationStore(this.catalogue.services.mdRelation + '?fast=false&uuid=' + this.metadataUuid, null, true),
+        var store = new GeoNetwork.data.MetadataRelationStore(this.catalogue.services.mdRelation + '?type=' + this.relationTypes + '&fast=false&uuid=' + this.metadataUuid, null, true),
             view = this;
         store.load();
         store.on('load', function(){
             this.each(view.displayLinkedData, view);
         });
     },
-    /**
-     * Display the record in the metadata related table (only available in simple view mode).
+    /** private: method[displayLinkedData]
+     *  Display the record in the metadata related table (only available in simple view mode).
      */
     displayLinkedData: function(record){
         var table = Ext.query('table.related', this.body.dom),
@@ -74,7 +108,7 @@ GeoNetwork.view.ViewWindow = Ext.extend(Ext.Window, {
         var el = Ext.get(table[0]);
         var exist = el.child('tr td[class*=' + type + ']');
         var link = '<li><a href="#" onclick="javascript:catalogue.metadataShow(\'' + 
-            record.get('uuid') + '\');" ' + 
+            record.get('uuid') + '\');return false;" ' + 
             'title="' + record.get('abstract') + '">' + 
             record.get('title') + '</a></li>';
         if (exist !== null) {
@@ -117,10 +151,12 @@ GeoNetwork.view.ViewWindow = Ext.extend(Ext.Window, {
         return viewButton;
     },
     updateViewMenu: function(){
-        var modes = Ext.query('span.mode', this.body.dom), menu = [], i, j, e, cmpId = this.getId();
-
+        var modes = Ext.query('span.mode', this.body.dom), menu = [], i, j, e, cmpId = this.getId(), isSimpleModeActive = true;
+        menu.push([OpenLayers.i18n('simpleViewMode'), 'view-simple', isSimpleModeActive]);
         Ext.ux.Lightbox.register('a[rel^=lightbox-viewset]', true);
-
+        
+        this.printMode = this.currTab;
+        
         for (i = 0; i < modes.length; i++) {
             if (modes[i].firstChild) {
                 var id = modes[i].getAttribute('id');
@@ -141,7 +177,9 @@ GeoNetwork.view.ViewWindow = Ext.extend(Ext.Window, {
                         // Register events when multiple tabs
                         for (j = 0; j < tabs.length; j++) {
                             e = Ext.get(tabs[j]);
-                            
+                            if (this.printDefaultForTabs) {
+                            	this.printMode = 'default';
+                            }
                             e.on('click', function(){
                                 Ext.getCmp(cmpId).switchToTab(this);
                             }, e.getAttribute('id'));
@@ -149,8 +187,15 @@ GeoNetwork.view.ViewWindow = Ext.extend(Ext.Window, {
                     }
                 }
                 menu.push([label, id, activeMode]);
+                
+                if (activeMode === true) {
+                    isSimpleModeActive = false;
+                }
             }
         }
+        
+        // If another mode is active turn off simple mode.
+        menu[0][2] = isSimpleModeActive;
         this.updateToolbar(menu);
     },
     updateToolbar: function(modes){
@@ -190,23 +235,125 @@ GeoNetwork.view.ViewWindow = Ext.extend(Ext.Window, {
     },
     // TODO : duplicate from EditorToolBar - end
     afterMetadataLoad: function(){
+        // Clear tooltip cache
+        this.cache = {};
+        this.tooltips = [];
+        
         // Processing after content load
         this.updateViewMenu();
         
         // Create map panel for extent visualization
         this.catalogue.extentMap.initMapDiv();
         
-        // Related metadata are only displayed in simple mode FIXME ?
-        if (this.currTab === 'view-simple') {
+        // Related metadata are only displayed in view mode with no tabs
+        if (this.currTab === 'view-simple' || this.currTab === 'inspire' || this.currTab === 'simple') {
             this.getLinkedData();
+        }
+        
+        this.registerTooltip();
+    },
+    createPrintMenu: function(){
+        return new Ext.Button({
+            iconCls: 'print',
+            tooltip: OpenLayers.i18n('printTT'),
+            listeners: {
+                click: function(c, pressed){
+                	window.open('print.html?uuid=' + this.metadataUuid + '&currTab=' + this.printMode + "&hl=" + this.lang);
+                },
+                scope: this
+            }
+        });
+    },
+    createTooltipMenu: function(){
+        return new Ext.Button({
+            enableToggle: true,
+            pressed: this.displayTooltip,
+            iconCls: 'book',
+            tooltip: OpenLayers.i18n('enableTooltip'),
+            listeners: {
+                toggle: function(c, pressed){
+                    this.displayTooltip = pressed;
+                    this.enableTooltip();
+                },
+                scope: this
+            }
+        });
+    },
+    /**
+     * Look for all th element with an id and register
+     * a tooltip
+     */
+    enableTooltip: function(){
+        Ext.each(this.tooltips, function(item, idx){
+            if (this.displayTooltip) {
+                item.enable();
+            } else {
+                item.disable();
+            }
+        }, this);
+    },
+    /**
+     * Look for all th element with an id and register
+     * a tooltip
+     */
+    registerTooltip: function(){
+        var formElements = Ext.query('th[id]', this.body.dom);
+        formElements = formElements.concat(Ext.query('legend[id]', this.body.dom));
+        Ext.each(formElements, function(item, index, allItems){
+            var e = Ext.get(item);
+            var id = e.getAttribute('id');
+            if (e.is('TH')) {
+                var section = e.up('FIELDSET');
+                var f = function(){
+                    if (this.displayTooltip) {
+                        this.loadHelp(id, section);
+                    }
+                };
+                e.parent().on('mouseover', f, this);
+                
+            } else {
+                var f = function(){
+                    if (this.displayTooltip) {
+                        this.loadHelp(id);
+                    }
+                };
+                    e.on('mouseover', f, this);
+                
+            }
+        }, this);
+    },
+    /**
+     * Add a tooltip to an element. If sectionId is defined,
+     * then anchor is on top (usually is a fieldset legend element)
+     */
+    loadHelp: function(id, sectionId){
+        if (!this.cache[id]) {
+            var panel = this;
+            GeoNetwork.util.HelpTools.get(id, this.metadataSchema, this.catalogue.services.schemaInfo, function(r) {
+                panel.cache[id] = panel.tipTpl.apply(r.records[0].data);
+                    
+                var t = new Ext.ToolTip({
+                    target: id,
+                    title: r.records[0].get('label'),
+                    anchor: sectionId ? 'top' : 'bottom',
+                    anchorOffset: 35,
+                    html: panel.cache[id]
+                });
+                // t.show();// This force the tooltip to be displayed once created
+                // it may cause issue when user scroll, so tooltips are all dislayed for hovered element
+                // If not present, the tooltip only appear when user come back to the element. FIXME
+                panel.tooltips.push(t);
+            });
         }
     },
     /** private: method[initComponent] 
      *  Initializes the metadata view window.
      */
-    initComponent: function(config){
-        Ext.apply(this, config);
+    initComponent: function(){
         Ext.applyIf(this, this.defaultConfig);
+        
+        this.tipTpl = new Ext.XTemplate(GeoNetwork.util.HelpTools.Templates.SIMPLE);
+        
         this.tools = [{
             id: 'newwindow',
             qtip: OpenLayers.i18n('newWindow'),
@@ -216,11 +363,11 @@ GeoNetwork.view.ViewWindow = Ext.extend(Ext.Window, {
             },
             scope: this
         }];
-        this.tbar = [this.createViewMenu(), this.createActionMenu()];
+        this.tbar = [this.createViewMenu(), this.createActionMenu(), '->', this.createPrintMenu(), this.createTooltipMenu()];
         
         GeoNetwork.view.ViewWindow.superclass.initComponent.call(this);
-        
-        this.setTitle(this.record?this.record.get('title'):'');
+        this.metadataSchema = this.record ? this.record.get('schema') : '';
+        this.setTitle(this.record ? this.record.get('title') : '');
         this.add(new Ext.Panel({
             autoLoad: {
                 url: this.serviceUrl + '&currTab=' + this.currTab,
