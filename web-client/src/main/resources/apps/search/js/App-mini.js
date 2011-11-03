@@ -15219,13 +15219,8 @@ this.geoPublisherWindow=undefined
 var xml="";
 var layerName=(node.get("id").indexOf("mapserver")===-1?node.get("namespacePrefix")+":":"")+this.layerName;
 var id="_X"+insertNodeRef+"_"+nodeName.replace(":","COLON");
-<<<<<<< HEAD
-var wxsOnlineSource="<gmd:onLine xmlns:gmd=&quot;http://www.isotc211.org/2005/gmd&quot; xmlns:gco=&quot;http://www.isotc211.org/2005/gco&quot;><gmd:CI_OnlineResource><gmd:linkage><gmd:URL>${url}</gmd:URL></gmd:linkage><gmd:protocol><gco:CharacterString>${protocol}</gco:CharacterString></gmd:protocol><gmd:name><gco:CharacterString>${layerName}</gco:CharacterString></gmd:name><gmd:description><gco:CharacterString>${layerName}</gco:CharacterString></gmd:description></gmd:CI_OnlineResource></gmd:onLine>";
-for(p in protocols){if(protocols.hasOwnProperty(p)){xml+=OpenLayers.String.format(wxsOnlineSource,{url:node.get(p+"Url"),protocol:protocols[p].label,layerName:layerName})+"&&&"
-=======
 var wxsOnlineSource="<gmd:onLine xmlns:gmd=&quot;http://www.isotc211.org/2005/gmd&quot; xmlns:gco=&quot;http://www.isotc211.org/2005/gco&quot;><gmd:CI_OnlineResource><gmd:linkage><gmd:URL>${ogcurl}</gmd:URL></gmd:linkage><gmd:protocol><gco:CharacterString>${protocol}</gco:CharacterString></gmd:protocol><gmd:name><gco:CharacterString>${layerName}</gco:CharacterString></gmd:name><gmd:description><gco:CharacterString>${metadataTitle}</gco:CharacterString></gmd:description></gmd:CI_OnlineResource></gmd:onLine>";
 for(p in protocols){if(protocols.hasOwnProperty(p)&&protocols[p].checked===true){xml+=OpenLayers.String.format(wxsOnlineSource,{ogcurl:node.get(p+"Url"),protocol:protocols[p].label,layerName:layerName,metadataTitle:this.metadataTitle+"("+protocols[p].label+")"})+"&&&"
->>>>>>> mirror/master
 }}GeoNetwork.editor.EditorTools.addHiddenFormField(id,xml);
 editorPanel.save();
 editorPanel.geoPublisherWindow.hide()
@@ -18089,21 +18084,12 @@ var orgNameField=new Ext.ux.form.SuperBoxSelect({hideLabel:false,minChars:0,quer
 var themekeyStore=new GeoNetwork.data.OpenSearchSuggestionStore({url:services.opensearchSuggest,rootId:1,baseParams:{field:"keyword"}});
 var themekeyField=new Ext.ux.form.SuperBoxSelect({hideLabel:false,minChars:0,queryParam:"q",hideTrigger:false,id:"E_themekey",name:"E_themekey",store:themekeyStore,valueField:"value",displayField:"value",valueDelimiter:" or ",fieldLabel:OpenLayers.i18n("keyword")});
 var when=new Ext.form.FieldSet({title:OpenLayers.i18n("when"),autoWidth:true,defaultType:"datefield",collapsible:true,collapsed:true,items:GeoNetwork.util.SearchFormTools.getWhen()});
-<<<<<<< HEAD
-var catalogueField=GeoNetwork.util.SearchFormTools.getCatalogueField(services.getSources,services.logoUrl);
-var groupField=GeoNetwork.util.SearchFormTools.getGroupField(services.getGroups);
-var metadataTypeField=GeoNetwork.util.SearchFormTools.getMetadataTypeField();
-var categoryField=GeoNetwork.util.SearchFormTools.getCategoryField(services.getCategories,services.imgUrl+"category/");
-var validField=GeoNetwork.util.SearchFormTools.getValidField();
-var spatialTypes=GeoNetwork.util.SearchFormTools.getSpatialRepresentationTypeField();
-=======
 var catalogueField=GeoNetwork.util.SearchFormTools.getCatalogueField(services.getSources,services.logoUrl,true);
 var groupField=GeoNetwork.util.SearchFormTools.getGroupField(services.getGroups,true);
 var metadataTypeField=GeoNetwork.util.SearchFormTools.getMetadataTypeField(true);
 var categoryField=GeoNetwork.util.SearchFormTools.getCategoryField(services.getCategories,"../images/default/category/",true);
 var validField=GeoNetwork.util.SearchFormTools.getValidField(true);
 var spatialTypes=GeoNetwork.util.SearchFormTools.getSpatialRepresentationTypeField(null,true);
->>>>>>> mirror/master
 var denominatorField=GeoNetwork.util.SearchFormTools.getScaleDenominatorField(true);
 advancedCriteria.push(themekeyField,orgNameField,categoryField,when,spatialTypes,denominatorField,catalogueField,groupField,metadataTypeField,validField);
 var adv={xtype:"fieldset",title:OpenLayers.i18n("advancedSearchOptions"),autoHeight:true,autoWidth:true,collapsible:true,collapsed:(urlParameters.advanced?false:true),defaultType:"checkbox",defaults:{width:160},items:advancedCriteria};

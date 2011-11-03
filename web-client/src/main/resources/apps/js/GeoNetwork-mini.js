@@ -15219,13 +15219,8 @@ this.geoPublisherWindow=undefined
 var xml="";
 var layerName=(node.get("id").indexOf("mapserver")===-1?node.get("namespacePrefix")+":":"")+this.layerName;
 var id="_X"+insertNodeRef+"_"+nodeName.replace(":","COLON");
-<<<<<<< HEAD
-var wxsOnlineSource="<gmd:onLine xmlns:gmd=&quot;http://www.isotc211.org/2005/gmd&quot; xmlns:gco=&quot;http://www.isotc211.org/2005/gco&quot;><gmd:CI_OnlineResource><gmd:linkage><gmd:URL>${url}</gmd:URL></gmd:linkage><gmd:protocol><gco:CharacterString>${protocol}</gco:CharacterString></gmd:protocol><gmd:name><gco:CharacterString>${layerName}</gco:CharacterString></gmd:name><gmd:description><gco:CharacterString>${layerName}</gco:CharacterString></gmd:description></gmd:CI_OnlineResource></gmd:onLine>";
-for(p in protocols){if(protocols.hasOwnProperty(p)){xml+=OpenLayers.String.format(wxsOnlineSource,{url:node.get(p+"Url"),protocol:protocols[p].label,layerName:layerName})+"&&&"
-=======
 var wxsOnlineSource="<gmd:onLine xmlns:gmd=&quot;http://www.isotc211.org/2005/gmd&quot; xmlns:gco=&quot;http://www.isotc211.org/2005/gco&quot;><gmd:CI_OnlineResource><gmd:linkage><gmd:URL>${ogcurl}</gmd:URL></gmd:linkage><gmd:protocol><gco:CharacterString>${protocol}</gco:CharacterString></gmd:protocol><gmd:name><gco:CharacterString>${layerName}</gco:CharacterString></gmd:name><gmd:description><gco:CharacterString>${metadataTitle}</gco:CharacterString></gmd:description></gmd:CI_OnlineResource></gmd:onLine>";
 for(p in protocols){if(protocols.hasOwnProperty(p)&&protocols[p].checked===true){xml+=OpenLayers.String.format(wxsOnlineSource,{ogcurl:node.get(p+"Url"),protocol:protocols[p].label,layerName:layerName,metadataTitle:this.metadataTitle+"("+protocols[p].label+")"})+"&&&"
->>>>>>> mirror/master
 }}GeoNetwork.editor.EditorTools.addHiddenFormField(id,xml);
 editorPanel.save();
 editorPanel.geoPublisherWindow.hide()
