@@ -265,6 +265,7 @@
 <!-- normal records -->
 
 			<xsl:otherwise>
+
 				<xsl:variable name="md">
 					<xsl:apply-templates mode="brief" select="."/>
 				</xsl:variable>

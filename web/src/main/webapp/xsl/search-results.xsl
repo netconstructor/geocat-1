@@ -3,6 +3,7 @@
 
 	<xsl:include href="main.xsl"/>
 	<xsl:include href="metadata.xsl"/>
+    <xsl:include href="metadata-geocat-utils.xsl"/>
 
 	<xsl:variable name="pageRange"   select="5"/>
 	<xsl:variable name="hitsPerPage">
@@ -22,6 +23,14 @@
         <link rel="stylesheet" type="text/css" href="../../scripts/ext/resources/css/ext-all.css"/>
 
 		<script language="JavaScript" type="text/javascript">
+		function permlink(url) {
+		    Ext.MessageBox.show({
+		        title: translate("permlink"),
+		        msg: '<a href = "'+url+'" target="_newtab">'+url+'</a>',
+		        animEl: 'mb7'
+		    });
+		}
+		
             var translations = {
 				<xsl:apply-templates select="/root/gui/strings/*[@js='true' and not(*) and not(@id)]" mode="js-translations"/>
 			};
@@ -153,6 +162,11 @@
 		<xsl:param name="metadata"/>
 		<xsl:param name="remote"/>
 
+	    <xsl:variable name="protocol" select="/root/gui/env/server/protocol" />
+		<xsl:variable name="host" select="/root/gui/env/server/host" />
+		<xsl:variable name="port" select="/root/gui/env/server/port" />
+    	<xsl:variable name="baseURL" select="concat($protocol,'://',$host,':',$port,/root/gui/url)" />
+
 		<!-- info -->
 		<table width="100%">
 			<tr>
@@ -219,7 +233,7 @@
 										</h1>
 									</td>
 								<!-- Download XML for ISO and FGDC for use in applications like GeoNetwork or ESRI ArcCatalog -->
-									<td class="padded" align="center" nowrap="nowrap" width="40">
+									<td class="padded" align="center" nowrap="nowrap">
 										<xsl:choose>
 											<xsl:when test="contains($metadata/geonet:info/schema,'dublin-core')">
 												<a href="{/root/gui/locService}/dc.xml?id={$metadata/geonet:info/id}" target="_blank" title="{/root/gui/strings/savexml/dc}">
@@ -240,12 +254,10 @@
 												</a>
 											</xsl:when>
 											<xsl:when test="contains($metadata/geonet:info/schema,'iso19139')">
-												<a href="{/root/gui/locService}/iso19139.xml?id={$metadata/geonet:info/id}" target="_blank" title="{/root/gui/strings/savexml/iso19139}">
-													<img src="{/root/gui/url}/images/xml.png" alt="{/root/gui/strings/savexml/iso19139}" title="{/root/gui/strings/savexml/iso19139}" border="0"/>
-												</a>
-<!-- //FIXME												<a href="{/root/gui/locService}/iso_arccatalog8.xml?id={$metadata/geonet:info/id}" target="_blank" title="{/root/gui/strings/savexml/iso19115Esri}">
-													<img src="{/root/gui/url}/images/ac.png" alt="{/root/gui/strings/savexml/iso19115Esri}" title="{/root/gui/strings/savexml/iso19115Esri}" border="0"/>
-												</a> -->
+											 <xsl:call-template name="geocatMetadataLinks">
+											     <xsl:with-param name="metadata" select="$metadata"/>
+											     <xsl:with-param name="baseURL" select="$baseURL" /> 
+										     </xsl:call-template>
 											</xsl:when>
 
 										</xsl:choose>

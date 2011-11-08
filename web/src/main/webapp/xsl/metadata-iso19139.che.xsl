@@ -1695,13 +1695,33 @@
 	<!-- === iso19139 brief formatting === -->
 	<!-- ===================================================================== -->
 	
-	<xsl:template name="iso19139.cheBrief">
+	<xsl:template match="iso19139.cheBrief">
+	 <xsl:for-each select="/metadata/*[1]">
 		<metadata>
-			<xsl:variable name="download_check">
-				<xsl:text>&amp;fname=&amp;access</xsl:text>
-			</xsl:variable>
-			<xsl:variable name="id" select="geonet:info/id"/>
-			<xsl:variable name="uuid" select="geonet:info/uuid"/>
+		  <xsl:choose>
+		    <xsl:when test="geonet:info/isTemplate='s'">
+		      <xsl:apply-templates mode="iso19139-subtemplate" select="."/>
+		      <xsl:copy-of select="geonet:info" copy-namespaces="no"/>
+		    </xsl:when>
+		    <xsl:otherwise>
+		      <xsl:call-template name="iso19139.che-brief"/>
+		    </xsl:otherwise>
+		  </xsl:choose>
+		</metadata>
+	 </xsl:for-each>
+	</xsl:template>
+	
+
+	<xsl:template name="iso19139.che-brief">
+			<xsl:variable name="download_check"><xsl:text>&amp;fname=&amp;access</xsl:text></xsl:variable>
+			<xsl:variable name="info" select="geonet:info"/>
+			<xsl:variable name="id" select="$info/id"/>
+			<xsl:variable name="uuid" select="$info/uuid"/>
+
+			<xsl:if test="normalize-space(gmd:parentIdentifier/gco:CharacterString)!=''">
+				<parentId><xsl:value-of select="gmd:parentIdentifier/*"/></parentId>
+			</xsl:if>
+
 			<xsl:variable name="langId">
 				<xsl:call-template name="getLangId">
 					<xsl:with-param name="langGui" select="/root/gui/language"/>
@@ -1709,184 +1729,98 @@
 				</xsl:call-template>
 			</xsl:variable>
 			
-			<xsl:if test="gmd:parentIdentifier[gco:CharacterString!='']">
-				<parentId><xsl:value-of select="gmd:parentIdentifier/gco:CharacterString"/></parentId>
-			</xsl:if>
-			
-			<xsl:apply-templates mode="briefster"
-				select="gmd:identificationInfo/gmd:MD_DataIdentification|
-				gmd:identificationInfo/*[@gco:isoType='gmd:MD_DataIdentification']|
-				gmd:identificationInfo/srv:SV_ServiceIdentification|
-				gmd:identificationInfo/*[@gco:isoType='srv:SV_ServiceIdentification']">
+			<xsl:apply-templates mode="briefster" select="gmd:identificationInfo/gmd:MD_DataIdentification|gmd:identificationInfo/*[@gco:isoType='gmd:MD_DataIdentification']|gmd:identificationInfo/srv:SV_ServiceIdentification|gmd:identificationInfo/*[@gco:isoType='srv:SV_ServiceIdentification']">
 				<xsl:with-param name="id" select="$id"/>
 				<xsl:with-param name="langId" select="$langId"/>
+				<xsl:with-param name="info" select="$info"/>
 			</xsl:apply-templates>
 			
-			<xsl:for-each
-				select="gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource">
-				<xsl:variable name="protocol" select="gmd:protocol/gco:CharacterString"/>
-				<xsl:variable name="linkage">
-					<xsl:choose>
-						<xsl:when test="count(gmd:linkage/*[name(.)!='gmd:URL']) &gt; 0">
-							<xsl:apply-templates mode="localisedUrl" select="gmd:linkage">
-								<xsl:with-param name="langId" select="$langId"/>
-							</xsl:apply-templates>      
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="normalize-space(gmd:linkage/gmd:URL)"/>
-						</xsl:otherwise>
-					</xsl:choose>
+			<xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource">
+				<xsl:variable name="protocol" select="gmd:protocol[1]/gco:CharacterString"/>
+				<xsl:variable name="linkage"  select="normalize-space(gmd:linkage/gmd:URL)"/>
+				<xsl:variable name="name">
+					<xsl:for-each select="gmd:name">
+						<xsl:call-template name="localised">
+							<xsl:with-param name="langId" select="$langId"/>
+						</xsl:call-template>
+					</xsl:for-each>
 				</xsl:variable>
+
+				<xsl:variable name="mimeType" select="normalize-space(gmd:name/gmx:MimeFileType/@type)"/>
 				
-				<xsl:variable name="name" select="normalize-space(gmd:name/gco:CharacterString)"/>
-				<xsl:variable name="desc"
-					select="normalize-space(gmd:description/gco:CharacterString)"/>
-				
-				
+				<xsl:variable name="desc">
+					<xsl:for-each select="gmd:description">
+						<xsl:call-template name="localised">
+							<xsl:with-param name="langId" select="$langId"/>
+						</xsl:call-template>
+					</xsl:for-each>
+				</xsl:variable>
+
 				<xsl:if test="string($linkage)!=''">
-					
-					<xsl:element name="link">
-						<xsl:attribute name="title">
-							<xsl:value-of select="$desc"/>
-						</xsl:attribute>
-						<xsl:attribute name="href">
-							<xsl:value-of select="$linkage"/>
-						</xsl:attribute>
-						<xsl:attribute name="name">
-							<xsl:value-of select="$name"/>
-						</xsl:attribute>
-						<xsl:choose>
-							<xsl:when test="starts-with($protocol,'WWW:LINK-')">
-								<xsl:attribute name="type">text/html</xsl:attribute>
-							</xsl:when>
-							<xsl:when
-								test="starts-with($protocol,'WWW:DOWNLOAD-') and contains($linkage,'.jpg')">
-								<xsl:attribute name="type">image/jpeg</xsl:attribute>
-							</xsl:when>
-							<xsl:when
-								test="starts-with($protocol,'WWW:DOWNLOAD-') and contains($linkage,'.png')">
-								<xsl:attribute name="type">image/png</xsl:attribute>
-							</xsl:when>
-							<xsl:when
-								test="starts-with($protocol,'WWW:DOWNLOAD-') and contains($linkage,'.gif')">
-								<xsl:attribute name="type">image/gif</xsl:attribute>
-							</xsl:when>
-							<xsl:when
-								test="starts-with($protocol,'WWW:DOWNLOAD-') and contains($linkage,'.doc')">
-								<xsl:attribute name="type">application/word</xsl:attribute>
-							</xsl:when>
-							<xsl:when
-								test="starts-with($protocol,'WWW:DOWNLOAD-') and contains($linkage,'.zip')">
-								<xsl:attribute name="type">application/zip</xsl:attribute>
-							</xsl:when>
-							<xsl:when
-								test="starts-with($protocol,'WWW:DOWNLOAD-') and contains($linkage,'.pdf')">
-								<xsl:attribute name="type">application/pdf</xsl:attribute>
-							</xsl:when>
-							<xsl:when
-								test="starts-with($protocol,'GLG:KML-') and contains($linkage,'.kml')">
-								<xsl:attribute name="type"
-									>application/vnd.google-earth.kml+xml</xsl:attribute>
-							</xsl:when>
-							<xsl:when
-								test="starts-with($protocol,'GLG:KML-') and contains($linkage,'.kmz')">
-								<xsl:attribute name="type"
-									>application/vnd.google-earth.kmz</xsl:attribute>
-							</xsl:when>
-							<xsl:when test="starts-with($protocol,'OGC:WMS-')">
-								<xsl:attribute name="type"
-									>application/vnd.ogc.wms_xml</xsl:attribute>
-							</xsl:when>
-							<xsl:when test="$protocol='ESRI:AIMS-'">
-								<xsl:attribute name="type"
-									>application/vnd.esri.arcims_axl</xsl:attribute>
-							</xsl:when>
-							<xsl:when test="$protocol!=''">
-								<xsl:attribute name="type">
-									<xsl:value-of select="$protocol"/>
-								</xsl:attribute>
-							</xsl:when>
-							<xsl:otherwise>
-								<!-- fall back to the default content type -->
-								<xsl:attribute name="type">text/plain</xsl:attribute>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:element>
-					
+						<xsl:element name="link">
+							<xsl:attribute name="title"><xsl:value-of select="$desc"/></xsl:attribute>
+							<xsl:attribute name="href"><xsl:value-of select="$linkage"/></xsl:attribute>
+							<xsl:attribute name="name"><xsl:value-of select="$name"/></xsl:attribute>
+							<xsl:attribute name="protocol"><xsl:value-of select="$protocol"/></xsl:attribute>
+						  <xsl:attribute name="type" select="geonet:protocolMimeType($linkage, $protocol, $mimeType)"/>
+						</xsl:element>
 				</xsl:if>
-				
+
 				<!-- Generate a KML output link for a WMS service -->
-				<xsl:if
-					test="string($linkage)!='' and starts-with($protocol,'OGC:WMS-') and contains($protocol,'-get-map') and string($linkage)!='' and string($name)!=''">
+				<xsl:if test="string($linkage)!='' and starts-with($protocol,'OGC:WMS-') and contains($protocol,'-get-map') and string($linkage)!='' and string($name)!=''">
 					
 					<xsl:element name="link">
-						<xsl:attribute name="title">
-							<xsl:value-of select="$desc"/>
-						</xsl:attribute>
+						<xsl:attribute name="title"><xsl:value-of select="$desc"/></xsl:attribute>
 						<xsl:attribute name="href">
-							<xsl:value-of
-								select="concat('http://',/root/gui/env/server/host,':',/root/gui/env/server/port,/root/gui/locService,'/google.kml?uuid=',$uuid,'&amp;layers=',$name)"
-							/>
+							<xsl:value-of select="concat(/root/gui/env/server/protocol,'://',/root/gui/env/server/host,':',/root/gui/env/server/port,/root/gui/locService,'/google.kml?uuid=',$uuid,'&amp;layers=',$name)"/>
 						</xsl:attribute>
-						<xsl:attribute name="name">
-							<xsl:value-of select="$name"/>
-						</xsl:attribute>
-						<xsl:attribute name="type"
-							>application/vnd.google-earth.kml+xml</xsl:attribute>
+						<xsl:attribute name="name"><xsl:value-of select="$name"/></xsl:attribute>
+						<xsl:attribute name="type">application/vnd.google-earth.kml+xml</xsl:attribute>
 					</xsl:element>
 				</xsl:if>
-				
-				<!-- The old links still in use by some systems. Deprecated -->
-				<xsl:choose>
-					<xsl:when
-						test="starts-with($protocol,'WWW:DOWNLOAD-') and contains($protocol,'http--download') and not(contains($linkage,$download_check))">
-						<link type="download">
-							<xsl:value-of select="$linkage"/>
-						</link>
-					</xsl:when>
-					<xsl:when
-						test="starts-with($protocol,'ESRI:AIMS-') and contains($protocol,'-get-image') and string($linkage)!='' and string($name)!=''">
-						<link type="arcims">
-							<!--                            <xsl:value-of select="concat('javascript:popInterMap(&#34;',/root/gui/url,'/intermap/srv/',/root/gui/language,'/map.addServicesExt?url=',$linkage,'&amp;service=',$name,'&amp;type=1&#34;)')"/>-->
-							<xsl:value-of
-								select="concat('javascript:runIM_addService(&#34;'  ,  $linkage  ,  '&#34;, &#34;', $name  ,'&#34;, 1)' )"
-							/>
-						</link>
-					</xsl:when>
-					<xsl:when
-						test="starts-with($protocol,'OGC:WMS-') and contains($protocol,'-get-map') and string($linkage)!='' and string($name)!=''">
-						<link type="wms">
-							<!--                            <xsl:value-of select="concat('javascript:popInterMap(&#34;',/root/gui/url,'/intermap/srv/',/root/gui/language,'/map.addServicesExt?url=',$linkage,'&amp;service=',$name,'&amp;type=2&#34;)')"/>-->
-							<xsl:value-of
-								select="concat('javascript:runIM_addService(&#34;'  ,  $linkage  ,  '&#34;, &#34;', $name  ,'&#34;, 2)' )"
-							/>
-						</link>
-						<link type="googleearth">
-							<xsl:value-of
-								select="concat(/root/gui/locService,'/google.kml?uuid=',$uuid,'&amp;layers=',$name)"
-							/>
-						</link>
-					</xsl:when>
-					<xsl:when
-						test="starts-with($protocol,'OGC:WMS-') and contains($protocol,'-get-capabilities') and string($linkage)!=''">
-						<link type="wms">
-							<xsl:value-of
-								select="concat('javascript:runIM_selectService(&#34;'  ,  $linkage  ,  '&#34;, 2,',$id,')' )"
-							/>
-						</link>
-					</xsl:when>
-					<xsl:when test="string($linkage)!=''">
-						<link type="url">
-							<xsl:value-of select="$linkage"/>
-						</link>
-					</xsl:when>
-					
-				</xsl:choose>
 			</xsl:for-each>
 			
-			<xsl:copy-of select="geonet:info"/>
-		</metadata>
+			<xsl:for-each select="gmd:contact/*">
+				<xsl:variable name="role" select="gmd:role/*/@codeListValue"/>
+				<xsl:if test="normalize-space($role)!=''">
+				  <responsibleParty role="{geonet:getCodeListValue(/root/gui/schemas, 'iso19139', 'gmd:CI_RoleCode', $role)}" appliesTo="metadata">
+						<xsl:apply-templates mode="responsiblepartysimple" select="."/>
+					</responsibleParty>
+				</xsl:if>
+			</xsl:for-each>
+
+			<metadatacreationdate>
+				<xsl:value-of select="gmd:dateStamp/*"/>
+			</metadatacreationdate>
+
+			<geonet:info>
+			  <xsl:copy-of select="geonet:info/*[name(.)!='edit']"/>
+			  <xsl:choose>
+			    <xsl:when test="/root/gui/env/harvester/enableEditing='false' and geonet:info/isHarvested='y'">
+			      <edit>false</edit>
+			    </xsl:when>
+			    <xsl:otherwise>
+			      <xsl:copy-of select="geonet:info/edit"/>
+			    </xsl:otherwise>
+			  </xsl:choose>
+				<!-- 
+					Internal category could be define using different informations
+				in a metadata record (according to standard). This could be improved.
+				This type of categories could be added to Lucene index also in order
+				to be queriable. 
+				Services and datasets are at least the required internal categories
+				to be distinguished for INSPIRE requirements (hierarchyLevel could be
+				use also). TODO
+				-->
+				<category internal="true">
+					<xsl:choose>
+						<xsl:when test="gmd:identificationInfo/srv:SV_ServiceIdentification|gmd:identificationInfo/*[@gco:isoType='srv:SV_ServiceIdentification']">service</xsl:when>
+						<xsl:otherwise>dataset</xsl:otherwise>
+					</xsl:choose>
+				</category>
+			</geonet:info>
 	</xsl:template>
+	
 
 <!--  Just stuck in here so xsl compile pre-edit stage of project, really needs to be other place -->
   <xsl:template name="validatedXlink">
