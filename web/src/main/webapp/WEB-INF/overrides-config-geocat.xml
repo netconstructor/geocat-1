@@ -1,5 +1,6 @@
 <overrides>
     <import file="/WEB-INF/server-props-overrides.xml"/>
+    <import file="/WEB-INF/overrides-config-csw-geocat.xml"/>
     
     <properties>
         <postgis.user>www-data</postgis.user>

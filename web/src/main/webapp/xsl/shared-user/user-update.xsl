@@ -10,7 +10,8 @@
 	-->
     
 	<xsl:template mode="script" match="/">
-        <script src="{/root/gui/url}/scripts/mapfishIntegration/ext-small.js" type="text/javascript"/>
+        <script src="{/root/gui/url}/scripts/ext/adapter/ext/ext-base.js" type="text/javascript"/>
+        <script src="{/root/gui/url}/scripts/ext/ext-all.js" type="text/javascript"/>
         <script type="text/javascript" src="{/root/gui/url}/scripts/translation_edit.js"/>
 		<script type="text/javascript" language="JavaScript">
 			// TODO : translate error message !
@@ -39,7 +40,6 @@
                 editI18n.init('onlinename', lang);
                 editI18n.init('onlinedescription', lang);
                 editI18n.init('onlineresource', lang);
-				profileChanged();
 			}
 		</script>
 	</xsl:template>

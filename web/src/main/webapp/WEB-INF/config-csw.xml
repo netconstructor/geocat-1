@@ -26,6 +26,7 @@
 
                 <parameter name="Abstract" field="abstract" type="SupportedISOQueryables">
                     <xpath schema="iso19139" path="gmd:abstract/gco:CharacterString"/>
+                    <xpath schema="iso19139.che" path="gmd:abstract/gco:CharacterString"/>
                 </parameter>
 
                 <parameter name="AnyText" field="any" type="SupportedISOQueryables" />
