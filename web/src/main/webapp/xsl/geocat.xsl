@@ -68,7 +68,10 @@
 			
             translations.languageIso3 = geocat.language;
 
-                geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', Env.proxy+'url=<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
+                geocat.initialize(
+                    '<xsl:value-of select="/root/gui/url"/>/',
+                    <xsl:value-of select="/root/gui/config/geoserver.url"/>,
+                    '<xsl:value-of select="/root/gui/session/userId"/>');
             });
         </script>
         

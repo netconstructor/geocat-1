@@ -30,6 +30,8 @@ import java.lang.reflect.Constructor;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -775,6 +777,24 @@ public class LuceneSearcher extends MetaSearcher
             }
 
             if(StringUtils.hasLength(analyzedString)) {
+            // no wildcards
+            if(string.indexOf('*') < 0 && string.indexOf('?') < 0) {
+                // similarity is not set or is 1
+                if(similarity == null || similarity.equals("1")) {
+                        query = new TermQuery(new Term(luceneIndexField, analyzedString));
+                }
+                // similarity is not null and not 1
+                else {
+                    Float minimumSimilarity = Float.parseFloat(similarity);
+                        query = new FuzzyQuery(new Term(luceneIndexField, analyzedString), minimumSimilarity);
+                }
+            }
+            // wildcards
+            else {
+                    query = new WildcardQuery(new Term(luceneIndexField, analyzedString));
+                }
+            }
+            if(StringUtils.hasLength(analyzedString) && tokenizedFieldSet.contains(luceneIndexField)) {
                 if(analyzedString.contains(" ")) {
                     // if analyzer creates spaces (by converting ignored characters like -) then make boolean query
                     String[] terms = analyzedString.split(" ");
@@ -883,15 +903,20 @@ public class LuceneSearcher extends MetaSearcher
 
 		FieldSelector keySelector = new FieldSelector() {
 			public final FieldSelectorResult accept(String name) {
-				if (summaryMaps.get(name) != null) return FieldSelectorResult.LOAD;
+				if (name.equals("_id") || summaryMaps.get(name) != null) return FieldSelectorResult.LOAD;
 				else return FieldSelectorResult.NO_LOAD;
 			}
 		};
 
+		BitSet read=new BitSet(sdocs.length);
         for (ScoreDoc sdoc : sdocs) {
             Document doc = null;
             try {
                 doc = reader.document(sdoc.doc, keySelector);
+                String _id = doc.get("_id");
+                int id = Integer.parseInt(_id);
+                if(read.get(id)) continue;
+                read.set(id);
             }
             catch (Exception e) {
                 Log.error(Geonet.SEARCH_ENGINE, e.getMessage() + " Caused Failure to get document " + sdoc.doc);
@@ -902,7 +927,10 @@ public class LuceneSearcher extends MetaSearcher
                 HashMap<String, Integer> summary = summaryMaps.get(key);
                 String hits[] = doc.getValues(key);
                 if (hits != null) {
+                	Set<String> visited = new HashSet<String>();
                     for (String info : hits) {
+                    	if(visited.contains(info)) continue;
+                    	visited.add(info);
                         Integer catCount = summary.get(info);
                         if (catCount == null) {
                             catCount = 1;

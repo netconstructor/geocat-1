@@ -17,12 +17,12 @@
       <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="/tmp/gc_data/htmlCacheDir"/>
     </file>
     <file name=".*/WEB-INF/config-gui.xml">
-        <replaceText xpath="geoserver.url">http://ec2-79-125-29-72.eu-west-1.compute.amazonaws.com/geoserver</replaceText>
+        <replaceText xpath="geoserver.url">http://www.geocat.ch/geoserver</replaceText>
         <replaceXML xpath="mapSearch/layers">
-                <layer server="http://ec2-79-125-29-72.eu-west-1.compute.amazonaws.com/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
+                <layer server="http://www.geocat.ch/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
         </replaceXML>
         <replaceXML xpath="mapViewer/layers">
-                <layer server="http://ec2-79-125-29-72.eu-west-1.compute.amazonaws.com/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
+                <layer server="http://www.geocat.ch/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
         </replaceXML>
     </file>
     <textFile name=".*/WEB-INF/classes/setup/sql/.+/data-db-default.sql">

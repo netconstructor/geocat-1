@@ -9,7 +9,7 @@
         <postgis.port>5432</postgis.port>
         <postgis.db>geocat</postgis.db>
         <wfs.host>localhost</wfs.host>
-        <wfs.port>8081</wfs.port>
+        <wfs.port>8700</wfs.port>
     </properties>
     <file name=".*/WEB-INF/config.xml">
         <replaceText xpath="default/language">deu</replaceText>

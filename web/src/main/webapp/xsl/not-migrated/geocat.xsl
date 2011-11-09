@@ -118,7 +118,7 @@
 							geocat.session.groups.push('<xsl:value-of select="normalize-space(groupid)"/>');
 						</xsl:for-each>
 
-                        geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', '../../proxy?url=<xsl:value-of select="/root/gui/config/geoserver.url"/>/', '<xsl:value-of select="/root/gui/session/userId"/>');
+                        geocat.initialize('<xsl:value-of select="/root/gui/url"/>/', '<xsl:value-of select="/root/gui/config/geoserver.url"/>', '<xsl:value-of select="/root/gui/session/userId"/>');
                     });
                 </script>
             </body>
