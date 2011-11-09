@@ -17,7 +17,7 @@
       <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="/tmp/gc_data/htmlCacheDir"/>
     </file>
     <file name=".*/WEB-INF/config-gui.xml">
-        <replaceText xpath="geoserver.url">http://www.geocat.ch/geoserver</replaceText>
+        <replaceText xpath="geoserver.url">http://localhost:8081/geoserver</replaceText>
         <replaceXML xpath="mapSearch/layers">
                 <layer server="http://www.geocat.ch/geoserver/wms" tocName="Kantone"  params="{layers: 'chtopo:kantoneBB', transparent: 'true', format: 'image/png'}"  options="{isBaseLayer: true}" />
         </replaceXML>

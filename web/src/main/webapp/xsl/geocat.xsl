@@ -70,7 +70,7 @@
 
                 geocat.initialize(
                     '<xsl:value-of select="/root/gui/url"/>/',
-                    <xsl:value-of select="/root/gui/config/geoserver.url"/>,
+                    '<xsl:value-of select="/root/gui/config/geoserver.url"/>',
                     '<xsl:value-of select="/root/gui/session/userId"/>');
             });
         </script>
