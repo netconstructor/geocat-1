@@ -20,7 +20,7 @@
         <ows:AccessConstraints>$ACCESS_CONSTRAINTS</ows:AccessConstraints>
     </ows:ServiceIdentification>
     <ows:ServiceProvider>
-        <ows:ProviderName>GeoNetwork opensource</ows:ProviderName>
+        <ows:ProviderName>$PROVIDER_NAME</ows:ProviderName>
         <ows:ProviderSite xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET"/>
         <ows:ServiceContact>
             <ows:IndividualName>$IND_NAME</ows:IndividualName>
@@ -232,7 +232,7 @@
 
 
             <inspire_common:MetadataPointOfContact>
-                <inspire_common:OrganisationName>$IND_NAME</inspire_common:OrganisationName>
+                <inspire_common:OrganisationName>$ORG_NAME</inspire_common:OrganisationName>
                 <inspire_common:EmailAddress>$EMAIL</inspire_common:EmailAddress>
             </inspire_common:MetadataPointOfContact>
 

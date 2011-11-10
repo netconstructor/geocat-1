@@ -39,26 +39,34 @@ Ext.namespace('GeoNetwork.data');
  *
  */
 GeoNetwork.data.MetadataResultsFastStore = function(){
-
+	var separator = "|";
+	
     function getTitle(v, record){
-        if (record._title && record._title) {
-            return record._title[0].value;
+        if (record.title && record.title) {
+            return record.title[0].value;
         } else {
             return '';
         }
     }
     function getValidationInfo(v, record){
-        var i, validity = [], validInfo;
-        if (record.geonet_info && record.geonet_info.valid_details) {
-            validInfo = record.geonet_info.valid_details;
-            for (i = 0; i < validInfo.length; i++) {
-                validity.push({
-                            valid: validInfo.status[i].value,
-                            type: validInfo.type[i].value,
-                            ratio: validInfo.ratio[i].value
-                        });
-            }
+        if (record.valid) {
+            return record.valid[0].value;
+        } else {
+            return '-1';
         }
+    }
+    function getValidationDetails(v, record){
+        var i, validity = [], validInfo;
+        for (var key in record) {
+    	   if (record.hasOwnProperty(key) && key.indexOf('valid_') !== -1) {
+    	     var obj = record[key];
+    	     validity.push({
+                 valid: obj[0].value,
+                 type: key.split('_')[1],
+                 ratio: '' // TODO
+             });
+    	   }
+    	}
         return validity;
     }
     
@@ -70,7 +78,8 @@ GeoNetwork.data.MetadataResultsFastStore = function(){
         if (record.image) {
         
             for (i = 0; i < record.image.length; i++) {
-                currentUri = record.image[i].value;
+            	var tokens = record.image[i].value.split(separator);
+                currentUri = tokens[1];
                 // Return the first URL even if not http (FIXME ?)
                 if (currentUri.indexOf('http') !== -1 || i === 0) {
                     uri = currentUri;
@@ -80,21 +89,17 @@ GeoNetwork.data.MetadataResultsFastStore = function(){
         return uri;
     }
     
-    
     function getContact(v, record){
         var i, contact = [], el, name;
         
         if (record.responsibleParty) {
             for (i = 0; i < record.responsibleParty.length; i++) {
-                el = record.responsibleParty[i];
-                
-                name = (record.responsibleParty.organisationName && record.responsibleParty.organisationName[i] ? 
-                            record.responsibleParty.organisationName[i].value : '');
+                var tokens = record.responsibleParty[i].value.split(separator);
                 contact.push({
-                            applies: el.appliesTo,
-                            logo: el.logo,
-                            role: el.role,
-                            name: name
+                            applies: tokens[1],
+                            logo: tokens[3],
+                            role: tokens[0],
+                            name: tokens[2]
                         });
             }
         }
@@ -102,10 +107,20 @@ GeoNetwork.data.MetadataResultsFastStore = function(){
     }
     
     function getLinks(v, record){
+    	var links = [];
         if (record.link) {
-            return record.link;
+        	for (i = 0; i < record.link.length; i++) {
+            	var tokens = record.link[i].value.split(separator);
+            	links.push({
+            		name: tokens[0],
+            		title: tokens[1],
+            		href: tokens[2],
+            		protocol: tokens[3],
+            		type: tokens[4]
+            	});
+            }
         }
-        return [];
+        return links;
     }
     
     /**
@@ -121,45 +136,51 @@ GeoNetwork.data.MetadataResultsFastStore = function(){
     }
     
     function getPopularity(v, record){
-        if (record.geonet_info && record.geonet_info.popularity) {
-            return record.geonet_info.popularity[0].value;
+        if (record.popularity) {
+            return record.popularity[0].value;
         } else {
             return '';
         }
     }
     
     function getRating(v, record){
-        if (record.geonet_info && record.geonet_info.rating) {
-            return record.geonet_info.rating[0].value;
+        if (record.rating) {
+            return record.rating[0].value;
         } else {
             return '';
         }
     }
     
     function getDownload(v, record){
-        if (record.geonet_info && record.geonet_info.download) {
-            return record.geonet_info.download[0].value;
+        if (record.download) {
+            return record.download[0].value;
         } else {
             return '';
         }
     }
     
     function getOwnerName(v, record){
-        if (record.geonet_info && record.geonet_info.ownername) {
-            return record.geonet_info.ownername[0].value;
+        if (record.userinfo && record.userinfo[0].value) {
+            var userinfo = record.userinfo[0].value.split(separator);
+            try {
+                return userinfo[2] + " " + userinfo[1]; // User profile + ' (' + OpenLayers.i18n(userinfo[3]) + ')';
+			} catch (e) {
+				return '';
+			}
         } else {
             return '';
         }
     }
     
     function getIsHarvested(v, record){
-        if (record.geonet_info && record.geonet_info.isHarvested) {
-            return record.geonet_info.isHarvested[0].value;
+        if (record.isHarvested) {
+            return record.isHarvested[0].value;
         } else {
             return '';
         }
     }
     function getHarvesterType(v, record){
+    	// FIXME
         if (record.geonet_info && record.geonet_info.harvestInfo && record.geonet_info.harvestInfo.type) {
             return record.geonet_info.harvestInfo.type[0].value;
         } else {
@@ -167,8 +188,8 @@ GeoNetwork.data.MetadataResultsFastStore = function(){
         }
     }
     function getCategory(v, record){
-        if (record.geonet_info && record.geonet_info.category) {
-            return record.geonet_info.category;
+        if (record.category) {
+            return record.category;
         } else {
             return '';
         }
@@ -302,11 +323,10 @@ GeoNetwork.data.MetadataResultsFastStore = function(){
             sortType: 'asInt'
         }, {
             name: 'valid',
-            //mapping: 'geonet_info.valid[0].value',
-            defaultValue: '-1'
+            convert: getValidationInfo
         }, {
-            name: 'valid_details'
-            //convert: getValidationInfo
+            name: 'valid_details',
+            convert: getValidationDetails
         }
         ]
     });
