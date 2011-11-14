@@ -65,6 +65,7 @@
         </addXML>
     </file>
     <file name=".*/WEB-INF/user-profiles.xml">
+        <removeXML xpath="allow[@service='metadata.schema.add.form']"/>
         <addXML xpath="profile[@name ='Editor']">
             <allow service="metadata.xlink.add"/>
         </addXML>
