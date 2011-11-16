@@ -1,4 +1,4 @@
-package org.fao.geonet.kernel.csw.services.getrecords;
+package org.fao.geonet.kernel.search;
 
 import java.io.IOException;
 
@@ -7,6 +7,7 @@ import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.FieldComparator;
 import org.apache.lucene.search.FieldComparatorSource;
 import org.apache.lucene.search.SortField;
+import org.fao.geonet.util.XslUtil;
 
 public class LangSortField extends SortField {
 
@@ -39,7 +40,7 @@ public class LangSortField extends SortField {
 
         public LangFieldComparator(String currentLocale, int numHits) {
             values = new int[numHits];
-            this.currentLocale = currentLocale.substring(0, 2).toLowerCase();
+            this.currentLocale = XslUtil.twoCharLangCode(currentLocale);
         }
 
         private int[]    values;
@@ -59,9 +60,9 @@ public class LangSortField extends SortField {
                 if (val2 == null) {
                     return 0;
                 }
-                return -1;
-            } else if (val2 == null) {
                 return 1;
+            } else if (val2 == null) {
+                return -1;
             }
             return bottom - intValue(val2);
         }
@@ -74,10 +75,10 @@ public class LangSortField extends SortField {
         private int intValue(String string) {
             if (string == null)
                 return 2;
-            if (string.substring(0, 2).equalsIgnoreCase(currentLocale)) {
+            if (XslUtil.twoCharLangCode(string).equals(currentLocale)) {
                 return 1;
             } else {
-                return 2;
+                return 3;
             }
         }
 

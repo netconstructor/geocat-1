@@ -1,72 +1,66 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <xsl:stylesheet version="1.0" xmlns:gmd="http://www.isotc211.org/2005/gmd"
-										xmlns:gco="http://www.isotc211.org/2005/gco"
-										xmlns:gml="http://www.opengis.net/gml"
-										xmlns:srv="http://www.isotc211.org/2005/srv"										
-										xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-										xmlns:che="http://www.geocat.ch/2008/che"
-										>
+                                        xmlns:gco="http://www.isotc211.org/2005/gco"
+                                        xmlns:gml="http://www.opengis.net/gml"
+                                        xmlns:srv="http://www.isotc211.org/2005/srv"
+                                        xmlns:che="http://www.geocat.ch/2008/che"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                                        xmlns:java="java:org.fao.geonet.util.XslUtil"
+                                        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                                        >
 
-	<!-- This file defines what parts of the metadata are indexed by Lucene
-	     Searches can be conducted on indexes defined here. 
-	     The Field@name attribute defines the name of the search variable.
-		 If a variable has to be maintained in the user session, it needs to be 
-		 added to the GeoNetwork constants in the Java source code.
-		 Please keep indexes consistent among metadata standards if they should
-		 work accross different metadata resources -->
-	<!-- ========================================================================================= -->
-	
-	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />
-	<xsl:include href="../index-utils.xsl"/>
-    
-	<!-- ========================================================================================= -->
+    <!-- This file defines what parts of the metadata are indexed by Lucene
+         Searches can be conducted on indexes defined here.
+         The Field@name attribute defines the name of the search variable.
+         If a variable has to be maintained in the user session, it needs to be
+         added to the GeoNetwork constants in the Java source code.
+         Please keep indexes consistent among metadata standards if they should
+         work accross different metadata resources -->
+    <!-- ========================================================================================= -->
 
-	<xsl:template match="/">
-		<xsl:variable name="iso3DocLangId">
-		  <xsl:call-template name="langId19139"/>
-		</xsl:variable>
-		
-		<Documents>
-			<xsl:for-each select="*[@gco:isoType='gmd:MD_Metadata']/gmd:locale/gmd:PT_Locale">
-			<xsl:variable name="langId" select="@id" />
-			<xsl:variable name="iso3LangId" select="gmd:languageCode/gmd:LanguageCode/@codeListValue" />
-				<Document locale="{string($iso3LangId)}">
-					<Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
+    <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="no" />
+    <xsl:include href="../iso19139/convert/functions.xsl"/>
 
-    			<xsl:variable name="docLang" select="/*[@gco:isoType='gmd:MD_Metadata']/gmd:language/gco:CharacterString"/>
-    			<Field name="_docLocale" string="{normalize-space(string($docLang))}" store="true" index="true" token="false"/>
-					
-					<xsl:variable name="poundLangId" select="translate(concat('#',$langId), $LOWER, $UPPER)" />
-					<xsl:variable name="_defaultTitle">
-						<xsl:call-template name="defaultTitle"/>
-					</xsl:variable>
-					<xsl:variable name="title" select="/*[@gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title//gmd:LocalisedCharacterString[@locale=$poundLangId]"/>
-			
-					<!-- not tokenized title for sorting -->
-					<Field name="_defaultTitle" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
-					<!-- not tokenized title for sorting -->
-					<Field name="_title" string="{string($title)}" store="true" index="true" token="false" />
-					
-					<xsl:apply-templates select="/*[@gco:isoType='gmd:MD_Metadata']" mode="metadata">
-						<xsl:with-param name="langId" select="$poundLangId"/>
-					</xsl:apply-templates>
-				
-				</Document>
-			</xsl:for-each>
-		</Documents>
-	</xsl:template>
-	
-	<xsl:template name="defaultTitle">
-		<xsl:choose>
-			<xsl:when test="string-length(/*[@gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title/gco:CharacterString) != 0">
-			<xsl:value-of select="string(/*[@gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title/gco:CharacterString)"></xsl:value-of>
-		</xsl:when>
-		<xsl:otherwise>
-			<xsl:value-of select="string(/*[@gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title//gmd:LocalisedCharacterString)"></xsl:value-of>
-		</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
+    <!-- ========================================================================================= -->
+    <xsl:variable name="isoDocLangId">
+      <xsl:call-template name="langId19139"/>
+    </xsl:variable>
+
+    <xsl:template match="/">
+
+        <Documents>
+            <xsl:for-each select="/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']/gmd:locale/gmd:PT_Locale">
+                <xsl:variable name="langId" select="@id" />
+                <xsl:variable name="isoLangId" select="java:twoCharLangCode(normalize-space(string(gmd:languageCode/gmd:LanguageCode/@codeListValue)))" />
+                    <Document locale="{$isoLangId}">
+
+                    <Field name="_locale" string="{$isoLangId}" store="true" index="true" token="false"/>
+                    <Field name="_docLocale" string="{$isoDocLangId}" store="true" index="true" token="false"/>
+
+                    <xsl:variable name="poundLangId" select="concat('#',translate($langId, $LOWER, $UPPER))" />
+                    <xsl:variable name="_defaultTitle">
+                        <xsl:call-template name="defaultTitle">
+                            <xsl:with-param name="isoDocLangId" select="$isoDocLangId"/>
+                        </xsl:call-template>
+                    </xsl:variable>
+                    <!-- not tokenized title for sorting -->
+                    <Field name="_defaultTitle" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
+
+                    <xsl:variable name="title" 
+                        select="/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title//gmd:LocalisedCharacterString[@locale=$poundLangId]"/>
+
+                    <!-- not tokenized title for sorting -->
+                    <Field name="_title" string="{string($title)}" store="true" index="true" token="false" />
+
+                    <xsl:apply-templates select="/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']" mode="metadata">
+                        <xsl:with-param name="langId" select="$poundLangId"/>
+                    </xsl:apply-templates>
+
+                    </Document>
+            </xsl:for-each>
+        </Documents>
+    </xsl:template>
 	
 	<!-- ========================================================================================= -->
 
@@ -125,7 +119,8 @@
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 	
-			<xsl:for-each select="gmd:abstract//gmd:LocalisedCharacterString[@locale=$langId]">
+	
+    		<xsl:for-each select="gmd:abstract//gmd:LocalisedCharacterString[@locale=$langId]">
 				<Field name="abstract" string="{string(.)}" store="true" index="true" token="true"/>
 			</xsl:for-each>
 
@@ -395,29 +390,36 @@
 		<xsl:apply-templates select="*" mode="codeList"/>
 	</xsl:template>
 	
-	<!-- ========================================================================================= -->
-	<!-- latlon coordinates + 360, zero-padded, indexed, not stored, not tokenized -->
-	<!-- ========================================================================================= -->
 
-	<xsl:template match="*" mode="latLon">
-	
-		<xsl:for-each select="gmd:westBoundLongitude">
-			<Field name="westBL" string="{string(gco:Decimal) + 360}" store="true" index="true" token="false"/>
-		</xsl:for-each>
-	
-		<xsl:for-each select="gmd:southBoundLatitude">
-			<Field name="southBL" string="{string(gco:Decimal) + 360}" store="true" index="true" token="false"/>
-		</xsl:for-each>
-	
-		<xsl:for-each select="gmd:eastBoundLongitude">
-			<Field name="eastBL" string="{string(gco:Decimal) + 360}" store="true" index="true" token="false"/>
-		</xsl:for-each>
-	
-		<xsl:for-each select="gmd:northBoundLatitude">
-			<Field name="northBL" string="{string(gco:Decimal) + 360}" store="true" index="true" token="false"/>
-		</xsl:for-each>
-	
-	</xsl:template>
+    <!-- ========================================================================================= -->
+    <!-- latlon coordinates indexed as numeric. -->
+    
+    <xsl:template match="*" mode="latLon">
+        <xsl:variable name="format" select="'##.00'"></xsl:variable>
+        <xsl:for-each select="gmd:westBoundLongitude">          
+            <xsl:if test="number(gco:Decimal)">
+                <Field name="westBL" string="{format-number(gco:Decimal, $format)}" store="true" index="true"/>
+            </xsl:if>
+        </xsl:for-each>
+    
+        <xsl:for-each select="gmd:southBoundLatitude">
+            <xsl:if test="number(gco:Decimal)">
+                <Field name="southBL" string="{format-number(gco:Decimal, $format)}" store="true" index="true"/>
+            </xsl:if>
+        </xsl:for-each>
+    
+        <xsl:for-each select="gmd:eastBoundLongitude">
+            <xsl:if test="number(gco:Decimal)">
+                <Field name="eastBL" string="{format-number(gco:Decimal, $format)}" store="true" index="true"/>
+            </xsl:if>
+        </xsl:for-each>
+    
+        <xsl:for-each select="gmd:northBoundLatitude">
+            <xsl:if test="number(gco:Decimal)">
+                <Field name="northBL" string="{format-number(gco:Decimal, $format)}" store="true" index="true"/>
+            </xsl:if>
+        </xsl:for-each> 
+    </xsl:template>
 
 	<!-- ========================================================================================= -->
 	<!--allText -->

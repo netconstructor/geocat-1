@@ -6,7 +6,7 @@
 						xmlns:che="http://www.geocat.ch/2008/che"
 		>
 
-	<xsl:template match="che:CHE_MD_Metadata">
+	<xsl:template match="che:CHE_MD_Metadata|gmd:MD_Metadata|*[@gco:isoType='gmd:MD_Metadata']">
 		 <uuid><xsl:value-of select="gmd:fileIdentifier/gco:CharacterString"/></uuid>
 	</xsl:template>
 

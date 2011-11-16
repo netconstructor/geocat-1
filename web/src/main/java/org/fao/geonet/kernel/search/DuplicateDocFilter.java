@@ -47,7 +47,7 @@ import org.apache.lucene.util.DocIdBitSet;
  * When there are multiple languages certain queries can match the same
  * "document" in each different language index. This filter allows the first
  * match but none of the later matche.
- * 
+ *
  * @author jeichar
  */
 public class DuplicateDocFilter extends Filter {

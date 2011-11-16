@@ -23,6 +23,7 @@
 
 package org.fao.geonet.kernel.search;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,6 +49,8 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
+import org.fao.geonet.util.XslUtil;
 
 import com.google.common.base.Splitter;
 
@@ -73,6 +76,7 @@ public class LuceneQueryBuilder {
     private Set<String> _tokenizedFieldSet;
     private PerFieldAnalyzerWrapper _analyzer;
     private Map<String, LuceneConfig.LuceneConfigNumericField> _numericFieldSet;
+	private String _language;
 
     // Lat long bounding box constants
     static final Double minBoundingLatitudeValue = -90.0;
@@ -82,13 +86,14 @@ public class LuceneQueryBuilder {
 
     public LuceneQueryBuilder(Set<String> tokenizedFieldSet,
             Map<String, LuceneConfig.LuceneConfigNumericField> numericFieldSet,
-            PerFieldAnalyzerWrapper analyzer) {
+            PerFieldAnalyzerWrapper analyzer, String langCode) {
         _tokenizedFieldSet = tokenizedFieldSet;
         _numericFieldSet = numericFieldSet;
         _analyzer = analyzer;
+        _language = langCode;
     }
 
-    /**
+	/**
      * Build a Lucene query for the {@link LuceneQueryInput}.
      * A AND clause is used for each search criteria and
      * a OR clause if the content of a criteria is "this or that".
@@ -427,6 +432,7 @@ public class LuceneQueryBuilder {
             query.add(q, qOccur);
         }
 
+        query = addLocaleTerm(query, _language);
         return query;
     }
 
@@ -1120,4 +1126,21 @@ public class LuceneQueryBuilder {
     private boolean onlyWildcard(String s) {
         return "*".equals(StringUtils.trim(s));
     }
+
+    static BooleanQuery addLocaleTerm(Query query, String langCode)
+    {
+        BooleanQuery booleanQuery;
+        if (query instanceof BooleanQuery) {
+            booleanQuery = (BooleanQuery) query;
+        } else {
+            booleanQuery = new BooleanQuery();
+            booleanQuery.add(query, BooleanClause.Occur.SHOULD);
+        }
+
+        String twoCharLang = XslUtil.twoCharLangCode(langCode);
+        booleanQuery.add(new TermQuery(new Term("_locale", twoCharLang)), BooleanClause.Occur.SHOULD);
+
+        return booleanQuery;
+    }
+
 }

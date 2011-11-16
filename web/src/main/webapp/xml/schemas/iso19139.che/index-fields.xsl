@@ -1,70 +1,68 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<xsl:stylesheet version="2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd"
+                                        xmlns:gco="http://www.isotc211.org/2005/gco"
+                                        xmlns:gml="http://www.opengis.net/gml"
+                                        xmlns:srv="http://www.isotc211.org/2005/srv"
+                                        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                                        xmlns:gmx="http://www.isotc211.org/2005/gmx"
+                                        xmlns:che="http://www.geocat.ch/2008/che"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                                        xmlns:java="java:org.fao.geonet.util.XslUtil"
+                                        xmlns:skos="http://www.w3.org/2004/02/skos/core#">
 
-<xsl:stylesheet version="1.0" xmlns:gmd="http://www.isotc211.org/2005/gmd"
-										xmlns:gco="http://www.isotc211.org/2005/gco"
-										xmlns:gml="http://www.opengis.net/gml"
-										xmlns:srv="http://www.isotc211.org/2005/srv"
-										xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-										xmlns:xlink="http://www.w3.org/1999/xlink"
-										xmlns:che="http://www.geocat.ch/2008/che"
-										>
+    <xsl:include href="../iso19139/convert/functions.xsl"/>
 
-	<!-- This file defines what parts of the metadata are indexed by Lucene
-	     Searches can be conducted on indexes defined here. 
-	     The Field@name attribute defines the name of the search variable.
-		 If a variable has to be maintained in the user session, it needs to be 
-		 added to the GeoNetwork constants in the Java source code.
-		 Please keep indexes consistent among metadata standards if they should
-		 work accross different metadata resources -->
-	
-	<!-- TODO : ISO profil index could be the same as iso19139 for all elements
-	using gco:isoType attribute to look for matching elements. Then only profil specific
-	elements (element defined in the profil and not existing in iso19139) could 
-	be indexed here ? -->
-	<!-- ========================================================================================= -->
-	
-	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />
-	<xsl:include href="../index-utils.xsl"/>
-	
+    <!-- This file defines what parts of the metadata are indexed by Lucene
+         Searches can be conducted on indexes defined here. 
+         The Field@name attribute defines the name of the search variable.
+         If a variable has to be maintained in the user session, it needs to be 
+         added to the GeoNetwork constants in the Java source code.
+         Please keep indexes consistent among metadata standards if they should
+         work accross different metadata resources -->
+    <!-- ========================================================================================= -->
     
-	<!-- ========================================================================================= -->
+    <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="no" />
 
-	<xsl:template match="/">
-		<xsl:variable name="iso3LangId">
-		  <xsl:call-template name="langId19139"/>
+
+    <!-- ========================================================================================= -->
+
+  <xsl:param name="thesauriDir"/>
+  <xsl:param name="inspire">false</xsl:param>
+  
+  <xsl:variable name="inspire-thesaurus" select="if ($inspire!='false') then document(concat('file:///', $thesauriDir, '/external/thesauri/theme/inspire-theme.rdf')) else ''"/>
+  <xsl:variable name="inspire-theme" select="if ($inspire!='false') then $inspire-thesaurus//skos:Concept else ''"/>
+  
+  <!-- If identification creation, publication and revision date
+    should be indexed as a temporal extent information (eg. in INSPIRE 
+    metadata implementing rules, those elements are defined as part
+    of the description of the temporal extent). -->
+    <xsl:variable name="useDateAsTemporalExtent" select="false()"/>
+
+        <!-- ========================================================================================= -->
+
+    <xsl:template match="/">
+      <xsl:variable name="isoLangId">
+          <xsl:call-template name="langId19139"/>
     </xsl:variable>
-		
-		<Document locale="{string($iso3LangId)}">
-			<xsl:apply-templates mode="xlinks"/>
-			<Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
 
-			<xsl:variable name="docLang" select="/*[@gco:isoType='gmd:MD_Metadata']/gmd:language/gco:CharacterString"/>
-			<Field name="_docLocale" string="{normalize-space(string($docLang))}" store="true" index="true" token="false"/>
+        <Document locale="{$isoLangId}">
+            <xsl:apply-templates mode="xlinks"/>
+            <Field name="_locale" string="{$isoLangId}" store="true" index="true" token="false"/>
 
-			<xsl:variable name="_defaultTitle">
-				<xsl:call-template name="defaultTitle"/>
-			</xsl:variable>
-	
-			<!-- not tokenized title for sorting -->
-			<Field name="_defaultTitle" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
-			<!-- not tokenized title for sorting -->
-			<Field name="_title" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
-			
-			<xsl:apply-templates select="che:CHE_MD_Metadata" mode="metadata"/>
-		</Document>
-	</xsl:template>
-	
-	<xsl:template name="defaultTitle">
-		<xsl:choose>
-		<xsl:when test="string-length(/*[@gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title/gco:CharacterString) != 0">
-			<xsl:value-of select="string(/*[@gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title/gco:CharacterString)"></xsl:value-of>
-		</xsl:when>
-		<xsl:otherwise>
-			<xsl:value-of select="string(/*[@gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title//gmd:LocalisedCharacterString)"></xsl:value-of>
-		</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-	
+            <Field name="_docLocale" string="{$isoLangId}" store="true" index="true" token="false"/>
+
+            <xsl:variable name="_defaultTitle">
+                <xsl:call-template name="defaultTitle">
+                    <xsl:with-param name="isoDocLangId" select="$isoLangId"/>
+                </xsl:call-template>
+            </xsl:variable>
+            <!-- not tokenized title for sorting -->
+            <Field name="_defaultTitle" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
+
+            <xsl:apply-templates select="*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']" mode="metadata"/>
+        </Document>
+    </xsl:template>
+    
 	<!-- ========================================================================================= -->
 
 	<xsl:template match="*" mode="metadata">
@@ -399,29 +397,36 @@
 	<xsl:template match="*" mode="codeList">
 		<xsl:apply-templates select="*" mode="codeList"/>
 	</xsl:template>
-	
-	<!-- ========================================================================================= -->
-	<!-- latlon coordinates + 360, zero-padded, indexed, not stored, not tokenized -->
-	
-	<xsl:template match="*" mode="latLon">
-	
-		<xsl:for-each select="gmd:westBoundLongitude">
-			<Field name="westBL" string="{string(gco:Decimal) + 360}" store="true" index="true" token="false"/>
-		</xsl:for-each>
-	
-		<xsl:for-each select="gmd:southBoundLatitude">
-			<Field name="southBL" string="{string(gco:Decimal) + 360}" store="true" index="true" token="false"/>
-		</xsl:for-each>
-	
-		<xsl:for-each select="gmd:eastBoundLongitude">
-			<Field name="eastBL" string="{string(gco:Decimal) + 360}" store="true" index="true" token="false"/>
-		</xsl:for-each>
-	
-		<xsl:for-each select="gmd:northBoundLatitude">
-			<Field name="northBL" string="{string(gco:Decimal) + 360}" store="true" index="true" token="false"/>
-		</xsl:for-each>
-	
-	</xsl:template>
+
+    <!-- ========================================================================================= -->
+    <!-- latlon coordinates indexed as numeric. -->
+    
+    <xsl:template match="*" mode="latLon">
+        <xsl:variable name="format" select="'##.00'"></xsl:variable>
+        <xsl:for-each select="gmd:westBoundLongitude">          
+            <xsl:if test="number(gco:Decimal)">
+                <Field name="westBL" string="{format-number(gco:Decimal, $format)}" store="true" index="true"/>
+            </xsl:if>
+        </xsl:for-each>
+    
+        <xsl:for-each select="gmd:southBoundLatitude">
+            <xsl:if test="number(gco:Decimal)">
+                <Field name="southBL" string="{format-number(gco:Decimal, $format)}" store="true" index="true"/>
+            </xsl:if>
+        </xsl:for-each>
+    
+        <xsl:for-each select="gmd:eastBoundLongitude">
+            <xsl:if test="number(gco:Decimal)">
+                <Field name="eastBL" string="{format-number(gco:Decimal, $format)}" store="true" index="true"/>
+            </xsl:if>
+        </xsl:for-each>
+    
+        <xsl:for-each select="gmd:northBoundLatitude">
+            <xsl:if test="number(gco:Decimal)">
+                <Field name="northBL" string="{format-number(gco:Decimal, $format)}" store="true" index="true"/>
+            </xsl:if>
+        </xsl:for-each> 
+    </xsl:template>
 
 	<!-- ========================================================================================= -->
 	<!--allText -->

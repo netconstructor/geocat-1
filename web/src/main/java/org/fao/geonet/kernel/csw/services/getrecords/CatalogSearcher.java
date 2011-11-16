@@ -419,14 +419,6 @@ public class CatalogSearcher {
 
 		Query groups = getGroupsQuery(context);
 
-		if (sort == null) {
-			sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)));
-		} 
-		ArrayList<SortField> sortFields = new ArrayList<SortField>(Arrays.asList(sort.getSort()));
-		sortFields.add(0, new LangSortField(context.getLanguage()));
-		sort.setSort(sortFields.toArray(new SortField[sortFields.size()]));
-		
-		
 		// --- put query on groups in AND with lucene query
 
 		BooleanQuery query = new BooleanQuery();
@@ -468,7 +460,9 @@ public class CatalogSearcher {
 		if (buildSummary) {
 			numHits = Math.max(maxHitsInSummary, numHits);
 		}
-
+		if (sort == null) {
+			sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)), context.getLanguage());
+		}
 		// record globals for reuse
 		_query = query;
 		_filter = new CachingWrapperFilter(cFilter);

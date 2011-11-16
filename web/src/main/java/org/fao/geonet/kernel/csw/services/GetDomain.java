@@ -181,7 +181,7 @@ public class GetDomain extends AbstractOperation implements CatalogService
 			IndexReader reader = sm.getIndexReader();
 			try {
 				Query query = CatalogSearcher.getGroupsQuery(context);
-				Sort   sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)));
+				Sort   sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)), null);
 				CachingWrapperFilter filter = null;
 
 				Pair<TopDocs,Element> searchResults = LuceneSearcher.doSearchAndMakeSummary( 

@@ -537,6 +537,10 @@ public class SchemaManager
 				schema = defaultSchema;
 			}
 
+			if(schema!=null && schema.equals("iso19139.che") && md.getName().equals("MD_Metadata")) {
+				schema = "iso19139";
+			}
+			
 			return schema;
 		} finally {
 			afterRead();

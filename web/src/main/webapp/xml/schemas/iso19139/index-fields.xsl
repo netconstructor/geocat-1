@@ -5,10 +5,10 @@
 										xmlns:srv="http://www.isotc211.org/2005/srv"
 										xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 										xmlns:gmx="http://www.isotc211.org/2005/gmx"
-                    xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+										xmlns:java="java:org.fao.geonet.util.XslUtil"
+                                        xmlns:skos="http://www.w3.org/2004/02/skos/core#">
 
-	<xsl:include href="../iso19139/convert/functions.xsl"/>
-  <xsl:include href="../index-utils.xsl"/>
+	<xsl:include href="convert/functions.xsl"/>
 
 	<!-- This file defines what parts of the metadata are indexed by Lucene
 	     Searches can be conducted on indexes defined here. 
@@ -19,7 +19,7 @@
 		 work accross different metadata resources -->
 	<!-- ========================================================================================= -->
 	
-	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />
+	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="no" />
 
 
 	<!-- ========================================================================================= -->
@@ -39,17 +39,24 @@
         <!-- ========================================================================================= -->
 
 	<xsl:template match="/">
-	  <xsl:variable name="iso3LangId">
+	  <xsl:variable name="isoLangId">
 		  <xsl:call-template name="langId19139"/>
     </xsl:variable>
-		
-		<Document locale="{string($iso3LangId)}">
-			<Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
 
-			<xsl:variable name="docLang" select="/*[@gco:isoType='gmd:MD_Metadata']/gmd:language/gco:CharacterString"/>
-			<Field name="_docLocale" string="{normalize-space(string($docLang))}" store="true" index="true" token="false"/>
+		<Document locale="{$isoLangId}">
+			<Field name="_locale" string="{$isoLangId}" store="true" index="true" token="false"/>
 
-			<xsl:apply-templates select="gmd:MD_Metadata" mode="metadata"/>
+			<Field name="_docLocale" string="{$isoLangId}" store="true" index="true" token="false"/>
+
+			<xsl:variable name="_defaultTitle">
+				<xsl:call-template name="defaultTitle">
+					<xsl:with-param name="isoDocLangId" select="$isoLangId"/>
+				</xsl:call-template>
+			</xsl:variable>
+			<!-- not tokenized title for sorting -->
+			<Field name="_defaultTitle" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
+
+			<xsl:apply-templates select="*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']" mode="metadata"/>
 		</Document>
 	</xsl:template>
 	
@@ -492,7 +499,7 @@
 	<xsl:template match="*" mode="codeList">
 		<xsl:apply-templates select="*" mode="codeList"/>
 		</xsl:template>
-	
+
 	<!-- ========================================================================================= -->
 	<!-- latlon coordinates indexed as numeric. -->
 	

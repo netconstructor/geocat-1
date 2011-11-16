@@ -1,15 +1,16 @@
 package org.fao.geonet.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +28,6 @@ import javax.xml.transform.stream.StreamSource;
 import jeeves.exceptions.JeevesException;
 import jeeves.utils.Log;
 import net.sf.saxon.Configuration;
-import net.sf.saxon.dom.DocumentWrapper;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.DocumentInfo;
@@ -38,8 +38,6 @@ import net.sf.saxon.om.UnfailingIterator;
 import net.sf.saxon.type.Type;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.fao.geonet.Geonetwork;
-import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.LuceneSearcher;
 import org.fao.geonet.kernel.search.spatial.Pair;
@@ -56,11 +54,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.traversal.NodeIterator;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -871,5 +864,28 @@ public final class XslUtil {
         
         return "";
     }
+    /**
+     * the basic way that {@linkplain #twoCharLangCode} works is by taking the first two letters of the
+     * language code.  However since there are multiple ways to map certain language or some time that method does not
+     * work this mapping contains the exceptions.
+     */
+    private static final Map<String,String> LANG_CODE_EXCEPTION_MAPPING;
+    static {
+        HashMap<String, String> hm = new HashMap<String, String>();
+        hm.put("ger", "de");
+        hm.put("ge", "de");
+
+        LANG_CODE_EXCEPTION_MAPPING = Collections.unmodifiableMap(hm);
+    }
+
+	public static String twoCharLangCode(String langCode) {
+		if(langCode == null || langCode.length() < 2) return Geonet.DEFAULT_LANGUAGE;
+
+		String exception = LANG_CODE_EXCEPTION_MAPPING.get(langCode);
+
+		if(exception!=null) return exception;
+
+		return langCode.substring(0,2).toLowerCase();
+	}
 
 }

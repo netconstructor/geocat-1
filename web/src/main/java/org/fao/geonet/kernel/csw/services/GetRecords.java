@@ -128,7 +128,7 @@ public class GetRecords extends AbstractOperation implements CatalogService
 		maxHitsInSummary = Integer.parseInt(sMaxRecordsInKeywordSummary);
 	}
 	
-	Sort sort = getSortFields(request);
+	Sort sort = getSortFields(request, context.getLanguage());
 
 	Element response;
 
@@ -487,7 +487,7 @@ public class GetRecords extends AbstractOperation implements CatalogService
 
     //---------------------------------------------------------------------------
 
-    private Sort getSortFields(Element request) 
+    private Sort getSortFields(Element request, String langCode) 
     {
 		Element query = request.getChild("Query", Csw.NAMESPACE_CSW);
 
@@ -521,7 +521,7 @@ public class GetRecords extends AbstractOperation implements CatalogService
 
 		// we always want to keep the relevancy as part of the sorting mechanism
 		
-		return LuceneSearcher.makeSort(al);
+		return LuceneSearcher.makeSort(al, langCode);
 	}
 
     //---------------------------------------------------------------------------

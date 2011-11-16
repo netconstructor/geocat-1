@@ -54,7 +54,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:hoeperdepoep +_isTemplate:n", query.toString());
 	}
@@ -75,7 +75,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+(+any:demo +any:hoeperdepoep) +_isTemplate:n", query.toString());
     }
@@ -89,7 +89,7 @@ public class LuceneQueryTest extends TestCase {
        // build lucene query input
        LuceneQueryInput lQI = new LuceneQueryInput(request);
        // build lucene query
-       Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+       Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
        // verify query
        assertEquals("+any:hoeper?poep +_isTemplate:n", query.toString());
     }
@@ -107,7 +107,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:hoeper*poep +_isTemplate:n", query.toString());
 	}
@@ -125,7 +125,7 @@ public class LuceneQueryTest extends TestCase {
       // build lucene query input
       LuceneQueryInput lQI = new LuceneQueryInput(request);
       // build lucene query
-      Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+      Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
       // verify query
       assertEquals("+(+any:hoeper +any:*) +_isTemplate:n", query.toString());
     }
@@ -143,7 +143,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:n", query.toString());
 	}
@@ -161,7 +161,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:hoeperdepoep +_isTemplate:n", query.toString());
 	}
@@ -182,7 +182,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:asjemenou~0.5740458 +_isTemplate:n", query.toString());
 	}
@@ -200,7 +200,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_uuid:ad2aa2c7-f099-47cb-8a38-4effe2a2d250 +_isTemplate:n", query.toString());
 	}
@@ -218,7 +218,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(_uuid:63C2378A-17A7-B863-BFF4-CC3EF507D10D _uuid:ad2aa2c7-f099-47cb-8a38-4effe2a2d250) +_isTemplate:n", query.toString());
 	}
@@ -236,7 +236,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+(_uuid:63C2378A-17A7-B863-BFF4-CC3EF507D10D _uuid:BAR_DEN) +_isTemplate:n", query.toString());
     }
@@ -258,7 +258,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:asjemenou +_isTemplate:n", query.toString());
 	}
@@ -276,7 +276,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+any:deze +any:die) +_isTemplate:n", query.toString());
 	}
@@ -297,7 +297,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+any:fucking~0.68854964 +any:hell~0.68854964) +_isTemplate:n", query.toString());
 	}
@@ -315,7 +315,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(any:hoeperdepoep) +_isTemplate:n", query.toString());
 	}
@@ -333,7 +333,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(any:hoep any:poep) +_isTemplate:n", query.toString());
 	}
@@ -354,7 +354,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(any:hoep~0.59694654 any:poep~0.59694654) +_isTemplate:n", query.toString());
 	}
@@ -372,7 +372,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:hoeperdepoep +_isTemplate:n", query.toString());
 	}
@@ -393,7 +393,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+any:fucking~0.68854964 +any:hell~0.68854964) +_isTemplate:n", query.toString());
 	}
@@ -411,7 +411,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		//assertEquals("+(+MatchAllDocsQuery -any:hoeperdepoep) +_isTemplate:n", query.toString());
         assertEquals("+(+*:* -any:hoeperdepoep) +_isTemplate:n", query.toString());
@@ -430,7 +430,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+*:* -any:hip -any:hop) +_isTemplate:n", query.toString());
 	}
@@ -451,7 +451,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+*:* -any:hip -any:hop) +_isTemplate:n", query.toString());
 	}
@@ -469,7 +469,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:\"humph\" +_isTemplate:n", query.toString());
 	}
@@ -487,7 +487,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:\"that one\" +_isTemplate:n", query.toString());
 	}
@@ -508,7 +508,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+any:\"that one\" +_isTemplate:n", query.toString());
 	}
@@ -526,7 +526,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+topicCat:biota* +_isTemplate:n", query.toString());
 	}
@@ -550,7 +550,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+topicCat:environment* +topicCat:boundaries +topicCat:biota*) +_isTemplate:n", query.toString());
 	}
@@ -567,7 +567,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+any:hoeper* +_isTemplate:n", query.toString());
     }
@@ -585,7 +585,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+any:hoeper? +_isTemplate:n", query.toString());
     }
@@ -600,7 +600,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+(topicCat:biota* topicCat:boundaries topicCat:environment) +_isTemplate:n", query.toString());
     }
@@ -618,7 +618,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:y", query.toString());
 	}
@@ -636,7 +636,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:s", query.toString());
 	}
@@ -653,7 +653,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:n", query.toString());
 	}
@@ -667,7 +667,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:n", query.toString());
 	}
@@ -685,7 +685,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+changeDate:[12-05-1989 TO *] +_isTemplate:n", query.toString());
 	}
@@ -703,7 +703,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+changeDate:[* TO 12-05-1989T23:59:59] +_isTemplate:n", query.toString());
 	}
@@ -725,7 +725,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+changeDate:[11-05-1989 TO 12-05-1989T23:59:59] +_isTemplate:n", query.toString());
 	}
@@ -743,7 +743,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_source:f74e4ccf-755a-48ef-bedf-990f9872298b +_isTemplate:n", query.toString());
 	}
@@ -761,7 +761,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+title:humph +_isTemplate:n", query.toString());
 	}
@@ -779,7 +779,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+protocol:download +_isTemplate:n", query.toString());
 	}
@@ -797,7 +797,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+type:dataset +_isTemplate:n", query.toString());
 	}
@@ -815,7 +815,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+inspirecat:true +_isTemplate:n", query.toString());
     }
@@ -834,7 +834,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+inspiretheme:Addresses +_isTemplate:n", query.toString());
     }
@@ -853,7 +853,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+inspiretheme:\"Administrative units\" +_isTemplate:n", query.toString());
     }
@@ -873,7 +873,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+(+inspiretheme:Hydrography* +inspiretheme:\"Cadastral parcels\") +_isTemplate:n", query.toString());
     }
@@ -891,7 +891,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+inspireannex:joostmaghetweten +_isTemplate:n", query.toString());
     }
@@ -909,7 +909,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+keyword:hoeperdepoep +_isTemplate:n", query.toString());
 	}
@@ -931,7 +931,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+keyword:\"zat op de stoep\" +keyword:hoeperdepoep) +_isTemplate:n", query.toString());
 	}
@@ -952,7 +952,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+(keyword:\"hoeperdepoep\" keyword:\"zat op de stoep\") +_isTemplate:n", query.toString());
 
@@ -971,7 +971,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_cat:hoeperdepoep +_isTemplate:n", query.toString());
 	}
@@ -989,7 +989,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+parentUuid:as432f-s45hj3-vcx35s-fsd8sf +_isTemplate:n", query.toString());
 	}
@@ -1007,7 +1007,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+operatesOn:value +_isTemplate:n", query.toString());
     }
@@ -1025,7 +1025,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+_schema:value +_isTemplate:n", query.toString());
     }                                                                    
@@ -1045,7 +1045,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 
         String expected = "+(tempExtentBegin:[2010-04-01T17:35:00 TO *] tempExtentEnd:[2010-04-01T17:35:00 TO *]) +_isTemplate:n";
         assertEquals(expected, query.toString());
@@ -1058,7 +1058,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI2 = new LuceneQueryInput(request);
         // build lucene query
-        query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI2);
+        query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI2);
 
         expected = "+(tempExtentBegin:[* TO 2010-04-27T17:43:00] tempExtentEnd:[* TO 2010-04-27T17:43:00]) +_isTemplate:n";
         assertEquals(expected, query.toString());
@@ -1076,7 +1076,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI3 = new LuceneQueryInput(request);
         // build lucene query
-        query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI3);
+        query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI3);
 
         expected = "+(tempExtentBegin:[2010-04-08T17:46:00 TO 2010-04-27T17:43:00] tempExtentEnd:[2010-04-08T17:46:00 TO 2010-04-27T17:43:00] (+tempExtentEnd:[2010-04-27T17:43:00 TO *] +tempExtentBegin:[* TO 2010-04-08T17:46:00])) +_isTemplate:n";
         assertEquals(expected, query.toString());
@@ -1091,7 +1091,7 @@ public class LuceneQueryTest extends TestCase {
         extTo.addContent("2010-04-29T16:40:00");
         request.addContent(extTo);
         // build lucene query
-        Query query = new LuceneQueryBuilder2(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder2(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+_isTemplate:n +(tempExtentBegin:[2010-04-27T16:40:00 TO 2010-04-29T16:40:00]" +
                 " tempExtentEnd:[2010-04-27T16:40:00 TO 2010-04-29T16:40:00] " +
@@ -1114,7 +1114,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+_cat:\"zat op de stoep\" +_cat:hoeperdepoep) +_isTemplate:n", query.toString());
 	}
@@ -1129,7 +1129,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+        Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
         // verify query
         assertEquals("+(_cat:hoeperdepoep _cat:\"zat op de stoep\") +_isTemplate:n", query.toString());
     }
@@ -1147,7 +1147,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:n", query.toString());
 	}
@@ -1168,7 +1168,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:n", query.toString());
 	}
@@ -1186,7 +1186,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:n", query.toString());
 	}
@@ -1204,7 +1204,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(+_op6:1 +_op0:1) +_isTemplate:n", query.toString());
 	}
@@ -1222,7 +1222,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:n", query.toString());
 	}
@@ -1241,7 +1241,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(_op0:hatsjekidee _op2:hatsjekidee) +_isTemplate:n", query.toString());
 	}
@@ -1262,7 +1262,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         // build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(_op0:nou moe _op2:nou moe _op0:hatsjekidee _op2:hatsjekidee) +_isTemplate:n", query.toString());
 	}
@@ -1286,7 +1286,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(_op0:nou moe _op2:nou moe _op0:hatsjekidee _op2:hatsjekidee) +_isTemplate:n", query.toString());
 	}
@@ -1310,7 +1310,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(_op0:nou moe _op2:nou moe _op0:hatsjekidee _op2:hatsjekidee _owner:yeah!) +_isTemplate:n", query.toString());
 	}
@@ -1334,7 +1334,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(_op0:nou moe _op2:nou moe _op0:hatsjekidee _op2:hatsjekidee _dummy:0) +_isTemplate:n", query.toString());
 	}
@@ -1365,7 +1365,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+eastBL:[55.0 TO 55.0] +westBL:[43.0 TO 43.0] +northBL:[12.0 TO 12.0] +southBL:[9.0 TO 9.0] +_isTemplate:n", query.toString());
 	}
@@ -1395,7 +1395,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+eastBL:[43.0 TO 180.0] +westBL:[-180.0 TO 55.0] +northBL:[9.0 TO 90.0] +southBL:[-90.0 TO 12.0] +_isTemplate:n", query.toString());
 	}
@@ -1425,7 +1425,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+eastBL:[55.0 TO 180.0] +westBL:[-180.0 TO 43.0] +northBL:[12.0 TO 90.0] +southBL:[-90.0 TO 9.0] +_isTemplate:n", query.toString());
 	}
@@ -1455,7 +1455,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+eastBL:[43.0 TO 55.0] +westBL:[43.0 TO 55.0] +northBL:[9.0 TO 12.0] +southBL:[9.0 TO 12.0] +_isTemplate:n", query.toString());
 	}
@@ -1485,7 +1485,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("eastBL:[-180.0 TO 43.0] westBL:[55.0 TO 180.0] northBL:[-90.0 TO 0.0] southBL:[30.0 TO 90.0] +_isTemplate:n", query.toString());
 	}
@@ -1515,7 +1515,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+eastBL:[-180.0 TO 180.0] +westBL:[-180.0 TO 180.0] +northBL:[-90.0 TO 90.0] +southBL:[-90.0 TO 90.0] +_isTemplate:n", query.toString());
 	}
@@ -1592,7 +1592,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+(_op0:1 _op2:1 _op0:0 _op2:0) +eastBL:[-180.0 TO 180.0] +westBL:[-180.0 TO 180.0] +northBL:[-90.0 TO 90.0] +southBL:[-90.0 TO 90.0] +title:hoi +_isTemplate:n", query.toString());
 	}
@@ -1706,7 +1706,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+_isTemplate:n +eastBL:[-180.0 TO 180.0] +westBL:[-180.0 TO 180.0] +northBL:[-90.0 TO 90.0] +southBL:[-90.0 TO 90.0]", query.toString());
 	}
@@ -1725,7 +1725,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+dynamic:true +_isTemplate:n", query.toString());
     }
@@ -1743,7 +1743,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+download:true +_isTemplate:n", query.toString());
 
@@ -1763,7 +1763,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
-		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQI);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("+digital:true +_isTemplate:n", query.toString());
 
@@ -1776,7 +1776,7 @@ public class LuceneQueryTest extends TestCase {
         // build lucene query input
         LuceneQueryInput lQIa = new LuceneQueryInput(request);
 		// build lucene query
-		 query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer).build(lQIa);
+		 query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQIa);
 		// verify query
 		assertEquals("+paper:true +_isTemplate:n", query.toString());
     }
