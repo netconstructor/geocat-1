@@ -12,4 +12,4 @@ MEMORY="-XX:MaxPermSize=256m -Xmx1024M -server"
 DIRS="-Dgeonetwork.lucene.dir=/tmp/gc_lucene -Dgeonetwork.data.dir=/tmp/gc_data"
 export MAVEN_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS -Dfile.encoding=UTF8 "
 
-mvn compile jetty:run -Penv-dev,widgets $@
+mvn compile jetty:run -Penv-dev,widgets -o $@
