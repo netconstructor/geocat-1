@@ -25,12 +25,12 @@
 							<!-- loop on all operations leaving editing and notify to last -->
 							<xsl:for-each select="/root/response/operations/record">
 								<xsl:if test="id!='2' and id!='3'">
-									<th class="padded-center"><xsl:value-of select="label/child::*[name() = $lang]"/></th>
+									<th class="padded-center"><xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/></th>
 								</xsl:if>
 							</xsl:for-each>
 							<xsl:for-each select="/root/response/operations/record">
 								<xsl:if test="id='2' or id='3'">
-									<th class="padded-center"><xsl:value-of select="label/child::*[name() = $lang]"/></th>
+									<th class="padded-center"><xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/></th>
 								</xsl:if>
 							</xsl:for-each>
 							<th width="70"/>
@@ -74,7 +74,7 @@
 											<xsl:if test="$disabled">
 												<xsl:attribute name="style">color: #A0A0A0;</xsl:attribute>
 											</xsl:if>
-											<xsl:value-of select="label/child::*[name() = $lang]"/>
+											<xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/>
 										</span>
 									</td>
 									
@@ -168,7 +168,7 @@
 					<xsl:if test="$disabled">
 						<xsl:attribute name="style">color: #A0A0A0;</xsl:attribute>
 					</xsl:if>
-					<xsl:value-of select="label/child::*[name() = $lang]"/>
+					<xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/>
 				</span>
 			</td>
 			

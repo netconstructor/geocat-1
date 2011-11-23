@@ -82,16 +82,15 @@
 
         <!-- groups -->
         <tr id="gn.groups">
-                LANG: <xsl:value-of select="$lang"/><br/>
             <th class="padded">
                 <xsl:value-of select="/root/gui/strings/group"/>
             </th>
             <td class="padded">
                 <select class="content" name="group" size="1">
                     <xsl:for-each select="/root/gui/groups/record">
-                        <xsl:sort select="label/child::*[name() = $lang]"/>
+                        <xsl:sort select="label/child::*[substring(name(),0,3) = $lang]"/>
                         <option value="{id}">
-                            <xsl:value-of select="label/child::*[name() = $lang]"/>
+                            <xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/>
                         </option>
                     </xsl:for-each>
                 </select>
@@ -116,9 +115,9 @@
                                 <xsl:value-of select="/root/gui/strings/none"/>
                             </option>
                             <xsl:for-each select="/root/gui/categories/record">
-                                <xsl:sort select="label/child::*[name() = $lang]"/>
+                                <xsl:sort select="label/child::*[substring(name(),0,3) = $lang]"/>
                                 <option value="{id}">
-                                    <xsl:value-of select="label/child::*[name() = $lang]"/>
+                                    <xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/>
                                 </option>
                             </xsl:for-each>
                         </select>
