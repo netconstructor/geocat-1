@@ -299,6 +299,10 @@
 			<xsl:for-each select="gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString">
 				<Field name="protocol" string="{string(.)}" store="true" index="true" token="false"/>
 			</xsl:for-each>
+
+            <xsl:for-each select="gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage//che:LocalisedURL[@locale=$langId]">
+                <Field name="linkage" string="{string(.)}" store="true" index="true" token="false"/>
+            </xsl:for-each>
 		</xsl:for-each>
 
 

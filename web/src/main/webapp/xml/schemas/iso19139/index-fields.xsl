@@ -331,7 +331,7 @@
 			  <xsl:if test="contains(., 'OGC:WMS')">
 			    <Field name="dynamic" string="true" store="false" index="true"/>
 			  </xsl:if>
-			</xsl:for-each>  
+			</xsl:for-each>
 		</xsl:for-each>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

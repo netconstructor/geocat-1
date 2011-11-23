@@ -60,6 +60,7 @@
             <Field name="_defaultTitle" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
 
             <xsl:apply-templates select="*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']" mode="metadata"/>
+            <xsl:call-template name="hasLinkageURL" />
         </Document>
     </xsl:template>
     
@@ -285,21 +286,39 @@
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 		<!-- === Distribution === -->		
 
-		<xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution">
-			<xsl:for-each select="gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString">
-				<Field name="format" string="{string(.)}" store="true" index="true" token="false"/>
-			</xsl:for-each>
+        <xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution">
+            <xsl:for-each select="gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString">
+                <Field name="format" string="{string(.)}" store="true" index="false"/>
+            </xsl:for-each>
 
-            <xsl:for-each select="gmd:distributionFormat/gmd:MD_Format/gmd:version/gco:CharacterString">
-				<Field name="formatversion" string="{string(.)}" store="true" index="true" token="false"/>
-			</xsl:for-each>
+            <!-- index online protocol -->
+            
+            <xsl:for-each select="gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString">
+                <xsl:variable name="download_check"><xsl:text>&amp;fname=&amp;access</xsl:text></xsl:variable>
+                <xsl:variable name="linkage" select="../../gmd:linkage/gmd:URL" /> 
 
-			<!-- index online protocol -->
-			
-			<xsl:for-each select="gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString">
-				<Field name="protocol" string="{string(.)}" store="true" index="true" token="false"/>
-			</xsl:for-each>
-		</xsl:for-each>
+                <!-- ignore empty downloads -->
+                <xsl:if test="string($linkage)!='' and not(contains($linkage,$download_check))">  
+                    <Field name="protocol" string="{string(.)}" store="true" index="true"/>
+                </xsl:if>  
+
+                <xsl:variable name="mimetype" select="../../gmd:name/gmx:MimeFileType/@type"/>
+                <xsl:if test="normalize-space($mimetype)!=''">
+                    <Field name="mimetype" string="{$mimetype}" store="true" index="true"/>
+                </xsl:if>
+              
+              <xsl:if test="contains(., 'WWW:DOWNLOAD')">
+                <Field name="download" string="true" store="false" index="true"/>
+              </xsl:if>
+              
+              <xsl:if test="contains(., 'OGC:WMS')">
+                <Field name="dynamic" string="true" store="false" index="true"/>
+              </xsl:if>
+            </xsl:for-each>
+            <xsl:for-each select="gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/che:LocalisedURL">
+                <Field name="linkage" string="{string(.)}" store="true" index="true" token="false"/>
+            </xsl:for-each>
+        </xsl:for-each>
 
 
 

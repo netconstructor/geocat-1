@@ -888,4 +888,11 @@ public final class XslUtil {
 		return langCode.substring(0,2).toLowerCase();
 	}
 
+	public static boolean match(Object src, Object pattern) {
+		if (src == null || src.toString().trim().isEmpty()) {
+			return false;
+		}
+		return src.toString().matches(pattern.toString());
+	}
+
 }

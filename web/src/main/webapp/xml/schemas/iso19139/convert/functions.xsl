@@ -5,6 +5,7 @@
                     xmlns:ADO="http://www.defence.gov.au/ADO_DM_MDP"
                     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 										xmlns:date="http://exslt.org/dates-and-times"
+                    xmlns:che="http://www.geocat.ch/2008/che"
                     xmlns:java="java:org.fao.geonet.util.XslUtil"
                     xmlns:joda="java:org.fao.geonet.util.JODAISODate"
                     xmlns:mime="java:org.fao.geonet.util.MimeTypeFinder">
@@ -129,6 +130,17 @@
             <xsl:value-of select="string(/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title//gmd:LocalisedCharacterString[1])"></xsl:value-of>
         </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+
+    <xsl:template name="hasLinkageURL">
+        <xsl:variable name="linkage" select="//gmd:distributionInfo//gmd:transferOptions//gmd:linkage"/>
+        <xsl:variable name="hasLinkageURL">
+            <xsl:choose>
+                <xsl:when test="$linkage/gmd:URL[java:match(string(.), 'https?://.*')] or $linkage//che:LocalisedURL[java:match(string(.), 'https?://.*')]">y</xsl:when>
+                <xsl:otherwise>n</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <Field name="hasLinkageURL" string="{$hasLinkageURL}" store="true" index="true" token="false"/>
     </xsl:template>
 
     <!-- ================================================================== -->
