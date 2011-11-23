@@ -145,12 +145,12 @@
 						<tr>
 							<td class="spacer"/>
 						</tr>
-						<xsl:call-template name="addrow">
+						<!--  <xsl:call-template name="addrow">
 							<xsl:with-param name="service" select="'metadata.schema.add.form'"/>
 							<xsl:with-param name="title" select="/root/gui/strings/addSchema"/>
 							<xsl:with-param name="desc" select="/root/gui/strings/addSchemaDes"/>
 							<xsl:with-param name="icon">folder_add.png</xsl:with-param>
-						</xsl:call-template>
+						</xsl:call-template> -->
 
 						<xsl:if test="count(/root/gui/schemalist/name[@plugin='true'])>0">
 							<xsl:call-template name="addrow">
@@ -167,8 +167,8 @@
 						</xsl:if>
 					</xsl:variable>
 
-
 					<!-- Template administration -->
+<!--
 					<xsl:variable name="mdTemplate">
 							
 							
@@ -246,7 +246,7 @@
 							
 						</xsl:with-param>
 					</xsl:call-template>
-
+ -->
 
 
 					<xsl:variable name="io">
@@ -430,13 +430,13 @@
 
 
 					<xsl:variable name="indexConfiguration">
-
+<!-- 
 						<xsl:call-template name="addrow">
 							<xsl:with-param name="service" select="'index.languages.get'"/>
 							<xsl:with-param name="title" select="/root/gui/strings/indexLanguages"/>
 							<xsl:with-param name="desc" select="/root/gui/strings/indexLanguagesDes"
 							/>
-						</xsl:call-template>
+						</xsl:call-template> -->
 
 						<xsl:if
 							test="/root/gui/services/service/@name='metadata.admin.index.rebuild' and /root/gui/services/service/@name='metadata.admin.index.optimize'">
@@ -471,7 +471,7 @@
 					</xsl:variable>
 					
 					-->
-                    
+
                     <xsl:variable name="i18n">
                         
                         <xsl:call-template name="addrow">
@@ -479,12 +479,12 @@
                             <xsl:with-param name="title" select="/root/gui/strings/localiz"/>
                             <xsl:with-param name="desc" select="/root/gui/strings/localizDes"/>
                         </xsl:call-template>
-                        
+<!--                         
                         <xsl:call-template name="addrow">
                             <xsl:with-param name="service" select="'test.i18n'"/>
                             <xsl:with-param name="title" select="/root/gui/strings/i18n"/>
                             <xsl:with-param name="desc" select="/root/gui/strings/i18nDesc"/>
-                        </xsl:call-template>
+                        </xsl:call-template> -->
                         
                     </xsl:variable>
                     
