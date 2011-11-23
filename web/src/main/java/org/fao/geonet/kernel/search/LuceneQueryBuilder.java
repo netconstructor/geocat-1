@@ -432,8 +432,7 @@ public class LuceneQueryBuilder {
             query.add(q, qOccur);
         }
 
-        query = addLocaleTerm(query, _language);
-        return query;
+        return addLocaleTerm(query, _language);
     }
 
     /**
@@ -1127,20 +1126,25 @@ public class LuceneQueryBuilder {
         return "*".equals(StringUtils.trim(s));
     }
 
-    static BooleanQuery addLocaleTerm(Query query, String langCode)
+    static Query addLocaleTerm(Query query, String langCode)
     {
-        BooleanQuery booleanQuery;
-        if (query instanceof BooleanQuery) {
-            booleanQuery = (BooleanQuery) query;
-        } else {
-            booleanQuery = new BooleanQuery();
-            booleanQuery.add(query, BooleanClause.Occur.SHOULD);
-        }
 
-        String twoCharLang = XslUtil.twoCharLangCode(langCode);
-        booleanQuery.add(new TermQuery(new Term("_locale", twoCharLang)), BooleanClause.Occur.SHOULD);
+		if (langCode == null) {
+			return query;
+		}
+		BooleanQuery booleanQuery;
+		if (query instanceof BooleanQuery) {
+			booleanQuery = (BooleanQuery) query;
+		} else {
+			booleanQuery = new BooleanQuery();
+			booleanQuery.add(query, BooleanClause.Occur.SHOULD);
+		}
 
-        return booleanQuery;
+		String twoCharLang = XslUtil.twoCharLangCode(langCode);
+		booleanQuery.add(new TermQuery(new Term("_locale", twoCharLang)),
+				BooleanClause.Occur.SHOULD);
+
+		return booleanQuery;
     }
 
 }
