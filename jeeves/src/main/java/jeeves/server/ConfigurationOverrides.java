@@ -4,6 +4,8 @@ import jeeves.server.sources.http.JeevesServlet;
 import jeeves.utils.Log;
 import jeeves.utils.XPath;
 import jeeves.utils.Xml;
+
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.spi.LoggerRepository;
@@ -185,10 +187,7 @@ public class ConfigurationOverrides {
             }
         }
         if (logOverides.size() > 0) {
-            LoggerRepository loggerRepo = Logger.getRootLogger().getLoggerRepository();
-            loggerRepo.resetConfiguration();
-            PropertyConfigurator configurator = new PropertyConfigurator();
-            configurator.doConfigure(p, loggerRepo);
+            PropertyConfigurator.configure(p);
         }
     }
 
