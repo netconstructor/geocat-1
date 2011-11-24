@@ -90,7 +90,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
         List<Pair<Element, String>> allKeywords = getAllKeywords(originalElem);
         java.util.Set<String> addedIds = new HashSet<String>();
         for (Pair<Element, String> elem : allKeywords) {
-            if(elem.one().getParent() == null){
+            if(elem.one().getParent() == null || elem.two() == null || elem.two().trim().isEmpty()){
                 // already processed by another translation.
                 continue;
             }

@@ -26,6 +26,7 @@
        	<xsl:with-param name="embedded" select="$embedded" />
      	</xsl:apply-templates>
     </xsl:template>
+    
 	<!-- Do not display those elements -->
 	<xsl:template mode="elementEP"
 		match="gmd:describes|gmd:propertyType|gmd:featureType|gmd:featureAttribute" priority="2"/>
@@ -64,10 +65,7 @@
 
     <!-- In ISO profil for switzerland not all text fields are 
     multilingual. -->
-    <xsl:template mode="iso19139"
-        match="
-        gmd:explanation[gco:CharacterString]
-        "
+    <xsl:template mode="iso19139" match="gmd:explanation[gco:CharacterString]"
         priority="100">
         <xsl:param name="schema" />
         <xsl:param name="edit" />
@@ -78,8 +76,6 @@
             <xsl:with-param name="rows" select="3" />
         </xsl:call-template>
     </xsl:template>
-
-
 
 	<!-- Use this template to define which elements
 		are not multilingual and mandatory-->
@@ -105,7 +101,104 @@
 		</xsl:call-template>
 	</xsl:template>
 
+    <!-- ============================================================================= -->
 
+    <xsl:template mode="iso19139" match="gmd:contact|gmd:pointOfContact|gmd:citedResponsibleParty|*[@gco:isoType='gmd:CI_ResponsibleParty']" priority="5">
+        <xsl:param name="schema"/>
+        <xsl:param name="edit"/>
+
+        <xsl:choose>
+            <xsl:when test="che:CHE_CI_ResponsibleParty">
+				<xsl:call-template name="cheContactTemplate">
+					<xsl:with-param name="edit" select="$edit" />
+					<xsl:with-param name="schema" select="$schema" />
+				</xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise>
+		        <xsl:call-template name="contactTemplate">
+		            <xsl:with-param name="edit" select="$edit"/>
+		            <xsl:with-param name="schema" select="$schema"/>
+		        </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template name="cheContactTemplate">
+        <xsl:param name="schema"/>
+        <xsl:param name="edit"/>
+        
+        <xsl:variable name="content">
+            <xsl:for-each select="che:CHE_CI_ResponsibleParty">
+            <tr>
+                <td class="padded-content" width="100%" colspan="2">
+                    <table width="100%">
+                        <tr>
+                            <td width="50%" valign="top">
+                                <table width="100%">
+                                    <xsl:apply-templates mode="elementEP" select="../@xlink:href">
+                                        <xsl:with-param name="schema" select="$schema"/>
+                                        <xsl:with-param name="edit"   select="$edit"/>
+                                    </xsl:apply-templates>
+                                    
+                                    <xsl:apply-templates mode="simpleElement" 
+                                            select="(che:individualFirstName|geonet:child[string(@name)='individualFirstName']|
+                                            che:individualLastName|geonet:child[string(@name)='individualLastName'])[1]">
+                                        <xsl:with-param name="schema" select="$schema"/>
+                                        <xsl:with-param name="edit"   select="$edit"/>
+                                        <xsl:with-param name="title" select="/root/gui/schemas/iso19139/labels/element[@name='gmd:individualName']/label"/>
+                                        <xsl:with-param name="text">
+                                            <xsl:value-of select="(che:individualFirstName|geonet:child[string(@name)='individualFirstName'])/gco:CharacterString"/>
+                                            <xsl:text> </xsl:text>
+                                            <xsl:value-of select="(che:individualFirstName|geonet:child[string(@name)='individualFirstName'])/gco:CharacterString"/>
+                                        </xsl:with-param>
+                                    </xsl:apply-templates>
+                                    
+                                    <xsl:apply-templates mode="elementEP" select="gmd:organisationName|geonet:child[string(@name)='organisationName']">
+                                        <xsl:with-param name="schema" select="$schema"/>
+                                        <xsl:with-param name="edit"   select="$edit"/>
+                                    </xsl:apply-templates>
+                                    
+                                    <xsl:apply-templates mode="elementEP" select="che:organisationAcronym|geonet:child[string(@name)='organisationAcronym']">
+                                        <xsl:with-param name="schema" select="$schema"/>
+                                        <xsl:with-param name="edit"   select="$edit"/>
+                                    </xsl:apply-templates>
+                                    
+                                    <xsl:apply-templates mode="elementEP" select="gmd:positionName|geonet:child[string(@name)='positionName']">
+                                        <xsl:with-param name="schema" select="$schema"/>
+                                        <xsl:with-param name="edit"   select="$edit"/>
+                                    </xsl:apply-templates>
+                                    
+                                    <xsl:apply-templates mode="elementEP" select="gmd:role|geonet:child[string(@name)='role']">
+                                        <xsl:with-param name="schema" select="$schema"/>
+                                        <xsl:with-param name="edit"   select="$edit"/>
+                                    </xsl:apply-templates>
+                                    
+                                </table>
+                            </td>
+                            <td valign="top">
+                                <table width="100%">
+                                    <xsl:apply-templates mode="elementEP" select="gmd:contactInfo|geonet:child[string(@name)='contactInfo']">
+                                        <xsl:with-param name="schema" select="$schema"/>
+                                        <xsl:with-param name="edit"   select="$edit"/>
+                                    </xsl:apply-templates>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            </xsl:for-each>
+        </xsl:variable>
+        
+        <xsl:apply-templates mode="complexElement" select=".">
+            <xsl:with-param name="schema"  select="$schema"/>
+            <xsl:with-param name="edit"    select="$edit"/>
+            <xsl:with-param name="content" select="$content"/>
+        </xsl:apply-templates>
+        
+    </xsl:template>
+
+    <!-- ============================================================================= -->
 
     <!-- Use this template to define which elements
         are multilingual and mandatory  
@@ -864,7 +957,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		
+
 		<xsl:choose>
 			<xsl:when test="$edit='true' and $isTemplate='true'">
 				<select class="md" name="_{geonet:element/@ref}" size="1">
