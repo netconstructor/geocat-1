@@ -23,12 +23,16 @@
 
 package org.fao.geonet.kernel.harvest.harvester.csw;
 
+import java.util.List;
+import java.util.Set;
+
 import jeeves.exceptions.OperationAbortedEx;
 import jeeves.interfaces.Logger;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Xml;
+
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.CswOperation;
@@ -42,10 +46,10 @@ import org.fao.geonet.kernel.harvest.harvester.GroupMapper;
 import org.fao.geonet.kernel.harvest.harvester.Privileges;
 import org.fao.geonet.kernel.harvest.harvester.RecordInfo;
 import org.fao.geonet.kernel.harvest.harvester.UUIDMapper;
+import org.jdom.Document;
 import org.jdom.Element;
-
-import java.util.List;
-import java.util.Set;
+import org.jdom.Namespace;
+import org.jdom.xpath.XPath;
 
 //=============================================================================
 
@@ -296,6 +300,10 @@ public class Aligner
                 boolean index = false;
                 String language = context.getLanguage();
                 UserSession session = null;
+                String schema = dataMan.autodetectSchema(md);
+                
+                // issue #18944 force namespace prefix for iso19139 metadata
+                dataMan.setNamespacePrefixUsingSchemas(schema, md);
 				dataMan.updateMetadata(session, dbms, id, md, validate, ufo, index, language, ri.changeDate, false);
 
 				dbms.execute("DELETE FROM OperationAllowed WHERE metadataId=?", Integer.parseInt(id));
@@ -346,7 +354,7 @@ public class Aligner
 	{
 		request.clearIds();
 		request.addId(uuid);
-
+		request.setOutputSchema(params.outputSchema);
 		try
 		{
 			log.debug("Getting record from : "+ request.getHost() +" (uuid:"+ uuid +")");
@@ -362,6 +370,34 @@ public class Aligner
 
 			response = (Element) list.get(0);
 			response = (Element) response.detach();
+
+			// issue #133730 : CSW getting remote MD as dc format
+			String schema = dataMan.autodetectSchema(response);
+
+			if (schema.equals("csw-record") && params.outputSchema != null &&
+					params.outputSchema.equals("http://www.opengis.net/cat/csw/2.0.2"))
+			{
+				schema = "dublin-core";
+				Element newRoot = new Element("simpledc");
+				Document newMd = new Document(newRoot);
+				newRoot.addContent(response.cloneContent());
+				newRoot.addNamespaceDeclaration(Namespace.getNamespace("dct", "http://purl.org/dc/terms/"));
+				response = newMd.getRootElement();
+
+			}
+			//removing geonet:info extra information
+			XPath xp = XPath.newInstance("geonet:info");
+			xp.addNamespace("geonet", "http://www.fao.org/geonetwork");
+			List<Element> lst = xp.selectNodes(response);
+			if (lst != null)
+			{
+				for (Element e : lst)
+				{
+					Element p = (Element) e.getParent();
+					p.removeContent(e);
+				}
+			}
+			// end issue #133730
 
             // validate it here if requested
             if (params.validate) {

@@ -13,6 +13,8 @@
 			<xsl:call-template name="search-CGP"/>
 			<div class="dots"/>
 			<xsl:call-template name="options-CGP"/>
+            <div class="dots"/>
+            <xsl:call-template name="content-CGP"/>
 			<div class="dots"/>
 			<xsl:call-template name="privileges-CGP"/>
 			<div class="dots"/>
@@ -105,13 +107,32 @@
 				<td class="padded"><xsl:value-of select="/root/gui/harvesting/oneRun"/></td>
 				<td class="padded"><input id="cgp.oneRunOnly" type="checkbox" value=""/></td>
 			</tr>
-
-			<tr>
-				<td class="padded"><xsl:value-of select="/root/gui/harvesting/validate"/></td>
-				<td class="padded"><input id="cgp.validate" type="checkbox" value=""/></td>
-			</tr>
 		</table>
 	</xsl:template>
+	
+    <!-- ============================================================================================= -->
+
+    <xsl:template name="content-CGP">
+    <div>
+        <h1 align="left"><xsl:value-of select="/root/gui/harvesting/content"/></h1>
+
+        <table border="0">
+             <!-- UNUSED -->
+            <tr style="display:none;">
+                <td class="padded"><xsl:value-of select="/root/gui/harvesting/importxslt"/></td>
+                <td class="padded">
+                    &#160;
+                    <select id="cgp.importxslt" class="content" name="importxslt" size="1"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="padded"><xsl:value-of select="/root/gui/harvesting/validate"/></td>
+                <td class="padded"><input id="cgp.validate" type="checkbox" value=""/></td>
+            </tr>
+        </table>
+    </div>
+    </xsl:template>
 
 	<!-- =============================================================================================  -->
 

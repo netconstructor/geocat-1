@@ -36,6 +36,7 @@ import org.fao.geonet.kernel.harvest.harvester.GroupMapper;
 import org.fao.geonet.kernel.harvest.harvester.Privileges;
 import org.fao.geonet.kernel.harvest.harvester.RecordInfo;
 import org.fao.geonet.kernel.harvest.harvester.UriMapper;
+import org.fao.geonet.services.harvesting.Util;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
@@ -148,8 +149,42 @@ class Harvester {
 		}
 		//--- schema handled check already done
 		String schema = dataMan.autodetectSchema(md);
-		String uuid   = UUID.randomUUID().toString();
+		// issue GC #133712
+		// we first try to get the current MD UUID before trying to generate a new one
+		String uuid = "";
+		
+		// /!\ retrieveMedata auto converts MDs into iso19139.che
+		if (md.getName().equals("CHE_MD_Metadata"))
+		{
+			String tempUuid = Util.extractUuid(md);
 
+			if (tempUuid != null)
+			{
+				// check if the UUID is not already in database
+				if (dataMan.getMetadataId(dbms, tempUuid) == null)
+				{
+					uuid = tempUuid;
+				}
+				// else : we will send a mail to the admin
+				else
+				{
+					Util.warnAdminByMail(context, 
+							Util.SKEL_MAIL_UUID_CLASH,
+							params.url, tempUuid, rf.getPath());
+					log.debug("  - UUID clash : record already in database ; mailing the GC admins");
+					return ;
+				}
+			}
+		}
+		
+		// fallback by generating a new one
+		if ((uuid == null) || (uuid.equals("")))
+		{
+			log.debug("  - No UUID found in the remote MD ; generating a new one");
+			uuid   = UUID.randomUUID().toString();
+		}
+		// end of GC issue #13712
+		
 		log.debug("  - Setting uuid for metadata with remote path : "+ rf.getPath());
 
 		//--- set uuid inside metadata and get new xml
@@ -194,6 +229,12 @@ class Harvester {
 				result.unknownSchema++;
 			}
 			else {
+				if (schema.equals("GM03")) {
+					// we need to convert to CHE
+					String styleSheetPath = context.getAppPath() + "xsl/conversion/import/GM03-to-ISO19139CHE.xsl";
+					md = Xml.transform(md, styleSheetPath);
+				}
+
 				if (!params.validate || validates(schema, md)) {
 					return (Element) md.detach();
 				}
@@ -203,10 +244,14 @@ class Harvester {
 		}
 		catch(JDOMException e) {
 			log.warning("Skipping metadata with bad XML format. Path is : "+ rf.getPath());
+			// issue #21546 : warn the admin by mail
+			Util.warnAdminByMail(context, Util.SKEL_MAIL_WEBDAV_ERROR, params.url, null, rf.getPath());
 			result.badFormat++;
 		}
 		catch(Exception e) {
 			log.warning("Raised exception while getting metadata file : "+ e);
+			// issue #21546 : warn the admin by mail
+			Util.warnAdminByMail(context, Util.SKEL_MAIL_WEBDAV_ERROR, params.url, null, rf.getPath());
 			result.unretrievable++;
 		}
 		//--- we don't raise any exception here. Just try to go on

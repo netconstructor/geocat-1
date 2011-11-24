@@ -160,5 +160,6 @@
     <desc>Description</desc>
     <hoursofservice>Hours of service</hoursofservice>
     <contactinstructions>Contact instructions</contactinstructions>
-    
+
+    <mostPopular>Most popular</mostPopular>    
 </strings>

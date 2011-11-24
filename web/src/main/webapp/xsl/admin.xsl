@@ -168,9 +168,8 @@
 					</xsl:variable>
 
 					<!-- Template administration -->
-<!--
 					<xsl:variable name="mdTemplate">
-							
+ 							
 							
 
 						<xsl:call-template name="addrow">
@@ -188,7 +187,7 @@
 							select="concat(/root/gui/strings/metadata, '&#160;&amp;&#160;', /root/gui/strings/template)"/>
 						<xsl:with-param name="content">
 							<xsl:copy-of select="$mdServices"/>
-							<tr>
+<!--							<tr>
 								<td class="spacer"/>
 							</tr>
 							<xsl:copy-of select="$mdTemplate"/>
@@ -241,12 +240,11 @@
 									</table>
 								</xsl:with-param>
 							</xsl:call-template>
-							
+							-->
 							
 							
 						</xsl:with-param>
 					</xsl:call-template>
- -->
 
 
 					<xsl:variable name="io">

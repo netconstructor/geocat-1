@@ -34,37 +34,29 @@
 			<tr>
 				<td/>
 				<td class="padded"><xsl:value-of select="/root/strings/freeText"/></td>
-				<td class="padded"><input id="cgp.anytext" class="content" type="text" value="{freeText}" size="30"/></td>
+				<td class="padded"><input id="{@id}.cgp.anytext" class="content" type="text" value="{freeText}" size="30"/></td>
 			</tr>
 
+            <!-- From field - - - - - - - - - - - - - - - - - - - - - - - - - -->
+            
+            <tr>
+                <td/>
+                <td class="padded"><xsl:value-of select="/root/strings/from"/></td>
+                <td class="padded">
+                    <div id="{@id}.cgp.from" class="cal"></div>
+                    <input id="{@id}.cgp.from_cal" type="hidden" value="{from}"/>
+                    </td>
+            </tr>
 
-			<!-- From field - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-			<tr>
-				<td/>
-				<td class="padded"><xsl:value-of select="/root/strings/from"/></td>
-				<td class="padded"><input id="cgp.from" class="content" type="text" value="{from}" size="12" readonly="on"/></td>
-				<td>
-					<img id="cgp.from.set" style="cursor:pointer;" src="{/root/env/url}/scripts/calendar/img.gif" />
-				</td>
-				<td valign="bottom">
-					<img id="cgp.from.clear" style="cursor:pointer;" src="{/root/env/url}/images/clear_left.png"/>
-				</td>
-			</tr>
-
-			<!-- Until field - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-			<tr>
-				<td/>
-				<td class="padded"><xsl:value-of select="/root/strings/until"/></td>
-				<td class="padded"><input id="cgp.until" class="content" type="text" value="{until}" size="12" readonly="on"/></td>
-				<td>
-					<img id="cgp.until.set" style="cursor:pointer;" src="{/root/env/url}/scripts/calendar/img.gif" />
-				</td>
-				<td>
-					<img id="cgp.until.clear" style="cursor:pointer;" valign="middle" src="{/root/env/url}/images/clear_left.png"/>
-				</td>
-			</tr>
+            <!-- Until field - - - - - - - - - - - - - - - - - - - - - - - - - -->
+            
+            <tr>
+                <td/>
+                <td class="padded"><xsl:value-of select="/root/strings/until"/></td>
+                <td class="padded">
+                    <div id="{@id}.cgp.until" class="cal"></div>
+                    <input id="{@id}.cgp.until_cal" type="hidden" value="{until}"/></td>
+            </tr>
 
 			<!-- BBox fields - - - - - - - - - - - - - - - - - - - - - - - - - -->
 			<tr>
@@ -79,17 +71,17 @@
 						</tr>
 						<tr>
 							<td></td>
-							<td><input id="cgp.latnorth" class="content" type="text" value="{latNorth}" size="12"/></td>
+							<td><input id="{@id}.cgp.latnorth" class="content" type="text" value="{latNorth}" size="12"/></td>
 							<td></td>
 						</tr>
 						<tr>
-							<td><xsl:value-of select="/root/strings/lonWest"/><input id="cgp.lonwest" class="content" type="text" value="{lonWest}" size="12"/></td>
+							<td><xsl:value-of select="/root/strings/lonWest"/><input id="{@id}.cgp.lonwest" class="content" type="text" value="{lonWest}" size="12"/></td>
 							<td style="text-align:center"><xsl:value-of select="/root/strings/extent"/></td>
-							<td><input id="cgp.loneast" class="content" type="text" value="{lonEast}" size="12"/><xsl:value-of select="/root/strings/lonEast"/></td>
+							<td><input id="{@id}.cgp.loneast" class="content" type="text" value="{lonEast}" size="12"/><xsl:value-of select="/root/strings/lonEast"/></td>
 						</tr>
 						<tr>
 							<td></td>
-							<td><input id="cgp.latsouth" class="content" type="text" value="{latSouth}" size="12"/></td>
+							<td><input id="{@id}.cgp.latsouth" class="content" type="text" value="{latSouth}" size="12"/></td>
 							<td></td>
 						</tr>
 						<tr>

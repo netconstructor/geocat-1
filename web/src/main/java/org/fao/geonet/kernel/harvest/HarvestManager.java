@@ -72,11 +72,6 @@ public class HarvestManager
 				Element node = transform((Element) o);
 				String  type = node.getAttributeValue("type");
 
-				// PMT deactivated for now
-				if ((type != null) && (type.equals("cgp")))
-					continue;
-				
-				
 				AbstractHarvester ah = AbstractHarvester.create(type, context, sm, dm);
 				ah.init(node);
 				hmHarvesters.put(ah.getID(), ah);

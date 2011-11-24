@@ -2814,7 +2814,7 @@ public class DataManager {
      * @param md
      * @throws Exception
      */
-	private void setNamespacePrefixUsingSchemas(String schema, Element md) throws Exception {
+	public void setNamespacePrefixUsingSchemas(String schema, Element md) throws Exception {
 		//--- if the metadata has no namespace or already has a namespace prefix
 		//--- then we must skip this phase
 
