@@ -315,7 +315,7 @@ public class LuceneSearcher extends MetaSearcher
             // unless you are logged in as Administrator, check if you are allowed to query the groups in the query
             if (userSession == null || userSession.getProfile() == null ||
                     ! (userSession.getProfile().equals(Geonet.Profile.ADMINISTRATOR) && userSession.isAuthenticated())) {
-                if(!CollectionUtils.isEmpty(requestedGroups)) {
+                if(requestedGroups!=null && !requestedGroups.isEmpty()) {
                     for(Element group : requestedGroups) {
                         if(! "".equals(group.getText()) 
                         		&& ! userGroups.contains(group.getText())) {

@@ -193,7 +193,7 @@ public class ReusableObjManager
             String defaultMetadataLang = parameterObject.defaultLang;
             if(defaultMetadataLang == null) {
                 defaultMetadataLang = LangUtils.iso19139DefaultLang(parameterObject.metadata);
-                if (defaultMetadataLang != null) {
+                if (defaultMetadataLang != null && defaultMetadataLang.length() > 2) {
                     defaultMetadataLang = defaultMetadataLang.substring(0, 2).toUpperCase();
                 } else {
                     defaultMetadataLang = "EN";

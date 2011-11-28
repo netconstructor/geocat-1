@@ -766,7 +766,7 @@ public class LuceneQueryBuilder {
         boolean groupsQueryEmpty = true;
         BooleanClause.Occur groupOccur = LuceneUtils
                 .convertRequiredAndProhibitedToOccur(false, false);
-        if (!CollectionUtils.isEmpty(groups)) {
+        if (groups!=null && !groups.isEmpty()) {
             for (String group : groups) {
                 if (StringUtils.isNotBlank(group)) {
                     if (!editable) {

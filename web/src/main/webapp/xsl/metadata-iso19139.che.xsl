@@ -271,7 +271,7 @@
                     <xsl:call-template name="PT_FreeURL_Tree" />
                 </xsl:variable>
 
-                <xsl:variable name="ptFreeURLTree" select="xalan:nodeset($tmpFreeURL)" />
+                <xsl:variable name="ptFreeURLTree" select="$tmpFreeURL" />  
 
                 <xsl:variable name="mainLang"
                     select="string(/root/*/gmd:language/gco:CharacterString)" />
@@ -1219,9 +1219,25 @@
 	<xsl:template mode="iso19139" match="che:dateOfLastUpdate|che:dateOfMonitoringState" priority="2">
 		<xsl:param name="schema"/>
 		<xsl:param name="edit"/>
-		
+
+        <xsl:variable name="ref" select="gco:DateTime/geonet:element/@ref|gco:Date/geonet:element/@ref"/>
+        <xsl:variable name="format">
+            <xsl:choose>
+                <xsl:when test="gco:Date"><xsl:text>%Y-%m-%d</xsl:text></xsl:when>
+                <xsl:otherwise><xsl:text>%Y-%m-%dT%H:%M:00</xsl:text></xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        
+
 		<xsl:choose>
 			<xsl:when test="$edit=true()">
+				        <xsl:call-template name="calendar">
+                            <xsl:with-param name="ref" select="$ref"/>
+                            <xsl:with-param name="date" select="gco:DateTime/text()|gco:Date/text()"/>
+                            <xsl:with-param name="format" select="$format"/>
+                        </xsl:call-template>
+				<!-- 
+				
 				<xsl:apply-templates mode="simpleElement" select=".">
 					<xsl:with-param name="schema"  select="$schema"/>
 					<xsl:with-param name="edit"   select="$edit"/>
@@ -1291,7 +1307,7 @@
 							</td>
 						</tr></table>
 					</xsl:with-param>
-				</xsl:apply-templates>
+				</xsl:apply-templates> -->
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:call-template name="iso19139String">

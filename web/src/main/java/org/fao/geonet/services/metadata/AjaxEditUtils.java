@@ -1,5 +1,11 @@
 package org.fao.geonet.services.metadata;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
@@ -20,12 +26,6 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 import org.jdom.filter.ElementFilter;
 import org.jdom.filter.Filter;
-
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * // --------------------------------------------------------------------------
@@ -665,7 +665,7 @@ public class AjaxEditUtils extends EditUtils {
         String parentUuid = null;
 		md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms);
 		
-		md = dataManager.processSharedObjects(dbms, id, md);
+		md = dataManager.processSharedObjects(dbms, id, md, srvContext.getLanguage());
 		
         String changeDate = null;
 		XmlSerializer.update(dbms, id, md, changeDate, false);
@@ -723,7 +723,7 @@ public class AjaxEditUtils extends EditUtils {
         String parentUuid = null;
         md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms);
 
-        md = dataManager.processSharedObjects(dbms, id, md);
+        md = dataManager.processSharedObjects(dbms, id, md, srvContext.getLanguage());
         
         String changeDate = null;
 		XmlSerializer.update(dbms, id, md, changeDate, false);

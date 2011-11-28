@@ -1454,6 +1454,14 @@ public class DataManager {
             isTemplate = "n";
         }
 
+        if(schema.startsWith("iso19139")) {
+            /*
+             * Geocat doesn't permit multilingual elements to have characterString elements only LocalizedString elements. 
+             * This transformation ensures this property
+             */
+            metadata = Xml.transform(metadata, stylePath+"characterstring-to-localisedcharacterstring.xsl");
+        }
+        
         //--- store metadata
         XmlSerializer.insert(dbms, schema, metadata, id, source, uuid, createDate, changeDate, isTemplate, title, owner, group, docType);
 
@@ -1644,7 +1652,7 @@ public class DataManager {
 		    md = updateFixedInfo(schema, id, null, md, parentUuid, (updateDateStamp ? DataManager.UpdateDatestamp.yes : DataManager.UpdateDatestamp.no), dbms);
         }
         
-        md = processSharedObjects(dbms, id, md);
+        md = processSharedObjects(dbms, id, md, lang);
         
 		//--- write metadata to dbms
         XmlSerializer.update(dbms, id, md, changeDate, updateDateStamp);
@@ -1672,9 +1680,9 @@ public class DataManager {
 		return true;
 	}
 
-	public Element processSharedObjects(Dbms dbms, String id, Element md)
+	public Element processSharedObjects(Dbms dbms, String id, Element md, String lang)
 			throws Exception, SQLException {
-		ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null,servContext);
+		ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, lang,servContext);
         List<Element> modified = reusableObjMan.process(processParameters);
         
         if(!modified.isEmpty()) {
