@@ -156,25 +156,10 @@ class Harvester {
 		// /!\ retrieveMedata auto converts MDs into iso19139.che
 		if (md.getName().equals("CHE_MD_Metadata"))
 		{
-			String tempUuid = Util.extractUuid(md);
-
-			if (tempUuid != null)
-			{
-				// check if the UUID is not already in database
-				if (dataMan.getMetadataId(dbms, tempUuid) == null)
-				{
-					uuid = tempUuid;
-				}
-				// else : we will send a mail to the admin
-				else
-				{
-					Util.warnAdminByMail(context, 
-							Util.SKEL_MAIL_UUID_CLASH,
-							params.url, tempUuid, rf.getPath());
-					log.debug("  - UUID clash : record already in database ; mailing the GC admins");
-					return ;
-				}
-			}
+		    uuid = Util.uuid(context, dbms, params.url,md, log, rf.getPath(), result, "iso19139");
+		    if(uuid==null) {
+		        return;
+		    }
 		}
 		
 		// fallback by generating a new one

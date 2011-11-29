@@ -31,6 +31,7 @@ import jeeves.server.resources.ResourceManager;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.harvest.harvester.AbstractHarvester;
 import org.fao.geonet.kernel.harvest.harvester.AbstractParams;
+import org.fao.geonet.kernel.harvest.harvester.ErrorTracker;
 import org.fao.geonet.lib.Lib;
 import org.jdom.Element;
 
@@ -265,7 +266,7 @@ public class CGPHarvester extends AbstractHarvester
 
 //=============================================================================
 
-class CGPResult
+class CGPResult implements ErrorTracker
 {
 	public int totalMetadata;			// = md for data and service (ie. data + 1)
 	public int addedMetadata;			// = total
@@ -276,6 +277,9 @@ class CGPResult
 	public int unretrievable;	// = http connection failed
 	public int databaseError;		//
 	public int doesNotValidate;	// = 0 cos' not validated
+    public void incrementError() {
+       databaseError++;
+    }
 }
 
 //=============================================================================

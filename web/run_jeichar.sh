@@ -10,6 +10,6 @@ DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 OVERRIDES="-Dgeonetwork.jeeves.configuration.overrides.file=/WEB-INF/override-config-jeichar.xml"
 MEMORY="-XX:MaxPermSize=256m -Xmx1024M -server"
 DIRS="-Dgeonetwork.lucene.dir=/tmp/gc_lucene -Dgeonetwork.data.dir=/tmp/gc_data"
-export MAVEN_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS -Dfile.encoding=UTF8 -Dlog4j.debug"
+export GRADLE_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS -Dfile.encoding=UTF8 -Dlog4j.debug -Dlog4j.configuration=file://`pwd`/src/main/webapp/WEB-INF/log4j-jeichar.cfg -Dproject.basedir=`pwd`"
 
-mvn compile jetty:run -Penv-dev,widgets -o $@
+gradle jettyRun $@

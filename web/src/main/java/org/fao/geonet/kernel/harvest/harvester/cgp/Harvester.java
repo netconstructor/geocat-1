@@ -278,25 +278,11 @@ class Harvester
             Date date = getMetadataDate(md);
          
             // issue GC #133712
-            String tempUuid = org.fao.geonet.services.harvesting.Util.extractUuid(md);
+            uuid = org.fao.geonet.services.harvesting.Util.uuid(context, dbms, params.url, md, log, null, result, "iso19139");
 
-			if (tempUuid != null)
+			if (uuid == null)
 			{
-				// check if the UUID is not already in database
-				if (dataMan.getMetadataId(dbms, tempUuid) == null)
-				{
-					uuid = tempUuid;
-				}
-				// else : we will send a mail to the admin
-				else
-				{
-					org.fao.geonet.services.harvesting.Util.warnAdminByMail(context, 
-							org.fao.geonet.services.harvesting.Util.SKEL_MAIL_UUID_CLASH,
-							params.url, tempUuid, null);
-					log.debug("  - UUID clash : record already in database ; mailing the GC admins");
-					result.databaseError++;
-					return ;
-				}
+			    return;
 			}
             // End #133712
             

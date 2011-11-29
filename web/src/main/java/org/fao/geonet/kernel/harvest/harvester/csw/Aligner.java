@@ -129,7 +129,9 @@ public class Aligner
 
 		localCateg = new CategoryMapper(dbms);
 		localGroups= new GroupMapper(dbms);
-		localUuids = new UUIDMapper(dbms, params.uuid);
+		localUuids = new UUIDMapper(dbms, params.uuid) {
+		    
+		};
 		dbms.commit();
 
 		//-----------------------------------------------------------------------

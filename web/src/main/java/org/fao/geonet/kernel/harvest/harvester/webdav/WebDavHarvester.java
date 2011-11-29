@@ -30,6 +30,7 @@ import jeeves.server.resources.ResourceManager;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.harvest.harvester.AbstractHarvester;
 import org.fao.geonet.kernel.harvest.harvester.AbstractParams;
+import org.fao.geonet.kernel.harvest.harvester.ErrorTracker;
 import org.fao.geonet.lib.Lib;
 import org.jdom.Element;
 
@@ -192,7 +193,7 @@ public class WebDavHarvester extends AbstractHarvester {
 
 //=============================================================================
 
-class WebDavResult {
+class WebDavResult implements ErrorTracker {
 	public int total;
 	public int added;
 	public int updated;
@@ -202,6 +203,10 @@ class WebDavResult {
 	public int unretrievable;
 	public int badFormat;
 	public int doesNotValidate;
+	public int errors;
+    public void incrementError() {
+        errors++;
+    }
 }
 
 //=============================================================================
