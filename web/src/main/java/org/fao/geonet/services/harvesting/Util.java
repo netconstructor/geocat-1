@@ -33,6 +33,7 @@ import jeeves.constants.Jeeves;
 import jeeves.interfaces.Logger;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.context.ServiceContext;
+import jeeves.utils.Log;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
@@ -113,9 +114,11 @@ public class Util
 		try {
 			emailWarn.sendEmail(adminAddress, "[geocat.ch] Harvesting error", emailBody);
 		} catch (AddressException e) {
-			e.printStackTrace();
+			Log.error(Geonet.HARVESTER, "Error sending email message: "+e);
+			Log.error(Geonet.HARVESTER, "Failed email is: \n"+emailBody);
 		} catch (MessagingException e) {
-			e.printStackTrace();
+            Log.error(Geonet.HARVESTER, "Error sending email message: "+e);
+            Log.error(Geonet.HARVESTER, "Failed email is: \n"+emailBody);
 		}
 
 	}

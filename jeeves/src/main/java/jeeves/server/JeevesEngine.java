@@ -105,8 +105,8 @@ public class JeevesEngine
 	{
 		try
 		{
-            PropertyConfigurator.configure(configPath +"log4j.cfg");
-            ConfigurationOverrides.updateLoggingAsAccordingToOverrides(servlet, appPath);
+/*            PropertyConfigurator.configure(configPath +"log4j.cfg");
+            ConfigurationOverrides.updateLoggingAsAccordingToOverrides(servlet, appPath);*/
 
 			this.appPath = appPath;
 

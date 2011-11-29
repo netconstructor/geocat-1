@@ -31,6 +31,7 @@ import jeeves.utils.XmlFileCacher;
 import org.jdom.Element;
 
 import java.io.File;
+import java.util.HashMap;
 
 //=============================================================================
 
@@ -42,10 +43,9 @@ public class XmlFile implements GuiService
 	private String  name;
 	private String  file;
 	private String  base;
-	private String  language;
 	private String  defaultLang;
 	private boolean localized;
-	private XmlFileCacher xmlCache;
+	private final HashMap<String,XmlFileCacher> xmlCache = new HashMap<String,XmlFileCacher>();
 
 	//---------------------------------------------------------------------------
 	//---
@@ -61,16 +61,12 @@ public class XmlFile implements GuiService
 		file = Util.getAttrib(config, ConfigFile.Xml.Attr.FILE);
 		base = Util.getAttrib(config, ConfigFile.Xml.Attr.BASE, "loc");
 
-		language = config.getAttributeValue(ConfigFile.Xml.Attr.LANGUAGE);
-
 		//--- handle localized attrib
 
 		String local = config.getAttributeValue(ConfigFile.Xml.Attr.LOCALIZED);
 
 		if (local == null)	localized = defaultLocalized;
 		else localized = local.equals("true");
-
-		xmlCache = null;
 	}
 
 	//---------------------------------------------------------------------------
@@ -79,31 +75,39 @@ public class XmlFile implements GuiService
 	//---
 	//--------------------------------------------------------------------------
 
-	public Element exec(Element response, ServiceContext context) throws Exception
+	public synchronized Element exec(Element response, ServiceContext context) throws Exception
 	{
 		String lang = context.getLanguage();
-		if (localized && !lang.equals(language)) xmlCache = null;
-		language = lang;
 		
 		String appPath = context.getAppPath();
 		String xmlFilePath;
 
 		if (localized) xmlFilePath = appPath + base +"/"+ lang +"/"+ file;
 		else xmlFilePath = appPath + file;
-
-		if (xmlCache == null) xmlCache = new XmlFileCacher(new File(xmlFilePath),context.getServlet(),appPath);
+		
+        XmlFileCacher cache = get(context, lang, xmlFilePath);
 
 		Element result = null;
 		try {
-			result = (Element)xmlCache.get().clone();
+			result = (Element)cache.get().clone();
 		} catch (Exception e) {
 			e.printStackTrace();
 			String xmlDefaultLangFilePath = appPath + base +"/"+ defaultLang +"/"+ file;
-			xmlCache = new XmlFileCacher(new File(xmlDefaultLangFilePath),context.getServlet(), appPath);
-			result = (Element)xmlCache.get().clone();
+			cache = get(context, defaultLang, xmlDefaultLangFilePath);
+			result = (Element)cache.get().clone();
 		}
 		return result.setName(name);
 	}
+
+    private XmlFileCacher get(ServiceContext context, String lang, String xmlFilePath) {
+        XmlFileCacher cache = xmlCache.get(lang);
+		
+		if (cache == null) {
+		    cache = new XmlFileCacher(new File(xmlFilePath),context.getServlet(),context.getAppPath());
+		    xmlCache.put(lang, cache);
+		}
+        return cache;
+    }
 
 	//--------------------------------------------------------------------------
 

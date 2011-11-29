@@ -156,7 +156,7 @@ class Harvester {
 		// /!\ retrieveMedata auto converts MDs into iso19139.che
 		if (md.getName().equals("CHE_MD_Metadata"))
 		{
-		    uuid = Util.uuid(context, dbms, params.url,md, log, rf.getPath(), result, "iso19139");
+		    uuid = Util.uuid(context, dbms, params.url,md, log, rf.getPath(), result, schema);
 		    if(uuid==null) {
 		        return;
 		    }
@@ -214,10 +214,17 @@ class Harvester {
 				result.unknownSchema++;
 			}
 			else {
-				if (schema.equals("GM03")) {
+				if (md.getName() == "TRANSFER") {
 					// we need to convert to CHE
-					String styleSheetPath = context.getAppPath() + "xsl/conversion/import/GM03-to-ISO19139CHE.xsl";
-					md = Xml.transform(md, styleSheetPath);
+				    try {
+                        String styleSheetPath = context.getAppPath() + "xsl/conversion/import/GM03_2-to-ISO19139CHE.xsl";
+                        Element tmp = Xml.transform(md, styleSheetPath);
+                        md = tmp;
+				    } catch (Throwable e) {
+                        String styleSheetPath = context.getAppPath() + "xsl/conversion/import/GM03-to-ISO19139CHE.xsl";
+                        Element tmp = Xml.transform(md, styleSheetPath);
+                        md = tmp;
+				    }
 				}
 
 				if (!params.validate || validates(schema, md)) {

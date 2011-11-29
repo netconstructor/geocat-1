@@ -278,7 +278,7 @@ class Harvester
             Date date = getMetadataDate(md);
          
             // issue GC #133712
-            uuid = org.fao.geonet.services.harvesting.Util.uuid(context, dbms, params.url, md, log, null, result, "iso19139");
+            uuid = org.fao.geonet.services.harvesting.Util.uuid(context, dbms, params.url, md, log, null, result, schema);
 
 			if (uuid == null)
 			{
