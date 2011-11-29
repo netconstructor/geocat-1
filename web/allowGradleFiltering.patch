@@ -1,0 +1,127 @@
+diff --git a/web/pom.xml b/web/pom.xml
+index ca75403..2c99684 100644
+--- a/web/pom.xml
++++ b/web/pom.xml
+@@ -822,7 +822,7 @@ Python and Latex are required to build the documentation. -->
+           <webAppConfig>
+             <contextPath>/geonetwork</contextPath>
+             <baseResource implementation="org.mortbay.resource.ResourceCollection">
+-              <resourcesAsCSV>${basedir}/src/main/webapp,${build.webapp.resources}${widgets.webapp.resources}</resourcesAsCSV>
++              <resourcesAsCSV>${basedir}/src/main/webapp,${build.webapp.resources}${widgetsWebappResources}</resourcesAsCSV>
+             </baseResource>
+           </webAppConfig>
+           <stopKey>JETTY_TOP</stopKey>
+@@ -876,8 +876,8 @@ Python and Latex are required to build the documentation. -->
+     <profile>
+       <id>widgets</id>
+       <properties>
+-        <web.xml.widget.config.overrides>/WEB-INF/config-overrides-widget.xml</web.xml.widget.config.overrides>
+-        <widgets.webapp.resources>,../web-client/src/main/resources/</widgets.webapp.resources>
++        <webXmlWidgetConfigOverrides>/WEB-INF/config-overrides-widget.xml</webXmlWidgetConfigOverrides>
++        <widgetsWebappResources>,../web-client/src/main/resources/</widgetsWebappResources>
+       </properties>
+     </profile>
+   </profiles>
+@@ -893,18 +893,18 @@ Python and Latex are required to build the documentation. -->
+   </reporting>
+ 
+   <properties>
+-    <geonetwork.version>${project.version}</geonetwork.version>
+-    <geonetwork.subversion>SNAPSHOT</geonetwork.subversion>
++    <geonetworkVersion>${project.version}</geonetworkVersion>
++    <geonetworkSubversion>SNAPSHOT</geonetworkSubversion>
+     <geonetwork.webapp.dir>${basedir}/src/main/webapp</geonetwork.webapp.dir>
+     <geonetwork.webapp.js.dir>${geonetwork.webapp.dir}/scripts</geonetwork.webapp.js.dir>
+     <geonetwork.build.dir>${project.build.directory}/${project.build.finalName}</geonetwork.build.dir>
+     <geonetwork.webapp.css.dir>${geonetwork.webapp.dir}</geonetwork.webapp.css.dir>
+     <minify.verbose>false</minify.verbose>
+     <build.webapp.resources>${project.build.directory}/webapp</build.webapp.resources>
+-    <web.xml.main.config.overrides>/WEB-INF/config-overrides-${env}.xml</web.xml.main.config.overrides>
+-    <web.xml.widget.config.overrides></web.xml.widget.config.overrides>
+-    <widgets.webapp.resources></widgets.webapp.resources>
+-    <system.specific.overrides></system.specific.overrides>
++    <webXmlMainConfigOverrides>/WEB-INF/config-overrides-${env}.xml</webXmlMainConfigOverrides>
++    <webXmlWidgetConfigOverrides></webXmlWidgetConfigOverrides>
++    <widgetsWebappResources></widgetsWebappResources>
++    <systemSpecificOverrides></systemSpecificOverrides>
+   </properties>
+ 
+   <repositories>
+diff --git a/web/src/main/filters/dev.properties b/web/src/main/filters/dev.properties
+index e5f5495..8839434 100644
+--- a/web/src/main/filters/dev.properties
++++ b/web/src/main/filters/dev.properties
+@@ -1,4 +1,4 @@
+-geonetwork.build.profile=dev
++geonetworkBuildProfile=dev
+ 
+-xsl.TransformerFactoryImpl=net.sf.saxon.TransformerFactoryImpl
++xsl_TransformerFactoryImpl=net.sf.saxon.TransformerFactoryImpl
+ 
+diff --git a/web/src/main/filters/inspire.properties b/web/src/main/filters/inspire.properties
+index 6d2b75f..b3f79b7 100644
+--- a/web/src/main/filters/inspire.properties
++++ b/web/src/main/filters/inspire.properties
+@@ -1,3 +1,3 @@
+-geonetwork.build.profile=inspire
++geonetworkBuildProfile=inspire
+ 
+-xsl.TransformerFactoryImpl=de.fzi.dbs.xml.transform.CachingTransformerFactory
++xsl_TransformerFactoryImpl=de.fzi.dbs.xml.transform.CachingTransformerFactory
+diff --git a/web/src/main/filters/prod.properties b/web/src/main/filters/prod.properties
+index dcae4ff..c210081 100644
+--- a/web/src/main/filters/prod.properties
++++ b/web/src/main/filters/prod.properties
+@@ -1,5 +1,5 @@
+-geonetwork.build.profile=prod
++geonetworkBuildProfile=prod
+ 
+-xsl.TransformerFactoryImpl=de.fzi.dbs.xml.transform.CachingTransformerFactory
++xsl_TransformerFactoryImpl=de.fzi.dbs.xml.transform.CachingTransformerFactory
+ 
+ 
+diff --git a/web/src/main/webResources/WEB-INF/classes/META-INF/services/javax.xml.transform.TransformerFactory b/web/src/main/webResources/WEB-INF/classes/META-INF/services/javax.xml.transform.TransformerFactory
+index 8b2b8a0..18d669f 100644
+--- a/web/src/main/webResources/WEB-INF/classes/META-INF/services/javax.xml.transform.TransformerFactory
++++ b/web/src/main/webResources/WEB-INF/classes/META-INF/services/javax.xml.transform.TransformerFactory
+@@ -1 +1 @@
+-${xsl.TransformerFactoryImpl}
+\ No newline at end of file
++${xsl_TransformerFactoryImpl}
+\ No newline at end of file
+diff --git a/web/src/main/webResources/WEB-INF/config-overrides.xml b/web/src/main/webResources/WEB-INF/config-overrides.xml
+index d625ff3..884deea 100644
+--- a/web/src/main/webResources/WEB-INF/config-overrides.xml
++++ b/web/src/main/webResources/WEB-INF/config-overrides.xml
+@@ -1,5 +1,5 @@
+ <overrides>
+-	<override>${system.specific.overrides}</override>
+-	<override>${web.xml.main.config.overrides}</override>
+-	<override>${web.xml.widget.config.overrides}</override>
++	<override>${systemSpecificOverrides}</override>
++	<override>${webXmlMainConfigOverrides}</override>
++	<override>${webXmlWidgetConfigOverrides}</override>
+ </overrides>
+\ No newline at end of file
+diff --git a/web/src/main/webResources/WEB-INF/server-props-overrides.xml b/web/src/main/webResources/WEB-INF/server-props-overrides.xml
+index 7dea135..68c23f1 100644
+--- a/web/src/main/webResources/WEB-INF/server-props-overrides.xml
++++ b/web/src/main/webResources/WEB-INF/server-props-overrides.xml
+@@ -3,11 +3,11 @@
+ -->
+ <overrides>
+ 	<textFile name=".*/WEB-INF/server.prop">
+-		<update linePattern="buildProfile=geonetwork.build.profile">buildProfile=${geonetwork.build.profile}</update>
+-		<update linePattern="subVersion=geonetwork.subversion">subVersion=${geonetwork.subversion}</update>
+-		<update linePattern="version=geonetwork.version">version=${geonetwork.version}</update>
+-		<update linePattern="release=geonetwork.version">release=${geonetwork.version}</update>
+-		<update linePattern="javaVersion=java.version">javaVersion=${geonetwork.version}</update>
++		<update linePattern="buildProfile=geonetworkBuildProfile">buildProfile=${geonetworkBuildProfile}</update>
++		<update linePattern="subVersion=geonetworkSubversion">subVersion=${geonetworkSubversion}</update>
++		<update linePattern="version=geonetworkVersion">version=${geonetworkVersion}</update>
++		<update linePattern="release=geonetworkVersion">release=${geonetworkVersion}</update>
++		<update linePattern="javaVersion=java.version">javaVersion=${geonetworkVersion}</update>
+ 		<update linePattern="OS=os">OS=${os.name} ${os.version} ${os.arch}</update>
+ 	</textFile>
+ </overrides>
+\ No newline at end of file

@@ -822,7 +822,7 @@ Python and Latex are required to build the documentation. -->
           <webAppConfig>
             <contextPath>/geonetwork</contextPath>
             <baseResource implementation="org.mortbay.resource.ResourceCollection">
-              <resourcesAsCSV>${basedir}/src/main/webapp,${build.webapp.resources}${widgets.webapp.resources}</resourcesAsCSV>
+              <resourcesAsCSV>${basedir}/src/main/webapp,${build.webapp.resources}${widgetsWebappResources}</resourcesAsCSV>
             </baseResource>
           </webAppConfig>
           <stopKey>JETTY_TOP</stopKey>
@@ -876,8 +876,8 @@ Python and Latex are required to build the documentation. -->
     <profile>
       <id>widgets</id>
       <properties>
-        <web.xml.widget.config.overrides>/WEB-INF/config-overrides-widget.xml</web.xml.widget.config.overrides>
-        <widgets.webapp.resources>,../web-client/src/main/resources/</widgets.webapp.resources>
+        <webXmlWidgetConfigOverrides>/WEB-INF/config-overrides-widget.xml</webXmlWidgetConfigOverrides>
+        <widgetsWebappResources>,../web-client/src/main/resources/</widgetsWebappResources>
       </properties>
     </profile>
   </profiles>
@@ -893,18 +893,18 @@ Python and Latex are required to build the documentation. -->
   </reporting>
 
   <properties>
-    <geonetwork.version>${project.version}</geonetwork.version>
-    <geonetwork.subversion>SNAPSHOT</geonetwork.subversion>
+    <geonetworkVersion>${project.version}</geonetworkVersion>
+    <geonetworkSubversion>SNAPSHOT</geonetworkSubversion>
     <geonetwork.webapp.dir>${basedir}/src/main/webapp</geonetwork.webapp.dir>
     <geonetwork.webapp.js.dir>${geonetwork.webapp.dir}/scripts</geonetwork.webapp.js.dir>
     <geonetwork.build.dir>${project.build.directory}/${project.build.finalName}</geonetwork.build.dir>
     <geonetwork.webapp.css.dir>${geonetwork.webapp.dir}</geonetwork.webapp.css.dir>
     <minify.verbose>false</minify.verbose>
     <build.webapp.resources>${project.build.directory}/webapp</build.webapp.resources>
-    <web.xml.main.config.overrides>/WEB-INF/config-overrides-${env}.xml</web.xml.main.config.overrides>
-    <web.xml.widget.config.overrides></web.xml.widget.config.overrides>
-    <widgets.webapp.resources></widgets.webapp.resources>
-    <system.specific.overrides></system.specific.overrides>
+    <webXmlMainConfigOverrides>/WEB-INF/config-overrides-${env}.xml</webXmlMainConfigOverrides>
+    <webXmlWidgetConfigOverrides></webXmlWidgetConfigOverrides>
+    <widgetsWebappResources></widgetsWebappResources>
+    <systemSpecificOverrides></systemSpecificOverrides>
   </properties>
 
   <repositories>
