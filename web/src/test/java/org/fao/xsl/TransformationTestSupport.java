@@ -64,6 +64,9 @@ import org.xml.sax.SAXException;
 public final class TransformationTestSupport
 {
 
+    static {
+        System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
+    }
     static File transformGM03_2toIso(File src, File outputDir) throws Exception {
         return transformGM03_2toIso(src,outputDir,true);
     }

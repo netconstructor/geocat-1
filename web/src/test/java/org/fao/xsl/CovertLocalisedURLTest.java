@@ -14,12 +14,12 @@ import org.junit.Test;
 
 
 
-public class CovertLocalisedURL
+public class CovertLocalisedURLTest
 {
     @Test
     public void covert() throws Exception{
         String pathToXsl = TransformationTestSupport.geonetworkWebapp+"/xsl/iso-internal-multilingual-conversion-url.xsl";
-        String testData = "data/localised-url.xml";
+        String testData = "/data/localised-url.xml";
         Element data = TransformationTestSupport.transform(getClass(), pathToXsl, testData );
 
 
@@ -62,6 +62,7 @@ public class CovertLocalisedURL
 
     private Map<String, String> findUrls(Element isoData)
     {
+        @SuppressWarnings("unchecked")
         Iterator<Element> urls = isoData.getDescendants(new Filter()
         {
             private static final long serialVersionUID = 1L;
@@ -87,8 +88,8 @@ public class CovertLocalisedURL
     @Test
     public void xmlUserGet() throws Exception
     {
-        String pathToXsl = TransformationTestSupport.geonetworkWebapp+"/xsl/user-xml.xsl";
-        String testData = "data/xml.user.get.xml";
+        String pathToXsl = TransformationTestSupport.geonetworkWebapp+"/xsl/shared-user/user-xml.xsl";
+        String testData = "/data/xml.user.get.xml";
         Element data = TransformationTestSupport.transform(getClass(), pathToXsl, testData );
         System.out.println(Xml.getString(data));
 

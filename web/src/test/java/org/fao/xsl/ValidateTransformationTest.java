@@ -3,10 +3,11 @@ package org.fao.xsl;
 import static org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode.EXCLUDE;
 import static org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode.INCLUDE;
 import static org.fao.geonet.services.extent.ExtentHelper.ExtentTypeCode.NA;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import jeeves.utils.Xml;
@@ -23,6 +24,7 @@ import org.fao.xsl.support.Prefix;
 import org.fao.xsl.support.Requirement;
 import org.fao.xsl.support.StartsWithText;
 import org.jdom.Element;
+import org.jdom.filter.Filter;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -816,6 +818,21 @@ public class ValidateTransformationTest
         }
 
         Element xml = Xml.loadFile(transformed);
+        Iterator errorTags = xml.getDescendants(new Filter(){
+            private static final long serialVersionUID = 1L;
+
+            public boolean matches(Object obj) {
+                if (obj instanceof Element) {
+                    Element e = (Element) obj;
+                    return e.getName().equals("ERROR");
+                }
+                return false;
+            }
+            
+        });
+        
+        assertFalse("Error tag found in xml", errorTags.hasNext());
+        
         Collection<Entry<String, Requirement>> rules = validationRules.entries();
         StringBuilder failures = new StringBuilder();
         for (Entry<String, Requirement> entry : rules) {

@@ -29,6 +29,7 @@ dependencies {
   compile(
     'com.google.guava:guava:r08',
     'xalan:xalan:2.7.1',
+    'net.sf.saxon:saxon-dom:9.1.0.8b',
     'jfree:jfreechart:1.0.0',
     'jfree:jcommon:1.0.15',
     'org.springframework:spring-context:2.5.3',
@@ -60,6 +61,8 @@ dependencies {
     'edu.ucar:netcdf:4.0.patch',
     'opendap:opendap:2.1')
 }
+
+
 // jetty configuration
 jettyRun {
   dependsOn 'minifyAll', 'copyWebResources'

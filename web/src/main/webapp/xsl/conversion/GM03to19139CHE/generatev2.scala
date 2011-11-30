@@ -70,7 +70,7 @@ val specifics = Map(
    ),
   "citation.xsl" -> Map(
      "Code_/value" -> "Code_/int:value",
-     "GM03Core.Core.CI_Citation|citation" -> "Core.Core.CI_Citation|int:citation",
+     "Core.Core.CI_Citation|citation" -> "Core.Core.CI_Citation|int:citation",
      "Comprehensive.Comprehensive.CI_Citationidentifier/identifier" -> "Comprehensive.Comprehensive.CI_Citationidentifier/int:identifier",
      "and not(alternateTitle/" -> "and not(int:alternateTitle/"
    ),

@@ -6,7 +6,7 @@
                 xmlns:int="http://www.interlis.ch/INTERLIS2.3"
                 exclude-result-prefixes="int"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:template mode="Citation" match="int:GM03_2Comprehensive.Comprehensive.CI_Citation|Core.Core.CI_Citation|int:citation">
+    <xsl:template mode="Citation" match="int:GM03_2Comprehensive.Comprehensive.CI_Citation|int:GM03_2Core.Core.CI_Citation|int:citation">
         <gmd:CI_Citation>
             <xsl:for-each select="int:title">
                 <gmd:title>
