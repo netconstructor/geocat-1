@@ -1,9 +1,12 @@
 dependsOnChildren()
 
-subprojects {
+allprojects {
   version=1.0
   charset='UTF-8'
-  
+  buildDir='target'
+}
+
+subprojects {
   apply plugin: 'java'
   apply plugin: 'eclipse'
 
@@ -108,6 +111,7 @@ class YuiMinificationExtention {
   def yuiTask(name,to,from,yuiArgs) {
     def toFile = project.file(to)
 
+    project.logger.info("creating task: "+name+" in project "+project.name)
     project.task (name, type:JavaExec) {
       outputs.upToDateSpec = new org.gradle.api.specs.AndSpec()
       inputs.files from.files

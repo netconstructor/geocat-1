@@ -3,6 +3,23 @@ apply plugin: 'jetty'
 
 env=System.properties['env'] ?: 'dev'
 
+jar {
+  enabled = false
+  baseName = "geonetwork"
+}
+
+war {
+  dependsOn 'minifyAll', 'copyWebResources'
+  baseName = "geonetwork"
+  contextPath = 'geonetwork'
+}
+
+// jetty configuration
+jettyRun {
+  dependsOn 'minifyAll', 'copyWebResources'
+  contextPath = 'geonetwork'
+}
+
 dependencies {
   compile project(':jeeves'), project(':oaipmh'),project(':sde'),project(':cachingxslt')
   
@@ -62,18 +79,6 @@ dependencies {
     'opendap:opendap:2.1')
 }
 
-
-// jetty configuration
-jettyRun {
-  dependsOn 'minifyAll', 'copyWebResources'
-  contextPath = 'geonetwork'
-}
-
-war {
-  dependsOn 'minifyAll', 'copyWebResources'
-  contextPath = 'geonetwork'
-}
-
 // Minification task declaration begins here
 def scripts = file('src/main/webapp/scripts').path
 def openLayersdir='openlayers/lib/OpenLayers'
@@ -107,7 +112,7 @@ minification {
       'widgets/LegendPanel.js', 'widgets/OpacitySlider.js', 'widgets/PrintAction.js', 'widgets/ProjectionSelector.js', 'widgets/TimeSelector.js', 
       'windows/BaseWindow.js', 'windows/SingletonWindowManager.js', 'windows/AddWMS.js', 'windows/FeatureInfo.js', 'windows/Opacity.js', 
       'windows/LoadWmc.js', 'windows/LayerStyles.js', 'windows/WmsLayerMetadata.js', 'windows/WMSTime.js', 'windows/Disclaimer.js'])
-     + fileTree(dir: "scripts", includes: ['ol_settings.js', 'ol_minimap.js', 'ol_map.js']))
+     + fileTree(dir: "$scripts", includes: ['ol_settings.js', 'ol_minimap.js', 'ol_map.js']))
 
   js(
     minifyGnScriptaculousLibs,
