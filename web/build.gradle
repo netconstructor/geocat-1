@@ -1,0 +1,302 @@
+apply plugin: 'war'
+apply plugin: 'jetty'
+
+env=System.properties['env'] ?: 'dev'
+
+dependencies {
+  compile project(':jeeves'), project(':oaipmh'),project(':sde'),project(':cachingxslt')
+  
+  // add Geotools dependencies
+  ['gt-cql', 'gt-shapefile', 'gt-epsg-extension', 'gt-epsg-hsql', 'gt-postgis', 'gt-wfs'].each{
+    compile "org.geotools:${it}:${geotoolsVersion}"
+  }
+  ['gt-xsd-gml3','gt-xsd-filter'].each{
+    compile "org.geotools.xsd:${it}:${geotoolsVersion}"
+  }
+
+  ['openrdf-model','openrdf-util','sesame'].each {
+    compile "org.openrdf:${it}:$openrdfVersion"
+  }
+  
+  ['lucene-core','lucene-analyzers','lucene-misc','lucene-queries'].each {
+    compile "org.apache.lucene:${it}:$luceneVersion"
+  }
+  ['core', 'service', 'z3950-server','z3950-plugin'].each {
+    compile "jzkit:jzkit-${it}:$jzkitVersion"
+  }
+  /* jcs dependencies, need to migrate to ehcache */
+  compile( 'pcj:pcj:1.2','concurrent:concurrent:1.3.4')
+  compile(
+    'com.google.guava:guava:r08',
+    'xalan:xalan:2.7.1',
+    'jfree:jfreechart:1.0.0',
+    'jfree:jcommon:1.0.15',
+    'org.springframework:spring-context:2.5.3',
+    'org.dspace:cql-java:1.0',
+    'org.jzkit:a2j:2.0.4',
+//    'marc4j:marc4j:2.3.1', 
+    'batik:batik-ext:1.6',
+    'org.apache.commons:commons-email:1.1',
+    'avalon-framework:avalon-framework-api:4.2.0',
+    'org.apache.avalon.framework:avalon-framework-impl:4.3.1',
+    'commons-digester:commons-digester:1.6',
+    'commons-io:commons-io:1.3.1',
+    'org.apache.xmlgraphics:xmlgraphics-commons:1.3.1',
+    'mckoi:mckoi:1.0.2',
+    'com.h2database:h2:1.3.152',
+    'postgresql:postgresql:8.4-701.jdbc3',
+    'org.postgis:postgis-jdbc:1.3.3',
+    'mysql:mysql-connector-java:5.1.12',
+    'ojdbc:ojdbc:14',
+    'javax.persistence:persistence-api:1.0',
+    'org.hibernate:hibernate-annotations:3.2.0.ga',
+    'eu.medsea.mimeutil:mime-util:2.1.2',
+    'joda-time:joda-time:1.5.2',
+    'jaxen:jaxen:1.1.1',
+    'org.mapfish.print:print-lib:1.2-SNAPSHOT',
+    'dlib:dlib:1.0',
+    'lizard:lizard-tiff:1.0',
+    'jakarta:jakarta-slide-webdavlib:2.1',
+    'edu.ucar:netcdf:4.0.patch',
+    'opendap:opendap:2.1')
+}
+// jetty configuration
+jettyRun {
+  dependsOn 'minifyAll', 'copyWebResources'
+  contextPath = 'geonetwork'
+}
+
+war {
+  dependsOn 'minifyAll', 'copyWebResources'
+  contextPath = 'geonetwork'
+}
+
+// Minification task declaration begins here
+def scripts = file('src/main/webapp/scripts').path
+def openLayersdir='openlayers/lib/OpenLayers'
+
+def minifyGnPrototypeLibs = 'minifyGnPrototypeLibs'
+def minifyGnMapLibs = 'minifyGnMapLibs'
+def minifyGnScriptaculousLibs = 'minifyGnScriptaculousLibs'
+def minifyGn = 'minifyGn'
+def minifySearchGn = 'minifySearchGn'
+def minifyEditorGn = 'minifyEditorGn'
+def minifyGeoGn = 'minifyGeoGn'
+
+task minifyAll(dependsOn: [
+  minifyGnPrototypeLibs, minifyGnMapLibs, minifyGnScriptaculousLibs,
+  minifyGn, minifySearchGn, minifyEditorGn, minifyGeoGn])
+
+minification {
+  js(
+    minifyGnPrototypeLibs,
+    file("$scripts/lib/gn.libs.js"), 
+    fileTree(dir: scripts, includes: ['sarissa.js', 'prototype.js']))
+
+  js(
+    minifyGnMapLibs,
+    file("$scripts/lib/gn.libs.map.js"), 
+    fileTree(dir: "$scripts/map", includes: [
+      'core/OGCUtil.js', 'core/MapStateManager.js', 'core/CatalogueInterface.js', 'core/WMCManager.js', 'Control/ExtentBox.js', 
+      'Control/ZoomWheel.js', 'lang/en.js', 'lang/de.js', 'lang/nl.js', 'lang/fr.js', 'lang/no.js', 'lang/fi.js', 'Ext.ux/form/DateTime.js', 
+      'widgets/tree/WMSListGenerator.js', 'widgets/tree/WMSTreeGenerator.js', 'widgets/wms/BrowserPanel.js', 'widgets/wms/LayerInfoPanel.js', 
+      'widgets/wms/LayerStylesPanel.js', 'widgets/wms/PreviewPanel.js', 'widgets/wms/WMSLayerInfo.js', 'widgets/FeatureInfoPanel.js', 
+      'widgets/LegendPanel.js', 'widgets/OpacitySlider.js', 'widgets/PrintAction.js', 'widgets/ProjectionSelector.js', 'widgets/TimeSelector.js', 
+      'windows/BaseWindow.js', 'windows/SingletonWindowManager.js', 'windows/AddWMS.js', 'windows/FeatureInfo.js', 'windows/Opacity.js', 
+      'windows/LoadWmc.js', 'windows/LayerStyles.js', 'windows/WmsLayerMetadata.js', 'windows/WMSTime.js', 'windows/Disclaimer.js'])
+     + fileTree(dir: "scripts", includes: ['ol_settings.js', 'ol_minimap.js', 'ol_map.js']))
+
+  js(
+    minifyGnScriptaculousLibs,
+    file("$scripts/lib/gn.libs.scriptaculous.js"), 
+    fileTree(dir: "$scripts/scriptaculous", includes: ['effects.js', 'dragdrop.js', 'controls.js', 'builder.js']))
+
+  js(
+    minifyGn,
+    file("$scripts/lib/gn.js"), 
+    fileTree(dir: "$scripts", includes: ['geonetwork.js', 'modalbox.js', 'form_check.js']))
+
+  js(
+    minifySearchGn,
+    file("$scripts/lib/gn.search.js"), 
+    fileTree(dir: "$scripts", includes: ['gn_search.js']))
+
+  js(
+    minifyEditorGn,
+    file("$scripts/lib/gn.editor.js"), 
+    fileTree(dir: "$scripts/editor", 
+      includes: [
+        'app.CRSSelectionPanel.js','app.KeywordSelectionPanel.js','app.LinkedMetadataSelectionPanel.js','/LogoSelectionPanel.js',
+        'app.GeoPublisherPanel.js','app.SearchField.js','csw.SearchTools.js','metadata-editor.js','metadata-show.js',
+        'simpletooltip.js','tooltip.js','tooltip-manager.js']))
+
+  js(
+    minifyGeoGn,
+    file("$scripts/lib/gn.geo.libs.js"), 
+    fileTree(dir: "$scripts", includes: [
+      "$openLayersdir/SingleFile.js",'openlayers/lib/OpenLayers.js',"$openLayersdir/Util.js","$openLayersdir/BaseTypes.js",
+      "$openLayersdir/BaseTypes/Class.js","$openLayersdir/BaseTypes/Bounds.js",'openlayers/lib/Rico/Corner.js','geoext/lib/GeoExt/SingleFile.js',
+      'geoext/lib/GeoExt.js',"$openLayersdir/Console.js","$openLayersdir/Format.js","$openLayersdir/Format/CSWGetRecords.js",
+      'geoext/lib/GeoExt/data/WMSCapabilitiesReader.js','geoext/lib/GeoExt/data/LayerStore.js',"$openLayersdir/Events.js",
+      "$openLayersdir/Icon.js","$openLayersdir/Marker.js","$openLayersdir/Popup.js","$openLayersdir/Popup/Anchored.js",
+      "$openLayersdir/Popup/AnchoredBubble.js","$openLayersdir/Feature.js","$openLayersdir/Feature/Vector.js",
+      "$openLayersdir/Format/WKT.js","$openLayersdir/Format/XML.js","$openLayersdir/Format/WMSGetFeatureInfo.js",
+      "$openLayersdir/Geometry.js","$openLayersdir/Control.js","$openLayersdir/Control/PanZoom.js","$openLayersdir/Control/PanZoomBar.js",
+      "$openLayersdir/Tween.js","$openLayersdir/Map.js","$openLayersdir/Projection.js","$openLayersdir/Layer.js","$openLayersdir/Tile.js",
+      "$openLayersdir/Tile/Image.js","$openLayersdir/Layer/Image.js","$openLayersdir/Geometry/Collection.js","$openLayersdir/Geometry/Point.js",
+      "$openLayersdir/Geometry/MultiPoint.js","$openLayersdir/Geometry/Curve.js","$openLayersdir/Geometry/LineString.js",
+      "$openLayersdir/Geometry/LinearRing.js","$openLayersdir/Handler.js","$openLayersdir/Handler/Point.js","$openLayersdir/Handler/Path.js",
+      "$openLayersdir/Geometry/Polygon.js","$openLayersdir/Handler/Polygon.js","$openLayersdir/Format/XML.js",
+      "$openLayersdir/Geometry/MultiLineString.js","$openLayersdir/Geometry/MultiPolygon.js","$openLayersdir/Format/GML.js",
+      "$openLayersdir/Format/GML/Base.js","$openLayersdir/Format/GML/v3.js","$openLayersdir/BaseTypes/Element.js",
+      "$openLayersdir/Handler/MouseWheel.js","$openLayersdir/Control/ZoomToMaxExtent.js","$openLayersdir/Style.js",
+      "$openLayersdir/Filter.js","$openLayersdir/Filter/FeatureId.js","$openLayersdir/Filter/Logical.js",
+      "$openLayersdir/Filter/Comparison.js","$openLayersdir/Format/Filter.js","$openLayersdir/Protocol.js",
+      "$openLayersdir/Protocol/HTTP.js","$openLayersdir/Renderer.js","$openLayersdir/Renderer/Elements.js",
+      'geoext/lib/GeoExt/widgets/MapPanel.js',"$openLayersdir/Handler/Feature.js","$openLayersdir/StyleMap.js",
+      "$openLayersdir/Layer/Vector.js","$openLayersdir/Layer/Vector/RootContainer.js","$openLayersdir/Control/SelectFeature.js",
+      'geoext/lib/GeoExt/data/WMSCapabilitiesStore.js',"$openLayersdir/Control/Attribution.js","$openLayersdir/Request.js",
+      "$openLayersdir/Request/XMLHttpRequest.js","$openLayersdir/Ajax.js","$openLayersdir/BaseTypes/LonLat.js",
+      "$openLayersdir/BaseTypes/Size.js","$openLayersdir/BaseTypes/Pixel.js","$openLayersdir/Lang.js","$openLayersdir/Lang/en.js",
+      "$openLayersdir/Handler/Drag.js","$openLayersdir/Handler/Box.js","$openLayersdir/Control/ZoomBox.js","$openLayersdir/Control/DragPan.js",
+      "$openLayersdir/Handler/Click.js","$openLayersdir/Control/Navigation.js","$openLayersdir/Layer/HTTPRequest.js",
+      "$openLayersdir/Layer/Grid.js","$openLayersdir/Layer/WMS.js",'geoext/lib/GeoExt/data/LayerRecord.js',
+      "$openLayersdir/Renderer/SVG.js","$openLayersdir/Layer/TileCache.js","$openLayersdir/Control/Button.js",
+      "$openLayersdir/Format/GML/v2.js","$openLayersdir/Format/Filter/v1.js","$openLayersdir/Format/Filter/v1_0_0.js",
+      "$openLayersdir/Format/Filter/v1_1_0.js","$openLayersdir/Format/CSWGetRecords/v2_0_2.js","$openLayersdir/Format/WMSCapabilities.js",
+      "$openLayersdir/Format/WMSCapabilities/v1_1.js","$openLayersdir/Control/Scale.js",'geoext/lib/GeoExt/widgets/Action.js',
+      "$openLayersdir/Control/DrawFeature.js","$openLayersdir/Rule.js","$openLayersdir/Handler/Hover.js",
+      "$openLayersdir/Control/MouseDefaults.js","$openLayersdir/Control/MousePosition.js","$openLayersdir/Handler/RegularPolygon.js",
+      "$openLayersdir/Renderer/VML.js",'geoext/lib/GeoExt/data/LayerReader.js',"$openLayersdir/Format/WMSCapabilities/v1_1_0.js",
+      "$openLayersdir/Format/WMSCapabilities/v1_1_1.js","$openLayersdir/Control/ArgParser.js",'openlayers/addins/LoadingPanel.js',
+      'openlayers/addins/ScaleBar.js']))
+}
+
+filteredWebResources = 'src/main/webResources'
+task copyWebResources(type: Copy) {
+  from filteredWebResources
+  into webAppDir
+  
+  def filters = new java.util.Properties()
+  def propFile = file("src/main/filters/${env}.properties")
+  logger.info("loading properties from "+propFile)
+  propFile.withReader{filters.load(it)}
+  filters.putAll ([
+    webXmlMainConfigOverrides:"/WEB-INF/config-overrides-${env}.xml",
+    geonetworkVersion: version,
+    geonetworkSubversion: 'SNAPSHOT',
+    webXmlWidgetConfigOverrides: '',
+    systemSpecificOverrides: ''])
+  System.properties.each{filters.put(it.key.replace('.','_'), it.value)}
+  expand(filters)
+}
+
+task cleanWebResources << {
+  def toDrop = file(filteredWebResources).path.length()
+  def outputFiles = fileTree(dir:filteredWebResources).each{file("$webAppDir/${it.path.substring toDrop}").delete()}
+}
+
+clean.dependsOn cleanWebResources
+
+
+// ------------   Geocat specific tasks   ----------------
+
+def codeMap = [en:'eng',fr:'fra',de:'deu',it:'ita']
+def toLocalise = file("$webAppDir/loc/").listFiles().findAll{codeMap.containsKey(it.name)}
+
+file("$webAppDir/xml/schemas").eachFileRecurse {
+  if(it.isDirectory() && it.parentFile.name == 'loc' && codeMap.containsKey(it.name)) {
+    toLocalise << it
+  }
+}
+  
+toLocalise.each { srcDir ->
+  def name = srcDir.path.contains('schemas') ? "Loc${srcDir.parentFile.parentFile.name.capitalize().replaceAll('-','')}" : 'Loc'
+  name += srcDir.name.capitalize()
+  def toDir = file("${srcDir.path}/../${codeMap[srcDir.name]}").absolutePath
+  
+  
+  // ---  Generate 3 letter lang code task ---
+  def copyName = "copy$name"
+  task (copyName, type:Copy) {
+    from srcDir
+    into toDir
+    exclude "**/geocat-strings.xml"
+    exclude "**/strings.xml"
+  }
+
+  // ---  Clean 3 letter lang code task ---
+  
+  def cleanName = "clean$name"
+  clean.dependsOn cleanName
+  
+  task (cleanName) << {
+    file(toDir).deleteDir()
+  }
+  
+  // --- Process Strings task ---
+  def stringsFiles = fileTree(dir: srcDir, include: "**/strings.xml")
+  if(stringsFiles.isEmpty()) {
+    processResources.dependsOn copyName
+  } else {
+    def stringsFile = stringsFiles.singleFile
+    def geocatStringsFile = file("${stringsFile.parentFile}/geocat-strings.xml")
+    def destStringsFile = file("$toDir/${stringsFile.path.substring(srcDir.path.length())}")
+  
+    processResources.dependsOn "processStrings$name"
+    task ("processStrings$name", dependsOn: copyName) {
+      inputs.file stringsFile
+      if(geocatStringsFile.exists()) inputs.file geocatStringsFile
+      outputs.file destStringsFile
+
+      doLast {
+        if(geocatStringsFile.exists()) {
+          def geocatStrings = new XmlParser().parse(geocatStringsFile)
+          def strings = new XmlParser().parse(stringsFile)
+          geocatStrings.each {strings.append it}
+          def writer = destStringsFile.newPrintWriter(charset)
+          def xmlPrinter = new XmlNodePrinter(writer)
+          xmlPrinter.preserveWhitespace = true
+          xmlPrinter.print(strings)
+          writer.close()
+        } else {
+          destStringsFile << stringsFile.getText(charset)
+        }
+      }
+    }
+  }
+}
+
+def renameJs(file) {
+  return file.replaceAll('-en.js','-eng.js')
+    .replaceAll('-fr.js','-fra.js')
+    .replaceAll('-de.js','-deu.js')
+    .replaceAll('-it.js','-ita.js')
+  
+}
+def localeJsFiles = fileTree() {
+  from "$webAppDir/scripts/ext/locale"
+  
+  include "ext-lang-en.js"
+  include "ext-lang-fr.js"
+  include "ext-lang-de.js"
+  include "ext-lang-it.js"
+}
+task copyExtLoc() {
+  localeJsFiles.each {
+    inputs.file it.path
+    outputs.file renameJs(it.path)
+  }
+    
+  doLast {
+    localeJsFiles.each {
+      file(renameJs(it.path)) << it.getText(charset) 
+    }
+  }
+}
+processResources.dependsOn copyExtLoc
+
+task cleanExtLoc() << {
+    localeJsFiles.each { file(renameJs(it.path)).delete()}
+}
+clean.dependsOn cleanExtLoc

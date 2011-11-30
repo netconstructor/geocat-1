@@ -1,0 +1,1 @@
+include 'cachingxslt', 'jeeves', 'oaipmh', 'sde', 'web', 'web-client'

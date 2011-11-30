@@ -67,6 +67,14 @@ public class ValidateTransformationTest
     }
 
     @Test
+    public void GM03TitleError() throws Throwable
+    {
+        File file = new File(data, "non_validating/gm03V2/cad_couvert_title_is_error_after_process.xml");
+        Multimap<String, Requirement> rules = ArrayListMultimap.create();
+        file = testFile(file, Control.GM03_2_ISO, rules, false);
+    }
+
+    @Test
     public void exportPurpose() throws Throwable
     {
         File file = new File(data, "gm03/AllComprehensiveAttributes.xml");

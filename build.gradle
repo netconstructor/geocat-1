@@ -1,0 +1,154 @@
+dependsOnChildren()
+
+subprojects {
+  version=1.0
+  charset='UTF-8'
+  
+  apply plugin: 'java'
+  apply plugin: 'eclipse'
+
+  // Note:  All project definitions are in this file exception for web and web-client.  
+  // Those build files the build.gradle files in the web and web-client directories
+
+  // Dependency versions and common dependencies
+  geotoolsVersion = '2.6.4'
+  luceneVersion = '3.0.2'
+  jettyVersion = '7.3.1.v20110307'
+  openrdfVersion = '1.2.7'
+  jzkitVersion = '3.r260.geonetwork.patch.1'
+
+  saxonDependency = 'net.sf.saxon:saxon:9.1.0.8b-patch'
+  // End of dependency section
+
+  dependencies.compile('log4j:log4j:1.2.16','log4j:apache-log4j-extras:1.1')
+    
+  dependencies.testCompile(
+      'junit:junit:4.6',
+      'xmlunit:xmlunit:1.2')
+  
+  repositories {
+      mavenLocal()
+      maven {url "file://${rootDir}/maven_repo"}
+      maven {url 'http://dev.mapfish.org/maven/repository'}
+      mavenCentral()
+      maven {url 'http://download.osgeo.org/webdav/geotools'}
+      maven {url 'http://mvnrepository.com/artifact'}
+  }
+  
+}
+
+project('sde') {
+  eclipse.project.name = 'sde-dummy-api'
+}
+project('cachingxslt') {
+  dependencies.compile(saxonDependency)
+}
+project('jeeves') {
+  dependencies{
+    compile("org.geotools:gt-postgis:$geotoolsVersion")
+    ['gt-jdbc-postgis','gt-jdbc-h2','gt-jdbc-sqlserver','gt-jdbc-mysql','gt-jdbc-db2','gt-jdbc-oracle'].
+      each{dependencies.compile("org.geotools.jdbc:${it}:$geotoolsVersion")}
+    compile(
+      'org.apache.jcs:jcs:1.3@jar',
+      'jaxen:jaxen:1.1.1', 
+      'commons-httpclient:commons-httpclient:3.0.1',
+      'commons-lang:commons-lang:2.1',
+      'commons-fileupload:commons-fileupload:1.2.1',
+      'commons-dbcp:commons-dbcp:1.3',
+      'commons-pool:commons-pool:1.5.5',
+      "org.eclipse.jetty:jetty-servlet:$jettyVersion",
+      'jsch:jsch:0.1.29',
+      'org.apache.xmlgraphics:fop:0.95',
+      saxonDependency,
+      'globus:cog-jglobus:1.2-060802',
+      'xerces:xercesImpl:2.7.1',
+      'xml-resolver:xml-resolver:1.2',
+      'org.apache.jcs:jcs:1.3@jar',
+      'com.googlecode.juniversalchardet:juniversalchardet:1.0.3')
+  }
+}
+
+project('oaipmh') {
+    dependencies.compile project(':jeeves')
+}
+
+
+// Add method for creating javascript minification tasks
+// the task is a JavaExec task which executes YUI compressor 
+// incremental build is taken into account so task
+// will only execute as needed
+configure(subprojects.findAll {it.name == 'web' || it.name == 'web-client'}) {
+  apply plugin: YuiMinification  
+}
+
+class YuiMinificationExtention {
+  private def project;
+
+  def basicYuiArgs(type, to) {
+    def args = [
+      '--line-break','8000',
+      '--charset', project.charset,
+      '--type', type,
+      '-o', to]
+      
+      if(project.hasProperty('minifyVerbose')) {
+        args << '--verbose'
+      }
+      return args
+  }
+  def js(name, to,from) {
+    def jsArgs = [
+    // '--nomunge', 
+    '--preserve-semi']  
+    yuiTask(name, to, from, basicYuiArgs('js', to) + jsArgs)
+  } 
+  def css(name, to,from) {
+    yuiTask(name, to, from, basicYuiArgs('css', to))
+  } 
+  def yuiTask(name,to,from,yuiArgs) {
+    def toFile = project.file(to)
+
+    project.task (name, type:JavaExec) {
+      outputs.upToDateSpec = new org.gradle.api.specs.AndSpec()
+      inputs.files from.files
+      outputs.file to
+      workingFile = File.createTempFile(toFile.name, ".yui.tmp")
+      classpath project.configurations.yui.asPath
+      args = (yuiArgs << workingFile.path)
+      main = 'com.yahoo.platform.yui.compressor.YUICompressor'
+
+      doFirst {
+        toFile.delete()
+        toFile.parentFile.mkdirs()
+        logger.info("starting creation of "+to)
+        logger.info("combining js files for minification in "+workingFile)
+        workingFile.withWriter {writer ->
+          from.each { file ->
+            logger.debug("Adding file for minification: "+file)
+            def js = file.getText(project.charset)
+            writer.write js
+          }
+        }
+
+      }
+      doLast {
+        logger.info("deleting minification working file:"+workingFile)
+        workingFile.delete()
+      }
+    }
+  }
+}
+class YuiMinification implements Plugin<Project> {
+    def void apply(Project project) {
+      def minification = new YuiMinificationExtention()
+      minification.project = project
+      
+      project.extensions.minification = minification
+      project.configurations {
+        yui
+      }
+      project.dependencies {
+        yui ('com.yahoo.platform.yui:yuicompressor:2.4.6') 
+      }
+    }
+}

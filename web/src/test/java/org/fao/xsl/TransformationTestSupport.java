@@ -129,9 +129,16 @@ public final class TransformationTestSupport
         current.delete();
     }
 
+    private static File findWebappDir(File dir) {
+        File webappDir = new File(dir,"src/main/webapp");
+        if(webappDir.exists()) {
+            return webappDir;
+        }
+        return findWebappDir(dir.getParentFile());
+    }
     public static final File     data                = new File(TransformationTestSupport.class.getResource("/data").getFile()).getAbsoluteFile();
     public static final File     outputDir           = new File(data.getParentFile(), "output").getAbsoluteFile();
-    public static final File     geonetworkWebapp    = new File(data.getParentFile(), "../../src/main/webapp");
+    public static final File     geonetworkWebapp    = findWebappDir(data);
     public static final File     toIsoStyleSheet     = new File(geonetworkWebapp, "xsl/conversion/import/GM03-to-ISO19139CHE.xsl");
     public static final File     toGm03StyleSheet    = new File(geonetworkWebapp, "xsl/conversion/import/ISO19139CHE-to-GM03.xsl");
     public static final File     gm03Xsd             = new File(geonetworkWebapp, "xml/schemas/iso19139.che/GM03_2.xsd");
