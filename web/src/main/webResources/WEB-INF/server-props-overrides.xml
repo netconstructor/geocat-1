@@ -8,6 +8,6 @@
 		<update linePattern="version=geonetworkVersion">version=${geonetworkVersion}</update>
 		<update linePattern="release=geonetworkVersion">release=${geonetworkVersion}</update>
 		<update linePattern="javaVersion=java.version">javaVersion=${geonetworkVersion}</update>
-		<update linePattern="OS=os">OS=${os.name} ${os.version} ${os.arch}</update>
+		<update linePattern="OS=os">OS=${os_name} ${os_version} ${os_arch}</update>
 	</textFile>
 </overrides>
