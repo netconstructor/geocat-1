@@ -110,14 +110,15 @@ class YuiMinificationExtention {
     // '--nomunge', 
     '--preserve-semi']  
     yuiTask(name, to, from, basicYuiArgs('js', to) + jsArgs)
-  } 
+  }
   def css(name, to,from) {
     yuiTask(name, to, from, basicYuiArgs('css', to))
-  } 
+  }
   def yuiTask(name,to,from,yuiArgs) {
     def toFile = project.file(to)
 
     project.logger.info("creating task: "+name+" in project "+project.name)
+    project.minifyAll.dependsOn name
     project.task (name, type:JavaExec) {
       outputs.upToDateSpec = new org.gradle.api.specs.AndSpec()
       inputs.files from.files
@@ -153,6 +154,7 @@ class YuiMinification implements Plugin<Project> {
     def void apply(Project project) {
       def minification = new YuiMinificationExtention()
       minification.project = project
+      project.task 'minifyAll'
       
       project.extensions.minification = minification
       project.configurations {

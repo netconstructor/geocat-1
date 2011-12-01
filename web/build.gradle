@@ -1,7 +1,12 @@
 apply plugin: 'war'
 apply plugin: 'jetty'
 
-env=System.properties['env'] ?: 'dev'
+env=System.getProperty('env', 'dev')
+
+// the below is for 'normal' geonetwork build system
+// processResources.dependsOn project(":schematrons").publishAll
+processResources.dependsOn project(":schematrons").publishAll
+clean.dependsOn project(":schematrons").cleanSchematronFiles
 
 jar {
   enabled = false
@@ -100,10 +105,6 @@ def minifiedGnFile = file("$scripts/lib/gn.js")
 def minifiedGnScriptaculousFile = file("$scripts/lib/gn.libs.scriptaculous.js")
 def minifiedGnMapsFile = file("$scripts/lib/gn.libs.map.js")
 def minifiedGnPrototypeFile = file("$scripts/lib/gn.libs.js")
-
-task minifyAll(dependsOn: [
-  minifyGnPrototypeLibs, minifyGnMapLibs, minifyGnScriptaculousLibs,
-  minifyGn, minifySearchGn, minifyEditorGn, minifyGeoGn])
 
 task cleanMinified << {
   [minifiedGeoGnFile, minifiedEditorGnFile, minifiedSearchGnFile, minifiedGnFile, 
@@ -206,6 +207,7 @@ minification {
       'openlayers/addins/ScaleBar.js']))
 }
 
+// ----  replace variables in the webResources that need it  ----
 filteredWebResources = 'src/main/webResources'
 task copyWebResources(type: Copy) {
   from filteredWebResources
@@ -231,7 +233,6 @@ task cleanWebResources << {
 }
 
 clean.dependsOn cleanWebResources
-
 
 // ------------   Geocat specific tasks   ----------------
 

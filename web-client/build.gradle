@@ -1,5 +1,7 @@
 apply plugin: 'java'
 
+sourceSets.main.output.resourcesDir = new File("nowhere")
+
 // ----  path related variables  ----
 def apps=file("src/main/resources/apps/").path
 def appsJs="$apps/js"
@@ -22,8 +24,6 @@ def minifiedAppFile = file("$searchJs/App-mini.js")
 def minifiedSearchCssFile = file("$apps/search/css/style.css")
 
 file(appsJs).mkdirs()
-
-task minifyAll(dependsOn: [appMiniTaskName])
 
 minification {
   js(

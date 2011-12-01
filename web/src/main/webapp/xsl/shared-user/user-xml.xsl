@@ -232,7 +232,7 @@
 					</gmd:address>
 						<gmd:onlineResource>
 							<gmd:CI_OnlineResource>
-								<gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+								<gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">xx
                                 <xsl:call-template name="composeURLTranslations">
                                     <xsl:with-param name="elem" select="onlineresource"/>
                                 </xsl:call-template>

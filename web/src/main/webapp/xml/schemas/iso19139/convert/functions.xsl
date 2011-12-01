@@ -127,7 +127,7 @@
             <xsl:value-of select="string(/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title/gco:CharacterString)"></xsl:value-of>
         </xsl:when>
         <xsl:otherwise>
-            <xsl:value-of select="string(/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title//gmd:LocalisedCharacterString[1])"></xsl:value-of>
+            <xsl:value-of select="string((/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo//gmd:citation//gmd:title//gmd:LocalisedCharacterString)[1])"></xsl:value-of>
         </xsl:otherwise>
         </xsl:choose>
     </xsl:template>

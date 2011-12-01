@@ -22,9 +22,9 @@
 	<!-- find all multilingual elements and move CharacterString to LocalisedCharacterString elements 
         this captures all elements with CharacterString and below are the exceptions that should not be caught	
 	--> 
-	<xsl:template priority="5" match="gmd:*[string-length(normalize-space(gco:CharacterString)) > 0] | 
-	                                  srv:*[string-length(normalize-space(gco:CharacterString)) > 0] | 
-	                                  gco:*[string-length(normalize-space(gco:CharacterString)) > 0]">
+	<xsl:template priority="5" match="gmd:*[gco:CharacterString] | 
+	                                  srv:*[gco:CharacterString] | 
+	                                  gco:*[gco:CharacterString]">
 	    <xsl:variable name="mainLang">
 	       <xsl:call-template name="langId19139"/>
 	    </xsl:variable>
@@ -49,6 +49,41 @@
 	               <gmd:PT_FreeText>
 	                   <xsl:copy-of select="$textGroup"/>
 	               </gmd:PT_FreeText>
+               </xsl:copy>
+	       </xsl:otherwise>
+	    </xsl:choose>
+   </xsl:template>
+
+	<!-- find all multilingual elements and move CharacterString to LocalisedCharacterString elements 
+        this captures all elements with CharacterString and below are the exceptions that should not be caught	
+	--> 
+	<xsl:template priority="5" match="gmd:*[gmd:URL] | 
+	                                  srv:*[gmd:URL] | 
+	                                  gco:*[gmd:URL]">
+	    <xsl:variable name="mainLang">
+	       <xsl:call-template name="langId19139"/>
+	    </xsl:variable>
+found
+	    <xsl:variable name="urlGroup">
+	       <che:URLGroup>
+            <che:LocalisedURL locale="#{$mainLang}"><xsl:value-of select="gmd:URL"></xsl:value-of></che:LocalisedURL>
+          </che:URLGroup>
+	    </xsl:variable>
+
+	    <xsl:choose>
+	       <xsl:when test="che:PT_FreeURL">
+		       <xsl:copy>
+		           <che:PT_FreeURL>
+		               <xsl:copy-of select="$urlGroup"/>
+		               <xsl:copy-of select="che:PT_FreeURL"/>
+		           </che:PT_FreeURL>
+	           </xsl:copy>
+	       </xsl:when>
+	       <xsl:otherwise>
+		       <xsl:copy>
+	               <che:PT_FreeURL>
+	                   <xsl:copy-of select="$urlGroup"/>
+	               </che:PT_FreeURL>
                </xsl:copy>
 	       </xsl:otherwise>
 	    </xsl:choose>
@@ -113,7 +148,9 @@
         che:individualFirstName|
         che:individualLastName|
         che:internalReference">
-      <xsl:copy-of select="."/>
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+        </xsl:copy>
     </xsl:template>
 
     <xsl:template name="langId19139">
@@ -130,7 +167,8 @@
     <xsl:variable name="UPPER">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
     <xsl:variable name="LOWER">abcdefghijklmnopqrstuvwxyz</xsl:variable>
 
-        <xsl:value-of select="translate(java:twoCharLangCode(normalize-space(string($tmp))), $LOWER, $UPPER)"></xsl:value-of>
+        <!-- <xsl:value-of select="translate(java:twoCharLangCode(normalize-space(string($tmp))), $LOWER, $UPPER)"></xsl:value-of>  -->
+        <xsl:value-of select="translate(substring(normalize-space(string($tmp)),1,2), $LOWER, $UPPER)"></xsl:value-of>
     </xsl:template>
 
 </xsl:stylesheet>

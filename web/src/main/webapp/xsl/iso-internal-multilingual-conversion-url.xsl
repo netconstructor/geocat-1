@@ -25,7 +25,7 @@
 	</xsl:template>
  
     <xsl:template name="composeURLTranslations">
-        <xsl:param name="elem" />
+        <xsl:param name="elem" />jkl
         <xsl:choose>
           <xsl:when test="count($elem/child::node()[normalize-space(text())!=''])>0 and normalize-space($elem/text())=''"/>
           <xsl:otherwise>

@@ -1,0 +1,74 @@
+schemaDir=project(":web").file("src/main/webapp/xml/schemas")
+defaultLang='en'
+schemas = schemaDir.listFiles().findAll{it.isDirectory()}
+
+allRules = file('rules').listFiles().findAll{it.isFile()}.collect{
+  it.name.drop("schematron-rules-".length()).reverse().drop(4).reverse()
+}
+rulesToPublish = ['geonetwork', 'iso', 'inspire']
+
+task cleanSchematronFiles(type:Delete) {
+  schemas.each {
+    delete fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml'])
+  }
+}
+
+task publishAll{
+  rulesToPublish.each {dependsOn "publish"+it.capitalize()}
+}
+rulesToPublish.each { rule ->
+  task ("publish"+rule.capitalize()) {
+    inputs.file rulesInputFile(rules)
+    inputs.files fileTree(dir: "rules/loc", includes: "**/${locFileName(rule)}")
+    schemas.each {
+      outputs.files fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml'])
+    }
+    
+    doLast {
+      compileRules(rule)
+  
+      if(rule.startsWith ('inspire')) {
+        schemas.findAll{it.name.startsWith 'iso19139'}.each{publish(rule, it)}
+      } else {
+        schemas.each{publish(rule, it)}
+      }
+    }
+  }
+}
+def rulesInputFile(rules) { return file("rules/schematron-rules-${rules}.sch")}
+def rulesOutputFile(rules) { return file("$schema/schematron-rules-${rules}.xsl")}
+
+def compileRules(rules) {
+  ant.xslt(
+    basedir:projectDir,
+    style:file("resources/iso_svrl_for_xslt2.xsl").path,
+	  in:rulesInputFile(rules).path,
+	  out:file("${buildDir}/schematron-rules-${rules}.xsl")) {
+	    classpath {
+	      pathelement(location: file("saxon9.jar"))
+	    }
+	  }
+}
+
+def locFileName(rules) {return "schematron-rules-${rules}.xml"}
+
+def publish(rules, schema) {
+  logger.info("Copy schematron $rules XSLT to $schema schema.")
+  def from = rulesInputFile(rules)
+  def to = rulesOutputFile(rules)
+  to << from.bytes
+  
+  def defaultLocFile = file("rules/loc/$defaultLang/$locFileName").bytes
+  file("rules/loc").listFiles().each { locDir ->
+    def toFile = file("$schema/loc/${locDir.name}/${locFileName(rules)}")
+    def fromFile = file("$locDir/${locFileName(rules)}")
+    if(toFile.parentFile.exists()) {
+      // if fromFile does not exist write the default
+      if(fromFile.exists()) {
+        toFile << fromFile.bytes
+      } else {
+        toFile << defaultLocFile
+      }
+    }
+  }
+}
