@@ -232,11 +232,13 @@
 					</gmd:address>
 						<gmd:onlineResource>
 							<gmd:CI_OnlineResource>
-								<gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">xx
-                                <xsl:call-template name="composeURLTranslations">
-                                    <xsl:with-param name="elem" select="onlineresource"/>
-                                </xsl:call-template>
-								</gmd:linkage>
+							    <xsl:for-each select="onlineresource[normalize-space(text())!='']">
+									<gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+	                                <xsl:call-template name="composeURLTranslations">
+	                                    <xsl:with-param name="elem" select="."/>
+	                                </xsl:call-template>
+									</gmd:linkage>
+								</xsl:for-each>
 								<gmd:protocol>
 									<gco:CharacterString>text/html</gco:CharacterString>
 								</gmd:protocol>

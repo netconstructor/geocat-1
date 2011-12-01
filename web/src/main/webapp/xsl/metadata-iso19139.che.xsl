@@ -339,7 +339,7 @@
                                         <xsl:otherwise><xsl:value-of select="gmd:*/geonet:element/@ref"></xsl:value-of></xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
-                                <option value="_{$ref}">
+                                <option value="_{$ref}" code="{substring-after($mainLangId, '#')}">
                                     <xsl:choose>
                                             <xsl:when test="normalize-space($mainLang)=''">
                                                     <xsl:value-of select="/root/gui/strings/mainMetadataLanguageNotSet"/>
@@ -351,7 +351,7 @@
                                     </xsl:choose>
                                 </option>
                                 <xsl:for-each select="$ptFreeURLTree//che:LocalisedURL[@locale!=$mainLangId]">
-                                    <option value="_{geonet:element/@ref}">
+                                    <option value="_{geonet:element/@ref}" code="{substring-after(@locale, '#')}">
                                         <xsl:value-of select="@language" />
                                     </option>
                                     <xsl:value-of select="name(.)" />
@@ -359,7 +359,7 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:for-each select="$ptFreeURLTree//che:LocalisedURL">
-                                    <option value="_{geonet:element/@ref}">
+                                    <option value="_{geonet:element/@ref}" code="{substring-after(@locale, '#')}">
                                         <xsl:value-of select="@language" />
                                     </option>
                                     <xsl:value-of select="name(.)" />

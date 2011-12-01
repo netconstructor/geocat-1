@@ -63,7 +63,7 @@
 	    <xsl:variable name="mainLang">
 	       <xsl:call-template name="langId19139"/>
 	    </xsl:variable>
-found
+
 	    <xsl:variable name="urlGroup">
 	       <che:URLGroup>
             <che:LocalisedURL locale="#{$mainLang}"><xsl:value-of select="gmd:URL"></xsl:value-of></che:LocalisedURL>
