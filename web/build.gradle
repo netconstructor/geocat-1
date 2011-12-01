@@ -52,7 +52,7 @@ dependencies {
     'org.springframework:spring-context:2.5.3',
     'org.dspace:cql-java:1.0',
     'org.jzkit:a2j:2.0.4',
-//    'marc4j:marc4j:2.3.1', 
+    'marc4j:marc4j:2.4', 
     'batik:batik-ext:1.6',
     'org.apache.commons:commons-email:1.1',
     'avalon-framework:avalon-framework-api:4.2.0',
@@ -83,6 +83,7 @@ dependencies {
 def scripts = file('src/main/webapp/scripts').path
 def openLayersdir='openlayers/lib/OpenLayers'
 
+// task names for minifying javascript
 def minifyGnPrototypeLibs = 'minifyGnPrototypeLibs'
 def minifyGnMapLibs = 'minifyGnMapLibs'
 def minifyGnScriptaculousLibs = 'minifyGnScriptaculousLibs'
@@ -91,20 +92,45 @@ def minifySearchGn = 'minifySearchGn'
 def minifyEditorGn = 'minifyEditorGn'
 def minifyGeoGn = 'minifyGeoGn'
 
+// names of minified files
+def minifiedGeoGnFile = file("$scripts/lib/gn.geo.libs.js")
+def minifiedEditorGnFile = file("$scripts/lib/gn.editor.js")
+def minifiedSearchGnFile = file("$scripts/lib/gn.search.js")
+def minifiedGnFile = file("$scripts/lib/gn.js")
+def minifiedGnScriptaculousFile = file("$scripts/lib/gn.libs.scriptaculous.js")
+def minifiedGnMapsFile = file("$scripts/lib/gn.libs.map.js")
+def minifiedGnPrototypeFile = file("$scripts/lib/gn.libs.js")
+
 task minifyAll(dependsOn: [
   minifyGnPrototypeLibs, minifyGnMapLibs, minifyGnScriptaculousLibs,
   minifyGn, minifySearchGn, minifyEditorGn, minifyGeoGn])
 
+task cleanMinified << {
+  [minifiedGeoGnFile, minifiedEditorGnFile, minifiedSearchGnFile, minifiedGnFile, 
+  minifiedGnScriptaculousFile, minifiedGnMapsFile, minifiedGnPrototypeFile].each{
+    if(it.exists()) {
+      logger.debug("deleting minified file '$it'")
+      if(!it.delete()) {
+        logger.error "Could not delete minified file '$it'"
+      }
+    } else {
+      logger.debug("'$it' does not exist")
+    }
+  }
+}
+
+clean.dependsOn cleanMinified
+    
 minification {
   js(
     minifyGnPrototypeLibs,
-    file("$scripts/lib/gn.libs.js"), 
-    fileTree(dir: scripts, includes: ['sarissa.js', 'prototype.js']))
+    minifiedGnPrototypeFile,
+    jsFiles(dir: scripts, includes: ['sarissa.js', 'prototype.js']))
 
   js(
     minifyGnMapLibs,
-    file("$scripts/lib/gn.libs.map.js"), 
-    fileTree(dir: "$scripts/map", includes: [
+    minifiedGnMapsFile,
+    jsFiles(dir: "$scripts/map", includes: [
       'core/OGCUtil.js', 'core/MapStateManager.js', 'core/CatalogueInterface.js', 'core/WMCManager.js', 'Control/ExtentBox.js', 
       'Control/ZoomWheel.js', 'lang/en.js', 'lang/de.js', 'lang/nl.js', 'lang/fr.js', 'lang/no.js', 'lang/fi.js', 'Ext.ux/form/DateTime.js', 
       'widgets/tree/WMSListGenerator.js', 'widgets/tree/WMSTreeGenerator.js', 'widgets/wms/BrowserPanel.js', 'widgets/wms/LayerInfoPanel.js', 
@@ -112,27 +138,27 @@ minification {
       'widgets/LegendPanel.js', 'widgets/OpacitySlider.js', 'widgets/PrintAction.js', 'widgets/ProjectionSelector.js', 'widgets/TimeSelector.js', 
       'windows/BaseWindow.js', 'windows/SingletonWindowManager.js', 'windows/AddWMS.js', 'windows/FeatureInfo.js', 'windows/Opacity.js', 
       'windows/LoadWmc.js', 'windows/LayerStyles.js', 'windows/WmsLayerMetadata.js', 'windows/WMSTime.js', 'windows/Disclaimer.js'])
-     + fileTree(dir: "$scripts", includes: ['ol_settings.js', 'ol_minimap.js', 'ol_map.js']))
+     + jsFiles(dir: "$scripts", includes: ['ol_settings.js', 'ol_minimap.js', 'ol_map.js']))
 
   js(
     minifyGnScriptaculousLibs,
-    file("$scripts/lib/gn.libs.scriptaculous.js"), 
-    fileTree(dir: "$scripts/scriptaculous", includes: ['effects.js', 'dragdrop.js', 'controls.js', 'builder.js']))
+    minifiedGnScriptaculousFile, 
+    jsFiles(dir: "$scripts/scriptaculous", includes: ['effects.js', 'dragdrop.js', 'controls.js', 'builder.js']))
 
   js(
     minifyGn,
-    file("$scripts/lib/gn.js"), 
-    fileTree(dir: "$scripts", includes: ['geonetwork.js', 'modalbox.js', 'form_check.js']))
+    minifiedGnFile, 
+    jsFiles(dir: "$scripts", includes: ['geonetwork.js', 'modalbox.js', 'form_check.js']))
 
   js(
     minifySearchGn,
-    file("$scripts/lib/gn.search.js"), 
-    fileTree(dir: "$scripts", includes: ['gn_search.js']))
+    minifiedSearchGnFile, 
+    jsFiles(dir: "$scripts", includes: ['gn_search.js']))
 
   js(
     minifyEditorGn,
-    file("$scripts/lib/gn.editor.js"), 
-    fileTree(dir: "$scripts/editor", 
+    minifiedEditorGnFile, 
+    jsFiles(dir: "$scripts/editor", 
       includes: [
         'app.CRSSelectionPanel.js','app.KeywordSelectionPanel.js','app.LinkedMetadataSelectionPanel.js','/LogoSelectionPanel.js',
         'app.GeoPublisherPanel.js','app.SearchField.js','csw.SearchTools.js','metadata-editor.js','metadata-show.js',
@@ -140,8 +166,8 @@ minification {
 
   js(
     minifyGeoGn,
-    file("$scripts/lib/gn.geo.libs.js"), 
-    fileTree(dir: "$scripts", includes: [
+    minifiedGeoGnFile,
+    jsFiles(dir: "$scripts", includes: [
       "$openLayersdir/SingleFile.js",'openlayers/lib/OpenLayers.js',"$openLayersdir/Util.js","$openLayersdir/BaseTypes.js",
       "$openLayersdir/BaseTypes/Class.js","$openLayersdir/BaseTypes/Bounds.js",'openlayers/lib/Rico/Corner.js','geoext/lib/GeoExt/SingleFile.js',
       'geoext/lib/GeoExt.js',"$openLayersdir/Console.js","$openLayersdir/Format.js","$openLayersdir/Format/CSWGetRecords.js",

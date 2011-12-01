@@ -1,1 +1,1 @@
-include 'cachingxslt', 'jeeves', 'oaipmh', 'sde', 'web'
+include 'cachingxslt', 'jeeves', 'oaipmh', 'sde'/*, 'web-client'*/, 'schematrons', 'web'

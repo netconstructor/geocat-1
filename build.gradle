@@ -6,7 +6,7 @@ allprojects {
   buildDir='target'
 }
 
-subprojects {
+configure(subprojects.findAll {it.name != 'web-client' && it.name != 'schematrons'}) {
   apply plugin: 'java'
   apply plugin: 'eclipse'
 
@@ -36,8 +36,7 @@ subprojects {
       mavenCentral()
       maven {url 'http://download.osgeo.org/webdav/geotools'}
       maven {url 'http://mvnrepository.com/artifact'}
-  }
-  
+  } 
 }
 
 project('sde') {
@@ -87,6 +86,13 @@ configure(subprojects.findAll {it.name == 'web' || it.name == 'web-client'}) {
 class YuiMinificationExtention {
   private def project;
 
+  def jsFiles(map) {
+    return jsFiles(map.dir, map.includes)
+  }
+  def jsFiles(dir, includes) {
+    def allFiles = includes.collect{project.file("$dir/$it")}
+    return project.files(allFiles)
+  }
   def basicYuiArgs(type, to) {
     def args = [
       '--line-break','8000',
@@ -116,7 +122,7 @@ class YuiMinificationExtention {
       outputs.upToDateSpec = new org.gradle.api.specs.AndSpec()
       inputs.files from.files
       outputs.file to
-      workingFile = File.createTempFile(toFile.name, ".yui.tmp")
+      workingFile = new File(temporaryDir, "${name}.yui.tmp")
       classpath project.configurations.yui.asPath
       args = (yuiArgs << workingFile.path)
       main = 'com.yahoo.platform.yui.compressor.YUICompressor'
@@ -136,7 +142,7 @@ class YuiMinificationExtention {
 
       }
       doLast {
-        logger.info("deleting minification working file:"+workingFile)
+        logger.info("deleting minification working file: "+workingFile)
         workingFile.delete()
       }
     }

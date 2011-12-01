@@ -1,25 +1,35 @@
-def apps="${sourceSets.main.output.resourcesDir}/apps"
+apply plugin: 'java'
+
+// ----  path related variables  ----
+def apps=file("src/main/resources/apps/").path
 def appsJs="$apps/js"
 def searchJs="$apps/search/js"
-
-def miniNomapTaskName='miniNomap'
-def minimapTaskName='minimap'
-def searchStyleTaskName='searchStyle'
-def appMiniTaskName='appMini'
 
 def openlayers='OpenLayers/lib/OpenLayers'
 def geonetworkLib='GeoNetwork/lib/GeoNetwork'
 def geoext='GeoExt/lib/GeoExt'
 
+// ----  Task name variables  ----
+def miniNomapTaskName='miniNomap'
+def minimapTaskName='minimap'
+def searchStyleTaskName='searchStyle'
+def appMiniTaskName='appMini'
+
+// ----  Minified JS files  ----
+def minifiedMiniNoMapFile = file("$appsJs/GeoNetwork-mini-nomap.js")
+def minifiedMinimapFile = file("$appsJs/GeoNetwork-mini.js")
+def minifiedAppFile = file("$searchJs/App-mini.js")
+def minifiedSearchCssFile = file("$apps/search/css/style.css")
+
 file(appsJs).mkdirs()
 
 task minifyAll(dependsOn: [appMiniTaskName])
-jar.dependsOn minifyAll
+
 minification {
   js(
     miniNomapTaskName,
-    file("$appsJs/GeoNetwork-mini-nomap.js"),
-    fileTree(dir: appsJs, includes: [
+    minifiedMiniNoMapFile,
+    jsFiles(dir: appsJs, includes: [
         "ext-ux/TwinTriggerComboBox/TwinTriggerComboBox.js","ext-ux/Rating/RatingItem.js","ext-ux/FileUploadField/FileUploadField.js",
         "ext-ux/DateTime/DateTime.js","ext-ux/RowExpander/RowExpander.js","ext-ux/MultiselectItemSelector-3.0/DDView.js",
         "ext-ux/MultiselectItemSelector-3.0/Multiselect.js","ext-ux/LightBox/lightbox.js","ext-ux/SuperBoxSelect/SuperBoxSelect.js",
@@ -96,8 +106,8 @@ minification {
     
     js(
       minimapTaskName,
-      file("$appsJs/GeoNetwork-mini.js"),
-      files("$appsJs/GeoNetwork-mini-nomap.js") + fileTree(dir: appsJs, includes: [
+      minifiedMinimapFile,
+      files("$appsJs/GeoNetwork-mini-nomap.js") + jsFiles(dir: appsJs, includes: [
         "$geonetworkLib/map/core/OGCUtil.js","$geonetworkLib/map/core/CatalogueInterface.js","$geonetworkLib/map/core/WMCManager.js",
         "$geonetworkLib/map/widgets/tree/WMSListGenerator.js","$geonetworkLib/map/widgets/tree/WMSTreeGenerator.js","$geonetworkLib/map/widgets/wms/BrowserPanel.js",
         "$geonetworkLib/map/widgets/wms/LayerInfoPanel.js","$geonetworkLib/map/widgets/wms/LayerStylesPanel.js","$geonetworkLib/map/widgets/wms/PreviewPanel.js",
@@ -112,20 +122,34 @@ minification {
     
     js(
       appMiniTaskName,
-      file("$searchJs/App-mini.js"),
-      files("$appsJs/GeoNetwork-mini.js") + fileTree(dir: searchJs, includes: [
+      minifiedAppFile,
+      files("$appsJs/GeoNetwork-mini.js") + jsFiles(dir: searchJs, includes: [
         "Settings.js","map/Settings.js","map/MapApp.js","Shortcuts.js","App.js"]))
     
 /*    js(
       searchStyleTaskName,
-      file("$apps/search/css/style.css"),
-      fileTree(dir: apps, includes: [
+      minifiedSearchCssFile,
+      jsFiles(dir: apps, includes: [
         "js/OpenLayers/theme/dark/style.css","js/ext/resources/css/ext-all.css","js/ext/resources/css/xtheme-gray.css",
         "js/ext-ux/FileUploadField/file-upload.css","js/ext-ux/MultiselectItemSelector-3.0/Multiselect.css","css/gndefault.css",
         "css/gnmapdefault.css","css/gnmetadatadefault.css","js/GeoNetwork/lib/GeoNetwork/resources/css/metadata-view.css"]))
     searchStyle.dependsOn(processResources)*/
 }    
 
-miniNomap.dependsOn(processResources)
 appMini.dependsOn(miniNomapTaskName)
 appMini.dependsOn(minimap)
+
+task cleanMinified << {
+  [minifiedMiniNoMapFile, minifiedMinimapFile, minifiedAppFile, /*minifiedSearchCssFile*/].each {
+    if(it.exists()) {
+      logger.debug("deleting minified file '$it'")
+      if(!it.delete()) {
+        logger.error "Could not delete minified file '$it'"
+      }
+    } else {
+      logger.debug("'$it' does not exist")
+    }    
+  }
+}
+
+clean.dependsOn cleanMinified
