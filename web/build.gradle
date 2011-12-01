@@ -52,7 +52,7 @@ dependencies {
     'org.springframework:spring-context:2.5.3',
     'org.dspace:cql-java:1.0',
     'org.jzkit:a2j:2.0.4',
-    'marc4j:marc4j:2.4', 
+    'org.tigris:marc4j:2.4', 
     'batik:batik-ext:1.6',
     'org.apache.commons:commons-email:1.1',
     'avalon-framework:avalon-framework-api:4.2.0',
