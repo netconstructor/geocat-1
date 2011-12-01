@@ -132,6 +132,7 @@ class YuiMinificationExtention {
         toFile.parentFile.mkdirs()
         logger.info("starting creation of "+to)
         logger.info("combining js files for minification in "+workingFile)
+        workingFile.parentFile.mkdirs()
         workingFile.withWriter {writer ->
           from.each { file ->
             logger.debug("Adding file for minification: "+file)
