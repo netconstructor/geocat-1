@@ -35,8 +35,9 @@ rulesToPublish.each { rule ->
     }
   }
 }
-def rulesInputFile(rules) { return file("rules/schematron-rules-${rules}.sch")}
-def rulesOutputFile(rules) { return file("$schema/schematron-rules-${rules}.xsl")}
+
+def rulesInputFile(rules) {return file("rules/schematron-rules-${rules}.sch")}
+def rulesOutputFile(rules) {return file("$schema/schematron-rules-${rules}.xsl")}
 
 def compileRules(rules) {
   ant.xslt(
