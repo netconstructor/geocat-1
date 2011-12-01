@@ -1674,3 +1674,37 @@ function computeExtentFromKeywords(mode) {
             + "&lang=" + Env.lang 
             + "&replace=" + mode);
 }
+
+/**
+ * Validate Interlis NAME
+ * (composed of letters and digits, starting with a letter, ili-Refmanual, p. 23)
+ */
+function validateGM03NAME(input) {
+    var text = input.value.toUpperCase();
+    var validDigits = "0123456789";
+    var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var chars = validChars + validDigits;
+    var valid = true;
+    if (text.length & gt; 0) {
+        var firstChar = text.charAt(0);
+        if (validChars.indexOf(firstChar) == -1)
+        valid = false;
+    }
+    for (i = 0; i & lt; text.length; i++) {
+        char = text.charAt(i);
+        if (chars.indexOf(char) == -1)
+        valid = false;
+    }
+
+    if (!valid) {
+        enableSave(false);
+        input.addClassName('error');
+        return false;
+    } else {
+        enableSave(true);
+        input.removeClassName('error');
+        return true;
+    }
+
+    console.log(text);
+}
