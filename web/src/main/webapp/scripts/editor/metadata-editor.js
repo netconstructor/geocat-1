@@ -1685,26 +1685,24 @@ function validateGM03NAME(input) {
     var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     var chars = validChars + validDigits;
     var valid = true;
-    if (text.length & gt; 0) {
+    if (text.length > 0) {
         var firstChar = text.charAt(0);
         if (validChars.indexOf(firstChar) == -1)
-        valid = false;
+          valid = false;
     }
-    for (i = 0; i & lt; text.length; i++) {
-        char = text.charAt(i);
-        if (chars.indexOf(char) == -1)
-        valid = false;
+    for (i = 0; i < text.length; i++) {
+        character = text.charAt(i);
+        if (chars.indexOf(character) == -1)
+          valid = false;
     }
 
     if (!valid) {
         enableSave(false);
         input.addClassName('error');
-        return false;
+          return false;
     } else {
         enableSave(true);
         input.removeClassName('error');
         return true;
     }
-
-    console.log(text);
 }
