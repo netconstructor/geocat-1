@@ -26,6 +26,22 @@
  
     <xsl:template name="composeURLTranslations">
         <xsl:param name="elem" />
+         <xsl:choose>
+          <xsl:when test="count($elem/child::node()[normalize-space(text())!=''])>0 and normalize-space($elem/text())=''"/>
+          <xsl:otherwise>
+            <che:PT_FreeURL>
+        <che:URLGroup>
+         <che:LocalisedURL>
+          <xsl:attribute name="locale">
+            <xsl:value-of select="concat('#', $urlMetadataLang)" />
+          </xsl:attribute>
+                <xsl:value-of select="normalize-space($elem/text())" />
+         </che:LocalisedURL>
+        </che:URLGroup>
+            </che:PT_FreeURL>
+          </xsl:otherwise>
+        </xsl:choose>
+         
         <xsl:choose>
          <xsl:when test="count($elem/child::node()[normalize-space(text())!=''])>0">
           <che:PT_FreeURL>

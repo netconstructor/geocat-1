@@ -246,7 +246,7 @@ file("$webAppDir/xml/schemas").eachFileRecurse {
   
 toLocalise.each { srcDir ->
   def name = srcDir.path.contains('schemas') ? "Loc${srcDir.parentFile.parentFile.name.capitalize().replaceAll('-','')}" : 'Loc'
-  name += srcDir.name.capitalize()
+  name += codeMap[srcDir.name].capitalize()
   def toDir = file("${srcDir.path}/../${codeMap[srcDir.name]}").absolutePath
   
   

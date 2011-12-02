@@ -232,7 +232,7 @@
 					</gmd:address>
 						<gmd:onlineResource>
 							<gmd:CI_OnlineResource>
-							    <xsl:for-each select="onlineresource[normalize-space(text())!='']">
+							    <xsl:for-each select="onlineresource[*[normalize-space(text())!='']]">
 									<gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
 	                                <xsl:call-template name="composeURLTranslations">
 	                                    <xsl:with-param name="elem" select="."/>

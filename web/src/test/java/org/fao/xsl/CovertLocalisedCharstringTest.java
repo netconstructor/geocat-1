@@ -9,20 +9,22 @@ import java.util.Map;
 import jeeves.utils.Xml;
 
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.filter.Filter;
 import org.junit.Test;
 
 
 
-public class CovertLocalisedURLTest
+public class CovertLocalisedCharstringTest
 {
     @Test
     public void convert() throws Exception{
-        String pathToXsl = TransformationTestSupport.geonetworkWebapp+"/xsl/iso-internal-multilingual-conversion-url.xsl";
-        String testData = "/data/localised-url.xml";
+        String pathToXsl = TransformationTestSupport.geonetworkWebapp+"/xsl/iso-internal-multilingual-conversion.xsl";
+        String testData = "/data/localised-charstring.xml";
         Element data = TransformationTestSupport.transform(getClass(), pathToXsl, testData );
 
-
+        System.out.println(Xml.getString(data));
+        
         assertEquals(1, data.getChildren("EN").size());
         assertEquals(1, data.getChildren("FR").size());
         assertEquals(1, data.getChildren("IT").size());
@@ -37,7 +39,7 @@ public class CovertLocalisedURLTest
 
         Element isoData = Xml.transform(data, pathToXsl);
 
-        Map<String, String> langMap = findUrls(isoData);
+        Map<String, String> langMap = findLocalizedString(isoData);
 
         assertEquals(4, langMap.size());
         assertEquals("http://camptocamp.com/main", langMap.get("#EN"));
@@ -51,14 +53,14 @@ public class CovertLocalisedURLTest
 
         isoData = Xml.transform(noTranslation, pathToXsl);
 
-        langMap = findUrls(isoData);
+        langMap = findLocalizedString(isoData);
 
         assertEquals(1, langMap.size());
         assertEquals(1, isoData.getChildren().size());
         assertEquals("http://camptocamp.com/main", langMap.get("#EN"));
     }
 
-    private Map<String, String> findUrls(Element isoData)
+    private Map<String, String> findLocalizedString(Element isoData)
     {
         @SuppressWarnings("unchecked")
         Iterator<Element> urls = isoData.getDescendants(new Filter()
@@ -69,7 +71,7 @@ public class CovertLocalisedURLTest
             {
                 if (arg0 instanceof Element) {
                     Element elem = (Element) arg0;
-                    return elem.getName().equals("LocalisedURL");
+                    return elem.getName().equals("LocalisedCharacterString");
                 }
                 return false;
             }
@@ -91,15 +93,15 @@ public class CovertLocalisedURLTest
         Element data = TransformationTestSupport.transform(getClass(), pathToXsl, testData );
         System.out.println(Xml.getString(data));
 
-        Map<String, String> langMap = findUrls(data);
+        Map<String, String> langMap = findLocalizedString(data.getChild("organisationAcronym", Namespace.getNamespace("http://www.geocat.ch/2008/che")));
 
         assertEquals(5, langMap.size());
 
-        assertEquals("http://camptocamp.com/en", langMap.get("#EN"));
-        assertEquals("http://camptocamp.com/fr", langMap.get("#FR"));
-        assertEquals("http://camptocamp.com/de", langMap.get("#DE"));
-        assertEquals("http://camptocamp.com/it", langMap.get("#IT"));
-        assertEquals("http://camptocamp.com/rm", langMap.get("#RM"));
+        assertEquals("ana en", langMap.get("#EN"));
+        assertEquals("ana fr", langMap.get("#FR"));
+        assertEquals("ana de", langMap.get("#DE"));
+        assertEquals("ana it", langMap.get("#IT"));
+        assertEquals("ana rm", langMap.get("#RM"));
 
     }
 }
