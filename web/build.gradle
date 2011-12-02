@@ -163,11 +163,6 @@ minification {
     jsFiles(dir: "$scripts", includes: ['gn_search.js']))
 
   js(
-    minifySearchGn,
-    minifiedSearchGnFile, 
-    jsFiles(dir: "$scripts", includes: ['gn_search.js']))
-
-  js(
     minifyEditorGn,
     minifiedEditorGnFile, 
     jsFiles(dir: "$scripts/editor", 
