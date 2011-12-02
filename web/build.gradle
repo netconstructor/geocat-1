@@ -95,6 +95,7 @@ def minifyGn = 'minifyGn'
 def minifySearchGn = 'minifySearchGn'
 def minifyEditorGn = 'minifyEditorGn'
 def minifyGeoGn = 'minifyGeoGn'
+def minifyGeocat = 'minifyGeocat'
 
 // names of minified files
 def minifiedGeoGnFile = file("$scripts/lib/gn.geo.libs.js")
@@ -104,6 +105,7 @@ def minifiedGnFile = file("$scripts/lib/gn.js")
 def minifiedGnScriptaculousFile = file("$scripts/lib/gn.libs.scriptaculous.js")
 def minifiedGnMapsFile = file("$scripts/lib/gn.libs.map.js")
 def minifiedGnPrototypeFile = file("$scripts/lib/gn.libs.js")
+def minifiedGeocatFile = file("$scripts/lib/geocat.js")
 
 task cleanMinified << {
   [minifiedGeoGnFile, minifiedEditorGnFile, minifiedSearchGnFile, minifiedGnFile, 
@@ -122,6 +124,11 @@ task cleanMinified << {
 clean.dependsOn cleanMinified
     
 minification {
+  js(
+    minifyGeocat,
+    minifyGeocatFile, 
+    jsFiles(dir: "$scripts", includes: ['geocat.js','searchTools.js']))
+
   js(
     minifyGnPrototypeLibs,
     minifiedGnPrototypeFile,
@@ -149,6 +156,11 @@ minification {
     minifyGn,
     minifiedGnFile, 
     jsFiles(dir: "$scripts", includes: ['geonetwork.js', 'modalbox.js', 'form_check.js']))
+
+  js(
+    minifySearchGn,
+    minifiedSearchGnFile, 
+    jsFiles(dir: "$scripts", includes: ['gn_search.js']))
 
   js(
     minifySearchGn,
