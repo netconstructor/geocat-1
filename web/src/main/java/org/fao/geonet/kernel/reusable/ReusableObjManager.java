@@ -335,8 +335,10 @@ public class ReusableObjManager
 						placeholder, originalElem, srvContext);
                 continue;
             }
-            changed |= replaceSingleElement(placeholder, originalElem, strategy, defaultMetadataLang, addOnly, dbms,
-                    originalElementName, logger);
+            if(originalElem != null) {
+                changed |= replaceSingleElement(placeholder, originalElem, strategy, defaultMetadataLang, addOnly, dbms,
+                        originalElementName, logger);
+            }
         }
 
         return changed;

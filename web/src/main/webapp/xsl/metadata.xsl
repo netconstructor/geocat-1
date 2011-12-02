@@ -98,9 +98,9 @@
 							or $subtemplates">
 				<xsl:variable name="text">
 					<xsl:if test="geonet:choose">
-						<xsl:variable name="isXLinked" select="count(ancestor-or-self::node()[@xlink:href]) > 0" />
+						<xsl:variable name="isXLinked"><xsl:call-template name="validatedXlink"/></xsl:variable>
 						<select class="md" name="_{$parentName}_{$qname}" size="1">
-							<xsl:if test="$isXLinked">
+							<xsl:if test="$isXLinked = 'true'">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>
 
@@ -141,7 +141,7 @@
 						<xsl:apply-templates mode="addXMLFragment" select="."/>
 					</xsl:variable>
 					<xsl:if test="normalize-space($function)!=''">
-						<xsl:value-of select="concat('javascript:', $function, '(',$parentName,',',$apos,$name,$apos,');')"/>
+						<xsl:value-of select="concat('javascript:', $function, '(',$parentName,',',$apos,$name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,');') "/>
 					</xsl:if>
 				</xsl:variable>
 				<xsl:variable name="helpLink">
@@ -612,6 +612,7 @@
 		<xsl:variable name="function">
 			<xsl:apply-templates mode="addXMLFragment" select="."/>
 		</xsl:variable>
+		
 		<xsl:choose>
 			<!-- Create link only when a function is available -->
 			<xsl:when test="normalize-space($function)!=''">
@@ -769,7 +770,7 @@
 		<xsl:param name="id" select="generate-id(.)"/>
 		<xsl:param name="visible" select="true()"/>
 
-		<xsl:variable name="isXLinked" select="count(ancestor-or-self::node()[@xlink:href]) > 0" />
+		<xsl:variable name="isXLinked"><xsl:call-template name="validatedXlink"/></xsl:variable>
 		<xsl:variable name="geonet" select="starts-with(name(.),'geonet:')"/>
 
 		<tr id="{$id}" type="metadata">
@@ -780,7 +781,7 @@
 			</xsl:if>
 			<th class="md" width="20%" valign="top">
 				<xsl:choose>
-					<xsl:when test="$isXLinked">
+					<xsl:when test="$isXLinked = 'true'">
 						<xsl:attribute name="class">md xlinked</xsl:attribute>
 					</xsl:when>
 					<xsl:otherwise>
@@ -805,7 +806,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 				<xsl:text>&#160;</xsl:text>
-				<xsl:if test="$edit and not($isXLinked)">
+				<xsl:if test="$edit and not($isXLinked = 'true')">
 					<xsl:call-template name="getButtons">
 						<xsl:with-param name="addLink" select="$addLink"/>
 						<xsl:with-param name="addXMLFragment" select="$addXMLFragment"/>
@@ -941,7 +942,7 @@
 		<xsl:param name="edit" select="false()"/>
 		<xsl:param name="id" select="generate-id(.)"/>
 	
-		<xsl:variable name="isXLinked" select="count(ancestor::node()[@xlink:href]) > 0" />
+		<xsl:variable name="isXLinked"><xsl:call-template name="validatedXlink"/></xsl:variable>
 
 		<tr id="{$id}" type="metadata">
 			<td class="padded-content" width="100%" colspan="2">
@@ -971,7 +972,7 @@
 							</xsl:otherwise>
 						</xsl:choose>
 						
-						<xsl:if test="$edit and not($isXLinked)">
+						<xsl:if test="$edit and not($isXLinked = 'true')">
 							<xsl:call-template name="getButtons">
 								<xsl:with-param name="addLink" select="$addLink"/>
 								<xsl:with-param name="addXMLFragment" select="$addXMLFragment"/>
@@ -1170,8 +1171,8 @@
 		
 		<xsl:variable name="name"  select="name(.)"/>
 		<xsl:variable name="value" select="string(.)"/>
-		<xsl:variable name="isXLinked" select="count(ancestor-or-self::node()[@xlink:href]) > 0" />		
-							
+		<xsl:variable name="isXLinked">false</xsl:variable>
+
 		<xsl:choose>
 			<!-- list of values -->
 			<xsl:when test="geonet:element/geonet:text">
@@ -1209,7 +1210,7 @@
 					<xsl:if test="$visible = 'false'">
 						<xsl:attribute name="style">display:none;</xsl:attribute>
 					</xsl:if>
-					<xsl:if test="$isXLinked">
+					<xsl:if test="$isXLinked = 'true'">
 						<xsl:attribute name="disabled">disabled</xsl:attribute>
 					</xsl:if>
 					<xsl:if test="$mandatory and $edit">
@@ -1236,7 +1237,7 @@
 					Default value set to false. -->
 					<xsl:when test="name(.)='gco:Boolean'">
 					    <input type="hidden" name="_{geonet:element/@ref}" id="_{geonet:element/@ref}" value="{.}">
-							<xsl:if test="$isXLinked">
+							<xsl:if test="$isXLinked = 'true'">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>
 					        <xsl:choose>
@@ -1252,14 +1253,14 @@
 						<xsl:choose>
 						    <xsl:when test="text()='true' or text()='1'">
 								<input class="md" type="checkbox" id="_{geonet:element/@ref}_checkbox" onclick="handleCheckboxAsBoolean(this, '_{geonet:element/@ref}');" checked="checked">
-									<xsl:if test="$isXLinked">
+									<xsl:if test="$isXLinked = 'true'">
 										<xsl:attribute name="disabled">disabled</xsl:attribute>
 									</xsl:if>
 								</input>
 							</xsl:when>
 							<xsl:otherwise>
 								<input class="md" type="checkbox" id="_{geonet:element/@ref}_checkbox" onclick="handleCheckboxAsBoolean(this, '_{geonet:element/@ref}');">
-									<xsl:if test="$isXLinked">
+									<xsl:if test="$isXLinked = 'true'">
 										<xsl:attribute name="disabled">disabled</xsl:attribute>
 									</xsl:if>								
 								</input>
@@ -1269,7 +1270,7 @@
 
 					<xsl:otherwise>
 						<input class="md" type="{$input_type}" value="{text()}" size="{$cols}">
-							<xsl:if test="$isXLinked">
+							<xsl:if test="$isXLinked = 'true'">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>						
 							<xsl:choose>
@@ -1326,7 +1327,7 @@
 			</xsl:when>
 			<xsl:when test="$edit=true()">
 				<textarea class="md" name="_{geonet:element/@ref}" id="_{geonet:element/@ref}" rows="{$rows}" cols="{$cols}">
-					<xsl:if test="$isXLinked">
+					<xsl:if test="$isXLinked = 'true'">
 						<xsl:attribute name="disabled">disabled</xsl:attribute>
 					</xsl:if>
 					<xsl:if test="$visible = 'false'">
@@ -1411,13 +1412,13 @@
 				<xsl:with-param name="name" select="$name"/>
 			</xsl:call-template>
 	  </xsl:variable>
-    	<xsl:variable name="isXLinked" select="count(ancestor-or-self::node()[@xlink:href]) > 0" />
+    	<xsl:variable name="isXLinked"><xsl:call-template name="validatedXlink"/></xsl:variable>
 		
 		<xsl:choose>
 			<!-- list of values for existing attribute or non existing ones -->
 			<xsl:when test="../geonet:attribute[string(@name)=$name]/geonet:text|geonet:text">
 				<select class="md" name="_{../geonet:element/@ref}_{$updatename}" size="1">
-					<xsl:if test="$isXLinked">
+					<xsl:if test="$isXLinked = 'true'">
 						<xsl:attribute name="disabled">disabled</xsl:attribute>
 					</xsl:if>
 					<option name=""/>

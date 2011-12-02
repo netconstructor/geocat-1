@@ -9,7 +9,8 @@
 	edit metadata form 
 	-->
 	<xsl:include href="edit.xsl"/>
-	<xsl:include href="metadata.xsl"/>
+    <xsl:include href="metadata.xsl"/>
+    <xsl:include href="metadata-geocat-edit.xsl"/>
 
 	<xsl:template mode="css" match="/">
 		<xsl:call-template name="geoCssHeader"/>
@@ -27,7 +28,8 @@
 		
 		<xsl:choose>
             <xsl:when test="/root/request/debug">
-	    		<script type="text/javascript" src="{/root/gui/url}/scripts/editor/metadata-editor.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/editor/metadata-editor.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/editor/metadata-geocat-editor.js"></script>
         		<script type="text/javascript" src="{/root/gui/url}/scripts/editor/simpletooltip.js"></script>
 		    </xsl:when>
             <xsl:otherwise>
@@ -111,6 +113,7 @@
 							<input class="md" type="hidden" name="showvalidationerrors" value="true"/> 
 							<input class="md" type="hidden" name="currTab" value="{/root/gui/currTab}"/>
 
+                            <xsl:call-template name="geocat-hidden-inputs"/>
 							<!-- Hidden div to contains extra elements like when posting multiple keywords. -->
 							<div id="hiddenFormElements" style="display:none;"/>
 							
@@ -143,8 +146,9 @@
 									</xsl:call-template>
 								</td></tr>
 							</table>
+                            <xsl:call-template name="xlinkSelector"/>
 						</form>
-						
+
 						<div id="validationReport" class="content" style="display:none;"/>
 						<div id="shortcutHelp" class="content" style="display:none;">
 							<xsl:copy-of select="/root/gui/strings/helpShortcutsEditor"/>

@@ -11,7 +11,8 @@
 						    xmlns:xlink="http://www.w3.org/1999/xlink"
 						    xmlns:java="java:org.fao.geonet.util.XslUtil"
 						    xmlns:geonet="http://www.fao.org/geonetwork"
-						    xmlns:xalan = "http://xml.apache.org/xalan">
+						    xmlns:xalan = "http://xml.apache.org/xalan"
+						    exclude-result-prefixes="java xalan">
 
 	<xsl:template match="@*|node()">
 		<xsl:copy>

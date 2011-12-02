@@ -168,7 +168,7 @@ minification {
     jsFiles(dir: "$scripts/editor", 
       includes: [
         'app.CRSSelectionPanel.js','app.KeywordSelectionPanel.js','app.LinkedMetadataSelectionPanel.js','/LogoSelectionPanel.js',
-        'app.GeoPublisherPanel.js','app.SearchField.js','csw.SearchTools.js','metadata-editor.js','metadata-show.js',
+        'app.GeoPublisherPanel.js','app.SearchField.js','csw.SearchTools.js','metadata-editor.js','metadata-geocat-editor.js','metadata-show.js',
         'simpletooltip.js','tooltip.js','tooltip-manager.js']))
 
   js(

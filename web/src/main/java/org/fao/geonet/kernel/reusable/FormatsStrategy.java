@@ -66,6 +66,7 @@ public final class FormatsStrategy extends ReplacementStrategy
     public FormatsStrategy(Dbms dbms, String appPath, String baseURL, String currentLocale, SerialFactory serialFactory)
     {
         this._serialFactory = serialFactory;
+        
         this._dbms = dbms;
         this._styleSheet = appPath + Utils.XSL_REUSABLE_OBJECT_DATA_XSL;
         this._currentLocale = currentLocale;

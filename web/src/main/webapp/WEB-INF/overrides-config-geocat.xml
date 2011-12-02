@@ -185,6 +185,8 @@
     <file name=".*/WEB-INF/config-gui.xml">
         <replaceAtt xpath="client" attName="url" value="geocat"/>
         <replaceAtt xpath="client" attName="parameters"/>
+        <removeXML xpath="editor-geopublisher"/>
+        <removeXML xpath="compute-extent-from-keyword"/>
         <addXml xpath="">
             <geoserver.url>http://${wfs.host}:${wfs.port}/geoserver</geoserver.url>
         </addXml>
