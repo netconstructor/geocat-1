@@ -9,7 +9,7 @@ allprojects {
 configure(subprojects.findAll {it.name != 'web-client' && it.name != 'schematrons'}) {
   apply plugin: 'java'
   apply plugin: 'eclipse'
-
+  
   // Note:  All project definitions are in this file exception for web and web-client.  
   // Those build files the build.gradle files in the web and web-client directories
 

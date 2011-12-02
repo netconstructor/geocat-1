@@ -7,9 +7,9 @@ allRules = file('rules').listFiles().findAll{it.isFile()}.collect{
 }
 rulesToPublish = ['geonetwork', 'iso', 'inspire']
 
-task cleanSchematronFiles(type:Delete) {
+task cleanSchematronFiles << {
   schemas.each {
-    delete fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml'])
+    fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml']).each{it.delete()}
   }
 }
 

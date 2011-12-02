@@ -1697,11 +1697,9 @@ function validateGM03NAME(input) {
     }
 
     if (!valid) {
-        enableSave(false);
         input.addClassName('error');
           return false;
     } else {
-        enableSave(true);
         input.removeClassName('error');
         return true;
     }

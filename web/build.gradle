@@ -126,7 +126,7 @@ clean.dependsOn cleanMinified
 minification {
   js(
     minifyGeocat,
-    minifyGeocatFile, 
+    minifiedGeocatFile, 
     jsFiles(dir: "$scripts", includes: ['geocat.js','searchTools.js']))
 
   js(

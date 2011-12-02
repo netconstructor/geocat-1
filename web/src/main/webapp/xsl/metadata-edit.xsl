@@ -37,7 +37,7 @@
 	
 		<xsl:call-template name="edit-header"/>
 		
-		<script type="text/javascript" src="{/root/gui/url}/scripts/ext/locale/ext-lang-{/root/gui/language}.js"/>
+		<script type="text/javascript" src="{/root/gui/url}/scripts/ext/locale/ext-lang-{substring(/root/gui/language,1,2)}.js"/>
 		<script type="text/javascript" src="{/root/gui/url}/scripts/core/kernel/kernel.js"/>
 		<script type="text/javascript" src="{/root/gui/url}/scripts/webtoolkit.aim.js"/>
 		<script type="text/javascript">
@@ -108,7 +108,7 @@
 							<input class="md" type="hidden" name="position" value="-1"/>
 							<!-- showvalidationerrors is only set to true when 'Check' is 
 							     pressed - default is false -->
-							<input class="md" type="hidden" name="showvalidationerrors" value="{/root/request/showvalidationerrors}"/> 
+							<input class="md" type="hidden" name="showvalidationerrors" value="true"/> 
 							<input class="md" type="hidden" name="currTab" value="{/root/gui/currTab}"/>
 
 							<!-- Hidden div to contains extra elements like when posting multiple keywords. -->
