@@ -5,8 +5,7 @@ env=System.getProperty('env', 'dev')
 
 // the below is for 'normal' geonetwork build system
 // processResources.dependsOn project(":schematrons").publishAll
-processResources.dependsOn project(":schematrons").publishAll
-clean.dependsOn project(":schematrons").cleanSchematronFiles
+// clean.dependsOn project(":schematrons").cleanSchematronFiles
 
 jar {
   enabled = false

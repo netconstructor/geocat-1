@@ -18,8 +18,8 @@ task publishAll{
 }
 rulesToPublish.each { rule ->
   task ("publish"+rule.capitalize()) {
-    inputs.file rulesInputFile(rules)
-    inputs.files fileTree(dir: "rules/loc", includes: "**/${locFileName(rule)}")
+    inputs.file rulesInputFile(rule)
+    inputs.files fileTree(dir: "rules/loc", include: "**/${locFileName(rule)}")
     schemas.each {
       outputs.files fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml'])
     }
@@ -37,7 +37,6 @@ rulesToPublish.each { rule ->
 }
 
 def rulesInputFile(rules) {return file("rules/schematron-rules-${rules}.sch")}
-def rulesOutputFile(rules) {return file("$schema/schematron-rules-${rules}.xsl")}
 
 def compileRules(rules) {
   ant.xslt(
@@ -56,10 +55,10 @@ def locFileName(rules) {return "schematron-rules-${rules}.xml"}
 def publish(rules, schema) {
   logger.info("Copy schematron $rules XSLT to $schema schema.")
   def from = rulesInputFile(rules)
-  def to = rulesOutputFile(rules)
+  def to = file("$schema/schematron-rules-${rules}.xsl")
   to << from.bytes
   
-  def defaultLocFile = file("rules/loc/$defaultLang/$locFileName").bytes
+  def defaultLocFile = file("rules/loc/$defaultLang/${locFileName(rules)}").bytes
   file("rules/loc").listFiles().each { locDir ->
     def toFile = file("$schema/loc/${locDir.name}/${locFileName(rules)}")
     def fromFile = file("$locDir/${locFileName(rules)}")
