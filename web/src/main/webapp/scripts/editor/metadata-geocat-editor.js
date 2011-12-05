@@ -9,30 +9,79 @@ function createNewExtent() {
 }
 
 function submitXLink() {
-    // Move xlink element to mainForm before submit
-    var el = Ext.get("keywordList").select("input.href");
-    var hiddenFormElements = Ext.get("hiddenFormElements");
-    el.each(function(item) {
-        hiddenFormElements.insertFirst(item);
-    });
-
-    // Check xlink exist
-    // FIXME : should check only non empty one and selected
-    if (($('href') == undefined || $('href').value == '') &&
-                  ($('href_1') == undefined || $('href_1').value == '')) {
+    if (xlinks.length == 0 || xlinks[0].href == null) {
         alert(translate("noXlink"));
         return;
     }
-
-    var hrefElem = $('href')
-    var href = hrefElem.value;
-    if (href.contains("&&")) {
-        hrefElem.value = href.replace("&&", "&")
+    
+    if(modalBox) {
+      modalBox.hide();
     }
-    href = escape(hrefElem.value);
-    // Submit form
-    doNewElementAction(dialogRequest.action,dialogRequest.ref,dialogRequest.name,dialogRequest.id,dialogRequest.replacement,dialogRequest.max, 'href='+href);
-    modalBox.hide();
+    disableEditForm();
+    var eBusy = $('editorBusy');
+		if (eBusy) eBusy.show();
+		
+    var metadataId = document.mainForm.id.value;
+    var thisElement = $(dialogRequest.id);
+    doXLinkNewElementAjax(xlinks.length-1,metadataId,thisElement);
+}
+
+function doXLinkNewElementAjax(index, metadataId, thisElement) {
+    var href = escape(xlinks[index].href);
+    var pars = "&id=" + metadataId + "&ref=" + dialogRequest.ref + "&name=" + dialogRequest.name + "&href="+href;
+
+    var myAjax = new Ajax.Request(
+    getGNServiceURL(dialogRequest.action),
+    {
+        method: 'get',
+        parameters: pars,
+        onSuccess: function(req) {
+            if (index == 0) {
+                var eBusy = $('editorBusy');
+                if (eBusy) eBusy.hide();
+                $('editorOverlay').setStyle({display: "none"});
+                // Init map if spatial extent editing - usually bounding box or bounding polygon
+                if (dialogRequest.name == 'gmd:geographicElement' || dialogRequest.name == 'gmd:polygon') {
+                  extentMap.initMapDiv();
+                }
+
+                //initCalendar();
+
+                // Check elements
+                validateMetadataFields();
+
+                setBunload(true);
+                // reset warning for window destroy
+            } else {
+                doXLinkNewElementAjax(index - 1,metadataId,thisElement);
+            }
+
+            var html = req.responseText;
+            
+            var what = index == 0 ? dialogRequest.replacement : 'add';
+            if (what == 'replace') {
+                thisElement.replace(html);
+            } else if (what == 'add') {
+                thisElement.insert({
+                    'after': html
+                });
+                setAddControls(thisElement.next(), orElement);
+            } else {
+                alert("doNewElementAjax: invalid what: " + what + " should be replace or add.");
+            }
+
+        },
+        onFailure: function(req) {
+            var eBusy = $('editorBusy');
+            if (eBusy) eBusy.hide();
+
+            alert(translate("errorAddElement") + name + translate("errorFromDoc")
+                  + " / status " + req.status + " text: " + req.statusText + " - " + translate("tryAgain"));
+            setBunload(true);
+            // reset warning for window destroy
+        }
+    }
+    );
 }
 
 /**
@@ -134,13 +183,11 @@ XLink.prototype.title = null;
  * XLink href
  */
 XLink.prototype.href = null;
-XLink.prototype.set = function() {
-    $("href").value = this.href;
-};
 
 Event.observe(window, 'load',
 function() {
     xl = new XLink();
+    xlinks = [xl];
 });
 
 var mode = null;
@@ -237,7 +284,6 @@ function updateXLink(text, li) {
         extentTypeCode($("extent.type.code").value);
         extentSetFormat($("extent.format").value);
     }
-    xl.set();
 }
 
 /**
@@ -258,8 +304,6 @@ function contactSetRole(role) {
         xl.href = xl.href.replace(/&role=.*/i, add);
         else
         xl.href += add;
-
-        xl.set();
     }
 }
 
@@ -379,8 +423,6 @@ function extentTypeCode(code) {
             xl.href = xl.href.replace(/&extentTypeCode=[^&]*/i, add);
         } else
         xl.href += add;
-
-        xl.set();
     }
 }
 
@@ -398,102 +440,15 @@ function extentSetFormat(code) {
             xl.href = xl.href.replace(/&format=[^&]*/i, add);
         } else
         xl.href += add;
-
-        xl.set();
-
     }
-}
-
-/*
- *  GeoNetwork searcher Class
- */
-var GNSearcher;
-
-function initSearcher(type) {
-    var defaultParams = null;
-    if (type == "serviceTpl")
-    defaultParams = {
-        type: "service",
-        template: "y",
-        output: "simpleList"
-    };
-    else if (type == "service")
-    defaultParams = {
-        any: "",
-        type: "service",
-        template: "n",
-        output: "checkbox"
-    };
-    else if (type == "coupledResource")
-    defaultParams = {
-        any: "",
-        type: "dataset",
-        template: "n",
-        output: "radio"
-    };
-    else
-    defaultParams = {
-        any: "",
-        type: "",
-        // here you could search only for datasets using "dataset"
-        output: "simpleUuid"
-    };
-    GNSearcher = new GeoNetworkSearcher("catResults", defaultParams, "popSearcher");
-}
-
-
-/**
- * Popup for searching metadata used for linking
- * parent and child
- */
-function popSearcher(type, ref, event) {
-    if (!poped(event.element(), $("popSearcher")))
-    return;
-
-    initSearcher(type);
-    GNSearcher.target = ref;
-}
-
-/**
- *  ModalBox for searching metadata used for linking
- *  dataset and service
- */
-function displaySearchBox(type, boxTitle, ref) {
-    $('mdsButton').style.display = 'none';
-    $('mddButton').style.display = 'none';
-    $('mddInfo').style.display = 'none';
-    $('createService').style.display = 'none';
-    $('scopedDesc').style.display = 'none';
-    $('createDataset').style.display = 'none';
-
-    if (type == "service") {
-        $('mdsButton').style.display = 'block';
-        $('mddInfo').style.display = 'block';
-        $('createService').style.display = 'block';
-        $('scopedDesc').style.display = 'block';
-    } else if (type == "dataset") {
-        $('createDataset').style.display = 'block';
-    } else if (type == "coupledResource") {
-        $('createDataset').style.display = 'block';
-        $('mddButton').style.display = 'block';
-        $('scopedDesc').style.display = 'block';
-    }
-
-    displayModalBox('popSearcher', boxTitle);
-
-    initSearcher(type);
-
-    if (type == "dataset" || type == "parentIdentifier")
-    GNSearcher.target = ref;
-
-    return false;
 }
 
 function displayXLinkSearchBox(ref, name, action, id, replacement, max) {
     // Clean href element on each popup init in order
     // to avoid mix of elements.
-    document.mainForm.href.value = "";
-
+    xl.href = null;
+    xlinks = [xl];
+    
     // store the variables of the request for use by the Create button
     dialogRequest.action = action;
     dialogRequest.ref = ref;
@@ -816,26 +771,24 @@ var keywordSelectionWindow;
 function xlinkShowKeywordSelectionPanel(ref, name, id) {
     if (!keywordSelectionWindow) {
         var port = window.location.port === "" ? "": ':' + window.location.port;
-        var xlinkTemplate = new Ext.Template('<input value="local://xml.keyword.get?thesaurus={thesaurus}&amp;id={uri}" id="href_{count}" name="href_{count}" type="hidden"/>').compile();
         var keywordSelectionPanel = new app.KeywordSelectionPanel({
             createKeyword: function() {
                 doNewElementAction('/geonetwork/srv/eng/metadata.elem.add', ref, name, id);
             },
             listeners: {
                 keywordselected: function(panel, keywords) {
-                    var hiddenFormElements = Ext.get("hiddenFormElements");
+                    xlinks = [];
+                    
                     var count = 2;
 
                     var store = panel.itemSelector.toMultiselect.store;
                     store.each(function(record) {
-                        var uri = escape(record.get("uri"));
-                        var thesaurus = escape(record.get("thesaurus"));
-                        xlinkTemplate.append(hiddenFormElements, {
-                            thesaurus: thesaurus,
-                            uri: uri,
-                            count: count
-                        });
-                        count += 1;
+                        var uri = record.get("uri");
+                        var thesaurus = record.get("thesaurus");
+                        var xlink = new XLink();
+
+                        xlink.href = "local://che.keyword.get?thesaurus="+thesaurus+"&id="+uri;
+                        xlinks.push(xlink);
                     });
 
 
@@ -853,6 +806,8 @@ function xlinkShowKeywordSelectionPanel(ref, name, id) {
             items: keywordSelectionPanel,
             closeAction: 'hide'
         });
+    } else {
+      keywordSelectionWindow.items.get(0).itemSelector.toMultiselect.store.data.clear();
     }
 
     keywordSelectionWindow.items.get(0).setRef(ref);

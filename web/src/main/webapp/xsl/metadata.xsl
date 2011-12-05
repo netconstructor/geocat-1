@@ -639,19 +639,19 @@
 				<xsl:choose>
 					<!-- place +/x because schema insists ie. next element is geonet:child -->
 					<xsl:when test="$newBrother/* and not($newBrother/*/geonet:choose) and $nextBrother/@prefix=''">
-						<xsl:value-of select="concat('javascript:', $function, '(',../geonet:element/@ref,',',$apos,$nextBrother/@name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,',',$apos,'add',$apos,',',$max,');')"/>
+						<xsl:value-of select="concat('javascript:', $function, '(',../geonet:element/@ref,',',$apos,$nextBrother/@name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,',',$apos,'add',$apos,',',$max,',',1,');')"/>
 					</xsl:when>
 					<xsl:when test="$newBrother/* and not($newBrother/*/geonet:choose)">
-		                <xsl:value-of select="concat('javascript:', $function, '(',../geonet:element/@ref,',',$apos,$nextBrother/@prefix,':',$nextBrother/@name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,',',$apos,'add',$apos,',',$max,');')"/>
+		                <xsl:value-of select="concat('javascript:', $function, '(',../geonet:element/@ref,',',$apos,$nextBrother/@prefix,':',$nextBrother/@name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,',',$apos,'add',$apos,',',$max,',',2,');')"/>
 					</xsl:when>
 					<!-- place optional +/x for use when re-ordering etc -->
 		            <xsl:when test="geonet:element/@add='true' and name($nextBrother)=name(.)">
-		            	<xsl:value-of select="concat('javascript:', $function, '(',../geonet:element/@ref,',',$apos,$nextBrother/@name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,',',$apos,'add',$apos,',',$max,');!OPTIONAL')"/>
+		            	<xsl:value-of select="concat('javascript:', $function, '(',../geonet:element/@ref,',',$apos,$nextBrother/@name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,',',$apos,'add',$apos,',',$max,',',3,');!OPTIONAL')"/>
 		            </xsl:when>
 					<!-- place +/x because schema insists but no geonet:child nextBrother 
 		                 this case occurs in the javascript handling of the +/+ -->
 		            <xsl:when test="geonet:element/@add='true' and not($newBrother/*/geonet:choose)">
-		            	<xsl:value-of select="concat('javascript:', $function, '(',geonet:element/@parent,',',$apos,$name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,',',$apos,'add',$apos,',',$max,');')"/>
+		            	<xsl:value-of select="concat('javascript:', $function, '(',geonet:element/@parent,',',$apos,$name,$apos,',',$apos,'/geonetwork/srv/eng/metadata.xlink.add',$apos,',',$apos,$id,$apos,',',$apos,'add',$apos,',',$max,',',4,');')"/>
 		            </xsl:when>
 				</xsl:choose>
 			</xsl:when>

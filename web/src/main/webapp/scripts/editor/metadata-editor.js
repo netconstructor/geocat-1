@@ -413,7 +413,7 @@ function doNewElementAjax(action, ref, name, child, id, what, max, orElement, ex
 					thisElement.insert({'before':html});
 					setAddControls(thisElement.previous(), orElement);
 				} else {
-					alert("doNewElementAjax: invalid what: " + what + " should be one of replace, after or before.");
+					alert("doNewElementAjax: invalid what: " + what + " should be one of replace, add, after or before.");
 				}
 
 				// Init map if spatial extent editing - usually bounding box or bounding polygon

@@ -23,13 +23,13 @@
          </xsl:variable>
 
 		<!-- Use for adding xlink -->
-		<!-- 
+		
 		<input type="hidden" id="xlink.schema" name="schema" value="{geonet:info/schema}" />
-		<input type="hidden" id="xlink.type" name="type" value="simple" />
-		<input type="hidden" id="xlink.show" name="show" value="embed" />
-		<input type="hidden" id="xlink.role" name="role" value="embed" />
+		<!-- <input type="hidden" id="xlink.role" name="role" value="embed" />
+		    <input type="hidden" id="href" name="href" value="" />
 		<input type="hidden" id="xlink.geom" name="geom" value="none" />
-		<input type="hidden" id="href" name="href" value="" />
+		<input type="hidden" id="xlink.show" name="show" value="embed" />
+		<input type="hidden" id="xlink.type" name="type" value="simple" />
 		<input type="hidden" id="keyword.locales" name="keyword.locales"
 			value="{$localesValue}" /> -->
 		<!-- Hidden div to contains extra elements like when posting multiple keywords. -->
