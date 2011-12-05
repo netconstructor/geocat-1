@@ -177,5 +177,6 @@
     <boolean value="false" context="gmd:extentTypeCode">Exclude</boolean>
     <xlink.new js="true">New</xlink.new>
     <xlink.newGeographic>New (Geographic only)</xlink.newGeographic>
+    <noXlink js="true">Invalid selected element.</noXlink>
 
 </strings>

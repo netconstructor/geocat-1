@@ -169,5 +169,6 @@ Ihr geocat.ch-Team</msg>
     <boolean value="false" context="gmd:extentTypeCode">Ausschliessend</boolean>
     <xlink.new js="true">Neu</xlink.new>
     <xlink.newGeographic>Neu (nur geografisch)</xlink.newGeographic>
+    <noXlink js="true">Das selektierte Element ist ungültig.</noXlink>
     
 </strings>    

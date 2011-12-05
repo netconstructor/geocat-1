@@ -3,7 +3,7 @@ function createNewExtent() {
     var inclusion = Ext.get('extent.type.code').getValue();
 
     var loc = window.location;
-    $('href').value = loc.protocol + '//' + loc.host + Env.locService + '/xml.extent.get?wfs=default&amp;typename=gn:non_validated&amp;id=createNewExtent&amp;format=' + format + '&amp;extentTypeCode=' + inclusion;
+    $('href').value = loc.protocol + '//' + loc.host + Env.locService + '/xml.extent.get?wfs=default&typename=gn:non_validated&id=createNewExtent&format=' + format + '&extentTypeCode=' + inclusion;
 
     doAction('metadata.xlink.add');
 }
@@ -18,14 +18,14 @@ function submitXLink() {
 
     // Check xlink exist
     // FIXME : should check only non empty one and selected
-    if (($('href') == undefined || $('href').value == '') & amp; & amp;
-    ($('href_1') == undefined || $('href_1').value == '')) {
-        alert("<xsl:value-of select=" / root / gui / strings / noXlink "/>");
+    if (($('href') == undefined || $('href').value == '') &&
+                  ($('href_1') == undefined || $('href_1').value == '')) {
+        alert(translate("noXlink"));
         return;
     }
 
-    if ($('href').value.contains("&amp;&amp;")) {
-        $('href').value = $('href').value.replace("&amp;&amp;", "&amp;")
+    if ($('href').value.contains("&&")) {
+        $('href').value = $('href').value.replace("&&", "&")
     }
     // Submit form
     doAction('metadata.xlink.add');
@@ -39,7 +39,7 @@ function validateGM03Distance(input, nullValue, noDecimals) {
     if (validateNumber(input, nullValue, noDecimals)) {
 
         var value = Number(input.value);
-        if (value & lt; 0.00 || value & gt; 9999999999.99) {
+        if (value < 0.00 || value > 9999999999.99) {
             enableSave(false);
             input.addClassName('error');
             return false;

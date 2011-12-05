@@ -168,5 +168,6 @@ Votre équipe geocat.ch</msg>
     <boolean value="false" context="gmd:extentTypeCode">Exclusion</boolean>
     <xlink.new js="true">Nouveau</xlink.new>
     <xlink.newGeographic>Nouvelle étendue géographique</xlink.newGeographic>
+    <noXlink js="true">Elément choisi non valide.</noXlink>
 
 </strings>
