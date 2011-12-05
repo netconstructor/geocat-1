@@ -1,3 +1,57 @@
+function createNewExtent() {
+    var format = Ext.get('extent.format').getValue();
+    var inclusion = Ext.get('extent.type.code').getValue();
+
+    var loc = window.location;
+    $('href').value = loc.protocol + '//' + loc.host + Env.locService + '/xml.extent.get?wfs=default&amp;typename=gn:non_validated&amp;id=createNewExtent&amp;format=' + format + '&amp;extentTypeCode=' + inclusion;
+
+    doAction('metadata.xlink.add');
+}
+
+function submitXLink() {
+    // Move xlink element to mainForm before submit
+    var el = Ext.get("keywordList").select("input.href");
+    var hiddenFormElements = Ext.get("hiddenFormElements");
+    el.each(function(item) {
+        hiddenFormElements.insertFirst(item);
+    });
+
+    // Check xlink exist
+    // FIXME : should check only non empty one and selected
+    if (($('href') == undefined || $('href').value == '') & amp; & amp;
+    ($('href_1') == undefined || $('href_1').value == '')) {
+        alert("<xsl:value-of select=" / root / gui / strings / noXlink "/>");
+        return;
+    }
+
+    if ($('href').value.contains("&amp;&amp;")) {
+        $('href').value = $('href').value.replace("&amp;&amp;", "&amp;")
+    }
+    // Submit form
+    doAction('metadata.xlink.add');
+}
+
+/**
+ * Check that GM03 distance are between 0.00 .. 9999999999.99
+ */
+function validateGM03Distance(input, nullValue, noDecimals) {
+
+    if (validateNumber(input, nullValue, noDecimals)) {
+
+        var value = Number(input.value);
+        if (value & lt; 0.00 || value & gt; 9999999999.99) {
+            enableSave(false);
+            input.addClassName('error');
+            return false;
+        } else {
+            enableSave(true);
+            input.removeClassName('error');
+            return true;
+        }
+    } else
+    return false;
+
+}
 /**
  * Validate Interlis NAME
  * (composed of letters and digits, starting with a letter, ili-Refmanual, p. 23)
@@ -11,17 +65,17 @@ function validateGM03NAME(input) {
     if (text.length > 0) {
         var firstChar = text.charAt(0);
         if (validChars.indexOf(firstChar) == -1)
-          valid = false;
+        valid = false;
     }
     for (i = 0; i < text.length; i++) {
         character = text.charAt(i);
         if (chars.indexOf(character) == -1)
-          valid = false;
+        valid = false;
     }
 
     if (!valid) {
         input.addClassName('error');
-          return false;
+        return false;
     } else {
         input.removeClassName('error');
         return true;
@@ -29,44 +83,43 @@ function validateGM03NAME(input) {
 }
 
 /**
- * Editor helper
+ * XLink Editor functions 
  */
-
-function XLink () {
+function XLink() {
     new Ajax.Autocompleter("xlink-s-contact",
-        "xll",
-        "xml.user.list?profile=Shared&sortByValidated=true",
-        {
-            method:'get',
-            paramName: 'name',
-            afterUpdateElement: updateXLink,
-            indicator: 'xlink.contact.indicator'
-        }
+    "xll",
+    "shared.user.list?sortByValidated=true",
+    {
+        method: 'get',
+        paramName: 'name',
+        afterUpdateElement: updateXLink,
+        indicator: 'xlink.contact.indicator'
+    }
     );
 
     new Ajax.Autocompleter("xlink-s-format",
-        "xll",
-        "xml.format.list?order=validated",
-        {
-            method:'get',
-            paramName: 'name',
-            afterUpdateElement: updateXLink,
-            indicator: 'xlink.format.indicator'
-        }
+    "xll",
+    "xml.format.list?order=validated",
+    {
+        method: 'get',
+        paramName: 'name',
+        afterUpdateElement: updateXLink,
+        indicator: 'xlink.format.indicator'
+    }
     );
 
     // _extent_acc made global in order to access it from updateExtentAutocompleter()
     window._acc = new Ajax.Autocompleter("xlink-s-extent",
-        "xll",
-        "extent.search.list?numResults=25&property=desc&method=loose&format=gmd_bbox",
-        {
-            method:'get',
-            frequency: 1,
-            paramName: 'pattern',
-            parameters: '',
-            afterUpdateElement: updateXLink,
-            indicator: 'xlink.extent.indicator'
-        }
+    "xll",
+    "extent.search.list?numResults=25&property=desc&method=loose&format=gmd_bbox",
+    {
+        method: 'get',
+        frequency: 1,
+        paramName: 'pattern',
+        parameters: '',
+        afterUpdateElement: updateXLink,
+        indicator: 'xlink.extent.indicator'
+    }
     );
 }
 /**
@@ -77,11 +130,12 @@ XLink.prototype.title = null;
  * XLink href
  */
 XLink.prototype.href = null;
-XLink.prototype.set = function () {
-	$("href").value = this.href;
+XLink.prototype.set = function() {
+    $("href").value = this.href;
 };
 
-Event.observe(window, 'load', function() {
+Event.observe(window, 'load',
+function() {
     xl = new XLink();
 });
 
@@ -99,41 +153,41 @@ var dialogRequest = {
  * xlink element to the metadata. This will set up an autocompletion
  * list on search action.
  */
-function popXLink (action, ref, name, id){
+function popXLink(action, ref, name, id) {
     /**
      * Display popup according to ref element.
      * Contact could be gmd:pointOfContact, gmd:contact, ...
      */
-	if (name.toUpperCase().indexOf("FORMAT") != -1) {
-		/**
+    if (name.toUpperCase().indexOf("FORMAT") != -1) {
+        /**
 		 * Distribution formats allow selection of
 		 * a format defined in ...
 		 */
-		mode = "FORMAT";
-		formatInit();
-	} else if (name.toUpperCase().indexOf("CONTACT") != -1 ||
-			name.toUpperCase().indexOf("PROCESSOR") != -1 ||
-			name.toUpperCase().indexOf("PARTY") != -1 ||
-			name.toUpperCase().indexOf("SOURCE") != -1
-			) {
-		mode = "CONTACT";
-		contactInit();
-	} else if (name.toUpperCase().indexOf("KEYWORD") != -1) {
-		/**
+        mode = "FORMAT";
+        formatInit();
+    } else if (name.toUpperCase().indexOf("CONTACT") != -1 ||
+    name.toUpperCase().indexOf("PROCESSOR") != -1 ||
+    name.toUpperCase().indexOf("PARTY") != -1 ||
+    name.toUpperCase().indexOf("SOURCE") != -1
+    ) {
+        mode = "CONTACT";
+        contactInit();
+    } else if (name.toUpperCase().indexOf("KEYWORD") != -1) {
+        /**
 		 * Keywords allow selection of a keyword in
 		 * a thesaurus registered in the catalogue.
 		 */
-		mode = "KEYWORD";
-		keywordInit();
-	} else {
-		/**
+        mode = "KEYWORD";
+        keywordInit();
+    } else {
+        /**
 		 * Extents allow selection of a geotag.
 		 *
 		 */
         mode = "EXTENTS";
         extentInit(name);
 
-	}
+    }
 }
 
 /**
@@ -146,58 +200,58 @@ function popXLink (action, ref, name, id){
  * </ul>
  *
  */
-function updateXLink (text, li) {
+function updateXLink(text, li) {
 
-	if (li != null) {
-		xl.title = li.innerHTML;
-		// According to namespace support in different browsers
-		var uri;
+    if (li != null) {
+        xl.title = li.innerHTML;
+        // According to namespace support in different browsers
+        var uri;
 
-		if (li.getAttributeNS) {
-        	uri = li.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+        if (li.getAttributeNS) {
+            uri = li.getAttributeNS("http://www.w3.org/1999/xlink", "href");
         }
 
-		if (uri == '') {
-        	uri = li.getAttribute("xlink:href");
+        if (uri == '') {
+            uri = li.getAttribute("xlink:href");
         }
 
-		if (uri == '' || uri == undefined)
-			uri = li.getAttributeNode("xlink:href").value;
-			
-		// TODO : Check on FF2, and more test on IE
-		// Tested on FF3 and IE6
-		xl.href = uri;
-	}
+        if (uri == '' || uri == undefined)
+        uri = li.getAttributeNode("xlink:href").value;
 
-	// TODO : multiple role
-	if (mode == "CONTACT") {
-		xl.href += ("&schema=" + $("xlink.schema").value);
-		contactSetRole ($("contact.role").value);
-	} else if (mode == "EXTENTS"){
-        extentTypeCode ($("extent.type.code").value);
-        extentSetFormat ($("extent.format").value);
+        // TODO : Check on FF2, and more test on IE
+        // Tested on FF3 and IE6
+        xl.href = uri;
     }
-	xl.set ();
+
+    // TODO : multiple role
+    if (mode == "CONTACT") {
+        xl.href += ("&schema=" + $("xlink.schema").value);
+        contactSetRole($("contact.role").value);
+    } else if (mode == "EXTENTS") {
+        extentTypeCode($("extent.type.code").value);
+        extentSetFormat($("extent.format").value);
+    }
+    xl.set();
 }
 
 /**
  * Contacts allow search in the contact directory
  * and selection of a role for the contact.
  */
-function contactInit () {
-	$("popXLink.contact").style.display = "block";
+function contactInit() {
+    $("popXLink.contact").style.display = "block";
     $("xlink-s-contact").value = "";
-	$("contact.role").selectedIndex = 0;
+    $("contact.role").selectedIndex = 0;
 }
 
-function contactSetRole (role) {
+function contactSetRole(role) {
     if (role != "") {
         var add = "&role=" + role;
-        if (!xl.href) xl.href='';
+        if (!xl.href) xl.href = '';
         if (xl.href.indexOf("role") != -1)
-            xl.href = xl.href.replace (/&role=.*/i, add);
+        xl.href = xl.href.replace(/&role=.*/i, add);
         else
-            xl.href += add;
+        xl.href += add;
 
         xl.set();
     }
@@ -206,19 +260,29 @@ function contactSetRole (role) {
 /**
  * Keywords allow search in the thesaurus directory
  */
-function keywordInit () {
+function keywordInit() {
     $("popXLink.keyword").style.display = "block";
     $("keywordList").style.display = "block";
 
     // remove the "xlink-s" text input
-/*
+    /*
     Ext.get("popXLink").first("#xlink-s").remove();
 */
     // insert divs for the text field and button
     Ext.DomHelper.insertFirst("popXLink.keyword", {
-        tag: "div", id: "pop-kw", children: [
-            {tag: "div", id: "pop-kw-txt", style: "float:left;margin-right:3px"},
-            {tag: "div", id: "pop-kw-btn", style: "float:left;margin-right:3px;"}
+        tag: "div",
+        id: "pop-kw",
+        children: [
+        {
+            tag: "div",
+            id: "pop-kw-txt",
+            style: "float:left;margin-right:3px"
+        },
+        {
+            tag: "div",
+            id: "pop-kw-btn",
+            style: "float:left;margin-right:3px;"
+        }
         ]
     });
 
@@ -230,7 +294,7 @@ function keywordInit () {
 
     // search button
     new Ext.Button({
-        text: translateStrings("search"),
+        text: translate("search"),
         id: "pop-kw-btn",
         renderTo: "pop-kw-btn",
         handler: function() {
@@ -245,7 +309,7 @@ function keywordInit () {
                     "pKeyword": tf.getValue()
                 },
                 success: function(response) {
-                	var el = Ext.get("keywordList").select(".href");
+                    var el = Ext.get("keywordList").select(".href");
 
                     if (el) {
                         el.remove();
@@ -259,7 +323,7 @@ function keywordInit () {
                 },
                 failure: function() {
                     Ext.get("xlink.keyword.indicator").hide();
-                    alert(translateStrings("ajaxRequestFailed"));
+                    alert(translate("ajaxRequestFailed"));
                 }
             });
         }
@@ -269,7 +333,7 @@ function keywordInit () {
 /**
  * Format allow search in the format table
  */
-function formatInit () {
+function formatInit() {
     $("popXLink.format").style.display = "block";
 
     $("xlink-s-format").value = "";
@@ -278,14 +342,14 @@ function formatInit () {
 /**
  * Search extents
  */
-function extentInit (name) {
-    
-    if( name == "gmd:spatialExtent" ){
+function extentInit(name) {
+
+    if (name == "gmd:spatialExtent") {
         $("extent.format").value = "gmd_spatial_extent_polygon";
     } else {
         $("extent.format").value = "gmd_complete";
     }
-    
+
     $("popXLink.extent").style.display = "block";
     $("extent.type.code").style.display = "block";
 
@@ -297,18 +361,18 @@ function extentInit (name) {
 }
 
 
-function extentTypeCode (code) {
-    if (xl.href !=null && code != "") {
+function extentTypeCode(code) {
+    if (xl.href != null && code != "") {
         var add = "&extentTypeCode=" + code;
 
-        if (xl.href.indexOf("extentTypeCode") != -1){
-            var index=xl.href.indexOf("extentTypeCode")
+        if (xl.href.indexOf("extentTypeCode") != -1) {
+            var index = xl.href.indexOf("extentTypeCode")
 
-            if( xl.href.indexOf("&",index)!= -1) add+="&"
+            if (xl.href.indexOf("&", index) != -1) add += "&"
 
-            xl.href = xl.href.replace (/&extentTypeCode=[^&]*/i, add);
-        }else
-            xl.href += add;
+            xl.href = xl.href.replace(/&extentTypeCode=[^&]*/i, add);
+        } else
+        xl.href += add;
 
         xl.set();
     }
@@ -316,21 +380,21 @@ function extentTypeCode (code) {
 
 function extentSetFormat(code) {
 
-    if (xl.href !=null && code != "") {
+    if (xl.href != null && code != "") {
 
 
-        var add = "&format="+code;
+        var add = "&format=" + code;
 
-        if (xl.href.indexOf("format") != -1){
-            var index=xl.href.indexOf("format")
-            if( xl.href.indexOf("&",index)!= -1) add+="&"
+        if (xl.href.indexOf("format") != -1) {
+            var index = xl.href.indexOf("format")
+            if (xl.href.indexOf("&", index) != -1) add += "&"
 
-            xl.href = xl.href.replace (/&format=[^&]*/i, add);
-        }else
-            xl.href += add;
+            xl.href = xl.href.replace(/&format=[^&]*/i, add);
+        } else
+        xl.href += add;
 
         xl.set();
-        
+
     }
 }
 
@@ -341,33 +405,34 @@ var GNSearcher;
 
 function initSearcher(type) {
     var defaultParams = null;
-    if (type=="serviceTpl")
-       defaultParams = {
-                            type: "service",
-                            template:"y",
-                            output: "simpleList"
-                        };
-    else if (type=="service")
-      defaultParams = {
-                            any: "",
-                            type: "service",
-                            template:"n",
-                            output: "checkbox"
-                        };
-    else if (type=="coupledResource")
-        defaultParams = {
-                              any: "",
-                              type: "dataset",
-                              template:"n",
-                              output: "radio"
-                          };
+    if (type == "serviceTpl")
+    defaultParams = {
+        type: "service",
+        template: "y",
+        output: "simpleList"
+    };
+    else if (type == "service")
+    defaultParams = {
+        any: "",
+        type: "service",
+        template: "n",
+        output: "checkbox"
+    };
+    else if (type == "coupledResource")
+    defaultParams = {
+        any: "",
+        type: "dataset",
+        template: "n",
+        output: "radio"
+    };
     else
-        defaultParams = {
-                            any: "",
-                            type: "",        // here you could search only for datasets using "dataset"
-                            output: "simpleUuid"
-                        };
-    GNSearcher = new GeoNetworkSearcher ("catResults", defaultParams, "popSearcher");
+    defaultParams = {
+        any: "",
+        type: "",
+        // here you could search only for datasets using "dataset"
+        output: "simpleUuid"
+    };
+    GNSearcher = new GeoNetworkSearcher("catResults", defaultParams, "popSearcher");
 }
 
 
@@ -375,11 +440,11 @@ function initSearcher(type) {
  * Popup for searching metadata used for linking
  * parent and child
  */
-function popSearcher (type, ref, event){
+function popSearcher(type, ref, event) {
     if (!poped(event.element(), $("popSearcher")))
-        return;
+    return;
 
-    initSearcher (type);
+    initSearcher(type);
     GNSearcher.target = ref;
 }
 
@@ -387,7 +452,7 @@ function popSearcher (type, ref, event){
  *  ModalBox for searching metadata used for linking
  *  dataset and service
  */
-function displaySearchBox (type, boxTitle, ref){
+function displaySearchBox(type, boxTitle, ref) {
     $('mdsButton').style.display = 'none';
     $('mddButton').style.display = 'none';
     $('mddInfo').style.display = 'none';
@@ -395,67 +460,67 @@ function displaySearchBox (type, boxTitle, ref){
     $('scopedDesc').style.display = 'none';
     $('createDataset').style.display = 'none';
 
-    if (type=="service") {
+    if (type == "service") {
         $('mdsButton').style.display = 'block';
         $('mddInfo').style.display = 'block';
         $('createService').style.display = 'block';
         $('scopedDesc').style.display = 'block';
-    } else if (type=="dataset") {
-    	$('createDataset').style.display = 'block';
-    } else if (type=="coupledResource") {
-    	$('createDataset').style.display = 'block';
+    } else if (type == "dataset") {
+        $('createDataset').style.display = 'block';
+    } else if (type == "coupledResource") {
+        $('createDataset').style.display = 'block';
         $('mddButton').style.display = 'block';
         $('scopedDesc').style.display = 'block';
     }
 
     displayModalBox('popSearcher', boxTitle);
 
-    initSearcher (type);
+    initSearcher(type);
 
-    if (type=="dataset" || type=="parentIdentifier")
-        GNSearcher.target = ref;
+    if (type == "dataset" || type == "parentIdentifier")
+    GNSearcher.target = ref;
 
     return false;
 }
 
-function displayXLinkSearchBox (ref, name, action, id){
-        // Clean href element on each popup init in order
-        // to avoid mix of elements.
-        document.mainForm.href.value = "";
+function displayXLinkSearchBox(ref, name, action, id) {
+    // Clean href element on each popup init in order
+    // to avoid mix of elements.
+    document.mainForm.href.value = "";
 
-        // store the variables of the request for use by the Create button
-        dialogRequest.action = action;
-        dialogRequest.ref = ref;
-        dialogRequest.name = name;
-        dialogRequest.id = id;
+    // store the variables of the request for use by the Create button
+    dialogRequest.action = action;
+    dialogRequest.ref = ref;
+    dialogRequest.name = name;
+    dialogRequest.id = id;
 
-        // Hide optional fields (could be faster by getting els by Ext.get(id))
+    // Hide optional fields (could be faster by getting els by Ext.get(id))
     /*
         var optionalFields = ['contact.role', 'extent.format', 'extent.map'];
         $('popXLink').descendants().each(function(el) {
             if (optionalFields.indexOf(el.id) != -1) el.style.display = "none";
         });
     */
-        // Hide all form contents
-        var optionalFields = ['popXLink.contact', 'popXLink.format', 'popXLink.keyword', 'popXLink.extent'];
-        optionalFields.each(function(id) {
-            $(id).style.display = 'none';
-        });
+    // Hide all form contents
+    var optionalFields = ['popXLink.contact', 'popXLink.format', 'popXLink.keyword', 'popXLink.extent'];
+    optionalFields.each(function(id) {
+        $(id).style.display = 'none';
+    });
 
-        // there is a special create button for extents so hide extents and show common one extents can modify if desired
-        $("extent.xlink.create").style.display = "none";
-        $("common.xlink.create").style.display = "inline";
+    // there is a special create button for extents so hide extents and show common one extents can modify if desired
+    $("extent.xlink.create").style.display = "none";
+    $("common.xlink.create").style.display = "inline";
 
-        // Clean keywords result list
-        $('keywordList').innerHTML = '';
+    // Clean keywords result list
+    $('keywordList').innerHTML = '';
 
 
     if (name.toUpperCase().indexOf("KEYWORD") != -1) {
-        showKeywordSelectionPanel(ref,name,id)
+        showKeywordSelectionPanel(ref, name, id)
     } else {
-        displayModalBox('popXLink', translateStrings('searchElements'));
+        displayModalBox('popXLink', translate('searchElements'));
 
-        popXLink (action, ref, name, id);
+        popXLink(action, ref, name, id);
 
     }
     document.mainForm.ref.value = ref;
@@ -467,7 +532,7 @@ var validationReportBox;
 
 function displayModalBox(contentDivId, boxTitle) {
 
-/*
+    /*
     var el;
     el = Ext.get("popXLink").first("#xlink-s");
     if (!el) {
@@ -480,7 +545,7 @@ function displayModalBox(contentDivId, boxTitle) {
     if (el) {
         el.remove();
     }
-    el = Ext.get("mainForm").select(".href");
+    el = Ext.get("editForm").select(".href");
     if (el) {
         el.remove();
     }
@@ -500,7 +565,7 @@ function displayModalBox(contentDivId, boxTitle) {
             closeAction: 'hide',
             listeners: {
                 hide: function() {
-        			$(contentDivId).style.display = 'none';
+                    $(contentDivId).style.display = 'none';
                 }
             },
             contentEl: contentDivId
@@ -511,7 +576,7 @@ function displayModalBox(contentDivId, boxTitle) {
         modalBox.show();
         modalBox.setHeight(620);
         modalBox.setTitle(boxTitle);
-        modalBox.setWidth(Ext.get(contentDivId).getWidth()+14);
+        modalBox.setWidth(Ext.get(contentDivId).getWidth() + 14);
         modalBox.center();
     }
 
@@ -519,23 +584,24 @@ function displayModalBox(contentDivId, boxTitle) {
 
 
 function updateValidationReportVisibleRules(errorOnly) {
-	$('validationReport').descendants().each(function(el) {
-		if (el.nodeName == 'LI') {
-			if (el.getAttribute('name')=='pass' && errorOnly) {
-				el.style.display = "none";
-			} else {
-				el.style.display = "block";
-			}
-		}
+    $('validationReport').descendants().each(function(el) {
+        if (el.nodeName == 'LI') {
+            if (el.getAttribute('name') == 'pass' && errorOnly) {
+                el.style.display = "none";
+            } else {
+                el.style.display = "block";
+            }
+        }
     });
 }
 
 function displayValidationReportBox(boxTitle) {
-	contentDivId = "validationReport";
+    contentDivId = "validationReport";
     $(contentDivId).style.display = 'block';
     if (!validationReportBox) {
-    	validationReportBox = new Ext.Window({
-            title: boxTitle,	// TODO : translate
+        validationReportBox = new Ext.Window({
+            title: boxTitle,
+            // TODO : translate
             id: "validationReportBox",
             layout: 'fit',
             modal: false,
@@ -553,11 +619,12 @@ function displayValidationReportBox(boxTitle) {
         });
     }
     if (validationReportBox) {
-    	validationReportBox.show();
-    	validationReportBox.setHeight(345);
-    	validationReportBox.setWidth(Ext.get(contentDivId).getWidth());
-    	//validationReportBox.center();
-    	validationReportBox.anchorTo(Ext.getBody(), 'tr-tr');	// Align top right
+        validationReportBox.show();
+        validationReportBox.setHeight(345);
+        validationReportBox.setWidth(Ext.get(contentDivId).getWidth());
+        //validationReportBox.center();
+        validationReportBox.anchorTo(Ext.getBody(), 'tr-tr');
+        // Align top right
     }
 
 }
@@ -577,7 +644,7 @@ function initMapComponent() {
     var mapCmp = new MapComponent('extent.map', {
         displayLayertree: false,
         resizablePanel: false,
-        panelWidth: popupDimensions.width-20,
+        panelWidth: popupDimensions.width - 20,
         panelHeight: 250
     });
     drawCmp = new MapDrawComponent(mapCmp.map, {
@@ -589,12 +656,14 @@ function initMapComponent() {
         },
         onClearFeatures: updateExtentAutocompleter
     });
-    pop.style.display = 'none';   
+    pop.style.display = 'none';
 }
 function updateExtentAutocompleter() {
     if (!drawCmp) return;
-    var geom = drawCmp.writeFeature( {format:'WKT'});
-    var geomParam = geom ? "&geom=" + geom : "";
+    var geom = drawCmp.writeFeature({
+        format: 'WKT'
+    });
+    var geomParam = geom ? "&geom=" + geom: "";
     if (!window._acc) return;
     if (!window._extent_acc_initialUrl) _extent_acc_initialUrl = _acc.url;
     // Tweaks Scriptaculous Autocompleter url
@@ -623,12 +692,12 @@ var GNSearcher;
  * Set default values for the existing element in html form and
  * copy all options into object properties.
  */
-function GeoNetworkParams (options) {
+function GeoNetworkParams(options) {
     for (var option in options) {
         this.OPTIONS[option] = options[option];
         var el = document.getElementById(option);
         if (el)
-            el.value = options[option];
+        el.value = options[option];
     }
 }
 
@@ -636,20 +705,20 @@ function GeoNetworkParams (options) {
  * List of search options.
  */
 GeoNetworkParams.prototype.OPTIONS = {
-                                        hitsPerPage: 300
-                                      }
+    hitsPerPage: 300
+}
 
 /**
  * Create URL to do the search using current options according
  * to user inputs
  */
-GeoNetworkParams.prototype.get = function () {
+GeoNetworkParams.prototype.get = function() {
     var paramsUrl = "";
 
     for (var option in this.OPTIONS) {
         var el = document.getElementById(option);
         if (el)
-            this.OPTIONS[option] = document.getElementById(option).value;
+        this.OPTIONS[option] = document.getElementById(option).value;
 
         paramsUrl += option + "=" + this.OPTIONS[option] + "&";
     }
@@ -659,8 +728,9 @@ GeoNetworkParams.prototype.get = function () {
 /**
  * GeoNetwork searcher class
  */
-function GeoNetworkSearcher (resultPanelId, params, popId) {
-    this.params = new GeoNetworkParams (params); // TODO : add default values
+function GeoNetworkSearcher(resultPanelId, params, popId) {
+    this.params = new GeoNetworkParams(params);
+    // TODO : add default values
     this.resultPanel = document.getElementById(resultPanelId);
     this.panel = document.getElementById(popId);
 }
@@ -671,31 +741,31 @@ GeoNetworkSearcher.prototype.searchPanel = null;
 GeoNetworkSearcher.prototype.panel = null;
 GeoNetworkSearcher.prototype.target = null;
 GeoNetworkSearcher.prototype.DEFAULT_PARAMS = {
-                                                method : "GET",
-                                                service : "main.search.embedded"
-                                                }
+    method: "GET",
+    service: "main.search.embedded"
+}
 GeoNetworkSearcher.prototype.req = null;
 
 /**
  *
  */
-GeoNetworkSearcher.prototype.search = function () {
-    this.reset ();
+GeoNetworkSearcher.prototype.search = function() {
+    this.reset();
     this.req = new Ajax.Request(
-        this.DEFAULT_PARAMS["service"],
-        {
-            method: this.DEFAULT_PARAMS["method"],
-            parameters: this.params.get(),
-            onSuccess: this.present.bind(this),
-            onFailure: this.error.bind(this)
-        }
+    this.DEFAULT_PARAMS["service"],
+    {
+        method: this.DEFAULT_PARAMS["method"],
+        parameters: this.params.get(),
+        onSuccess: this.present.bind(this),
+        onFailure: this.error.bind(this)
+    }
     );
 }
 
 /**
  * Display results
  */
-GeoNetworkSearcher.prototype.present = function (req) {
+GeoNetworkSearcher.prototype.present = function(req) {
     this.resultPanel.innerHTML = req.responseText;
 }
 
@@ -703,7 +773,7 @@ GeoNetworkSearcher.prototype.present = function (req) {
  * Update target element,
  * and clean results.
  */
-GeoNetworkSearcher.prototype.updateTarget = function (value) {
+GeoNetworkSearcher.prototype.updateTarget = function(value) {
     document.getElementById(this.target).value = value;
     this.reset();
 }
@@ -711,15 +781,15 @@ GeoNetworkSearcher.prototype.updateTarget = function (value) {
 /**
  * Clean result and search form
  */
-GeoNetworkSearcher.prototype.reset = function () {
+GeoNetworkSearcher.prototype.reset = function() {
     this.resultPanel.innerHTML = "";
 }
 
 /**
  * On error
  */
-GeoNetworkSearcher.prototype.error = function () {
-    alert ("Error");
+GeoNetworkSearcher.prototype.error = function() {
+    alert("Error");
 }
 
 
@@ -730,44 +800,44 @@ GeoNetworkSearcher.prototype.error = function () {
 ******************************/
 
 function enableCreateAsso(enable) {
-	if (enable) {
-		$('createAsso').disabled = false;
-		$('createAssoCoupledResource').disabled = false;
-	} else {
-		var inputs = $('catResults').getElementsByTagName('input');
-		var nbchecked = 0;
-		for (var i=0; i < inputs.length; i++) {
-		    if (inputs[i].checked) {
-		    	nbchecked++;
-		    }
-		}
-		if (nbchecked == 0) {
-			$('createAsso').disabled = true ;
-			$('createAssoCoupledResource').disabled = true ;
-		}
-	}
+    if (enable) {
+        $('createAsso').disabled = false;
+        $('createAssoCoupledResource').disabled = false;
+    } else {
+        var inputs = $('catResults').getElementsByTagName('input');
+        var nbchecked = 0;
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].checked) {
+                nbchecked++;
+            }
+        }
+        if (nbchecked == 0) {
+            $('createAsso').disabled = true;
+            $('createAssoCoupledResource').disabled = true;
+        }
+    }
 }
 
 function updateCoupledResourceforServices() {
-	// Get ModalBox values
-	var ids = '';
-	var inputs = $('catResults').getElementsByTagName('input');
-	for (var i=0; i < inputs.length; i++) {
-	    var input = inputs[i];
-	    if (input.checked) {
-    		ids = input.value;
-	    }
-	}
-	var scopedName = $('scopedName').value;
+    // Get ModalBox values
+    var ids = '';
+    var inputs = $('catResults').getElementsByTagName('input');
+    for (var i = 0; i < inputs.length; i++) {
+        var input = inputs[i];
+        if (input.checked) {
+            ids = input.value;
+        }
+    }
+    var scopedName = $('scopedName').value;
 
-	// update values in edit form.
-	var input = document.getElementById('datasetIds');
-	input.value = ids;
+    // update values in edit form.
+    var input = document.getElementById('datasetIds');
+    input.value = ids;
 
-	var srvScopedName = document.getElementById('srvScopedName');
-	srvScopedName.value = scopedName;
+    var srvScopedName = document.getElementById('srvScopedName');
+    srvScopedName.value = scopedName;
 
-	doAction(Env.locService+'/metadata.services.attachDataset');
+    doAction(Env.locService + '/metadata.services.attachDataset');
 }
 
 function updateMDforServices() {
@@ -780,48 +850,48 @@ function updateMDforServices() {
         var servicesAllowed = true;
         var services = '';
 
-        for (var i=0; i < edits.length; i++) {
+        for (var i = 0; i < edits.length; i++) {
             var edit = edits[i];
             var related_check = $(edit.id.replace("_edit", ""));
 
             if ((edit.value == 'false') && (related_check.checked)) {
-                    Ext.MessageBox.alert(updateDatasetTitle, updateDatasetMsg);
-                    servicesAllowed = false;
-                    break;
+                Ext.MessageBox.alert(updateDatasetTitle, updateDatasetMsg);
+                servicesAllowed = false;
+                break;
             }
         }
 
         if (!servicesAllowed) return;
     }
-    
-	// Get ModalBox values
-	var ids = '';
-	var inputs = $('catResults').getElementsByTagName('input');
-	var first = true;
-	for (var i=0; i < inputs.length; i++) {
-	    var input = inputs[i];
 
-	    if (input.checked) {
+    // Get ModalBox values
+    var ids = '';
+    var inputs = $('catResults').getElementsByTagName('input');
+    var first = true;
+    for (var i = 0; i < inputs.length; i++) {
+        var input = inputs[i];
+
+        if (input.checked) {
             var edit = $(input.id + "_edit");
-                if (first) {
-                    ids = input.value;
-                    first = false;
-                } else
-                    ids = ids + ','+input.value;
-	    }
-	}
-    
-	// update values in edit form.
-	var srvInput = document.getElementById('srvIds');
-	srvInput.value = ids;
+            if (first) {
+                ids = input.value;
+                first = false;
+            } else
+            ids = ids + ',' + input.value;
+        }
+    }
 
-	var updateMDD = document.getElementById('upMdd');
-	updateMDD.value = updateMddCheckbox;
+    // update values in edit form.
+    var srvInput = document.getElementById('srvIds');
+    srvInput.value = ids;
 
-	var srvScopedName = document.getElementById('srvScopedName');
-	srvScopedName.value = scopedName;
+    var updateMDD = document.getElementById('upMdd');
+    updateMDD.value = updateMddCheckbox;
 
-	doAction(Env.locService+'/metadata.update.onlineSrc');
+    var srvScopedName = document.getElementById('srvScopedName');
+    srvScopedName.value = scopedName;
+
+    doAction(Env.locService + '/metadata.update.onlineSrc');
 }
 
 
@@ -838,13 +908,13 @@ var keywordSelectionWindow;
  * @param name
  * @return
  */
-function showKeywordSelectionPanel(ref, name,id) {
+function showKeywordSelectionPanel(ref, name, id) {
     if (!keywordSelectionWindow) {
-        var port = window.location.port === "" ? "" : ':'+window.location.port;
-        var xlinkTemplate = new Ext.Template('<input value="http://'+window.location.hostname+port+Env.locService+'/xml.keyword.get?thesaurus={thesaurus}&amp;id={uri}" id="href_{count}" name="href_{count}" type="hidden"/>').compile();
+        var port = window.location.port === "" ? "": ':' + window.location.port;
+        var xlinkTemplate = new Ext.Template('<input value="http://' + window.location.hostname + port + Env.locService + '/xml.keyword.get?thesaurus={thesaurus}&amp;id={uri}" id="href_{count}" name="href_{count}" type="hidden"/>').compile();
         var keywordSelectionPanel = new app.KeywordSelectionPanel({
             createKeyword: function() {
-                doNewElementAction('/geonetwork/srv/eng/metadata.elem.add',ref,name,id);
+                doNewElementAction('/geonetwork/srv/eng/metadata.elem.add', ref, name, id);
             },
             listeners: {
                 keywordselected: function(panel, keywords) {
@@ -854,18 +924,18 @@ function showKeywordSelectionPanel(ref, name,id) {
                     var store = panel.itemSelector.toMultiselect.store;
                     store.each(function(record) {
                         var uri = escape(record.get("uri"));
-                        var thesaurus = escape(record.get("thesaurus")); 
-                        xlinkTemplate.append(hiddenFormElements,{
-                            thesaurus:thesaurus,
-                            uri:uri,
+                        var thesaurus = escape(record.get("thesaurus"));
+                        xlinkTemplate.append(hiddenFormElements, {
+                            thesaurus: thesaurus,
+                            uri: uri,
                             count: count
                         });
                         count += 1;
                     });
 
-               
-					// Save
-					doAction('metadata.xlink.add');
+
+                    // Save
+                    doAction('metadata.xlink.add');
                 }
             }
         });
@@ -879,7 +949,9 @@ function showKeywordSelectionPanel(ref, name,id) {
             closeAction: 'hide'
         });
     }
-    
+
     keywordSelectionWindow.items.get(0).setRef(ref);
     keywordSelectionWindow.show();
 }
+
+/* -----------   End XLink functions  -------------

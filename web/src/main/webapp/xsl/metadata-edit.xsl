@@ -146,7 +146,7 @@
 									</xsl:call-template>
 								</td></tr>
 							</table>
-                            <xsl:call-template name="xlinkSelector"/>
+                            <xsl:call-template name="geocat-xlinkSelector"/>
 						</form>
 
 						<div id="validationReport" class="content" style="display:none;"/>

@@ -152,7 +152,22 @@ Ihr geocat.ch-Team</msg>
     <desc>Description</desc>
     <hoursofservice>Hours of service</hoursofservice>
     <contactinstructions>Contact instructions</contactinstructions>
-
     <mostPopular>Meistbesuchte Metadaten</mostPopular>
+
+    <popXlink.about> Suche nach einem existierenden Objekt oder Klick auf "Neu", wenn nichts passendes gefunden wurde.</popXlink.about>
+    <popXlink.contact.search>Suchen nach einem Kontakt in der Liste</popXlink.contact.search>
+    <popXlink.contact.role>Füllen Sie die Rolle des Kontakts</popXlink.contact.role>
+    <popXlink.contact.action>Diesen Eintrag hinzuzufügen Sie die Metadaten, oder einen neuen Eintrag (unter Moderation), wenn Sie das gewünschte Element nicht finden</popXlink.contact.action>
+    <extentBbox>Nur Begrenzungsrechteck</extentBbox>
+    <extentPolygon>Nur Polygon</extentPolygon>
+    <extentBboxAndPolygon>Begrenzungsrechteck und Polygon</extentBboxAndPolygon>
+    <boolean value="1" context="">Ja</boolean>
+    <boolean value="0" context="">Nein</boolean>
+    <boolean value="1" context="gmd:extentTypeCode">Einschliessend</boolean>
+    <boolean value="0" context="gmd:extentTypeCode">Ausschliessend</boolean>
+    <boolean value="true" context="gmd:extentTypeCode">Einschliessend</boolean>
+    <boolean value="false" context="gmd:extentTypeCode">Ausschliessend</boolean>
+    <xlink.new js="true">Neu</xlink.new>
+    <xlink.newGeographic>Neu (nur geografisch)</xlink.newGeographic>
     
 </strings>    

@@ -472,10 +472,5 @@
 
             <output sheet="csv-search.xsl" contentType="text/plain; charset=UTF-8" />
         </service>
-        <service name="md.edit">
-            <class name=".services.metadata.GetEditableData"/>
-            <output sheet="angular/edit.xsl"/>
-        </service>
-        </service>
     </services>
 </geonet>

@@ -34,7 +34,7 @@
 		<!-- Hidden div to contains extra elements like when posting multiple keywords. -->
 	</xsl:template>
 
-	<xsl:template name="xlinkSelector">
+	<xsl:template name="geocat-xlinkSelector">
 		<xsl:variable name="locales" select="//gmd:locale"/>
 
 		<div id="popXLink" name="popXLink" style="display:none;width:460px;padding:10px">
@@ -60,15 +60,16 @@
 				<select name="contact.role" id="contact.role"
 					onChange="contactSetRole(this.options[this.selectedIndex].value);">
 					<!-- add point of contact first -->
+					                   <!-- add point of contact first -->
 					<option value="pointOfContact">
 						<xsl:attribute name="selected"></xsl:attribute>
 						<xsl:value-of
-							select="/root/gui/iso19139/codelist[@name='gmd:CI_RoleCode']/entry[code='pointOfContact']/label" />
+							select="/root/gui/schemas/iso19139/codelists/codelist[@name='gmd:CI_RoleCode']/entry[code='pointOfContact']/label" />
 					</option>
 
 					<!-- add the rest of elements -->
 					<xsl:for-each
-						select="/root/gui/iso19139/codelist[@name='gmd:CI_RoleCode']/entry">
+						select="/root/gui/schemas/iso19139/codelists/codelist[@name='gmd:CI_RoleCode']/entry">
 						<xsl:sort select="label" order="ascending" />
 
 						<xsl:if test="code!='pointOfContact'">

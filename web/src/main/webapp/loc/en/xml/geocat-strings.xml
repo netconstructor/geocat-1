@@ -160,6 +160,22 @@
     <desc>Description</desc>
     <hoursofservice>Hours of service</hoursofservice>
     <contactinstructions>Contact instructions</contactinstructions>
-
     <mostPopular>Most popular</mostPopular>    
+
+    <popXlink.about>Search for an existing object or press 'New' if unable to locate a match.</popXlink.about>
+    <popXlink.contact.search>Search for a contact in the list</popXlink.contact.search>
+    <popXlink.contact.role>Fill the role of this contact</popXlink.contact.role>
+    <popXlink.contact.action>Add this item to the form of metadata, or suggest a new entry (subject to moderation) if you do not find the needed item</popXlink.contact.action>
+    <extentBbox>Bounding box only</extentBbox>
+    <extentPolygon>Polygon only</extentPolygon>
+    <extentBboxAndPolygon>Bounding box and bounding polygon</extentBboxAndPolygon>
+    <boolean value="1" context="">True</boolean>
+    <boolean value="0" context="">False</boolean>
+    <boolean value="1" context="gmd:extentTypeCode">Include</boolean>
+    <boolean value="0" context="gmd:extentTypeCode">Exclude</boolean>
+    <boolean value="true" context="gmd:extentTypeCode">Include</boolean>
+    <boolean value="false" context="gmd:extentTypeCode">Exclude</boolean>
+    <xlink.new js="true">New</xlink.new>
+    <xlink.newGeographic>New (Geographic only)</xlink.newGeographic>
+
 </strings>

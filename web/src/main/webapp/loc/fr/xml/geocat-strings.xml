@@ -153,4 +153,20 @@ Votre équipe geocat.ch</msg>
     <contactinstructions>Contact instructions</contactinstructions>
     <mostPopular>Les plus populaires</mostPopular>
 
+    <popXlink.about>Rechercher un objet existant ou utiliser le bouton 'Nouveau' si vous n'en trouvez pas.</popXlink.about>
+    <popXlink.contact.search>Rechercher dans la liste de valeur un contact</popXlink.contact.search>
+    <popXlink.contact.role>Renseigner le rôle de ce contact</popXlink.contact.role>
+    <popXlink.contact.action>Ajouter cet élément à la fiche de métadonnée, ou proposer une nouvelle entrée (soumise à modération) si vous ne trouvez pas l'élément désiré.</popXlink.contact.action>
+    <extentBbox>BBOX seulement</extentBbox>
+    <extentPolygon>Polygone seulement</extentPolygon>
+    <extentBboxAndPolygon>Polygone et BBOX</extentBboxAndPolygon>
+    <boolean value="1" context="">Vrai</boolean>
+    <boolean value="0" context="">Faux</boolean>
+    <boolean value="1" context="gmd:extentTypeCode">Inclusion</boolean>
+    <boolean value="0" context="gmd:extentTypeCode">Exclusion</boolean>
+    <boolean value="true" context="gmd:extentTypeCode">Inclusion</boolean>
+    <boolean value="false" context="gmd:extentTypeCode">Exclusion</boolean>
+    <xlink.new js="true">Nouveau</xlink.new>
+    <xlink.newGeographic>Nouvelle étendue géographique</xlink.newGeographic>
+
 </strings>

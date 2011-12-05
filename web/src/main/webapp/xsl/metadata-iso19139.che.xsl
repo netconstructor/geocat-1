@@ -1915,9 +1915,24 @@
  	</xsl:template>
  	
     <xsl:template mode="addXMLFragment"  priority="100"
-    match="gmd:descriptiveKeywords|geonet:child[@name='descriptiveKeywords' and @prefix='gmd'] |
-           *:extent|geonet:child[@name='extent'] |
-           che:revisionExtent|geonet:child[@name='revisionExtent' and @prefix='che']">
+    match="
+           gmd:descriptiveKeywords|geonet:child[@name='descriptiveKeywords' and @prefix='gmd'] |
+           srv:keywords|geonet:child[@name='keywords' and @prefix='srv'] |
+           gmd:extent|geonet:child[@name='extent'] | srv:extent |
+           gmd:spatialExtent|geonet:child[@name='spatialExtent' and @prefix='gmd'] |
+           che:revisionExtent|geonet:child[@name='revisionExtent' and @prefix='che'] |
+           gmd:sourceExtent|geonet:child[@name='sourceExtent' and @prefix='gmd'] |
+           gmd:contact|geonet:child[@name='contact' and @prefix='gmd'] |
+           gmd:processor|geonet:child[@name='processor' and @prefix='gmd'] |
+           gmd:citedResponsibleParty|geonet:child[@name='citedResponsibleParty' and @prefix='gmd'] |
+           gmd:pointOfContact|geonet:child[@name='pointOfContact' and @prefix='gmd'] |
+           gmd:distributorContact|geonet:child[@name='distributorContact' and @prefix='gmd'] |
+           gmd:source|geonet:child[@name='source' and @prefix='gmd'] |
+           gmd:userContactInfo|geonet:child[@name='userContactInfo' and @prefix='gmd'] |
+           gmd:distributionFormat|geonet:child[@name='distributionFormat' and @prefix='gmd'] |
+           gmd:distributorFormat|geonet:child[@name='distributorFormat' and @prefix='gmd'] |
+           gmd:resourceFormat|geonet:child[@name='resourceFormat' and @prefix='gmd']
+           ">
         <xsl:text>displayXLinkSearchBox</xsl:text>
     </xsl:template>
     <xsl:template mode="addXMLFragment" match="gmd:referenceSystemInfo|geonet:child[@name='referenceSystemInfo' and @prefix='gmd']" priority="100"/>
