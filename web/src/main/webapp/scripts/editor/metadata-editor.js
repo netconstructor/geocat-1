@@ -321,11 +321,11 @@ function doMoveElementAction(action, ref, id)
 	setBunload(true);
 }
 
-function doNewElementAction(action, ref, name, id, what, max)
+function doNewElementAction(action, ref, name, id, what, max, extraParams)
 {
 	var child = null;
 	var orElement = false;
-	doNewElementAjax(action, ref, name, child, id, what, max, orElement);
+	doNewElementAjax(action, ref, name, child, id, what, max, orElement, extraParams);
 }
 
 function doNewAttributeAction(action, ref, name, id, what)
@@ -333,13 +333,15 @@ function doNewAttributeAction(action, ref, name, id, what)
 	var child = "geonet:attribute";
 	var max = null;
 	var orElement = false;
-	doNewElementAjax(action, ref, name, child, id, what, max, orElement);
+	var extraParams = null;
+	doNewElementAjax(action, ref, name, child, id, what, max, orElement, extraParams);
 }
 
 function doNewORElementAction(action, ref, name, child, id, what, max)
 {
 	var orElement = true;
-	doNewElementAjax(action, ref, name, child, id, what, max, orElement);
+	var extraParams = null;
+	doNewElementAjax(action, ref, name, child, id, what, max, orElement, extraParams);
 }
 
 function setAddControls(el, orElement) 
@@ -379,12 +381,14 @@ function setAddControls(el, orElement)
 	}
 }
 
-function doNewElementAjax(action, ref, name, child, id, what, max, orElement)
+function doNewElementAjax(action, ref, name, child, id, what, max, orElement, extraParams)
 {
 	var metadataId = document.mainForm.id.value;
 	var pars = "&id="+metadataId+"&ref="+ref+"&name="+name;
 	if (child != null) 
 		pars += "&child="+child;
+	if (extraParams != null) 
+		pars += '&'+extraParams;
 	var thisElement = $(id);
 
 	var myAjax = new Ajax.Request(

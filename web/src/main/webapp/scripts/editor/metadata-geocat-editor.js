@@ -24,11 +24,15 @@ function submitXLink() {
         return;
     }
 
-    if ($('href').value.contains("&&")) {
-        $('href').value = $('href').value.replace("&&", "&")
+    var hrefElem = $('href')
+    var href = hrefElem.value;
+    if (href.contains("&&")) {
+        hrefElem.value = href.replace("&&", "&")
     }
+    href = escape(hrefElem.value);
     // Submit form
-    doAction('metadata.xlink.add');
+    doNewElementAction(dialogRequest.action,dialogRequest.ref,dialogRequest.name,dialogRequest.id,dialogRequest.replacement,dialogRequest.max, 'href='+href);
+    modalBox.hide();
 }
 
 /**
@@ -144,7 +148,9 @@ var dialogRequest = {
     action: '',
     ref: '',
     name: '',
-    id: ''
+    id: '',
+    replacement: '',
+    max: 1000
 };
 
 
@@ -483,7 +489,7 @@ function displaySearchBox(type, boxTitle, ref) {
     return false;
 }
 
-function displayXLinkSearchBox(ref, name, action, id) {
+function displayXLinkSearchBox(ref, name, action, id, replacement, max) {
     // Clean href element on each popup init in order
     // to avoid mix of elements.
     document.mainForm.href.value = "";
@@ -493,6 +499,8 @@ function displayXLinkSearchBox(ref, name, action, id) {
     dialogRequest.ref = ref;
     dialogRequest.name = name;
     dialogRequest.id = id;
+    dialogRequest.replacement = replacement;
+    dialogRequest.max = max;
 
     // Hide optional fields (could be faster by getting els by Ext.get(id))
     /*
@@ -516,7 +524,7 @@ function displayXLinkSearchBox(ref, name, action, id) {
 
 
     if (name.toUpperCase().indexOf("KEYWORD") != -1) {
-        showKeywordSelectionPanel(ref, name, id)
+        xlinkShowKeywordSelectionPanel(ref, name, id)
     } else {
         displayModalBox('popXLink', translate('searchElements'));
 
@@ -792,109 +800,6 @@ GeoNetworkSearcher.prototype.error = function() {
     alert("Error");
 }
 
-
-/*****************************
-***
-***		Metadata for Services
-***
-******************************/
-
-function enableCreateAsso(enable) {
-    if (enable) {
-        $('createAsso').disabled = false;
-        $('createAssoCoupledResource').disabled = false;
-    } else {
-        var inputs = $('catResults').getElementsByTagName('input');
-        var nbchecked = 0;
-        for (var i = 0; i < inputs.length; i++) {
-            if (inputs[i].checked) {
-                nbchecked++;
-            }
-        }
-        if (nbchecked == 0) {
-            $('createAsso').disabled = true;
-            $('createAssoCoupledResource').disabled = true;
-        }
-    }
-}
-
-function updateCoupledResourceforServices() {
-    // Get ModalBox values
-    var ids = '';
-    var inputs = $('catResults').getElementsByTagName('input');
-    for (var i = 0; i < inputs.length; i++) {
-        var input = inputs[i];
-        if (input.checked) {
-            ids = input.value;
-        }
-    }
-    var scopedName = $('scopedName').value;
-
-    // update values in edit form.
-    var input = document.getElementById('datasetIds');
-    input.value = ids;
-
-    var srvScopedName = document.getElementById('srvScopedName');
-    srvScopedName.value = scopedName;
-
-    doAction(Env.locService + '/metadata.services.attachDataset');
-}
-
-function updateMDforServices() {
-    var updateMddCheckbox = $('updateMDD').checked;
-    var scopedName = $('scopedName').value;
-
-    if (!updateMddCheckbox) {
-        // Check the services. If any it's not allowed to the user, shows an alert
-        var edits = $$('#catResults input[type=hidden]');
-        var servicesAllowed = true;
-        var services = '';
-
-        for (var i = 0; i < edits.length; i++) {
-            var edit = edits[i];
-            var related_check = $(edit.id.replace("_edit", ""));
-
-            if ((edit.value == 'false') && (related_check.checked)) {
-                Ext.MessageBox.alert(updateDatasetTitle, updateDatasetMsg);
-                servicesAllowed = false;
-                break;
-            }
-        }
-
-        if (!servicesAllowed) return;
-    }
-
-    // Get ModalBox values
-    var ids = '';
-    var inputs = $('catResults').getElementsByTagName('input');
-    var first = true;
-    for (var i = 0; i < inputs.length; i++) {
-        var input = inputs[i];
-
-        if (input.checked) {
-            var edit = $(input.id + "_edit");
-            if (first) {
-                ids = input.value;
-                first = false;
-            } else
-            ids = ids + ',' + input.value;
-        }
-    }
-
-    // update values in edit form.
-    var srvInput = document.getElementById('srvIds');
-    srvInput.value = ids;
-
-    var updateMDD = document.getElementById('upMdd');
-    updateMDD.value = updateMddCheckbox;
-
-    var srvScopedName = document.getElementById('srvScopedName');
-    srvScopedName.value = scopedName;
-
-    doAction(Env.locService + '/metadata.update.onlineSrc');
-}
-
-
 /**
  * Property: keywordSelectionWindow
  * The window in which we can select keywords
@@ -908,10 +813,10 @@ var keywordSelectionWindow;
  * @param name
  * @return
  */
-function showKeywordSelectionPanel(ref, name, id) {
+function xlinkShowKeywordSelectionPanel(ref, name, id) {
     if (!keywordSelectionWindow) {
         var port = window.location.port === "" ? "": ':' + window.location.port;
-        var xlinkTemplate = new Ext.Template('<input value="http://' + window.location.hostname + port + Env.locService + '/xml.keyword.get?thesaurus={thesaurus}&amp;id={uri}" id="href_{count}" name="href_{count}" type="hidden"/>').compile();
+        var xlinkTemplate = new Ext.Template('<input value="local://xml.keyword.get?thesaurus={thesaurus}&amp;id={uri}" id="href_{count}" name="href_{count}" type="hidden"/>').compile();
         var keywordSelectionPanel = new app.KeywordSelectionPanel({
             createKeyword: function() {
                 doNewElementAction('/geonetwork/srv/eng/metadata.elem.add', ref, name, id);
@@ -935,7 +840,7 @@ function showKeywordSelectionPanel(ref, name, id) {
 
 
                     // Save
-                    doAction('metadata.xlink.add');
+                    submitXLink();
                 }
             }
         });
@@ -954,4 +859,4 @@ function showKeywordSelectionPanel(ref, name, id) {
     keywordSelectionWindow.show();
 }
 
-/* -----------   End XLink functions  -------------
+/* -----------   End XLink functions  ------------- */
