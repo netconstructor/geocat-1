@@ -787,7 +787,7 @@ function xlinkShowKeywordSelectionPanel(ref, name, id) {
                         var thesaurus = record.get("thesaurus");
                         var xlink = new XLink();
 
-                        xlink.href = "local://che.keyword.get?thesaurus="+thesaurus+"&id="+uri;
+                        xlink.href = "local://che.keyword.get?thesaurus="+thesaurus+"&id="+uri+"&locales=fr,en,de,it";
                         xlinks.push(xlink);
                     });
 
