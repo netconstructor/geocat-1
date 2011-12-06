@@ -90,7 +90,7 @@
 	    </xsl:choose>
    </xsl:template>
 
-    <!-- The following are NOT multilingual -->
+    <!-- The following are NOT multilingual text -->
     <xsl:template priority="100" match="gmd:identifier|
         gmd:fileIdentifier|
         gmd:metadataStandardName|
@@ -153,7 +153,12 @@
             <xsl:apply-templates select="@*|node()" />
         </xsl:copy>
     </xsl:template>
-
+    <!-- The following are NOT multilingual -->
+    <xsl:template priority="100" match="gmd:dataSetURI | gmd:GM03_2Core.Core.CI_ResponsibleParty/electronicalMailAddress">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+        </xsl:copy>
+    </xsl:template>
     <xsl:template name="langId19139">
         <xsl:variable name="tmp">
             <xsl:choose>
