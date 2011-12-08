@@ -129,11 +129,9 @@
     <xsl:template match="GM03Core.Core.PT_FreeURL" mode="language">
         <xsl:attribute name="xsi:type">che:PT_FreeURL_PropertyType</xsl:attribute>
 
-        <xsl:if test="URLGroup/GM03_2Core.Core.PT_URLGroup/language">
-	        <che:PT_FreeURL>
-	            <xsl:apply-templates mode="language" select="URLGroup/GM03Core.Core.PT_URLGroup"/>
-	        </che:PT_FreeURL>
-        </xsl:if>
+        <che:PT_FreeURL>
+            <xsl:apply-templates mode="language" select="URLGroup/GM03Core.Core.PT_URLGroup"/>
+        </che:PT_FreeURL>
     </xsl:template>
 
     <xsl:template match="GM03Core.Core.PT_URLGroup" mode="language">
@@ -143,7 +141,7 @@
         </xsl:variable>
         <che:URLGroup>
             <che:LocalisedURL locale="#{$lang}">
-                <xsl:value-of select="plainURL"/>
+                <xsl:value-of select="normalize-space(plainURL)"/>
             </che:LocalisedURL>
         </che:URLGroup>
     </xsl:template>

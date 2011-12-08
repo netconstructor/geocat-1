@@ -113,15 +113,17 @@
                 </che:CHE_CI_Address>
             </gmd:address>
 
-            <gmd:onlineResource>
-                <xsl:for-each select="int:linkage">
-                    <gmd:CI_OnlineResource>
-                        <gmd:linkage>
-                            <xsl:apply-templates mode="language"/>
-                        </gmd:linkage>
-                    </gmd:CI_OnlineResource>
-                </xsl:for-each>
-            </gmd:onlineResource>
+            <xsl:if test="int:linkage">
+	            <gmd:onlineResource>
+	                <xsl:for-each select="int:linkage">
+	                    <gmd:CI_OnlineResource>
+	                        <gmd:linkage>
+	                            <xsl:apply-templates mode="language"/>
+	                        </gmd:linkage>
+	                    </gmd:CI_OnlineResource>
+	                </xsl:for-each>
+	            </gmd:onlineResource>
+            </xsl:if>
 
             <xsl:for-each select="int:hoursOfService|int:contactInfo/int:GM03_2Core.Core.CI_Contact/int:hoursOfService">
                 <gmd:hoursOfService>

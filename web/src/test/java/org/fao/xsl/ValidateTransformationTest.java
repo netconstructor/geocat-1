@@ -16,6 +16,7 @@ import org.fao.xsl.support.And;
 import org.fao.xsl.support.Attribute;
 import org.fao.xsl.support.Count;
 import org.fao.xsl.support.EqualText;
+import org.fao.xsl.support.EqualTrimText;
 import org.fao.xsl.support.Exists;
 import org.fao.xsl.support.Finder;
 import org.fao.xsl.support.Not;
@@ -75,6 +76,21 @@ public class ValidateTransformationTest
         Multimap<String, Requirement> rules = ArrayListMultimap.create();
         file = testFile(file, Control.GM03_2_ISO, rules, false);
     }
+
+    @Test
+    public void contactLinkageNotImported() throws Throwable
+    {
+        File file = new File(data, "iso19139/contact_with_linkage.xml");
+        Multimap<String, Requirement> rules = ArrayListMultimap.create();
+        rules.put("GM03_2Core.Core.CI_ResponsibleParty/linkage/GM03_2Core.Core.PT_FreeURL",
+                new Exists(new Finder("plainURL", new EqualTrimText("http://etat.geneve.ch/dt/geomatique/accueil.html"))));
+        file = testFile(file, Control.ISO_GM03, rules, false);
+
+        rules = ArrayListMultimap.create();
+        rules.put("CHE_MD_Metadata/contact/CHE_CI_ResponsibleParty/contactInfo/CI_Contact/onlineResource/CI_OnlineResource/linkage", 
+                new Exists(new Finder("LocalisedURL", new EqualText("http://etat.geneve.ch/dt/geomatique/accueil.html"))));
+        testFile(file, Control.GM03_2_ISO, rules, false);
+}
 
     @Test
     public void exportPurpose() throws Throwable

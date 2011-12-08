@@ -107,6 +107,7 @@
         gmd:hoursOfService|
         gmd:applicationProfile|
         gmd:CI_Series/gmd:page|
+        gmd:language|
         gmd:MD_BrowseGraphic/gmd:fileName|
         gmd:MD_BrowseGraphic/gmd:fileType|
         gmd:unitsOfDistribution|
