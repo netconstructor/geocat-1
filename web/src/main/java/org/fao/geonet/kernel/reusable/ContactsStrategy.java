@@ -134,6 +134,7 @@ public final class ContactsStrategy extends ReplacementStrategy
         return "";
     }
 
+    @SuppressWarnings("unchecked")
     public static String lookupElement(Element originalElem, String name, final String defaultMetadataLang)
     {
         Element elem = Utils.nextElement(originalElem.getDescendants(new ContactElementFinder("CharacterString",
@@ -141,7 +142,6 @@ public final class ContactsStrategy extends ReplacementStrategy
         if (elem == null) {
             Iterator freeTexts = originalElem.getDescendants(new ContactElementFinder("PT_FreeText",
                     XslUtil.GMD_NAMESPACE, name));
-
             while (freeTexts.hasNext()) {
                 Element next = (Element) freeTexts.next();
                 Iterator<Element> defaultLangElem = next.getDescendants(new Filter()

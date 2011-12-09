@@ -91,7 +91,6 @@ public class CovertLocalisedCharstringTest
         String pathToXsl = TransformationTestSupport.geonetworkWebapp+"/xsl/shared-user/user-xml.xsl";
         String testData = "/data/xml.user.get.xml";
         Element data = TransformationTestSupport.transform(getClass(), pathToXsl, testData );
-        System.out.println(Xml.getString(data));
 
         Map<String, String> langMap = findLocalizedString(data.getChild("organisationAcronym", Namespace.getNamespace("http://www.geocat.ch/2008/che")));
 

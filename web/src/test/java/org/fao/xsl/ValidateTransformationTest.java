@@ -90,7 +90,7 @@ public class ValidateTransformationTest
         rules.put("CHE_MD_Metadata/contact/CHE_CI_ResponsibleParty/contactInfo/CI_Contact/onlineResource/CI_OnlineResource/linkage", 
                 new Exists(new Finder("LocalisedURL", new EqualText("http://etat.geneve.ch/dt/geomatique/accueil.html"))));
         testFile(file, Control.GM03_2_ISO, rules, false);
-}
+    }
 
     @Test
     public void exportPurpose() throws Throwable

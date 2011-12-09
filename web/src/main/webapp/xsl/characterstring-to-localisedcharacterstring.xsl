@@ -25,7 +25,8 @@
 	--> 
 	<xsl:template priority="5" match="gmd:*[gco:CharacterString] | 
 	                                  srv:*[gco:CharacterString] | 
-	                                  gco:*[gco:CharacterString]">
+	                                  gco:*[gco:CharacterString] |
+	                                  che:*[gco:CharacterString]">
 	    <xsl:variable name="mainLang">
 	       <xsl:call-template name="langId19139"/>
 	    </xsl:variable>
@@ -39,6 +40,7 @@
 	    <xsl:choose>
 	       <xsl:when test="gmd:PT_FreeText">
 		       <xsl:copy>
+		          <xsl:attribute name="xsi:type">gmd:PT_FreeText_PropertyType</xsl:attribute>
 		           <gmd:PT_FreeText>
 		               <xsl:copy-of select="$textGroup"/>
 		               <xsl:copy-of select="gmd:PT_FreeText/*"/>
@@ -47,6 +49,7 @@
 	       </xsl:when>
 	       <xsl:otherwise>
 		       <xsl:copy>
+                  <xsl:attribute name="xsi:type">gmd:PT_FreeText_PropertyType</xsl:attribute>
 	               <gmd:PT_FreeText>
 	                   <xsl:copy-of select="$textGroup"/>
 	               </gmd:PT_FreeText>
@@ -60,7 +63,8 @@
 	--> 
 	<xsl:template priority="5" match="gmd:*[gmd:URL] | 
 	                                  srv:*[gmd:URL] | 
-	                                  gco:*[gmd:URL]">
+                                      gco:*[gmd:URL] | 
+                                      che:*[gmd:URL]">
 	    <xsl:variable name="mainLang">
 	       <xsl:call-template name="langId19139"/>
 	    </xsl:variable>
@@ -74,6 +78,7 @@
 	    <xsl:choose>
 	       <xsl:when test="che:PT_FreeURL">
 		       <xsl:copy>
+                  <xsl:attribute name="xsi:type">che:PT_FreeURL_PropertyType</xsl:attribute>
 		           <che:PT_FreeURL>
 		               <xsl:copy-of select="$urlGroup"/>
 		               <xsl:copy-of select="che:PT_FreeURL"/>
@@ -82,6 +87,7 @@
 	       </xsl:when>
 	       <xsl:otherwise>
 		       <xsl:copy>
+                  <xsl:attribute name="xsi:type">che:PT_FreeURL_PropertyType</xsl:attribute>
 	               <che:PT_FreeURL>
 	                   <xsl:copy-of select="$urlGroup"/>
 	               </che:PT_FreeURL>
@@ -149,13 +155,17 @@
         che:mobile|
         che:individualFirstName|
         che:individualLastName|
-        che:internalReference">
+        che:internalReference | 
+        gmd:name[count(ancestor::gmd:MD_Format) > 0] |
+        gmd:version[count(ancestor::gmd:MD_Format) > 0] |
+        gmd:electronicMailAddress">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()" />
         </xsl:copy>
     </xsl:template>
     <!-- The following are NOT multilingual -->
-    <xsl:template priority="100" match="gmd:dataSetURI | gmd:GM03_2Core.Core.CI_ResponsibleParty/electronicalMailAddress">
+    <xsl:template priority="100" match="
+        gmd:dataSetURI">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()" />
         </xsl:copy>
