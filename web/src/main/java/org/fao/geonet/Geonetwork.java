@@ -67,6 +67,7 @@ import org.fao.geonet.kernel.harvest.HarvestManager;
 import org.fao.geonet.kernel.oaipmh.OaiPmhDispatcher;
 import org.fao.geonet.kernel.search.LuceneConfig;
 import org.fao.geonet.kernel.reusable.ReusableObjManager;
+import org.fao.geonet.kernel.reusable.SharedObjectUriMapper;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.search.spatial.SpatialIndexWriter;
 import org.fao.geonet.kernel.setting.SettingInfo;
@@ -147,6 +148,8 @@ public class Geonetwork implements ApplicationHandler
 	@SuppressWarnings("unchecked")
 	public Object start(Element config, ServiceContext context) throws Exception
 	{
+	    Processor.addUriMapper(new SharedObjectUriMapper());
+	    
 		System.setProperty(GeoTools.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.toString(true));
 		logger = context.getLogger();
 

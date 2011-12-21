@@ -9,17 +9,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import jeeves.JeevesJCS;
 import jeeves.server.context.ServiceContext;
-import jeeves.server.local.LocalJeeves;
 import jeeves.server.local.LocalServiceRequest;
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
 
 import org.apache.jcs.access.exception.CacheException;
-import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
-import org.apache.jcs.engine.behavior.IElementAttributes;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -64,6 +62,8 @@ public final class Processor {
 	private static final String ACTION_DETACH = "detach";
 
 	public static final String XLINK_JCS = "xlink";
+	
+	private static CopyOnWriteArraySet<URIMapper> uriMapper = new CopyOnWriteArraySet<URIMapper>(); 
 	
 	/**
     * Default constructor.
@@ -155,8 +155,10 @@ public final class Processor {
 		}
 
 		uri = uri.replaceAll("&+","&");
+		String mappedURI = mapURI(uri);
+
 		JeevesJCS xlinkCache = JeevesJCS.getInstance(XLINK_JCS);
-		Element remoteFragment = (Element) xlinkCache.get(uri.toLowerCase());
+		Element remoteFragment = (Element) xlinkCache.getFromGroup(uri.toLowerCase(), mappedURI);
 
 		if (remoteFragment == null) {
 			Log.info(Log.XLINK_PROCESSOR, "cache MISS on "+uri.toLowerCase());
@@ -191,7 +193,7 @@ public final class Processor {
 			}
 			
 			if (remoteFragment != null && !remoteFragment.getName().equalsIgnoreCase("error")) {
-				xlinkCache.put(uri.toLowerCase(), remoteFragment);
+				xlinkCache.putInGroup(uri.toLowerCase(), mappedURI, remoteFragment);
 				Log.debug(Log.XLINK_PROCESSOR,"cache miss for "+uri);
 			} else {
 				return null;
@@ -223,17 +225,34 @@ public final class Processor {
 		return res;
 	}
 
-	//--------------------------------------------------------------------------
+	private static String mapURI( String uri ) {
+	    uri = uri.replaceAll("&+","&").toLowerCase();
+	    for(URIMapper mapper: uriMapper) {
+	        uri = mapper.map(uri);
+	    }
+        return uri;
+    }
+	
+    public static void addUriMapper(URIMapper mapper) {
+        uriMapper.add(mapper);
+    }
+    public static void removeUriMapper(URIMapper mapper) {
+        uriMapper.add(mapper);
+    }
+
+    //--------------------------------------------------------------------------
 	/** Uncaches an xlink */
 	public static void uncacheXLinkUri(String uri) throws CacheException {
 		JeevesJCS xlinkCache = JeevesJCS.getInstance(XLINK_JCS);
-		Element theXLink = (Element)xlinkCache.get(uri.toLowerCase());
-		if (theXLink == null) {
-			Log.warning(Log.XLINK_PROCESSOR,"Uri "+uri+" wasn't there");
-		} else {
-			xlinkCache.remove(uri);
-			Log.warning(Log.XLINK_PROCESSOR,"Uri "+uri+" was removed from cache");
-		}
+		String mappedURI = mapURI(uri);
+        Set groupKeys = xlinkCache.getGroupKeys(mappedURI);
+        if(groupKeys==null || groupKeys.isEmpty()) {
+            
+        } else {
+            for( Object key : groupKeys ) {
+                xlinkCache.remove(key, mappedURI);
+            }
+        }
 	}
 
 	//--------------------------------------------------------------------------

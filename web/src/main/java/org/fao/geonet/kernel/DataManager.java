@@ -31,6 +31,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1641,7 +1642,26 @@ public class DataManager {
      * @return
      * @throws Exception
      */
-	public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate, boolean updateDateStamp) throws Exception {
+    public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate, boolean updateDateStamp) throws Exception {
+        return updateMetadata(session, dbms, id, md, validate, ufo, index,lang, changeDate, updateDateStamp, true);
+	}
+	
+    /**
+     * Updates a metadata record. Deletes validation report currently in session (if any). If user asks for validation the validation report will be (re-)created then.
+     *
+     * @param session
+     * @param dbms
+     * @param id
+     * @param md
+     * @param validate
+     * @param lang
+     * @param changeDate
+     * @param updateDateStamp
+     *
+     * @return
+     * @throws Exception
+     */
+	public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate, boolean updateDateStamp, boolean processSharedObject) throws Exception {
 		// when invoked from harvesters, session is null
         if(session != null) {
             session.removeProperty(Geonet.Session.VALIDATION_REPORT + id);
@@ -1652,7 +1672,9 @@ public class DataManager {
 		    md = updateFixedInfo(schema, id, null, md, parentUuid, (updateDateStamp ? DataManager.UpdateDatestamp.yes : DataManager.UpdateDatestamp.no), dbms);
         }
         
-        md = processSharedObjects(dbms, id, md, lang);
+        if(processSharedObject) {
+            md = processSharedObjects(dbms, id, md, lang);
+        }
         
 		//--- write metadata to dbms
         XmlSerializer.update(dbms, id, md, changeDate, updateDateStamp);
@@ -3097,5 +3119,21 @@ public class DataManager {
 
 	public synchronized boolean isIndexing() {
 	    return !indexing.isEmpty() && indexThreadPool.getTaskCount() > 0;
+    }
+
+    public void updateXlinkObjects(Dbms dbms, String metadataId, String lang, Element md, Element... updatedXLinks) throws Exception {
+        ProcessParams params = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, metadataId, md, md, thesaurusMan,
+                extentMan, baseURL, settingMan, false, lang, servContext);
+        for (Element xlink : updatedXLinks) {
+            Collection<Element> newElements = reusableObjMan.updateXlink(xlink, params);
+
+            for (Element element : newElements) {
+                element.detach();
+            }
+
+            Element parentElement = xlink.getParentElement();
+            int index = parentElement.indexOf(xlink);
+            parentElement.addContent(index + 1, newElements);
+        }
     }
 }

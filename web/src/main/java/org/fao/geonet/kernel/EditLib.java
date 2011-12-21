@@ -28,17 +28,21 @@
 package org.fao.geonet.kernel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
+import jeeves.xlink.XLink;
 
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.reusable.ReusableObjManager;
 import org.fao.geonet.kernel.schema.MetadataAttribute;
 import org.fao.geonet.kernel.schema.MetadataSchema;
 import org.fao.geonet.kernel.schema.MetadataType;
@@ -91,7 +95,9 @@ public class EditLib
 	public void addEditingInfo(String schema, Element md, int id, int parent) throws Exception
 	{
 		Log.debug(Geonet.EDITOR,"MD before editing infomation:\n" + jeeves.utils.Xml.getString(md));
-		enumerateTree(md,id,parent);
+		
+		Map<String, Integer> xlinks = new HashMap<String,Integer>();
+        enumerateTree(md,id,parent,xlinks);
 		expandTree(scm.getSchema(schema), md);
 		Log.debug(Geonet.EDITOR,"MD after editing infomation:\n" + jeeves.utils.Xml.getString(md));
 	}
@@ -100,14 +106,16 @@ public class EditLib
 
 	public void enumerateTree(Element md) throws Exception
 	{
-		enumerateTree(md,1,0);
+        Map<String, Integer> xlinks = new HashMap<String,Integer>();
+		enumerateTree(md,1,0,xlinks);
 	}
 
 	//--------------------------------------------------------------------------
 
 	public void enumerateTreeStartingAt(Element md, int id, int parent) throws Exception
 	{
-		enumerateTree(md,id,parent);
+	      Map<String, Integer> xlinks = new HashMap<String,Integer>();
+	      enumerateTree(md,id,parent,xlinks);
 	}
 
 	//--------------------------------------------------------------------------
@@ -649,18 +657,27 @@ public class EditLib
 	/** Does a pre-order visit enumerating each node
 	  */
 
-	private int enumerateTree(Element md, int ref, int parent) throws Exception
+	private int enumerateTree(Element md, int originalRef, int parent, Map<String,Integer> xlinks) throws Exception
 	{
-
+	    int ref = originalRef;
 		int thisRef = ref;
 		int thisParent = ref;
 
+        String href = XLink.getHRef(md);
+        if(href!=null) {
+            if(xlinks.containsKey(href)) {
+                thisRef = xlinks.get(href);
+            }
+            xlinks.put(href, thisRef);
+        }
+
 		List list = md.getChildren();
 
+		
         for (Object aList : list) {
             Element child = (Element) aList;
             if (!Edit.NS_PREFIX.equals(child.getNamespacePrefix())) {
-                ref = enumerateTree(child, ref + 1, thisParent);
+                ref = enumerateTree(child, ref + 1, thisParent, xlinks);
             }
         }
 
@@ -670,7 +687,11 @@ public class EditLib
 		elem.setAttribute(new Attribute(Edit.Element.Attr.UUID, md.getQualifiedName()+"_"+UUID.randomUUID().toString()));
 		md.addContent(elem);
 
-		return ref;
+		if(xlinks.containsKey(href)) {
+		    return originalRef;
+		} else {
+		    return ref;
+		}
 	}
 
 	//--------------------------------------------------------------------------

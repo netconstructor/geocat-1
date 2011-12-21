@@ -2,6 +2,7 @@ package org.fao.geonet.services.metadata;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.EditLib;
 import org.fao.geonet.kernel.XmlSerializer;
+import org.fao.geonet.kernel.reusable.ReusableObjManager;
 import org.fao.geonet.kernel.schema.MetadataSchema;
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -80,7 +82,7 @@ public class AjaxEditUtils extends EditUtils {
      * @throws Exception
      */
     protected Element applyChangesEmbedded(Dbms dbms, String id, 
-                                        Hashtable changes, String currVersion) throws Exception {
+                                        Hashtable changes, String currVersion, String lang) throws Exception {
         String schema = dataManager.getMetadataSchema(dbms, id);
         EditLib editLib = dataManager.getEditLib();
 
@@ -96,6 +98,7 @@ public class AjaxEditUtils extends EditUtils {
 
         // Store XML fragments to be handled after other elements update
         Map<String, String> xmlInputs = new HashMap<String, String>();
+        HashSet<Element> updatedXLinks = new HashSet<Element>();
 
         // --- update elements
         for (Enumeration e = changes.keys(); e.hasMoreElements();) {
@@ -115,7 +118,7 @@ public class AjaxEditUtils extends EditUtils {
                 continue;
             }
 
-            if (updatedLocalizedTextElement(md, ref, value, editLib)) {
+            if (updatedLocalizedTextElement(md, ref, value, editLib, updatedXLinks) || updatedLocalizedURLElement(md, ref, value, editLib, updatedXLinks)) {
                 continue;
             }
 
@@ -130,8 +133,16 @@ public class AjaxEditUtils extends EditUtils {
                 Log.error(Geonet.EDITOR, MSG_ELEMENT_NOT_FOUND_AT_REF + ref);
                 continue;
             }
-            
-            // Process attribute
+
+            Element xlinkParent = findXlinkParent(el);
+            if( xlinkParent!=null && ReusableObjManager.isValidated(xlinkParent)){
+                continue;
+            }
+            if( xlinkParent!=null ){
+                updatedXLinks.add(xlinkParent);
+            }
+
+            // Process attribute 
             if (attribute != null) {
                 Integer indexColon = attribute.indexOf(COLON_SEPARATOR);
                 
@@ -182,7 +193,15 @@ public class AjaxEditUtils extends EditUtils {
                     Log.error(Geonet.EDITOR, MSG_ELEMENT_NOT_FOUND_AT_REF + ref);
                     continue;
                 }
-                
+
+                Element xlinkParent = findXlinkParent(el);
+                if( xlinkParent!=null && !ReusableObjManager.isValidated(xlinkParent)){
+                    continue;
+                }
+                if( xlinkParent!=null ){
+                    updatedXLinks.add(xlinkParent);
+                }
+
                 if (value != null && !value.equals("")) {
                     String[] fragments = value.split(XML_FRAGMENT_SEPARATOR);
                     for (String fragment : fragments) {
@@ -207,6 +226,8 @@ public class AjaxEditUtils extends EditUtils {
             }
         }
         
+        dataManager.updateXlinkObjects(dbms, id, lang, md, updatedXLinks.toArray(new Element[updatedXLinks.size()]));
+
         // --- remove editing info
         editLib.removeEditingInfo(md);
         editLib.contractElements(md);
@@ -262,7 +283,7 @@ public class AjaxEditUtils extends EditUtils {
      * @throws Exception
      */
 	public Element getMetadataEmbedded(ServiceContext srvContext, String id, boolean forEditing, boolean withValidationErrors) throws Exception {
-	    boolean keepXlinkAttributes = false;
+	    boolean keepXlinkAttributes = true;
 		Element md = dataManager.getMetadata(srvContext, id, forEditing, withValidationErrors, keepXlinkAttributes);
 		UserSession session = srvContext.getUserSession();
 		setMetadataIntoSession(session, md, id);

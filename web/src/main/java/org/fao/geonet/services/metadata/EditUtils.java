@@ -23,6 +23,11 @@
 
 package org.fao.geonet.services.metadata;
 
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+
 import jeeves.exceptions.BadParameterEx;
 import jeeves.exceptions.OperationNotAllowedEx;
 import jeeves.resources.dbms.Dbms;
@@ -31,6 +36,8 @@ import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
+import jeeves.xlink.XLink;
+
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
@@ -40,14 +47,11 @@ import org.fao.geonet.kernel.AccessManager;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.EditLib;
 import org.fao.geonet.kernel.XmlSerializer;
+import org.fao.geonet.kernel.reusable.ReusableObjManager;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
-
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
 
 
 /**
@@ -164,15 +168,15 @@ class EditUtils {
         boolean updateDateStamp = !minor.equals("true");
         String changeDate = null;
 		if (embedded) {
-            Element updatedMetada = new AjaxEditUtils(context).applyChangesEmbedded(dbms, id, htChanges, version);
+            Element updatedMetada = new AjaxEditUtils(context).applyChangesEmbedded(dbms, id, htChanges, version, context.getLanguage());
             if(updatedMetada != null) {
-                result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, false, ufo, index, context.getLanguage(), changeDate, updateDateStamp);
+                result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, false, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
             }
    		}
         else {
-            Element updatedMetada = applyChanges(dbms, id, htChanges, version);
+            Element updatedMetada = applyChanges(dbms, id, htChanges, version, context.getLanguage());
             if(updatedMetada != null) {
-			    result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp);
+			    result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
             }
 		}
 		if (!result) {
@@ -190,7 +194,7 @@ class EditUtils {
      * @return
      * @throws Exception
      */
-    private Element applyChanges(Dbms dbms, String id, Hashtable changes, String currVersion) throws Exception {
+    private Element applyChanges(Dbms dbms, String id, Hashtable changes, String currVersion, String lang) throws Exception {
         Element md = XmlSerializer.select(dbms, "Metadata", id, context);
 
 		//--- check if the metadata has been deleted
@@ -209,13 +213,15 @@ class EditUtils {
 			return null;
         }
 
+        HashSet<Element> updatedXLinks = new HashSet<Element>();
+
 		//--- update elements
 		for(Enumeration e=changes.keys(); e.hasMoreElements();) {
 			String ref = ((String) e.nextElement()) .trim();
 			String val = ((String) changes.get(ref)).trim();
 			String attr= null;
 
-			if(updatedLocalizedTextElement(md, ref, val, editLib)) {
+			if(updatedLocalizedTextElement(md, ref, val, editLib, updatedXLinks) && updatedLocalizedURLElement(md, ref, val, editLib, updatedXLinks)) {
 			    continue;
 			}
 
@@ -232,6 +238,14 @@ class EditUtils {
 			Element el = editLib.findElement(md, ref);
 			if (el == null)
 				throw new IllegalStateException("Element not found at ref = " + ref);
+
+            Element xlinkParent = findXlinkParent(el);
+            if( xlinkParent!=null && ReusableObjManager.isValidated(xlinkParent)){
+                continue;
+            }
+            if( xlinkParent!=null ){
+                updatedXLinks.add(xlinkParent);
+            }
 
 			if (attr != null) {
                 // The following work-around decodes any attribute name that has a COLON in it
@@ -276,7 +290,56 @@ class EditUtils {
 		editLib.removeEditingInfo(md);
 
 		editLib.contractElements(md);
+
+        dataManager.updateXlinkObjects(dbms, id, lang, md, updatedXLinks.toArray(new Element[updatedXLinks.size()]));
+
         return md;
+    }
+
+    public static boolean updatedLocalizedURLElement( Element md, String ref, String val, EditLib editLib, HashSet<Element> updatedXLinks ) {
+        if (ref.startsWith("url")) {
+            if (val.length() > 0) {
+                String[] ids = ref.split("_");
+                Element parent = editLib.findElement(md, ids[2]);
+
+                Element xlinkParent = findXlinkParent(parent);
+                if (xlinkParent != null && !ReusableObjManager.isValidated(xlinkParent)) {
+                    return true;
+                }
+                if (xlinkParent != null) {
+                    updatedXLinks.add(xlinkParent);
+                }
+
+                parent.setAttribute("type", "che:PT_FreeURL_PropertyType",
+                        Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance"));
+                Namespace che = Namespace.getNamespace("che", "http://www.geocat.ch/2008/che");
+                Element langElem = new Element("LocalisedURL", che);
+                langElem.setAttribute("locale", "#" + ids[1]);
+                langElem.setText(val);
+
+                Element freeURL = getOrAdd(parent, "PT_FreeURL", che);
+
+                Element urlGroup = new Element("URLGroup", che);
+                freeURL.addContent(urlGroup);
+                urlGroup.addContent(langElem);
+                Element refElem = new Element(Edit.RootChild.ELEMENT, Edit.NAMESPACE);
+                refElem.setAttribute(Edit.Element.Attr.REF, "");
+                urlGroup.addContent(refElem);
+                langElem.addContent((Element) refElem.clone());
+            }
+            return true;
+        }
+        return false;
+    }
+
+	public static  Element findXlinkParent(Element el)
+    {
+        if (el==null) return null;
+        if(el.getAttribute(XLink.HREF, XLink.NAMESPACE_XLINK)!=null){
+            return el;
+        } else {
+            return findXlinkParent(el.getParentElement());
+        }
     }
 
     /**
@@ -287,12 +350,21 @@ class EditUtils {
      * @param val
      * @return
      */
-    protected static boolean updatedLocalizedTextElement(Element md, String ref, String val, EditLib editLib) {
+    protected static boolean updatedLocalizedTextElement(Element md, String ref, String val, EditLib editLib, HashSet<Element> updatedXLinks) {
         if (ref.startsWith("lang")) {
             if (val.length() > 0) {
                 String[] ids = ref.split("_");
                 // --- search element in current metadata record
                 Element parent = editLib.findElement(md, ids[2]);
+
+                Element xlinkParent = findXlinkParent(parent);
+                if( xlinkParent!=null && ReusableObjManager.isValidated(xlinkParent)){
+                    return true;
+                }
+                if( xlinkParent!=null ){
+                    updatedXLinks.add(xlinkParent);
+                }
+
 
                 // --- add required attribute
                 parent.setAttribute("type", "gmd:PT_FreeText_PropertyType", Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance"));

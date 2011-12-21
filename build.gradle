@@ -14,11 +14,13 @@ configure(subprojects.findAll {it.name != 'web-client' && it.name != 'schematron
   // Those build files the build.gradle files in the web and web-client directories
 
   // Dependency versions and common dependencies
-  geotoolsVersion = '2.6.4'
+  geotoolsVersion = '2.6.5'
   luceneVersion = '3.0.2'
   jettyVersion = '7.3.1.v20110307'
   openrdfVersion = '1.2.7'
   jzkitVersion = '3.r260.geonetwork.patch.1'
+
+  configurations.compile.transitive = 1
 
   saxonDependency = 'net.sf.saxon:saxon:9.1.0.8b-patch'
   // End of dependency section
