@@ -687,11 +687,7 @@ public class EditLib
 		elem.setAttribute(new Attribute(Edit.Element.Attr.UUID, md.getQualifiedName()+"_"+UUID.randomUUID().toString()));
 		md.addContent(elem);
 
-		if(xlinks.containsKey(href)) {
-		    return originalRef;
-		} else {
-		    return ref;
-		}
+	    return ref;
 	}
 
 	//--------------------------------------------------------------------------

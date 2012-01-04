@@ -1,6 +1,6 @@
 package org.fao.xsl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,6 +8,7 @@ import java.util.Map;
 
 import jeeves.utils.Xml;
 
+import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.filter.Filter;
@@ -58,6 +59,29 @@ public class CovertLocalisedCharstringTest
         assertEquals(1, langMap.size());
         assertEquals(1, isoData.getChildren().size());
         assertEquals("http://camptocamp.com/main", langMap.get("#EN"));
+        
+        Element duplicateTranslation = Xml.loadString(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
+                "<description><EN>EN</EN><EN>EN2</EN></description>", false);
+
+        isoData = Xml.transform(duplicateTranslation, pathToXsl);
+        Iterator textGroups = isoData.getDescendants(new Filter()
+        {
+            private static final long serialVersionUID = 1L;
+
+            public boolean matches(Object arg0)
+            {
+                if (arg0 instanceof Element) {
+                    Element elem = (Element) arg0;
+                    return elem.getName().equals("textGroup");
+                }
+                return false;
+            }
+        });
+        
+        assertTrue(textGroups.hasNext());
+        textGroups.next();
+        assertFalse(textGroups.hasNext());
     }
 
     private Map<String, String> findLocalizedString(Element isoData)

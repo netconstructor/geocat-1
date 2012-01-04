@@ -61,8 +61,9 @@
 
 	<xsl:template mode="convert-inner-to-iso" match="node()"
 		priority="1">
-
-		<xsl:if test="normalize-space(string(.))!=''">
+		<xsl:variable name="currentName" select="name(.)"/>
+		<xsl:variable name="hasPreviousSiblingWithSameName" select="count(preceding-sibling::node()[name() = $currentName]) > 0"/>
+		<xsl:if test="normalize-space(string(.))!='' and not($hasPreviousSiblingWithSameName)">
 			<gmd:textGroup>
 				<gmd:LocalisedCharacterString>
 					<xsl:attribute name="locale">

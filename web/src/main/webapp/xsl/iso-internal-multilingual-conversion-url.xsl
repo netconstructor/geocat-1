@@ -58,8 +58,9 @@
     <xsl:template mode="convert-url-inner-to-iso" match="text()"/>
     
 	<xsl:template mode="convert-url-inner-to-iso" match="node()" priority="1">
- 
-        <xsl:if test="normalize-space(string(.))!=''">
+		<xsl:variable name="currentName" select="name(.)"/>
+ 		<xsl:variable name="hasPreviousSiblingWithSameName" select="count(preceding-sibling::node()[name() = $currentName]) > 0"/>
+		<xsl:if test="normalize-space(string(.))!='' and not($hasPreviousSiblingWithSameName)">
         <che:URLGroup>
          <che:LocalisedURL>
           <xsl:attribute name="locale">

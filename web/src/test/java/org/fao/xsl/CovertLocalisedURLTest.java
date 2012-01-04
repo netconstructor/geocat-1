@@ -1,6 +1,8 @@
 package org.fao.xsl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,6 +58,30 @@ public class CovertLocalisedURLTest
         assertEquals(1, langMap.size());
         assertEquals(1, isoData.getChildren().size());
         assertEquals("http://camptocamp.com/main", langMap.get("#EN"));
+
+        Element duplicateTranslation = Xml.loadString(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
+                "<description><EN>EN</EN><EN>EN2</EN></description>", false);
+
+        isoData = Xml.transform(duplicateTranslation, pathToXsl);
+        Iterator textGroups = isoData.getDescendants(new Filter()
+        {
+            private static final long serialVersionUID = 1L;
+
+            public boolean matches(Object arg0)
+            {
+                if (arg0 instanceof Element) {
+                    Element elem = (Element) arg0;
+                    return elem.getName().equals("URLGroup");
+                }
+                return false;
+            }
+        });
+        
+        assertTrue(textGroups.hasNext());
+        textGroups.next();
+        assertFalse(textGroups.hasNext());
+        
     }
 
     private Map<String, String> findUrls(Element isoData)
