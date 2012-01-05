@@ -98,7 +98,7 @@ public class SharedUpdate implements Service
         String onlinedesc  = LangUtils.createDescFromParams(params, "onlinedescription");
 
         String hours    = Util.getParam(params, Geocat.Params.HOURSOFSERV, "");
-		String instruct = Util.getParam(params, Geocat.Params.CONTACTINST, "");
+		String instruct = LangUtils.createDescFromParams(params, Geocat.Params.CONTACTINST);
 		String orgacronym = LangUtils.createDescFromParams(params, Geocat.Params.ORGACRONYM);
 		String directnumber = Util.getParam(params, Geocat.Params.DIRECTNUMBER, "");
 		String mobile = Util.getParam(params, Geocat.Params.MOBILE, "");

@@ -40,6 +40,7 @@
                 editI18n.init('onlinename', lang);
                 editI18n.init('onlinedescription', lang);
                 editI18n.init('onlineresource', lang);
+                editI18n.init('contactinstructions', lang);
 			}
 		</script>
 	</xsl:template>
@@ -347,8 +348,15 @@
 				<label for="contactinstructions" accesskey="I">
 					<xsl:value-of select="/root/gui/strings/contactinstructions"/>
 				</label>
-				<input class="content" type="text" id="contactinstructions"
-					name="contactinstructions" value="{/root/response/record/contactinstructions}"/>
+				   <xsl:call-template name="translationWidgetInputs">
+                        <xsl:with-param name="key" select="'contactinstructions'"/>
+                        <xsl:with-param name="root" select="/root/response/record/contactinstructions"/>
+                   </xsl:call-template>
+                   
+                   <xsl:call-template name="translationWidgetSelect">
+                        <xsl:with-param name="key" select="'contactinstructions'"/>
+                        <xsl:with-param name="class" select="'left-indent'"/>
+                   </xsl:call-template>
 				<br/>
 				<label for="kind" accesskey="I">
 					<xsl:value-of select="/root/gui/strings/kind"/>

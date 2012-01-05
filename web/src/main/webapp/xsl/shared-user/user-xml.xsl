@@ -263,12 +263,9 @@
 							</gco:CharacterString>
 						</gmd:hoursOfService>
 						<gmd:contactInstructions>
-                            <xsl:if test="contactinstructions=''">
-                                    <xsl:attribute name="gco:nilReason">missing</xsl:attribute>
-                            </xsl:if>
-							<gco:CharacterString>
-								<xsl:value-of select="contactinstructions"/>
-							</gco:CharacterString>
+                            <xsl:call-template name="composeTranslations">
+                                <xsl:with-param name="elem" select="contactinstructions"/>
+                            </xsl:call-template>
 						</gmd:contactInstructions>
 				</gmd:CI_Contact>
 			</gmd:contactInfo>

@@ -77,7 +77,7 @@
                             </xsl:if>
 		                 </xsl:when>
 		                 <xsl:otherwise>
-                            <button class="content" onclick="load('{/root/gui/locService}/shared.user.edit?validated=n&amp;operation=editinfo&amp;id={id}')"><xsl:value-of select="/root/gui/strings/edit"/></button>
+                            <button class="content" onclick="load('{/root/gui/locService}/shared.user.edit?validated=y&amp;operation=fullupdate&amp;id={id}')"><xsl:value-of select="/root/gui/strings/edit"/></button>
                             &#160;
                             <xsl:if test="/root/gui/session/userId != id">
                                 <button class="content" onclick="deleteUser('{/root/gui/locService}/nonvalidated.shared.user.remove?id={id}','{/root/gui/strings/delUserConf}', {id})"><xsl:value-of select="/root/gui/strings/delete"/></button>
@@ -103,7 +103,7 @@
                         <td class="padded"><xsl:value-of select="surname"/></td>
                         <td class="padded"><xsl:value-of select="name"/></td>
                         <td class="padded">
-                            <button class="content" onclick="load('{/root/gui/locService}/shared.user.edit?id={id}')"><xsl:value-of select="/root/gui/strings/edit"/></button>
+                            <button class="content" onclick="load('{/root/gui/locService}/shared.user.edit?validated=n&amp;operation=fullupdate&amp;id={id}')"><xsl:value-of select="/root/gui/strings/edit"/></button>
                             &#160;
                             <xsl:if test="/root/gui/session/userId != id">
                                 <button class="content" onclick="deleteUser('{/root/gui/locService}/shared.user.remove?id={id}','{/root/gui/strings/delUserConf}', {id})"><xsl:value-of select="/root/gui/strings/delete"/></button>

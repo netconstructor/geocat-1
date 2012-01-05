@@ -159,7 +159,7 @@ public class Get implements Service
 
         //--- return data
 
-        String[] elementsToResolve = { "organisation", "positionname", "orgacronym","onlinename","onlinedescription", "onlineresource" };
+        String[] elementsToResolve = { "organisation", "positionname", "orgacronym","onlinename","onlinedescription", "onlineresource", Geocat.Params.CONTACTINST};
         LangUtils.resolveMultiLingualElements(elUser, elementsToResolve);
 
         return elUser;

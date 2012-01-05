@@ -158,7 +158,7 @@
 			</button>
 			&#160;
 			<button id="common.xlink.create"
-				onClick="javascript:doNewElementAction('metadata.elem.add', dialogRequest.ref, dialogRequest.name, dialogRequest.id);">
+				onClick="javascript:doNewElementAction('metadata.elem.add', dialogRequest.ref, dialogRequest.name, dialogRequest.id,'replace',1);">
 				<xsl:value-of select="/root/gui/strings/xlink.new" />
 			</button>
 			<button id="extent.xlink.create" onClick="javascript:createNewExtent();">
