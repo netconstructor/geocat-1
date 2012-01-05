@@ -995,7 +995,8 @@
 							</xsl:otherwise>
 						</xsl:choose>
 						
-						<xsl:if test="$edit and not($isXLinked = 'true' or $rejected)">
+						<xsl:choose>
+						<xsl:when test="$edit and not($isXLinked = 'true')">
 							<xsl:call-template name="getButtons">
 								<xsl:with-param name="addLink" select="$addLink"/>
 								<xsl:with-param name="addXMLFragment" select="$addXMLFragment"/>
@@ -1005,7 +1006,19 @@
 								<xsl:with-param name="validationLink" select="$validationLink"/>
 								<xsl:with-param name="id" select="$id"/>
 							</xsl:call-template>
-						</xsl:if>
+						</xsl:when>
+						<xsl:when test="$edit and $rejected">
+							<xsl:call-template name="getButtons">
+								<xsl:with-param name="addLink" select="false()"/>
+								<xsl:with-param name="addXMLFragment" select="false()"/>
+								<xsl:with-param name="removeLink" select="$removeLink"/>
+								<xsl:with-param name="upLink" select="false()"/>
+								<xsl:with-param name="downLink" select="false()"/>
+								<xsl:with-param name="validationLink" select="false()"/>
+								<xsl:with-param name="id" select="$id"/>
+							</xsl:call-template>
+						</xsl:when>
+						</xsl:choose>
 						</span>
 					</legend>
 					<table width="100%" id="toggled{$id}">
