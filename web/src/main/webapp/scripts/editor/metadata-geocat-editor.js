@@ -26,6 +26,18 @@ function submitXLink() {
     doXLinkNewElementAjax(xlinks.length-1,metadataId,thisElement);
 }
 
+
+function createNewXLink() {
+    if(modalBox) {
+      modalBox.hide();
+    }
+    disableEditForm();
+    var eBusy = $('editorBusy');
+	if (eBusy) eBusy.show();
+		
+    doNewElementAction('metadata.elem.add', dialogRequest.ref, dialogRequest.name, dialogRequest.id,dialogRequest.replacement,1);
+}
+
 function doXLinkNewElementAjax(index, metadataId, thisElement) {
     var href = escape(xlinks[index].href);
     var pars = "&id=" + metadataId + "&ref=" + dialogRequest.ref + "&name=" + dialogRequest.name + "&href="+href;

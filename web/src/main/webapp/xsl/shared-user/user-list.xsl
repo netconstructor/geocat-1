@@ -106,7 +106,7 @@
                             <button class="content" onclick="load('{/root/gui/locService}/shared.user.edit?validated=n&amp;operation=fullupdate&amp;id={id}')"><xsl:value-of select="/root/gui/strings/edit"/></button>
                             &#160;
                             <xsl:if test="/root/gui/session/userId != id">
-                                <button class="content" onclick="deleteUser('{/root/gui/locService}/shared.user.remove?id={id}','{/root/gui/strings/delUserConf}', {id})"><xsl:value-of select="/root/gui/strings/delete"/></button>
+                                <button class="content" onclick="deleteUser('{/root/gui/locService}/nonvalidated.shared.user.remove?id={id}','{/root/gui/strings/delUserConf}', {id})"><xsl:value-of select="/root/gui/strings/delete"/></button>
                             </xsl:if>
                         </td>
                     </tr>

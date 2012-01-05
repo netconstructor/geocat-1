@@ -101,6 +101,7 @@
     <monitoring.freespace>Espace libre</monitoring.freespace>
 
     <reject>Refuser</reject>
+    <rejected>rejeté</rejected>
     <replaceSharedObjects>Remplacer par des objets réutilisables</replaceSharedObjects>
     <format>
         <management>Gestion des formats de distribution</management>

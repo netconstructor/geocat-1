@@ -949,10 +949,25 @@
 		<xsl:param name="schema"/>
 		<xsl:param name="edit" select="false()"/>
 		<xsl:param name="id" select="generate-id(.)"/>
-	
+	        
+        <xsl:variable name="rejected" select="count(*[contains(@xlink:title,'rejected')]) > 0"/>
+	    <xsl:variable name="updatedTitle">
+            <xsl:choose>
+                <xsl:when test="$rejected">
+                <xsl:value-of select="$title"/> (<xsl:value-of select="/root/gui/strings/rejected"/>)
+                </xsl:when>
+                <xsl:otherwise>
+                <xsl:value-of select="$title"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        
 		<xsl:variable name="isXLinked"><xsl:call-template name="validatedXlink"/></xsl:variable>
-
 		<tr id="{$id}" type="metadata">
+		   <xsl:if test="$rejected">
+                <xsl:attribute name="class">deleted-reusable</xsl:attribute>
+           </xsl:if>
+		
 			<td class="padded-content" width="100%" colspan="2">
 				<fieldset class="metadata-block">
 					<legend class="block-legend">
@@ -962,7 +977,7 @@
 						</xsl:if>
 						<xsl:choose>
 							<xsl:when test="$helpLink!=''">
-								<span id="stip.{$helpLink}|{$id}" onclick="toolTip(this.id);" class="content" style="cursor:help;"><xsl:value-of select="$title"/>
+								<span id="stip.{$helpLink}|{$id}" onclick="toolTip(this.id);" class="content" style="cursor:help;"><xsl:value-of select="$updatedTitle"/>
 								</span>
 								<!-- Only show asterisks on simpleElements - user has to know
 									which ones to fill out 
@@ -974,13 +989,13 @@
 							</xsl:when>
 							<xsl:otherwise>
 								<xsl:call-template name="showTitleWithTag">
-									<xsl:with-param name="title" select="$title"/>
+									<xsl:with-param name="title" select="$updatedTitle"/>
 									<xsl:with-param name="class" select="'no-help'"/>
 								</xsl:call-template>
 							</xsl:otherwise>
 						</xsl:choose>
 						
-						<xsl:if test="$edit and not($isXLinked = 'true')">
+						<xsl:if test="$edit and not($isXLinked = 'true' or $rejected)">
 							<xsl:call-template name="getButtons">
 								<xsl:with-param name="addLink" select="$addLink"/>
 								<xsl:with-param name="addXMLFragment" select="$addXMLFragment"/>
@@ -1181,6 +1196,7 @@
 		<xsl:variable name="value" select="string(.)"/>
 		<xsl:variable name="isXLinked">false</xsl:variable>
 
+		<xsl:variable name="rejected" select="count(ancestor-or-self::*[contains(@xlink:title,'rejected')]) > 0"/>
 		<xsl:choose>
 			<!-- list of values -->
 			<xsl:when test="geonet:element/geonet:text">
@@ -1195,7 +1211,6 @@
 					</xsl:otherwise>
 				  </xsl:choose>
 				</xsl:variable>
-							
 				<!-- This code is mainly run under FGDC 
 				but also for enumeration like topic category and 
 				service parameter direction in ISO. 
@@ -1226,7 +1241,7 @@
 					<xsl:if test="$visible = 'false'">
 						<xsl:attribute name="style">display:none;</xsl:attribute>
 					</xsl:if>
-					<xsl:if test="$isXLinked = 'true'">
+					<xsl:if test="$rejected or $isXLinked = 'true'">
 						<xsl:attribute name="disabled">disabled</xsl:attribute>
 					</xsl:if>
 					<xsl:if test="$mandatory='true' and $edit">
@@ -1253,7 +1268,7 @@
 					Default value set to false. -->
 					<xsl:when test="name(.)='gco:Boolean'">
 					    <input type="hidden" name="_{geonet:element/@ref}" id="_{geonet:element/@ref}" value="{.}">
-							<xsl:if test="$isXLinked = 'true'">
+							<xsl:if test="$rejected or $isXLinked = 'true'">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>
 					        <xsl:choose>
@@ -1269,14 +1284,14 @@
 						<xsl:choose>
 						    <xsl:when test="text()='true' or text()='1'">
 								<input class="md" type="checkbox" id="_{geonet:element/@ref}_checkbox" onclick="handleCheckboxAsBoolean(this, '_{geonet:element/@ref}');" checked="checked">
-									<xsl:if test="$isXLinked = 'true'">
+									<xsl:if test="$rejected or $isXLinked = 'true'">
 										<xsl:attribute name="disabled">disabled</xsl:attribute>
 									</xsl:if>
 								</input>
 							</xsl:when>
 							<xsl:otherwise>
 								<input class="md" type="checkbox" id="_{geonet:element/@ref}_checkbox" onclick="handleCheckboxAsBoolean(this, '_{geonet:element/@ref}');">
-									<xsl:if test="$isXLinked = 'true'">
+									<xsl:if test="$rejected or $isXLinked = 'true'">
 										<xsl:attribute name="disabled">disabled</xsl:attribute>
 									</xsl:if>								
 								</input>
@@ -1285,8 +1300,8 @@
 					</xsl:when>
 
 					<xsl:otherwise>
-						<input class="md" type="{$input_type}" value="{text()}" size="{$cols}">
-							<xsl:if test="$isXLinked = 'true'">
+						<input class="md" type="{$input_type}" value="{text()}" size="{$cols}" other="{$rejected}">
+							<xsl:if test="$rejected or $isXLinked = 'true'">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>						
 							<xsl:choose>
@@ -1363,9 +1378,8 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
-
 				<textarea class="md" name="_{geonet:element/@ref}" id="_{geonet:element/@ref}" rows="{$rows}" cols="{$cols}">
-					<xsl:if test="$isXLinked = 'true'">
+					<xsl:if test="$rejected or $isXLinked = 'true'">
 						<xsl:attribute name="disabled">disabled</xsl:attribute>
 					</xsl:if>
 					<xsl:if test="$visible = 'false'">

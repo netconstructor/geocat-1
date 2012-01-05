@@ -170,13 +170,13 @@ class EditUtils {
 		if (embedded) {
             Element updatedMetada = new AjaxEditUtils(context).applyChangesEmbedded(dbms, id, htChanges, version, context.getLanguage());
             if(updatedMetada != null) {
-                result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, false, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
+                result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, false, ufo, index, context.getLanguage(), changeDate, updateDateStamp, true);
             }
    		}
         else {
             Element updatedMetada = applyChanges(dbms, id, htChanges, version, context.getLanguage());
             if(updatedMetada != null) {
-			    result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
+			    result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, true);
             }
 		}
 		if (!result) {

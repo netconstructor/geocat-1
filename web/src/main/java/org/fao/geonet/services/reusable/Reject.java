@@ -52,6 +52,7 @@ import org.fao.geonet.kernel.reusable.ReusableTypes;
 import org.fao.geonet.kernel.reusable.SendEmailParameter;
 import org.fao.geonet.kernel.reusable.Utils;
 import org.fao.geonet.kernel.reusable.Utils.FindXLinks;
+import org.jdom.Comment;
 import org.jdom.Element;
 
 import com.google.common.base.Function;
@@ -110,6 +111,7 @@ public class Reject implements Service
 
         Multimap<String/* ownerid */, String/* metadataid */> emailInfo = HashMultimap.create();
         List<Element> result = new ArrayList<Element>();
+        ArrayList<Integer> allAffectedMdIds = new ArrayList<Integer>();
         for (String id : ids) {
             Set<MetadataRecord> results = Utils.getReferencingMetadata(context, invalidXlinkLuceneField, id, true, idConverter);
 
@@ -121,9 +123,10 @@ public class Reject implements Service
             Element newIds = updateHrefs(strategy, context, dbms, session, id, results, baseURL, strategySpecificData);
             ArrayList<Integer> mdIds = new ArrayList<Integer>();
             for (MetadataRecord metadataRecord : results) {
-                mdIds.add(Integer.parseInt(metadataRecord.id));
+                int mdId = Integer.parseInt(metadataRecord.id);
+                mdIds.add(mdId);
+                allAffectedMdIds.add(mdId);
             }
-            gc.getDataManager().startThreadsToReindex(context, mdIds);
 
             Element e = new Element("idMap").addContent(new Element("oldId").setText(id)).addContent(newIds);
             result.add(e);
@@ -133,6 +136,8 @@ public class Reject implements Service
             emailNotifications(strategy, context, dbms, session, msg, emailInfo, baseURL, strategySpecificData, testing);
         }
         strategy.performDelete(ids, dbms, session, strategySpecificData);
+
+        gc.getDataManager().startThreadsToReindex(context, allAffectedMdIds);
 
         return result;
 
@@ -156,7 +161,7 @@ public class Reject implements Service
                     String newHref;
                     if (!updatedHrefs.containsKey(oldHRef)) {
                         Element fragment = Processor.resolveXLink(oldHRef,context);
-
+                        fragment.setAttribute(XLink.TITLE, "rejected", XLink.NAMESPACE_XLINK);
                         // update xlink service
                         int newId = DeletedObjects.insert(dbms, context.getSerialFactory(), Xml.getString(fragment), href);
                         newIds.addContent(new Element("id").setText(String.valueOf(newId)));

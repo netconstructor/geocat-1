@@ -113,6 +113,7 @@
 	<monitoring.freespace>Free space</monitoring.freespace>
 
     <reject>Reject</reject>
+    <rejected>Rejected</rejected>
     <replaceSharedObjects>Validate shared objects</replaceSharedObjects>
     <format>
            <management>Distribution formats management</management>

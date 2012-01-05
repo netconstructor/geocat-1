@@ -424,12 +424,17 @@ function doNewElementAjax(action, ref, name, child, id, what, max, orElement, ex
 				
 				// Check elements
 				validateMetadataFields();
-				
+				var eBusy = $('editorBusy');
+                if (eBusy) eBusy.hide();
+                $('editorOverlay').setStyle({display: "none"});
 				setBunload(true); // reset warning for window destroy
 			},
 			onFailure: function(req) { 
 				alert(translate("errorAddElement") + name + translate("errorFromDoc") 
 						+ " / status " + req.status + " text: " + req.statusText + " - " + translate("tryAgain"));
+				var eBusy = $('editorBusy');
+                if (eBusy) eBusy.hide();
+                $('editorOverlay').setStyle({display: "none"});
 				setBunload(true); // reset warning for window destroy
 			}
 		}

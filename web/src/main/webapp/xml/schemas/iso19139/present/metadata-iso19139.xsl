@@ -4170,7 +4170,7 @@
 			<xsl:variable name="guiLang" select="/root/gui/language" />
 			<xsl:variable name="language"
 				select="/root/gui/isoLang/record[code=$code]/label/*[name(.)=$guiLang]" />
-			<gmd:PT_FreeText>
+			<gmd:PT_FreeText xlink:title="{$currentNode/ancestor-or-self::*[contains(@xlink:title,'rejected')]/@xlink:title}">
 				<gmd:textGroup>
 					<gmd:LocalisedCharacterString locale="{$langId}"
 						code="{$code}" language="{$language}">
