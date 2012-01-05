@@ -226,7 +226,9 @@
 	<xsl:template mode="simpleElement" match="*">
 		<xsl:param name="schema"/>
 		<xsl:param name="edit"   select="false()"/>
+		<xsl:param name="overrideMandatory" select="''"/>
 		<xsl:param name="title">
+		
 			<xsl:call-template name="getTitle">
 				<xsl:with-param name="name"   select="name(.)"/>
 				<xsl:with-param name="schema" select="$schema"/>
@@ -252,6 +254,7 @@
 					<xsl:with-param name="title"    select="$title"/>
 					<xsl:with-param name="text"     select="$text"/>
 					<xsl:with-param name="helpLink" select="$helpLink"/>
+					<xsl:with-param name="overrideMandatory" select="$overrideMandatory"/>
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
@@ -472,6 +475,7 @@
 		<xsl:param name="title"/>
 		<xsl:param name="text"/>
 		<xsl:param name="helpLink"/>
+		<xsl:param name="overrideMandatory" select="''"/>
 		
 		<!-- if it's the last brother of it's type and there is a new brother make addLink -->
 
@@ -525,6 +529,7 @@
 			<xsl:with-param name="validationLink" select="$validationLink"/>
 			<xsl:with-param name="edit"       select="true()"/>
 			<xsl:with-param name="id" select="$id"/>
+			<xsl:with-param name="overrideMandatory" select="$overrideMandatory"/>
 		</xsl:call-template>
 	</xsl:template>
 	
@@ -770,6 +775,7 @@
 		<xsl:param name="edit" select="false()"/>
 		<xsl:param name="id" select="generate-id(.)"/>
 		<xsl:param name="visible" select="true()"/>
+		<xsl:param name="overrideMandatory" select="''"/>
 
 		<xsl:variable name="isXLinked"><xsl:call-template name="validatedXlink"/></xsl:variable>
 		<xsl:variable name="geonet" select="starts-with(name(.),'geonet:')"/>
@@ -789,7 +795,7 @@
 						<xsl:attribute name="class">md</xsl:attribute>
 					</xsl:otherwise>
 				</xsl:choose>
-				
+
 				<xsl:choose>
 					<xsl:when test="$helpLink!=''">
 						<span id="stip.{$helpLink}|{$id}" onclick="toolTip(this.id);" class="content" style="cursor:help;">
@@ -798,6 +804,7 @@
 						<xsl:call-template name="asterisk">
 							<xsl:with-param name="link" select="$removeLink"/>
 							<xsl:with-param name="edit" select="$edit"/>
+							<xsl:with-param name="overrideMandatory" select="$overrideMandatory"/>
 						</xsl:call-template>
 					</xsl:when>
 					<xsl:otherwise>
@@ -1080,7 +1087,6 @@
     <xsl:template name="getTitle">
         <xsl:param name="name"/>
         <xsl:param name="schema"/>
-
 				<!-- <xsl:message>Running getTitle on <xsl:value-of select="concat($name,' from ',$schema)"/></xsl:message> -->
 
         <xsl:variable name="fullContext">
@@ -1096,7 +1102,7 @@
             <xsl:choose>
                 <xsl:when test="starts-with($schema,'iso19139')">
 
-                    <!-- Name with context in current schema -->
+                    <!-- Name with context in current schema --> 
                     <xsl:variable name="schematitleWithContext"
                                   select="string(/root/gui/schemas/*[name(.)=$schema]/labels/element[@name=$name and (@context=$fullContext or @context=$context or @context=$contextIsoType)]/label)"/>
 
@@ -1158,6 +1164,7 @@
 		<xsl:param name="rows" select="1"/>
 		<xsl:param name="cols" select="40"/>
 		<xsl:param name="langId"/>
+		<xsl:param name="overrideMandatory" select="''"/>
 		<xsl:param name="visible" select="true"/>
 		<!-- Add javascript validator function. By default, if element 
 		is mandatory a non empty validator is defined. -->
@@ -1178,8 +1185,16 @@
 			<!-- list of values -->
 			<xsl:when test="geonet:element/geonet:text">
 
-				<xsl:variable name="mandatory" select="geonet:element/@min='1' and
-					geonet:element/@max='1'"/>
+				<xsl:variable name="mandatory">
+				  <xsl:choose>
+				  	<xsl:when test="string-length($overrideMandatory) > 0">
+				  		<xsl:value-of select="$overrideMandatory = 'true'"/>
+				  	</xsl:when>
+				  	<xsl:otherwise>
+				  		<xsl:value-of select="geonet:element/@min='1' and geonet:element/@max='1'"/>
+					</xsl:otherwise>
+				  </xsl:choose>
+				</xsl:variable>
 							
 				<!-- This code is mainly run under FGDC 
 				but also for enumeration like topic category and 
@@ -1214,7 +1229,7 @@
 					<xsl:if test="$isXLinked = 'true'">
 						<xsl:attribute name="disabled">disabled</xsl:attribute>
 					</xsl:if>
-					<xsl:if test="$mandatory and $edit">
+					<xsl:if test="$mandatory='true' and $edit">
 						<xsl:attribute name="onchange">
 							validateNonEmpty(this);
 						</xsl:attribute>
@@ -1287,10 +1302,19 @@
 							<xsl:if test="$visible = 'false'">
 								<xsl:attribute name="style">display:none;</xsl:attribute>
 							</xsl:if>
-							
-							<xsl:variable name="mandatory" select="(name(.)='gmd:LocalisedCharacterString' 
-									and ../../geonet:element/@min='1')
-									or ../geonet:element/@min='1'"/>
+							<xsl:variable name="mandatory">
+								<xsl:choose>
+									<xsl:when test="string-length($overrideMandatory) > 0">
+										<xsl:value-of select="$overrideMandatory = 'true'" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of
+											select="(name(.)='gmd:LocalisedCharacterString' 
+															and ../../geonet:element/@min='1')
+															or ../geonet:element/@min='1'" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:variable>
 							
 							<xsl:choose>
 								<!-- Numeric field -->
@@ -1306,8 +1330,7 @@
 									</xsl:choose>
 								</xsl:when>
 								<!-- Mandatory field (with extra validator) -->
-								<xsl:when test="$mandatory
-									and $edit">
+								<xsl:when test="$mandatory='true' and $edit">
 									<xsl:attribute name="onkeyup">
 										validateNonEmpty(this);
 									</xsl:attribute>
@@ -1327,6 +1350,20 @@
 				</xsl:choose>
 			</xsl:when>
 			<xsl:when test="$edit=true()">
+				<xsl:variable name="mandatory">
+					<xsl:choose>
+						<xsl:when test="string-length($overrideMandatory) > 0">
+							<xsl:value-of select="$overrideMandatory = 'true'" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of
+								select="(name(.)='gmd:LocalisedCharacterString' 
+												and ../../geonet:element/@min='1')
+												or ../geonet:element/@min='1'" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+
 				<textarea class="md" name="_{geonet:element/@ref}" id="_{geonet:element/@ref}" rows="{$rows}" cols="{$cols}">
 					<xsl:if test="$isXLinked = 'true'">
 						<xsl:attribute name="disabled">disabled</xsl:attribute>
@@ -1334,11 +1371,8 @@
 					<xsl:if test="$visible = 'false'">
 						<xsl:attribute name="style">display:none;</xsl:attribute>
 					</xsl:if>
-					<xsl:if test="(
-						(name(.)='gmd:LocalisedCharacterString' and ../../geonet:element/@min='1')
-						or ../geonet:element/@min='1'
-						) and $edit">
-						<xsl:attribute name="onkeyup">validateNonEmpty(this);</xsl:attribute>
+					<xsl:if test="$mandatory='true' and $edit">
+						<xsl:attribute name="onkeyup">validateNonEmpty(this)</xsl:attribute>
 					</xsl:if>
 					<xsl:value-of select="text()"/>
 				</textarea>
@@ -1524,9 +1558,21 @@
 	<xsl:template name="asterisk">
 		<xsl:param name="link"/>
 		<xsl:param name="edit"/>
-
+		<xsl:param name="overrideMandatory" select="''"/>
+		
+		<xsl:variable name="mandatory">
+		  <xsl:choose>
+		  	<xsl:when test="string-length($overrideMandatory) > 0">
+		  		<xsl:value-of select="$overrideMandatory = 'true'"/>
+		  	</xsl:when>
+		  	<xsl:otherwise>
+		  		<xsl:value-of select="geonet:element/@min='1'"/>
+			</xsl:otherwise>
+		  </xsl:choose>
+		</xsl:variable>
+		
 		<!-- <xsl:if test="$link='' and not(contains(name(.),'geonet:')) and $edit"> -->
-		<xsl:if test="geonet:element/@min='1' and $edit">
+		<xsl:if test="$mandatory='true' and $edit">
 			<sup><font size="-1" color="#FF0000">&#xA0;*</font></sup>
 		</xsl:if>
 	</xsl:template>

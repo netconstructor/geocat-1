@@ -405,6 +405,7 @@
 		<xsl:param name="rows" select="1"/>
 		<xsl:param name="cols" select="40"/>
 		<xsl:param name="langId" />
+		<xsl:param name="overrideMandatory" select="''"/>
 		<xsl:param name="widget" />
 		<xsl:param name="validator" />
 		
@@ -461,6 +462,7 @@
 					<xsl:apply-templates mode="simpleElement" select=".">
 						<xsl:with-param name="schema" select="$schema"/>
 						<xsl:with-param name="edit"   select="$edit"/>
+						<xsl:with-param name="overrideMandatory" select="$overrideMandatory"/>
 					</xsl:apply-templates>
 				</xsl:for-each>
 
@@ -471,6 +473,7 @@
 					<xsl:with-param name="title"    select="$title"/>
 					<xsl:with-param name="helpLink" select="$helpLink"/>
 					<xsl:with-param name="text"     select="$text"/>
+					<xsl:with-param name="overrideMandatory" select="$overrideMandatory"/>
 				</xsl:apply-templates>
 				</xsl:with-param>
 			</xsl:apply-templates>
@@ -482,6 +485,7 @@
 				<xsl:with-param name="title"    select="$title"/>
 				<xsl:with-param name="helpLink" select="$helpLink"/>
 				<xsl:with-param name="text"     select="$text"/>
+				<xsl:with-param name="overrideMandatory" select="$overrideMandatory"/>
 			</xsl:apply-templates>
 		</xsl:otherwise>
 		</xsl:choose>
@@ -3958,6 +3962,13 @@
 		<xsl:param name="edit" />
 		<xsl:param name="rows" select="1" />
 		
+		<xsl:variable name="overrideMandatory">
+			<xsl:choose>
+				<xsl:when test="ancestor-or-self::gmd:code and ancestor-or-self::gmd:geographicIdentifier">false</xsl:when>
+				<xsl:otherwise></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		 
 		<xsl:variable name="langId">
 			<xsl:call-template name="getLangId">
 				<xsl:with-param name="langGui" select="/root/gui/language" />
@@ -3984,7 +3995,6 @@
 					</xsl:call-template>
 				</xsl:variable>
 
-				
 				<table><tr><td>
 					<!-- Match gco:CharacterString element which is in default language or
 						process a PT_FreeText with a reference to the main metadata language. -->
@@ -3995,6 +4005,7 @@
 									<xsl:with-param name="schema" select="$schema" />
 									<xsl:with-param name="edit" select="'true'" />
 									<xsl:with-param name="rows" select="$rows" />
+									<xsl:with-param name="overrideMandatory" select="$overrideMandatory" />
 								</xsl:call-template>
 							</xsl:for-each>                        
 						</xsl:when>
@@ -4004,6 +4015,7 @@
 									<xsl:with-param name="schema" select="$schema" />
 									<xsl:with-param name="edit" select="'true'" />
 									<xsl:with-param name="rows" select="$rows" />
+									<xsl:with-param name="overrideMandatory" select="$overrideMandatory" />
 								</xsl:call-template>
 							</xsl:for-each>                        
 						</xsl:when>
@@ -4013,6 +4025,7 @@
 									<xsl:with-param name="schema" select="$schema" />
 									<xsl:with-param name="edit" select="'true'" />
 									<xsl:with-param name="rows" select="$rows" />
+									<xsl:with-param name="overrideMandatory" select="$overrideMandatory" />
 								</xsl:call-template>
 							</xsl:for-each>         
 						</xsl:when>
@@ -4022,6 +4035,7 @@
 									<xsl:with-param name="schema" select="$schema" />
 									<xsl:with-param name="edit" select="'true'" />
 									<xsl:with-param name="rows" select="$rows" />
+									<xsl:with-param name="overrideMandatory" select="$overrideMandatory" />
 								</xsl:call-template>
 							</xsl:for-each>         
 						</xsl:otherwise>
@@ -4033,6 +4047,7 @@
 							<xsl:with-param name="edit" select="'true'" />
 							<xsl:with-param name="visible" select="'false'" />
 							<xsl:with-param name="rows" select="$rows" />
+							<xsl:with-param name="overrideMandatory" select="$overrideMandatory" />
 						</xsl:call-template>
 					</xsl:for-each>
 				</td>
@@ -4120,6 +4135,7 @@
 			<xsl:with-param name="edit" select="$edit" />
 			<xsl:with-param name="langId" select="$langId" />
 			<xsl:with-param name="widget" select="$widget" />
+			<xsl:with-param name="overrideMandatory" select="$overrideMandatory" />
 			<xsl:with-param name="rows" select="$rows" />
 		</xsl:call-template>
 	</xsl:template>
