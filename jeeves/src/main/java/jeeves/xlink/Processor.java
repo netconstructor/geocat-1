@@ -247,7 +247,7 @@ public final class Processor {
 		String mappedURI = mapURI(uri);
         Set groupKeys = xlinkCache.getGroupKeys(mappedURI);
         if(groupKeys==null || groupKeys.isEmpty()) {
-            
+            xlinkCache.remove(uri);           
         } else {
             for( Object key : groupKeys ) {
                 xlinkCache.remove(key, mappedURI);
@@ -446,11 +446,6 @@ public final class Processor {
 				break;
 			}
 		}
-	}
-
-	public static void removeHRef(String href) throws CacheException {
-		JeevesJCS.getInstance(XLINK_JCS).remove(href);
-		
 	}
 
 }
