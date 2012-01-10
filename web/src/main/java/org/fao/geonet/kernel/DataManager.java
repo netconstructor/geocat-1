@@ -3137,5 +3137,7 @@ public class DataManager {
             int index = parentElement.indexOf(xlink);
             parentElement.addContent(index + 1, newElements);
         }
+        
+        dbms.commit();
     }
 }

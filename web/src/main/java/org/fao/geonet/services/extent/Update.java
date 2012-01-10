@@ -42,6 +42,7 @@ import jeeves.xlink.Processor;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.reusable.ExtentsStrategy;
 import org.fao.geonet.services.extent.Add.Format;
 import org.fao.geonet.services.extent.Source.FeatureType;
 import org.fao.geonet.util.LangUtils;
@@ -163,7 +164,7 @@ public class Update implements Service
         store.modifyFeatures(attributes.toArray(new AttributeDescriptor[attributes.size()]), newValues.toArray(),
                 featureType.createFilter(id));
 
-        Processor.clearCache();
+        Processor.uncacheXLinkUri(ExtentsStrategy.baseHref(id,wfs.wfsId,featureType.typename));
 
         final Element responseElem = new Element("success");
         responseElem.setText("Updated features with id= " + id);

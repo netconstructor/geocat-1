@@ -498,7 +498,7 @@ public class ReusableObjManager
             ReplacementStrategy strategy;
 
             if (xlink.getName().equals("contact") || xlink.getName().equals("pointOfContact")
-                     || xlink.getName().equals("distributorContact") || xlink.getName().equals("citedResponsibleParty")) {
+                     || xlink.getName().equals("distributorContact") || xlink.getName().equals("citedResponsibleParty") || xlink.getName().equals("parentResponsibleParty")) {
                 strategy = new ContactsStrategy(dbms, _appPath, baseUrl, "unknown", _serialFactory);
             } else if (xlink.getName().equals("resourceFormat") || xlink.getName().equals("distributionFormat")) {
                 strategy = new FormatsStrategy(dbms, _appPath, baseUrl, "unknown", _serialFactory);

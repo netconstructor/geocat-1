@@ -577,8 +577,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
         Source wfs = _extentMan.getSource();
         FeatureType featureType = findFeatureType(featureTypeName);
 
-        return XLink.LOCAL_PROTOCOL+"xml.extent.get?wfs=" + wfs.wfsId + "&typename=" + featureType.typename + "&id="
-                + id + "&";
+        return baseHref(id, wfs.wfsId, featureType.typename) + "&";
     }
 
     public String updateHrefId(String oldHref, String id, UserSession session) {
@@ -663,13 +662,12 @@ public final class ExtentsStrategy extends ReplacementStrategy {
         return filter;
     }
 
+    public static String baseHref(String id, String wfs, String typename) {
+        return  MessageFormat.format(XLink.LOCAL_PROTOCOL+"xml.extent.get?id={0}&wfs={1}&typename={2}",id,wfs,typename);
+    }
     private Element xlinkIt(Format format, Source wfs, FeatureType featureType, String id, boolean validated,
             boolean include, Element xlinkElement) {
-
-
-        String template = XLink.LOCAL_PROTOCOL+"xml.extent.get?wfs={0}&typename={1}&id={2}&format={3}&extentTypeCode={4}";
-        String xlink = MessageFormat.format(template, wfs.wfsId, featureType.typename, id, format,
-                String.valueOf(include));
+        String xlink = baseHref(id,wfs.wfsId, featureType.typename)+"&format="+format+"&extentTypeCode="+String.valueOf(include);
 
         xlinkElement.removeContent();
         xlinkElement.setAttribute(XLink.HREF, xlink, XLink.NAMESPACE_XLINK);

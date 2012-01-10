@@ -174,6 +174,9 @@ public final class ContactsStrategy extends ReplacementStrategy
         }
     }
 
+    public static String baseHref(String id) {
+        return  XLink.LOCAL_PROTOCOL+"xml.user.get?id=" + id;
+    }
     private Collection<Element> xlinkIt(Element originalElem, String role, String id, boolean validated)
     {
         String schema = "iso19139";
@@ -183,7 +186,7 @@ public final class ContactsStrategy extends ReplacementStrategy
 
         originalElem.removeContent();
         // param order is important, id param must be first
-        originalElem.setAttribute(XLink.HREF, XLink.LOCAL_PROTOCOL+"xml.user.get?id=" + id + "&schema=" + schema
+        originalElem.setAttribute(XLink.HREF,baseHref(id) + "&schema=" + schema
                 + "&role=" + role, XLink.NAMESPACE_XLINK);
 
         if (!validated) {

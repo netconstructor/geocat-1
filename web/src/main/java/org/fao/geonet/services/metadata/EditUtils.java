@@ -170,13 +170,13 @@ class EditUtils {
 		if (embedded) {
             Element updatedMetada = new AjaxEditUtils(context).applyChangesEmbedded(dbms, id, htChanges, version, context.getLanguage());
             if(updatedMetada != null) {
-                result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, false, ufo, index, context.getLanguage(), changeDate, updateDateStamp, true);
+                result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, false, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
             }
    		}
         else {
             Element updatedMetada = applyChanges(dbms, id, htChanges, version, context.getLanguage());
             if(updatedMetada != null) {
-			    result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, true);
+			    result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
             }
 		}
 		if (!result) {
@@ -332,13 +332,14 @@ class EditUtils {
         return false;
     }
 
-	public static  Element findXlinkParent(Element el)
+    public static  Element findXlinkParent(Element el) { return findXlinkParent(el,null);}
+	public static  Element findXlinkParent(Element el, Element topXLink)
     {
-        if (el==null) return null;
+        if (el==null) return topXLink;
         if(el.getAttribute(XLink.HREF, XLink.NAMESPACE_XLINK)!=null){
-            return el;
+            return findXlinkParent(el.getParentElement(), el);
         } else {
-            return findXlinkParent(el.getParentElement());
+            return findXlinkParent(el.getParentElement(), topXLink);
         }
     }
 
@@ -372,7 +373,7 @@ class EditUtils {
                 // --- add new translation
                 Namespace gmd = Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
                 Element langElem = new Element("LocalisedCharacterString", gmd);
-                langElem.setAttribute("locale", "#" + ids[1]);
+                langElem.setAttribute("locale", "#" + ids[1].toUpperCase());
                 langElem.setText(val);
 
                 Element freeText = getOrAdd(parent, "PT_FreeText", gmd);

@@ -35,6 +35,7 @@ import jeeves.xlink.Processor;
 
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
+import org.fao.geonet.kernel.reusable.ContactsStrategy;
 import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
 
@@ -106,7 +107,7 @@ public class SharedUpdate implements Service
         String validated = Util.getParam(params, Geocat.Params.VALIDATED);
 
 
-		Processor.clearCache();
+		Processor.uncacheXLinkUri(ContactsStrategy.baseHref(id));
 		
 		UserSession usrSess = context.getUserSession();
 		String      myProfile = usrSess.getProfile();

@@ -75,8 +75,8 @@ public class UpdateElement implements Service {
 
 		ThesaurusManager manager = gc.getThesaurusManager();
 		Thesaurus thesaurus = manager.getThesaurusByName(ref);
-		Processor.removeHRef(XLink.LOCAL_PROTOCOL+"che.keyword.get?thesaurus=" + ref + "&id=" + URLEncoder.encode(namespace+oldid, "UTF-8").toLowerCase() + "&locales=en,it,de,fr");
-		Processor.removeHRef(XLink.LOCAL_PROTOCOL+"che.keyword.get?thesaurus=" + ref + "&id=" + URLEncoder.encode(namespace+oldid, "UTF-8") + "&locales=en,it,de,fr");
+		Processor.uncacheXLinkUri(XLink.LOCAL_PROTOCOL+"che.keyword.get?thesaurus=" + ref + "&id=" + URLEncoder.encode(namespace+oldid, "UTF-8").toLowerCase() + "&locales=en,it,de,fr");
+		Processor.uncacheXLinkUri(XLink.LOCAL_PROTOCOL+"che.keyword.get?thesaurus=" + ref + "&id=" + URLEncoder.encode(namespace+oldid, "UTF-8") + "&locales=en,it,de,fr");
 		if (!(oldid.equals(newid))) {
 			if (thesaurus.isFreeCode(namespace, newid)) {
 				thesaurus.updateCode(namespace, oldid, newid);

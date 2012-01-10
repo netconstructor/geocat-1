@@ -100,7 +100,7 @@ public class Manager implements Service {
 				elRes.addContent(new Element(Jeeves.Elem.OPERATION)
 						.setText(Jeeves.Text.UPDATED));
 
-				Processor.removeHRef(XLink.LOCAL_PROTOCOL+"xml.format.get?id=" + id);
+				Processor.uncacheXLinkUri(XLink.LOCAL_PROTOCOL+"xml.format.get?id=" + id);
 
 			}
 		}

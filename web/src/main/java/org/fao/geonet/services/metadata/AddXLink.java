@@ -35,10 +35,12 @@ import jeeves.xlink.XLink;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.reusable.ReusableObjManager;
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 //=============================================================================
@@ -87,8 +89,18 @@ public class AddXLink implements Service {
 
 		// -- build the element to be added and return it
 		AjaxEditUtils ajaxEditUtils = new AjaxEditUtils(context);
-		return  ajaxEditUtils.addXLink(dbms, session, id, ref, name, xLink);
+		Element element = ajaxEditUtils.addXLink(dbms, session, id, ref, name, xLink);
+		Attribute attribute = new Attribute("xlinkedObj","true", Edit.NAMESPACE);
+		element.setAttribute(attribute);
+		Element md = (Element) findRoot(element).clone();
+        element.removeAttribute(attribute);
+        return md;
 	}
+
+    private Element findRoot( Element element ) {
+        if(element.isRootElement() || element.getParentElement() == null) return element;
+        return findRoot(element.getParentElement());
+    }
 }
 
 // =============================================================================

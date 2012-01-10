@@ -57,6 +57,7 @@ import jeeves.utils.Xml;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.reusable.ExtentsStrategy;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.services.extent.Get.Format;
 import org.fao.geonet.services.extent.Source.FeatureType;
@@ -262,8 +263,7 @@ public class List implements Service
         final boolean selected = selection != null && selection.ids.contains(Pair.read(featureType, id));
         featureElem.setAttribute(SELECTED, String.valueOf(selected));
 
-        final String href = baseURL + "/srv/" + langCode + "/xml.extent.get?wfs=" + wfs.wfsId + "&format=" + format
-                + "&typename=" + featureType.typename + "&id=" + id;
+        final String href = ExtentsStrategy.baseHref(id, wfs.wfsId, featureType.typename)+"&format=" + format;
         featureElem.setAttribute(HREF, href);
         if (featureType.descColumn != null) {
             String descAt = ExtentHelper.decodeDescription((String) next.getAttribute(featureType.descColumn));
