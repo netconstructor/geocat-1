@@ -32,7 +32,7 @@ configure(subprojects.findAll {it.name != 'web-client' && it.name != 'schematron
       'xmlunit:xmlunit:1.2')
   
   repositories {
-      mavenLocal()
+//      mavenLocal()
       maven {url "file://${rootDir}/maven_repo"}
       maven {url 'http://dev.mapfish.org/maven/repository'}
       mavenCentral()

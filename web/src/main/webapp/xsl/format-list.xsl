@@ -13,7 +13,7 @@
 	<xsl:template match="/">
 		<ul>
 			<xsl:for-each select="/root/response/record">                     
-				<li xlink:href="{concat('http://', /root/gui/env/server/host, ':', /root/gui/env/server/port, /root/gui/locService)}/xml.format.get?id={id}">
+				<li xlink:href="local://xml.format.get?id={id}">
                     <xsl:text> </xsl:text>
                     <xsl:call-template name="validIndicator">
                         <xsl:with-param name="indicator" select="normalize-space(translate(validated,$LOWER,$UPPER)) = 'N'" />

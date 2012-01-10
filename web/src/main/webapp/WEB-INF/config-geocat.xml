@@ -151,7 +151,7 @@
                 <param name="type" value="SHARED"/>
             </class>
 
-            <output sheet="user-list-xml.xsl" />
+            <output sheet="shared-user/user-list-xml.xsl" />
 
         </service>
 

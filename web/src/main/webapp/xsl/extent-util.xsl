@@ -146,10 +146,10 @@
 						<!-- Escape # sign in URL -->
 			                <xsl:choose>
 			                   <xsl:when test="contains ($feature/@href, '#')">
-			                       <xsl:value-of select="concat('http://', /root/gui/env/server/host, ':', /root/gui/env/server/port, substring-before($feature/@href, '#'), '%23', substring-after($feature/@href, '#'))" />
+			                       <xsl:value-of select="concat(substring-before($feature/@href, '#'), '%23', substring-after($feature/@href, '#'))" />
 			                   </xsl:when>
 			                   <xsl:otherwise>
-			                       <xsl:value-of select="concat('http://', /root/gui/env/server/host, ':', /root/gui/env/server/port,$feature/@href)" />
+			                       <xsl:value-of select="$feature/@href" />
 			                   </xsl:otherwise>
 			               </xsl:choose>
 					</xsl:attribute>
