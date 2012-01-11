@@ -45,6 +45,7 @@ import jeeves.utils.Log;
 import jeeves.utils.Xml;
 import jeeves.xlink.XLink;
 
+import org.fao.geonet.constants.Edit;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.services.extent.Add;
 import org.fao.geonet.services.extent.ExtentHelper;

@@ -3,9 +3,9 @@ function createNewExtent() {
     var inclusion = Ext.get('extent.type.code').getValue();
 
     var loc = window.location;
-    $('href').value = loc.protocol + '//' + loc.host + Env.locService + '/xml.extent.get?wfs=default&typename=gn:non_validated&id=createNewExtent&format=' + format + '&extentTypeCode=' + inclusion;
+    xlinks[0].href = 'local://xml.extent.get?wfs=default&typename=gn:non_validated&id=createNewExtent&format=' + format + '&extentTypeCode=' + inclusion;
 
-    doAction('metadata.xlink.add');
+    submitXLink();
 }
 
 function submitXLink() {
@@ -14,12 +14,13 @@ function submitXLink() {
         return;
     }
     
+    disableEditForm();
+    var eBusy = $('editorBusy');
+    if (eBusy) eBusy.show();
+    
     if(modalBox) {
       modalBox.hide();
     }
-    disableEditForm();
-    var eBusy = $('editorBusy');
-		if (eBusy) eBusy.show();
 		
     var metadataId = document.mainForm.id.value;
     var thisElement = $(dialogRequest.id);
@@ -28,12 +29,12 @@ function submitXLink() {
 
 
 function createNewXLink() {
+	disableEditForm();
+	var eBusy = $('editorBusy');
+	if (eBusy) eBusy.show();
     if(modalBox) {
       modalBox.hide();
     }
-    disableEditForm();
-    var eBusy = $('editorBusy');
-	if (eBusy) eBusy.show();
 		
     doNewElementAction('metadata.elem.add', dialogRequest.ref, dialogRequest.name, dialogRequest.id,dialogRequest.replacement,1);
 }
@@ -48,23 +49,7 @@ function doXLinkNewElementAjax(index, metadataId, thisElement) {
         method: 'get',
         parameters: pars,
         onSuccess: function(req) {
-            if (index == 0) {
-                var eBusy = $('editorBusy');
-                if (eBusy) eBusy.hide();
-                $('editorOverlay').setStyle({display: "none"});
-                // Init map if spatial extent editing - usually bounding box or bounding polygon
-                if (dialogRequest.name == 'gmd:geographicElement' || dialogRequest.name == 'gmd:polygon') {
-                  extentMap.initMapDiv();
-                }
-
-                //initCalendar();
-
-                // Check elements
-                validateMetadataFields();
-
-                setBunload(true);
-                // reset warning for window destroy
-            } else {
+            if (index > 0) {
                 doXLinkNewElementAjax(index - 1,metadataId,thisElement);
             }
 
@@ -80,6 +65,23 @@ function doXLinkNewElementAjax(index, metadataId, thisElement) {
                 setAddControls(thisElement.next(), orElement);
             } else {
                 alert("doNewElementAjax: invalid what: " + what + " should be replace or add.");
+            }
+            
+            if (index == 0) {
+                var eBusy = $('editorBusy');
+                if (eBusy) eBusy.hide();
+                $('editorOverlay').setStyle({display: "none"});
+                // Init map if spatial extent editing - usually bounding box or bounding polygon
+                if (dialogRequest.name == 'gmd:geographicElement' || dialogRequest.name == 'gmd:polygon' 
+                	|| dialogRequest.name == 'gmd:extent' || dialogRequest.name == 'gmd:serviceExtent') {
+                  extentMap.initMapDiv();
+                }
+
+                // Check elements
+                validateMetadataFields();
+
+                setBunload(true);
+                // reset warning for window destroy
             }
 
         },

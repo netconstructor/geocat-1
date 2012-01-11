@@ -3127,6 +3127,7 @@ public class DataManager {
         ProcessParams params = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, metadataId, md, md, thesaurusMan,
                 extentMan, baseURL, settingMan, false, lang, servContext);
         for (Element xlink : updatedXLinks) {
+            editLib.removeEditingInfo(xlink);
             Collection<Element> newElements = reusableObjMan.updateXlink(xlink, params);
 
             for (Element element : newElements) {
