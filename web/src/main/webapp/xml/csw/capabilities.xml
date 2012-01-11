@@ -39,15 +39,15 @@
                 <ows:HoursOfService>$HOUROFSERVICE</ows:HoursOfService>
                 <ows:ContactInstructions>$CONTACT_INSTRUCTION</ows:ContactInstructions>
             </ows:ContactInfo>
-            <ows:Role>$ROLE</ows:Role>
+            <ows:Role>pointOfContact</ows:Role>
         </ows:ServiceContact>
     </ows:ServiceProvider>
     <ows:OperationsMetadata>
         <ows:Operation name="GetCapabilities">
             <ows:DCP>
                 <ows:HTTP>
-                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
-                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
+                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
+                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
                 </ows:HTTP>
             </ows:DCP>
             <ows:Parameter name="sections">
@@ -64,8 +64,8 @@
         <ows:Operation name="DescribeRecord">
             <ows:DCP>
                 <ows:HTTP>
-                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
-                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
+                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
+                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
                 </ows:HTTP>
             </ows:DCP>
             <ows:Parameter name="typeName">
@@ -86,16 +86,16 @@
         <ows:Operation name="GetDomain">
             <ows:DCP>
                 <ows:HTTP>
-                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
-                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
+                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
+                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
                 </ows:HTTP>
             </ows:DCP>
         </ows:Operation>
         <ows:Operation name="GetRecords">
             <ows:DCP>
                 <ows:HTTP>
-                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
-                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
+                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
+                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
                 </ows:HTTP>
             </ows:DCP>
             <!-- FIXME : Gets it from enum or conf -->
@@ -130,8 +130,8 @@
         <ows:Operation name="GetRecordById">
             <ows:DCP>
                 <ows:HTTP>
-                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
-                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"/>
+                    <ows:Get xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
+                    <ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"/>
                 </ows:HTTP>
             </ows:DCP>
             <ows:Parameter name="outputSchema">
@@ -159,8 +159,8 @@
         <ows:Operation name="Transaction">
 			<ows:DCP>
 				<ows:HTTP>
-					<ows:Get  xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw" />
-					<ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/csw"  />
+					<ows:Get  xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT" />
+					<ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"  />
 				</ows:HTTP>
 			</ows:DCP>
 		</ows:Operation>

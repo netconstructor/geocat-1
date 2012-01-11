@@ -208,7 +208,6 @@
           </xsl:call-template>
         </xsl:variable>
 
-
         <xsl:call-template name="simpleElementGui">
           <xsl:with-param name="title">
             <xsl:call-template name="getTitle">
@@ -242,7 +241,6 @@
       <!-- has children or attributes, existing or potential -->
       <xsl:when
         test="*[namespace-uri(.)!=$geonetUri]|@*|geonet:child|geonet:element/geonet:attribute">
-
         <xsl:choose>
 
           <!-- display as a list -->
@@ -308,6 +306,7 @@
         <xsl:with-param name="schema" select="$schema"/>
       </xsl:call-template>
     </xsl:param>
+    
     <xsl:choose>
       <xsl:when test="$edit=true()">
         <xsl:call-template name="editSimpleElement">
@@ -450,7 +449,7 @@
         <xsl:with-param name="schema" select="$schema"/>
       </xsl:call-template>
     </xsl:param>
-
+    
     <xsl:choose>
       <xsl:when test="$edit=true()">
         <xsl:call-template name="editComplexElement">
@@ -963,7 +962,7 @@
   <xsl:template name="getContent">
     <xsl:param name="schema"/>
     <xsl:param name="edit" select="false()"/>
-
+    
     <xsl:choose>
       <xsl:when test="$edit=true()">
         <xsl:apply-templates mode="elementEP" select="@*">
@@ -1250,7 +1249,12 @@
           </xsl:choose>
         </label>
         <xsl:text>&#160;</xsl:text>
-        <xsl:if test="$edit and not($isXLinked)">
+        <!-- srv:operatesOn is an element which contains xlink:href attribute 
+          (due to INSPIRE usage added in r7710) and must be editable in any cases (#705). 
+          The xLink for this element is used for linking to a full
+          XML metadata records and is part of the Jeeves XLink resolver exception (jeeves.xlink.Processor#doXLink).
+        -->
+        <xsl:if test="$edit and (not($isXLinked) or name(.)='srv:operatesOn')">
           <xsl:call-template name="getButtons">
             <xsl:with-param name="addLink" select="$addLink"/>
             <xsl:with-param name="addXMLFragment" select="$addXMLFragment"/>
@@ -1374,6 +1378,7 @@
     <xsl:param name="edit"/>
     <xsl:param name="name"/>
     <xsl:param name="eltRef"/>
+    <xsl:param name="tabIndex"/>
 
     <xsl:variable name="title">
       <xsl:call-template name="getTitle">
@@ -1414,6 +1419,7 @@
           <xsl:with-param name="input_step" select="'0.00001'"/>
           <xsl:with-param name="validator" select="'validateNumber(this, false)'"/>
           <xsl:with-param name="no_name" select="true()"/>
+          <xsl:with-param name="tabindex" select="$tabIndex"/>
         </xsl:call-template>
         <xsl:call-template name="getElementText">
           <xsl:with-param name="schema" select="$schema"/>
@@ -1492,7 +1498,6 @@
                   </xsl:if>
                 </input>
               </label>
-              <xsl:text>&#160;&#160;</xsl:text>
             </xsl:for-each>
 
           </td>
@@ -1506,6 +1511,7 @@
                 <xsl:with-param name="edit" select="$edit"/>
                 <xsl:with-param name="name" select="'gmd:northBoundLatitude'"/>
                 <xsl:with-param name="eltRef" select="concat('n', $eltRef)"/>
+                <xsl:with-param name="tabIndex" select="100"/>
               </xsl:apply-templates>
             </td>
           </tr>
@@ -1518,6 +1524,7 @@
                 <xsl:with-param name="edit" select="$edit"/>
                 <xsl:with-param name="name" select="'gmd:westBoundLongitude'"/>
                 <xsl:with-param name="eltRef" select="concat('w', $eltRef)"/>
+                <xsl:with-param name="tabIndex" select="101"/>
               </xsl:apply-templates>
             </td>
           </xsl:if>
@@ -1581,6 +1588,7 @@
                 <xsl:with-param name="edit" select="$edit"/>
                 <xsl:with-param name="name" select="'gmd:eastBoundLongitude'"/>
                 <xsl:with-param name="eltRef" select="concat('e', $eltRef)"/>
+                <xsl:with-param name="tabIndex" select="103"/>
               </xsl:apply-templates>
             </td>
           </xsl:if>
@@ -1593,6 +1601,7 @@
                 <xsl:with-param name="edit" select="$edit"/>
                 <xsl:with-param name="name" select="'gmd:southBoundLatitude'"/>
                 <xsl:with-param name="eltRef" select="concat('s', $eltRef)"/>
+                <xsl:with-param name="tabIndex" select="102"/>
               </xsl:apply-templates>
             </td>
           </tr>
@@ -1729,7 +1738,7 @@
     to create a textarea -->
     <xsl:param name="class"/>
     <xsl:param name="langId"/>
-    <xsl:param name="visible" select="true"/>
+    <xsl:param name="visible" select="true()"/>
     <!-- Add javascript validator function. By default, if element 
       is mandatory a non empty validator is defined. -->
     <xsl:param name="validator"/>
@@ -1743,12 +1752,12 @@
     <!-- Set to true no_name parameter in order to create an element 
       which will not be submitted to the form. -->
     <xsl:param name="no_name" select="false()"/>
-
+    <xsl:param name="tabindex"/>
+        
     <xsl:variable name="edit" select="xs:boolean($edit)"/>
     <xsl:variable name="name" select="name(.)"/>
     <xsl:variable name="value" select="string(.)"/>
     <xsl:variable name="isXLinked" select="count(ancestor-or-self::node()[@xlink:href]) > 0"/>
-
     <xsl:choose>
       <!-- list of values -->
       <xsl:when test="geonet:element/geonet:text">
@@ -1789,7 +1798,7 @@
           </items>
         </xsl:variable>
         <select class="md" name="_{geonet:element/@ref}" size="1">
-          <xsl:if test="$visible = 'false'">
+          <xsl:if test="$visible = false()">
             <xsl:attribute name="style">display:none;</xsl:attribute>
           </xsl:if>
           <xsl:if test="$isXLinked">
@@ -1864,6 +1873,9 @@
               <xsl:if test="$input_step">
                 <xsl:attribute name="step"><xsl:value-of select="$input_step"/></xsl:attribute>
               </xsl:if>
+              <xsl:if test="$tabindex">
+                <xsl:attribute name="tabindex" select="$tabindex"/>
+              </xsl:if>
               <xsl:choose>
                 <xsl:when test="$no_name=false()">
                   <xsl:attribute name="name">_<xsl:value-of select="geonet:element/@ref"
@@ -1878,7 +1890,7 @@
                 </xsl:otherwise>
               </xsl:choose>
 
-              <xsl:if test="$visible = 'false'">
+              <xsl:if test="$visible = false()">
                 <xsl:attribute name="style">display:none;</xsl:attribute>
               </xsl:if>
 
@@ -1929,7 +1941,7 @@
           <xsl:if test="$isXLinked">
             <xsl:attribute name="disabled">disabled</xsl:attribute>
           </xsl:if>
-          <xsl:if test="$visible = 'false'">
+          <xsl:if test="$visible = false()">
             <xsl:attribute name="style">display:none;</xsl:attribute>
           </xsl:if>
           <xsl:if

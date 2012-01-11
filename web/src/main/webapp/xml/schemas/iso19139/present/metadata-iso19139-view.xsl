@@ -98,7 +98,7 @@
           <xsl:with-param name="content">
             <xsl:apply-templates mode="block"
               select="
-              gmd:identificationInfo/*/gmd:spatialResolution/gmd:MD_Resolution
+              gmd:identificationInfo/*/gmd:spatialResolution[1]
               |gmd:identificationInfo/*/gmd:spatialRepresentationType
               |gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage
               |gmd:identificationInfo/*/gmd:resourceConstraints[1]
@@ -183,8 +183,28 @@
       <xsl:with-param name="content">
         <xsl:apply-templates mode="iso19139-simple"
           select="
-          descendant::node()[gco:CharacterString and normalize-space(gco:CharacterString)!='']
+          gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/descendant::node()[(gco:CharacterString and normalize-space(gco:CharacterString)!='')]
           "/>
+        
+        <xsl:for-each select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource">
+          
+          <xsl:call-template name="simpleElement">
+            <xsl:with-param name="id" select="generate-id(.)"/>
+            <xsl:with-param name="title">
+              <xsl:call-template name="getTitle">
+                <xsl:with-param name="name" select="'gmd:onlineResource'"/>
+                <xsl:with-param name="schema" select="$schema"/>
+              </xsl:call-template>
+            </xsl:with-param>
+            <xsl:with-param name="help"></xsl:with-param>
+            <xsl:with-param name="content">
+              <a href="{gmd:linkage/gmd:URL}" target="_blank">
+                <xsl:value-of select="gmd:name/gco:CharacterString"/>
+              </a>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:for-each>
+        
         <xsl:if test="descendant::gmx:FileName">
           <img src="{descendant::gmx:FileName/@src}" alt="logo" class="orgLogo" style="float:right;"/>
           <!-- FIXME : css -->
@@ -214,8 +234,18 @@
         </xsl:call-template>
       </xsl:with-param>
       <xsl:with-param name="content">
-          <!-- TODO multilingual -->
-          <xsl:value-of select="string-join(gmd:keyword/gco:CharacterString, ', ')"/> 
+        <xsl:for-each select="gmd:keyword">
+          <xsl:if test="position() &gt; 1"><xsl:text>, </xsl:text></xsl:if>
+          <xsl:call-template name="translatedString">
+            <xsl:with-param name="schema" select="$schema"/>
+            <xsl:with-param name="langId">
+              <xsl:call-template name="getLangId">
+                <xsl:with-param name="langGui" select="/root/gui/language"/>
+                <xsl:with-param name="md" select="ancestor-or-self::*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']" />
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:for-each>
         <xsl:if test="gmd:type/gmd:MD_KeywordTypeCode/@codeListValue">
           (<xsl:value-of
             select="gmd:type/gmd:MD_KeywordTypeCode/@codeListValue"/>)
@@ -435,8 +465,34 @@
       </xsl:with-param>
     </xsl:call-template>
   </xsl:template>
-
   
+  
+  <xsl:template mode="block" match="gmd:spatialResolution" priority="100">
+    <xsl:call-template name="simpleElementSimpleGUI">
+      <xsl:with-param name="title">
+        <xsl:call-template name="getTitle">
+          <xsl:with-param name="name" select="'gmd:spatialResolution'"/>
+          <xsl:with-param name="schema" select="$schema"/>
+        </xsl:call-template>
+      </xsl:with-param>
+      <xsl:with-param name="helpLink">
+        <xsl:call-template name="getHelpLink">
+          <xsl:with-param name="schema" select="$schema"/>
+          <xsl:with-param name="name" select="name(.)"/>
+        </xsl:call-template>
+      </xsl:with-param>
+      <xsl:with-param name="content">
+        <xsl:apply-templates mode="iso19139-simple"
+          select="
+          gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator
+          |gmd:MD_Resolution/gmd:distance
+          |following-sibling::node()[name(.)='gmd:spatialResolution']/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator
+          |following-sibling::node()[name(.)='gmd:spatialResolution']/gmd:MD_Resolution/gmd:distance
+          "/>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
+
   <xsl:template mode="block" match="*|@*">
     <xsl:apply-templates mode="block" select="*"/>
   </xsl:template>
@@ -607,6 +663,14 @@
           select="gco:Integer|gco:Decimal|gco:Boolean|gco:Real|gco:Measure
           |gco:Length|gco:Distance|gco:Angle|gco:Scale|gco:RecordType|gmx:MimeFileType"
         />
+        <xsl:if test="gco:Distance/@uom"><xsl:text>&#160;</xsl:text>
+          <xsl:choose>
+            <xsl:when test="contains(gco:Distance/@uom, '#')">
+              <a href="{gco:Distance/@uom}"><xsl:value-of select="substring-after(gco:Distance/@uom, '#')"/></a>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="gco:Distance/@uom"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:if>
       </xsl:with-param>
     </xsl:call-template>
   </xsl:template>
@@ -673,6 +737,16 @@
       <xsl:with-param name="help"></xsl:with-param>
       <xsl:with-param name="content">
         <xsl:value-of select="."/>
+        
+        <xsl:for-each select="@*">
+          <xsl:variable name="label">
+            <xsl:call-template name="getTitle">
+              <xsl:with-param name="name" select="name(.)"/>
+              <xsl:with-param name="schema" select="$schema"/>
+            </xsl:call-template>
+          </xsl:variable>
+          | <xsl:value-of select="concat($label, ': ', .)"/>
+        </xsl:for-each>
       </xsl:with-param>
     </xsl:call-template>
   </xsl:template>

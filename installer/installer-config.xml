@@ -101,12 +101,7 @@
 
     <pack id="widget" name="GeoNetwork User Interface (experimental)" required="no" preselected="yes">
       <description>GeoNetwork web-client interface</description>
-      <fileset dir="../web-client/src/main/resources" targetdir="$INSTALL_PATH/web/geonetwork/apps">
-	<exclude name="js/OpenLayers/doc/**"/>
-	<exclude name="js/OpenLayers/doc_config/**"/>
-	<exclude name="js/OpenLayers/apidoc_config/**"/>
-	<exclude name="js/OpenLayers/examples/**"/>
-	<exclude name="js/OpenLayers/tests/**"/>
+      <fileset dir="../web-client/target/classes/apps" targetdir="$INSTALL_PATH/web/geonetwork/apps">
       </fileset>
     </pack>
     

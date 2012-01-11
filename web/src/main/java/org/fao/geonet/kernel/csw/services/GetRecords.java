@@ -169,10 +169,13 @@ public class GetRecords extends AbstractOperation implements CatalogService
 		status.setAttribute("timestamp",timeStamp);
 
 		response.addContent(status);
+
+        String cswServiceSpecificContraint = request.getChildText(Geonet.Elem.FILTER);
+
 		Pair<Element, Element> search = _searchController.search(context,
 					startPos, maxRecords, resultType, outSchema,
 					setName, filterExpr, filterVersion, sort,
-					elemNames, maxHitsInSummary);
+					elemNames, maxHitsInSummary, cswServiceSpecificContraint);
 		
 		// Only add GeoNetwork summary on results_with_summary option 
 		if (resultType == ResultType.RESULTS_WITH_SUMMARY)

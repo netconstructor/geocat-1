@@ -9,6 +9,7 @@ GeoNetwork.app = function(){
     var searching = false;
     var editorWindow;
     var editorPanel;
+    var cookie;
     
     /**
      * Application parameters are :
@@ -143,6 +144,25 @@ GeoNetwork.app = function(){
         });
         
         catalogue.on('afterBadLogin', loginAlert, this);
+
+        // Store user info in cookie to be displayed if user reload the page
+        // Register events to set cookie values
+        catalogue.on('afterLogin', function(){
+            var cookie = Ext.state.Manager.getProvider();
+            cookie.set('user', catalogue.identifiedUser);
+        });
+        catalogue.on('afterLogout', function(){
+            var cookie = Ext.state.Manager.getProvider();
+            cookie.set('user', undefined);
+        });
+        
+        // Refresh login form if needed
+        var cookie = Ext.state.Manager.getProvider();
+        var user = cookie.get('user');
+        if (user) {
+            catalogue.identifiedUser = user;
+            loginForm.login(catalogue, true);
+        }
     }
     
     /**
@@ -285,7 +305,7 @@ GeoNetwork.app = function(){
         var formItems = [];
         formItems.push(GeoNetwork.util.SearchFormTools.getSimpleFormFields(catalogue.services, 
                     GeoNetwork.map.BACKGROUND_LAYERS, GeoNetwork.map.MAP_OPTIONS, true, 
-                    GeoNetwork.searchDefault.activeMapControlExtent), adv);
+                    GeoNetwork.searchDefault.activeMapControlExtent, undefined, {width: 290}), adv);
         // Add advanced mode criteria to simple form - end
         
         
@@ -465,6 +485,7 @@ GeoNetwork.app = function(){
         
         if (success) {
             createMainTagCloud();
+            createLatestUpdate();
         } else {
             Ext.get('infoPanel').getUpdater().update({url:'home_en.html'});
             Ext.get('helpPanel').getUpdater().update({url:'help_en.html'});
@@ -527,7 +548,28 @@ GeoNetwork.app = function(){
         
         return tagCloudView;
     }
-    
+    /**
+     * Create latest metadata panel.
+     */
+    function createLatestUpdate(){
+        var latestView = new GeoNetwork.MetadataResultsView({
+            catalogue: catalogue,
+            autoScroll: true,
+            tpl: GeoNetwork.Settings.latestTpl
+        });
+        var latestStore = GeoNetwork.Settings.mdStore();
+        latestView.setStore(latestStore);
+        latestStore.on('load', function(){
+            Ext.ux.Lightbox.register('a[rel^=lightbox]');
+        });
+        new Ext.Panel({
+            border: false,
+            bodyCssClass: 'md-view',
+            items: latestView,
+            renderTo: 'latest'
+        });
+        catalogue.kvpSearch(GeoNetwork.Settings.latestQuery, null, null, null, true, latestView.getStore());
+    }
     /**
      * Extra tag cloud to displayed current search summary TODO : not really a
      * narrow your search component.
@@ -562,7 +604,7 @@ GeoNetwork.app = function(){
                     id: 'newwindow',
                     qtip: OpenLayers.i18n('newWindow'),
                     handler: function(e, toolEl, panel, tc){
-                        window.open(GeoNetwork.Util.getBaseUrl(location.href) + "#edit=" + metadataId);
+                        window.open(GeoNetwork.Util.getBaseUrl(location.href) + "#edit=" + panel.getComponent('editorPanel').metadataId);
                         panel.hide();
                     },
                     scope: this
@@ -597,6 +639,7 @@ GeoNetwork.app = function(){
     function createHeader(){
         var info = catalogue.getInfo();
         Ext.getDom('title').innerHTML = '<img class="catLogo" src="../../images/logos/' + info.siteId + '.gif"/>&nbsp;' + info.name;
+        document.title = info.name;
     }
     
     // public space:
@@ -610,6 +653,12 @@ GeoNetwork.app = function(){
                 urlParameters.bounds = new OpenLayers.Bounds(urlParameters.extent[0], urlParameters.extent[1], urlParameters.extent[2], urlParameters.extent[3]);
             }
             
+            
+            // Init cookie
+            cookie = new Ext.state.CookieProvider({
+                expires: new Date(new Date().getTime()+(1000*60*60*24*365))
+            });
+            Ext.state.Manager.setProvider(cookie);
             
             // Create connexion to the catalogue
             catalogue = new GeoNetwork.Catalogue({
@@ -628,9 +677,6 @@ GeoNetwork.app = function(){
             
             createHeader();
             
-            // Override xml search service value
-            catalogue.setServiceUrl('xmlSearch', GeoNetwork.Settings.searchService);
-
             // Search form
             searchForm = createSearchForm();
             

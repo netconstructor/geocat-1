@@ -44,6 +44,7 @@ import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
@@ -51,6 +52,8 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.misc.ChainedFilter;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.CachingWrapperFilter;
@@ -61,6 +64,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.Version;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
@@ -75,6 +79,7 @@ import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.LuceneSearcher;
 import org.fao.geonet.kernel.search.LuceneUtils;
 import org.fao.geonet.kernel.search.SearchManager;
+import org.fao.geonet.kernel.search.LuceneIndexField;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.kernel.search.spatial.SpatialIndexWriter;
 import org.geotools.data.DataStore;
@@ -98,6 +103,18 @@ import org.opengis.filter.Or;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Iterator;
+import java.util.Arrays;
 
 //=============================================================================
 
@@ -176,7 +193,7 @@ public class CatalogSearcher {
 	public Pair<Element, List<ResultItem>> search(ServiceContext context,
                                                   Element filterExpr, String filterVersion,
                                                   Sort sort, ResultType resultType, int startPosition, int maxRecords,
-                                                  int maxHitsInSummary)
+                                                  int maxHitsInSummary, String cswServiceSpecificContraint)
 			throws CatalogException {
 		Element luceneExpr = filterToLucene(context, filterExpr);
 
@@ -198,7 +215,7 @@ public class CatalogSearcher {
 
             return performSearch(context,
                     luceneExpr, filterExpr, filterVersion, sort, resultType,
-                    startPosition, maxRecords, maxHitsInSummary);
+                    startPosition, maxRecords, maxHitsInSummary, cswServiceSpecificContraint);
 		} catch (Exception e) {
 			Log.error(Geonet.CSW_SEARCH, "Error while searching metadata ");
 			Log.error(Geonet.CSW_SEARCH, "  (C) StackTrace:\n"
@@ -384,10 +401,29 @@ public class CatalogSearcher {
 
 	// ---------------------------------------------------------------------------
 
+    /**
+     * Executes a CSW search using a filter query.
+     *
+     * If it is provided a service specific constraint in CswDispatcher service, the constraint is added
+     * to the final search query to restrict the search.
+     *
+     * @param context
+     * @param luceneExpr
+     * @param filterExpr                    CSW Filter
+     * @param filterVersion
+     * @param sort
+     * @param resultType
+     * @param startPosition
+     * @param maxRecords
+     * @param maxHitsInSummary
+     * @param cswServiceSpecificContraint   Service specific constraint
+     * @return
+     * @throws Exception
+     */
 	private Pair<Element, List<ResultItem>> performSearch(
 			ServiceContext context, Element luceneExpr, Element filterExpr,
 			String filterVersion, Sort sort, ResultType resultType, 
-			int startPosition, int maxRecords, int maxHitsInSummary) throws Exception {
+			int startPosition, int maxRecords, int maxHitsInSummary, String cswServiceSpecificContraint) throws Exception {
 
         if (filterExpr != null) {
             Log.debug(Geonet.CSW_SEARCH, "CatS performsearch: filterXpr:\n"+ Xml.getString(filterExpr));
@@ -416,6 +452,13 @@ public class CatalogSearcher {
 		Query data = (luceneExpr == null) ? null : LuceneSearcher.makeLocalisedQuery(luceneExpr, SearchManager.getAnalyzer(), _tokenizedFieldSet, _numericFieldSet, context.getLanguage());
         Log.info(Geonet.CSW_SEARCH,"LuceneSearcher made query:\n" + data.toString());
 
+        Query cswCustomFilterQuery = null;
+
+        Log.info(Geonet.CSW_SEARCH,"LuceneSearcher cswCustomFilter:\n" + cswServiceSpecificContraint);
+        if (StringUtils.isNotEmpty(cswServiceSpecificContraint)) {
+            cswCustomFilterQuery = getCswServiceSpecificConstraintQuery(cswServiceSpecificContraint);
+            Log.info(Geonet.CSW_SEARCH,"LuceneSearcher cswCustomFilterQuery:\n" + cswCustomFilterQuery);
+        }
 
 		Query groups = getGroupsQuery(context);
 
@@ -436,6 +479,8 @@ public class CatalogSearcher {
 			query.add(data, occur);
 
 		query.add(groups, occur);
+
+        if (cswCustomFilterQuery != null) query.add(cswCustomFilterQuery, occur);
 
 		// --- proper search
 		Log.debug(Geonet.CSW_SEARCH, "Lucene query: " + query.toString());
@@ -715,6 +760,43 @@ public class CatalogSearcher {
 
 		return query;
 	}
+
+    /**
+     * Creates a lucene Query object from a lucene query string using Lucene query syntax.
+     *
+     * @param cswServiceSpecificConstraint
+     * @return
+     * @throws ParseException
+     */
+    public static Query getCswServiceSpecificConstraintQuery(String cswServiceSpecificConstraint) throws ParseException {
+
+        Query q = new QueryParser(Version.LUCENE_30, "title", SearchManager.getAnalyzer()).parse(cswServiceSpecificConstraint);
+
+        // List of lucene fields which MUST not be control by user, to be removed from the CSW service specific constraint
+        List<String> SECURITY_FIELDS = Arrays.asList(
+             LuceneIndexField.OWNER,
+             LuceneIndexField.GROUP_OWNER);
+
+        BooleanQuery bq = (BooleanQuery) q;
+
+        List<BooleanClause> clauses = bq.clauses();
+
+        Iterator<BooleanClause> it = clauses.iterator();
+        while (it.hasNext()) {
+            BooleanClause bc = it.next();
+
+            for (String fieldName : SECURITY_FIELDS){
+                if (bc.getQuery().toString().contains(fieldName + ":")) {
+                    Log.debug(Geonet.CSW_SEARCH,"LuceneSearcher getCswServiceSpecificConstraintQuery removed security field: " + fieldName);
+                    it.remove();
+
+                    break;
+                }
+            }
+        }
+
+        return q;
+    }
 
 }
 

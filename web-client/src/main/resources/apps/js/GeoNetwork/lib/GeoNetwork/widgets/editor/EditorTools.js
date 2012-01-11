@@ -306,6 +306,29 @@ function doRemoveElementAction(action, ref, parentref, id, min){
     });
 }
 
+function doRemoveAttributeAction(action, ref, parentref)
+{
+	var metadataId = document.mainForm.id.value;
+	var thisElement = Ext.get(ref + '_block');
+	Ext.Ajax.request({
+		url: catalogue.services.rootUrl + action,
+		method: 'GET',
+		params: {id:metadataId, ref:ref},
+		success: function(result, request) {
+			var html = result.responseText;
+			//TODO replace element by result. Need #122 to be fixed thisElement.remove();
+			var editor = Ext.getCmp('editorPanel');
+			editor.save();
+			setBunload(true); // reset warning for window destroy
+		},
+		failure:function (result, request) { 
+			Ext.MessageBox.alert(translate("errorDeleteAttribute") + name + " " + translate("errorFromDoc") 
+						+ " / status " + result.status + " text: " + result.statusText + " - " + translate("tryAgain"));
+			setBunload(true); // reset warning for window destroy
+		}
+	});
+}
+
 function updateEditorContent(result, request){
     var editor = Ext.getCmp('editorPanel');
     editor.updateEditor(result.responseText);
@@ -408,9 +431,9 @@ function doFileRemoveAction(action, ref, access, id){
  * Protocol could not be changed if file is already uploaded.
  */
 function checkForFileUpload(fref, pref, protocolBeforeEdit){
-    var fileName = $('_' + fref); // the file name input field
-    var protoSelect = $('s_' + pref); // the protocol <select>
-    var protoIn = $('_' + pref); // the protocol input field to be submitted
+    var fileName = Ext.getDom('_' + fref); // the file name input field
+    var protoSelect = Ext.getDom('s_' + pref); // the protocol <select>
+    var protoIn = Ext.getDom('_' + pref); // the protocol input field to be submitted
     var fileUploaded = protocolBeforeEdit.startsWith('WWW:DOWNLOAD'); // File name not displayed in editor if downloaded
     var protocol = protoSelect.value;
     var protocolDownload = (protocol.startsWith('WWW:DOWNLOAD') && protocol.indexOf('http') > 0);

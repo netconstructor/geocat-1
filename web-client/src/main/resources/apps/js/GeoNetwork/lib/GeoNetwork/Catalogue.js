@@ -773,7 +773,8 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
      *  If not set, simple mode is used.
      */
     metadataShow: function(uuid, maximized, width, height){
-        var url = this.services.mdView + '?uuid=' + uuid;
+    	// UUID may contains special character like #
+    	var url = this.services.mdView + '?uuid=' + escape(uuid);
         var bd = Ext.getBody();
         
         if (this.resultsView) {
@@ -990,9 +991,9 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
         
         if (response.status === 200 && !exception) {
             this.identifiedUser = {
-                firstName: 'TODO',
-                surName: 'TODO',
-                role: 'admin'
+                firstName: '',
+                surName: '',
+                role: ''
             };
             this.onAfterLogin();
             return true;
@@ -1001,7 +1002,13 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
                 OpenLayers.i18n('connectIssueMsg') + this.services.rootUrl + '.');
         } else if (exception) {
             this.checkError();
+            return false;
         } else {
+            // Reset user cookie information
+            var cookie = Ext.state.Manager.getProvider();
+            if (cookie) {
+                cookie.set('user', undefined);
+            }
             return false;
         }
     },

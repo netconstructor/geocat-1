@@ -414,6 +414,7 @@ public class SearchManager
 	public void end() throws Exception
 	{
 		endZ3950();
+		_spatial.end();
 		_optimizerTimer.cancel();
 	}
 
@@ -950,24 +951,25 @@ public class SearchManager
 	{
 		List<TermFrequency> termList = new ArrayList<TermFrequency>();
 		IndexReader reader = getIndexReader();
-		TermEnum term = reader.terms();
+		TermEnum term = reader.terms(new Term(fieldName, ""));
 		int i = 0;
 		// TODO : we should apply the same Analyzer used for field indexing
 		// to the term searched.
 
 		try {
-			// Extract terms containing search value.
-			while (term.next()) {
-				if (++i > maxNumberOfTerms)
-					break;
-
-				if (term.docFreq() >= threshold
-						&& term.term().field().equals(fieldName)
-						&& term.term().text().contains(searchValue)) {
-					TermFrequency freq = new TermFrequency(term.term().text(), term
-							.docFreq());
-					termList.add(freq);
-				}
+			if (term.term()!=null) {
+				// Extract terms containing search value.
+				do {
+					if (!term.term().field().equals(fieldName) || (++i > maxNumberOfTerms))
+						break;
+	
+					if (term.docFreq() >= threshold
+							&& term.term().text().contains(searchValue)) {
+						TermFrequency freq = new TermFrequency(term.term().text(), term
+								.docFreq());
+						termList.add(freq);
+					} 
+				} while (term.next());
 			}
 		} finally {
 			releaseIndexReader(reader);
@@ -1484,7 +1486,6 @@ public class SearchManager
                 // generated
                 _writer.getIndex();
             }
-            addShutdownHook();
         }
 
         /**
@@ -1516,27 +1517,19 @@ public class SearchManager
         }
 
         /**
-         * TODO javadoc.
+         * Close spatial index.
          */
-        private void addShutdownHook()
-        {
-            Runtime.getRuntime().addShutdownHook(new Thread()
-            {
-                @Override
-                public void run()
-                {
+				public void end() {
                     _lock.lock();
                     try {
                         _writer.close();
                     } catch (IOException e) {
-                        Log.error(Geonet.SPATIAL,"error writing spatial index: "+e.getMessage());
+                        Log.error(Geonet.SPATIAL,"error closing spatial index: "+e.getMessage());
 												e.printStackTrace();
                     } finally {
                         _lock.unlock();
                     }
-                }
-            });
-        }
+				}
 
         /**
          * TODO javadoc.

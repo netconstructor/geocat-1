@@ -60,7 +60,7 @@ POST request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/xml
 
   Post data:
@@ -79,7 +79,7 @@ SOAP request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/soap+xml
 
   Post data:
@@ -120,7 +120,7 @@ POST request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/xml
 
   Post data:
@@ -132,7 +132,7 @@ SOAP request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/soap+xml
 
   Post data:
@@ -164,7 +164,7 @@ POST request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/xml
 
   Post data:
@@ -179,7 +179,7 @@ SOAP request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/soap+xml
 
   Post data:
@@ -215,7 +215,7 @@ POST request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/xml
 
   Post data:
@@ -238,7 +238,7 @@ SOAP request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/soap+xml
 
   Post data:
@@ -277,7 +277,7 @@ POST request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/xml
 
   Post data:
@@ -310,7 +310,7 @@ POST request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/xml
 
   Post data:
@@ -350,7 +350,7 @@ POST request::
   Url:
   http://localhost:8080/geonetwork/srv/en/csw
 
-  Mime-type:
+  Content-type:
   application/xml
 
   Post data:

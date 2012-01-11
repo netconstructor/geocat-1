@@ -80,11 +80,12 @@ public class SearchController
     public Pair<Element, Element> search(ServiceContext context, int startPos, int maxRecords,
                                          ResultType resultType, OutputSchema outSchema, ElementSetName setName,
                                          Element filterExpr, String filterVersion, Sort sort,
-                                         Set<String> elemNames, int maxHitsFromSummary) throws CatalogException
+                                         Set<String> elemNames, int maxHitsFromSummary,String cswServiceSpecificContraint) throws CatalogException
     {
 	Element results = new Element("SearchResults", Csw.NAMESPACE_CSW);
 
-	Pair<Element, List<ResultItem>> summaryAndSearchResults = _searcher.search(context, filterExpr, filterVersion, sort, resultType, startPos, maxRecords, maxHitsFromSummary);
+	Pair<Element, List<ResultItem>> summaryAndSearchResults = _searcher.search(context, filterExpr, filterVersion, sort,
+            resultType, startPos, maxRecords, maxHitsFromSummary, cswServiceSpecificContraint);
 	
 	UserSession session = context.getUserSession();
 	session.setProperty(Geonet.Session.SEARCH_RESULT, _searcher);
@@ -175,6 +176,19 @@ public class SearchController
 			// PMT GeoCat c2c : Backported from old geocat
 			if (schema.contains("iso19139"))
 				schema = "iso19139";
+		// --- transform iso19115 record to iso19139
+		// --- If this occur user should probably migrate the catalogue from iso19115 to iso19139.
+		// --- But sometimes you could harvest remote node in iso19115 and make them available through CSW
+		if (schema.equals("iso19115")) {
+			res = Xml.transform(res, context.getAppPath() + "xsl" + FS
+					+ "conversion" + FS + "import" + FS + "ISO19115-to-ISO19139.xsl");
+			schema = "iso19139";
+		}
+		
+		//--- skip metadata with wrong schemas
+		if (schema.equals("fgdc-std") || schema.equals("dublin-core"))
+		    if(outSchema != OutputSchema.OGC_CORE)
+		    	return null;
 
 			// convert metadata to outputSchema
 			if (outSchema != OutputSchema.OWN && !isCHE) {
