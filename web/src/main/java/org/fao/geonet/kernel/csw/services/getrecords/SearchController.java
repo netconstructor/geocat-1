@@ -171,15 +171,16 @@ public class SearchController
 		Element info = res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE);
 		String schema = info.getChildText(Edit.Info.Elem.SCHEMA);
 		String fullSchema = schema;
-		
-    boolean isCHE = schema.equals("iso19139.che") && OutputSchema.CHE_PROFILE == outSchema;
-			// PMT GeoCat c2c : Backported from old geocat
-			if (schema.contains("iso19139"))
-				schema = "iso19139";
+
+		boolean isCHE = schema.equals("iso19139.che") && OutputSchema.CHE_PROFILE == outSchema;
+		// PMT GeoCat c2c : Backported from old geocat
+		if (schema.contains("iso19139")) schema = "iso19139";
+
 		// --- transform iso19115 record to iso19139
 		// --- If this occur user should probably migrate the catalogue from iso19115 to iso19139.
 		// --- But sometimes you could harvest remote node in iso19115 and make them available through CSW
 		if (schema.equals("iso19115")) {
+		    String FS = File.pathSeparator;
 			res = Xml.transform(res, context.getAppPath() + "xsl" + FS
 					+ "conversion" + FS + "import" + FS + "ISO19115-to-ISO19139.xsl");
 			schema = "iso19139";

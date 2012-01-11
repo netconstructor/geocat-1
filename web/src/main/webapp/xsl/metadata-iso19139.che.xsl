@@ -1918,7 +1918,7 @@
     match="
            gmd:descriptiveKeywords|geonet:child[@name='descriptiveKeywords' and @prefix='gmd'] |
            srv:keywords|geonet:child[@name='keywords' and @prefix='srv'] |
-           gmd:extent|geonet:child[@name='extent'] | srv:extent |
+           gmd:extent[not(ancestor::gmd:temporalElement)]|geonet:child[@name='extent' and not(ancestor::gmd:temporalElement)] | srv:extent |
            gmd:spatialExtent|geonet:child[@name='spatialExtent' and @prefix='gmd'] |
            che:revisionExtent|geonet:child[@name='revisionExtent' and @prefix='che'] |
            gmd:sourceExtent|geonet:child[@name='sourceExtent' and @prefix='gmd'] |

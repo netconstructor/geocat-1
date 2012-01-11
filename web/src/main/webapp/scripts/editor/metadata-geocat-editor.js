@@ -58,11 +58,16 @@ function doXLinkNewElementAjax(index, metadataId, thisElement) {
             var what = index == 0 ? dialogRequest.replacement : 'add';
             if (what == 'replace') {
                 thisElement.replace(html);
-            } else if (what == 'add') {
+            } else if (what == 'before') {
                 thisElement.insert({
-                    'after': html
+                    'before': html
                 });
-                setAddControls(thisElement.next(), orElement);
+                setAddControls(thisElement.previous(), orElement);
+            } else if (what == 'add') {
+            	thisElement.insert({
+            		'after': html
+            	});
+            	setAddControls(thisElement.next(), orElement);
             } else {
                 alert("doNewElementAjax: invalid what: " + what + " should be replace or add.");
             }
@@ -73,7 +78,9 @@ function doXLinkNewElementAjax(index, metadataId, thisElement) {
                 $('editorOverlay').setStyle({display: "none"});
                 // Init map if spatial extent editing - usually bounding box or bounding polygon
                 if (dialogRequest.name == 'gmd:geographicElement' || dialogRequest.name == 'gmd:polygon' 
-                	|| dialogRequest.name == 'gmd:extent' || dialogRequest.name == 'gmd:serviceExtent') {
+                	|| dialogRequest.name == 'gmd:extent' || dialogRequest.name == 'gmd:serviceExtent'
+            		|| dialogRequest.name == 'gmd:sourceExtent' || dialogRequest.name == 'gmd:spatialExtent'
+            		|| dialogRequest.name == 'che:revisionExtent' ) {
                   extentMap.initMapDiv();
                 }
 

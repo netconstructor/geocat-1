@@ -52,6 +52,7 @@ import org.fao.geonet.kernel.csw.services.getrecords.SearchController;
 import org.fao.geonet.kernel.search.LuceneConfig;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.lib.Lib;
+import org.geotools.data.DataStore;
 import org.jdom.Element;
 import org.jdom.Document;
 //=============================================================================
@@ -67,8 +68,8 @@ public class GetRecordById extends AbstractOperation implements CatalogService
 
     private SearchController _searchController;
 
-    public GetRecordById(File summaryConfig, LuceneConfig luceneConfig) {
-        _searchController = new SearchController(summaryConfig, luceneConfig);
+    public GetRecordById(DataStore ds, File summaryConfig, LuceneConfig luceneConfig) {
+        _searchController = new SearchController(ds, summaryConfig, luceneConfig);
     }
 
 

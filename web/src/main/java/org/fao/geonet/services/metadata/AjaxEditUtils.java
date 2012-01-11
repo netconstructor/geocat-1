@@ -187,7 +187,7 @@ public class AjaxEditUtils extends EditUtils {
                 }
 
                 Element xlinkParent = findXlinkParent(el);
-                if( xlinkParent!=null && !ReusableObjManager.isValidated(xlinkParent)){
+                if( xlinkParent!=null && ReusableObjManager.isValidated(xlinkParent)){
                     continue;
                 }
                 if( xlinkParent!=null ){

@@ -369,42 +369,6 @@
 		</xsl:apply-templates>
 	</xsl:template>
 
-    <xsl:template name="translatedString">
-        <xsl:param name="schema"/>
-        <xsl:param name="edit"/>
-        <xsl:param name="rows" select="1"/>
-        <xsl:param name="cols" select="40"/>
-        <xsl:param name="langId" />
-        <xsl:param name="widget" />
-        <xsl:param name="validator" />
-		<xsl:choose>
-			<xsl:when test="not(gco:*)">
-				<xsl:for-each select="gmd:PT_FreeText">
-					<xsl:call-template name="getElementText">
-						<xsl:with-param name="edit" select="$edit" />
-						<xsl:with-param name="schema" select="$schema" />
-						<xsl:with-param name="rows" select="$rows" />
-						<xsl:with-param name="cols" select="$cols" />
-						<xsl:with-param name="langId" select="$langId" />
-						<xsl:with-param name="validator" select="$validator" />
-					</xsl:call-template>
-				</xsl:for-each>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:for-each select="gco:*">
-					<xsl:call-template name="getElementText">
-						<xsl:with-param name="edit" select="$edit" />
-						<xsl:with-param name="schema" select="$schema" />
-						<xsl:with-param name="rows" select="$rows" />
-						<xsl:with-param name="cols" select="$cols" />
-						<xsl:with-param name="langId" select="$langId" />
-						<xsl:with-param name="validator" select="$validator" />
-					</xsl:call-template>
-				</xsl:for-each>
-			</xsl:otherwise>
-		</xsl:choose>
-    </xsl:template>
-
     <!-- ==================================================================== -->
   
   <xsl:template name="translatedString">
