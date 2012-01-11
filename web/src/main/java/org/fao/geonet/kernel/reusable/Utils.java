@@ -70,6 +70,7 @@ import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
 import org.fao.geonet.services.util.Email;
 import org.fao.geonet.util.LangUtils;
+import org.geotools.gml3.GMLConfiguration;
 import org.jdom.Attribute;
 import org.jdom.Content;
 import org.jdom.Element;
@@ -84,6 +85,11 @@ import com.google.common.base.Function;
  * @author jeichar
  */
 public final class Utils {
+    
+
+    public static final GMLConfiguration                   gml3Conf             = new GMLConfiguration();
+    public static final org.geotools.gml2.GMLConfiguration gml2Conf             = new org.geotools.gml2.GMLConfiguration();
+
 	public static Element updateXLink(ReplacementStrategy strategy,
 			ServiceContext context, Map<String, String> idMapping, String id,
 			boolean validated) throws Exception {

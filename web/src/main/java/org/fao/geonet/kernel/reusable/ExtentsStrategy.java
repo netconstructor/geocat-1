@@ -23,6 +23,8 @@
 
 package org.fao.geonet.kernel.reusable;
 
+import static org.fao.geonet.kernel.reusable.Utils.gml2Conf;
+import static org.fao.geonet.kernel.reusable.Utils.gml3Conf;
 import static org.fao.geonet.kernel.reusable.Utils.addChild;
 import static org.fao.geonet.util.LangUtils.FieldType.STRING;
 
@@ -45,7 +47,6 @@ import jeeves.utils.Log;
 import jeeves.utils.Xml;
 import jeeves.xlink.XLink;
 
-import org.fao.geonet.constants.Edit;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.services.extent.Add;
 import org.fao.geonet.services.extent.ExtentHelper;
@@ -68,7 +69,6 @@ import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.JTS;
-import org.geotools.gml3.GMLConfiguration;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.xml.Parser;
 import org.jdom.Attribute;
@@ -110,28 +110,19 @@ public final class ExtentsStrategy extends ReplacementStrategy {
     //private final String _baseURL;
     private final ExtentManager _extentMan;
 
-    private final GMLConfiguration gml3Conf;
-    private final org.geotools.gml2.GMLConfiguration gml2Conf;
     private final String _gmlConvertStyleSheet;
     private final String _currentLocale;
     private final String _appPath;
     private final String _flattenStyleSheet;
 
-    public ExtentsStrategy(String baseURL, String appDir, ExtentManager extentMan, String currentLocale) {
-        this(baseURL, appDir, extentMan, currentLocale, new GMLConfiguration(),
-                new org.geotools.gml2.GMLConfiguration());
-    }
 
-    ExtentsStrategy(String baseURL, String appDir, ExtentManager extentMan, String currentLocale,
-            GMLConfiguration gml3Conf, org.geotools.gml2.GMLConfiguration gml2Conf) {
+    public ExtentsStrategy(String baseURL, String appDir, ExtentManager extentMan, String currentLocale) {
         this._gmlConvertStyleSheet = appDir + "xsl/reusable-object-gml-convert.xsl";
         this._flattenStyleSheet = appDir + "xsl/reusable-object-snippet-flatten.xsl";
 //        this._baseURL = baseURL;
         this._appPath = appDir;
         this._extentMan = extentMan;
         _currentLocale = currentLocale;
-        this.gml3Conf = gml3Conf;
-        this.gml2Conf = gml2Conf;
     }
 
     public Pair<Collection<Element>, Boolean> find(Element placeholder, Element originalElem, String defaultMetadataLang)

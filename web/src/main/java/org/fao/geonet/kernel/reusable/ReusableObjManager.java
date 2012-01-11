@@ -1,5 +1,8 @@
 package org.fao.geonet.kernel.reusable;
 
+import static org.fao.geonet.kernel.reusable.Utils.gml2Conf;
+import static org.fao.geonet.kernel.reusable.Utils.gml3Conf;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,7 +44,6 @@ import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.ISODate;
 import org.fao.geonet.util.LangUtils;
 import org.fao.geonet.util.XslUtil;
-import org.geotools.gml3.GMLConfiguration;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -70,8 +72,6 @@ public class ReusableObjManager
     private final String                             _appPath;
     private boolean                                  _processOnInsert;
 
-    private final GMLConfiguration                   gml3Conf             = new GMLConfiguration();
-    private final org.geotools.gml2.GMLConfiguration gml2Conf             = new org.geotools.gml2.GMLConfiguration();
     private final SerialFactory _serialFactory;
 
 
@@ -284,7 +284,7 @@ public class ReusableObjManager
         String baseURL = params.baseURL;
         ExtentManager extentMan = params.extentManager;
 
-        ExtentsStrategy strategy = new ExtentsStrategy(baseURL, _appPath, extentMan, null, this.gml3Conf, this.gml2Conf);
+        ExtentsStrategy strategy = new ExtentsStrategy(baseURL, _appPath, extentMan, null);
 
         Iterator iter = xml.getChild(EXTENTS).getChildren().iterator();
         List<Content> originalElems = Utils.convertToList(iter, Content.class);
