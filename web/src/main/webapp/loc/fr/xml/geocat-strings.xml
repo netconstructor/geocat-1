@@ -171,4 +171,9 @@ Votre équipe geocat.ch</msg>
     <xlink.newGeographic>Nouvelle étendue géographique</xlink.newGeographic>
     <noXlink js="true">Elément choisi non valide.</noXlink>
 
+	<displayValidationReport>Rapport de validation</displayValidationReport>
+	<publishOnlyIfAdminOrValid>Une métadonnée peut être publiée si elle est valide ISO ou si vous êtes un administrateur.</publishOnlyIfAdminOrValid>
+	<standardValid>Valide ISO et GM03</standardValid>
+	<inspireValid>Valide INSPIRE</inspireValid>
+
 </strings>

@@ -171,5 +171,10 @@ Ihr geocat.ch-Team</msg>
     <xlink.new js="true">Neu</xlink.new>
     <xlink.newGeographic>Neu (nur geografisch)</xlink.newGeographic>
     <noXlink js="true">Das selektierte Element ist ungültig.</noXlink>
+
+	<displayValidationReport>Validierungsbericht</displayValidationReport>
+	<publishOnlyIfAdminOrValid>Metadaten können nur publiziert werden, wenn sie gültig nach ISO und GM03-Regeln sind und Sie über die nötigen Administrator-Rechte verfügen.</publishOnlyIfAdminOrValid>
+	<standardValid>Gültig nach ISO und GM03</standardValid>
+	<inspireValid>Gültig nach INSPIRE</inspireValid>
     
 </strings>    

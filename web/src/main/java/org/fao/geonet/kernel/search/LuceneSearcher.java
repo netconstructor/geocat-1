@@ -1245,9 +1245,19 @@ public class LuceneSearcher extends MetaSearcher
 			List<String> fieldnames = new ArrayList<String>();
 			fieldnames.add(fieldname);
 			return getMetadataFromIndex(indexPath, id, fieldnames).get(fieldname);
-		}
+	}
+    public static String getMetadataFromIndexById(String indexPath, String id, String fieldname) throws Exception
+    {
+            List<String> fieldnames = new ArrayList<String>();
+            fieldnames.add(fieldname);
+            return getMetadataFromIndex(indexPath, "_id", id, fieldnames).get(fieldname);
+    }
 
-    public static Map<String,String> getMetadataFromIndex(String indexPath, String id, List<String> fieldnames) throws Exception
+    public static Map<String,String> getMetadataFromIndex(String indexPath, String uuid, List<String> fieldnames) throws Exception {
+        return getMetadataFromIndex(indexPath, "_uuid", uuid, fieldnames);
+    }
+
+    public static Map<String,String> getMetadataFromIndex(String indexPath, String idField, String id, List<String> fieldnames) throws Exception
     {
 			MapFieldSelector selector = new MapFieldSelector(fieldnames); 
 
@@ -1258,7 +1268,7 @@ public class LuceneSearcher extends MetaSearcher
 			Map<String,String> values = new HashMap<String,String>();
         
     	try {	
-				TermQuery query = new TermQuery(new Term("_uuid", id));
+				TermQuery query = new TermQuery(new Term(idField, id));
 		    TopDocs tdocs = searcher.search(query,1);
 	        
 	       for ( ScoreDoc sdoc : tdocs.scoreDocs ) {

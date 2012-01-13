@@ -188,6 +188,16 @@ public final class XslUtil {
             return "";
         }
     }
+    public static String getIndexFieldById(Object appPath, Object id, Object field, Object lang) {
+        String path = appPath.toString();
+        String fieldname = field.toString();
+        try {
+            return LuceneSearcher.getMetadataFromIndexById(path, id.toString(), fieldname);
+        } catch (Exception e) {
+            Log.error(Geonet.GEONETWORK, "Failed to get index field value caused by " + e.getMessage());
+            return "";
+        }
+    }
 
     /**
      * convert gml geometry to WKT
