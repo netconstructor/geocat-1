@@ -5,7 +5,7 @@ schemas = schemaDir.listFiles().findAll{it.isDirectory()}
 allRules = file('rules').listFiles().findAll{it.isFile()}.collect{
   it.name.drop("schematron-rules-".length()).reverse().drop(4).reverse()
 }
-rulesToPublish = ['geonetwork', 'iso', 'inspire']
+rulesToPublish = ['geonetwork', 'iso', 'inspire','iso-che']
 
 task cleanSchematronFiles << {
   schemas.each {
