@@ -18,7 +18,7 @@
                 che:dummy-for-xmlns="">
    <xsl:output method="xml"/>
    <xsl:param name="lang"/>
-   <xsl:variable name="loc" select="document(concat('loc/', $lang, '/schematron.xml'))"/>
+   <xsl:variable name="loc" select="document(concat('loc/', $lang, '/schematron-rules-iso-che.xml'))"/>
    <xsl:template match="*|@*" mode="schematron-get-full-path">
       <xsl:apply-templates select="parent::*" mode="schematron-get-full-path"/>
       <xsl:text>/</xsl:text>

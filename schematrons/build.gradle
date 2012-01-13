@@ -9,7 +9,7 @@ rulesToPublish = ['geonetwork', 'iso', 'inspire']
 
 task cleanSchematronFiles << {
   schemas.each {
-    fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml']).each{it.delete()}
+    fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml'], excludes: ['schematron*-che*']).each{it.delete()}
   }
 }
 
@@ -38,12 +38,16 @@ rulesToPublish.each { rule ->
 
 def rulesInputFile(rules) {return file("rules/schematron-rules-${rules}.sch")}
 
+def compiledRules(rules) {
+  return file("${buildDir}/schematron-rules-${rules}.xsl")
+}
+
 def compileRules(rules) {
   ant.xslt(
     basedir:projectDir,
     style:file("resources/iso_svrl_for_xslt2.xsl").path,
 	  in:rulesInputFile(rules).path,
-	  out:file("${buildDir}/schematron-rules-${rules}.xsl")) {
+	  out: compiledRules(rules)) {
 	    classpath {
 	      pathelement(location: file("saxon9.jar"))
 	    }
@@ -54,14 +58,17 @@ def locFileName(rules) {return "schematron-rules-${rules}.xml"}
 
 def publish(rules, schema) {
   logger.info("Copy schematron $rules XSLT to $schema schema.")
-  def from = rulesInputFile(rules)
+  def from = compiledRules(rules)
   def to = file("$schema/schematron-rules-${rules}.xsl")
+  to.delete()
   to << from.bytes
   
   def defaultLocFile = file("rules/loc/$defaultLang/${locFileName(rules)}").bytes
   file("rules/loc").listFiles().each { locDir ->
     def toFile = file("$schema/loc/${locDir.name}/${locFileName(rules)}")
     def fromFile = file("$locDir/${locFileName(rules)}")
+    toFile.delete()
+    toFile.parentFile.mkdirs()
     if(toFile.parentFile.exists()) {
       // if fromFile does not exist write the default
       if(fromFile.exists()) {
