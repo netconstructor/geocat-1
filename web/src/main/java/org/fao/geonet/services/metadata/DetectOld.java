@@ -32,9 +32,9 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.Email;
 import org.fao.geonet.kernel.reusable.Utils;
 import org.fao.geonet.kernel.search.SearchManager;
-import org.fao.geonet.services.util.Email;
 import org.fao.geonet.util.ISODate;
 import org.jdom.Element;
 
@@ -82,9 +82,8 @@ public class DetectOld implements Service
 
     public Element exec(Element params, ServiceContext context) throws Exception
     {
-
+        GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
     	boolean testing = Boolean.parseBoolean(Util.getParam(params, "testing", "false"));
-        Email connection = new Email(context, testing);
         int limit;
         Multimap<String, EmailInfo> results;
         switch (serviceType)
@@ -94,11 +93,11 @@ public class DetectOld implements Service
         case EMAIL:
             limit = parseLimit(params);
             results = doSearch(limit, context);
-            return emailResults(connection, limit, results);
+            return emailResults(testing, gc.getEmail(), limit, results);
         default:
             limit = parseLimit(params);
             results = doSearch(limit, context);
-            Element notifications = emailResults(connection, limit, results).getChild(SENT_NOTIFICATIONS);
+            Element notifications = emailResults(testing, gc.getEmail(), limit, results).getChild(SENT_NOTIFICATIONS);
             notifications.setName("unpublishedItems");
             List<String> ids = new ArrayList<String>();
             for (EmailInfo info : results.values()) {
@@ -234,7 +233,7 @@ public class DetectOld implements Service
         }
     }
 
-    private Element emailResults(Email connection, int limit, Multimap<String, EmailInfo> results)
+    private Element emailResults(boolean testing, Email email, int limit, Multimap<String, EmailInfo> results)
             throws Exception
     {
 
@@ -293,7 +292,7 @@ public class DetectOld implements Service
             } else {
                 if (serviceType == ServiceType.EMAIL) {
                     String msg = MessageFormat.format(AUTHOR_INTRO, limit, sampleInfo.ownerUsername) + metadataSummary;
-                    connection.sendEmail(emailTo, AUTHOR_SUBJECT, msg);
+                    email.send(emailTo, AUTHOR_SUBJECT, msg, testing);
                 }
                 notifications.addContent(owner);
                 adminMessage.append(userSummary);
@@ -302,13 +301,13 @@ public class DetectOld implements Service
         }
 
         if (serviceType == ServiceType.EMAIL) {
-            connection.sendEmail(connection.feedbackAddress, ADMIN_OLD_METADATA_SUBJECT, adminMessage.toString());
+            email.sendToAdmin(ADMIN_OLD_METADATA_SUBJECT, adminMessage.toString(), testing);
         } else {
-            connection.sendEmail(connection.feedbackAddress, ADMIN_UNPUBLISH_SUBJECT, adminMessage.toString());
+            email.sendToAdmin(ADMIN_UNPUBLISH_SUBJECT, adminMessage.toString(), testing);
         }
 
         if (!failedNotifications.getChildren().isEmpty()) {
-            connection.sendEmail(connection.feedbackAddress, ADMIN_FAILED_EMAIL_SUBJECT, failedMessage.toString());
+            email.sendToAdmin(ADMIN_FAILED_EMAIL_SUBJECT, failedMessage.toString(), testing);
         }
         return xmlResponse;
 

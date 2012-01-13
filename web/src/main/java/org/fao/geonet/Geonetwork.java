@@ -59,6 +59,7 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.kernel.AccessManager;
 import org.fao.geonet.kernel.DataManager;
+import org.fao.geonet.kernel.Email;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.ThesaurusManager;
 import org.fao.geonet.kernel.csw.CatalogConfiguration;
@@ -404,6 +405,7 @@ public class Geonetwork implements ApplicationHandler
         logger.info("  - Service monitor manager...");
         ServiceMonitorManager smm = new ServiceMonitorManager(dbms, context, settingMan);
 
+        Email email = new Email(settingMan, threadPool);
 
         //------------------------------------------------------------------------
 		//--- initialize metadata notifier subsystem
@@ -419,6 +421,7 @@ public class Geonetwork implements ApplicationHandler
 		gnContext.accessMan   = accessMan;
 		gnContext.dataMan     = dataMan;
 		gnContext.searchMan   = searchMan;
+		gnContext.email   = email;
 		gnContext.schemaMan   = schemaMan;
 		gnContext.config      = handlerConfig;
 		gnContext.catalogDis  = catalogDis;

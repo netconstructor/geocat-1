@@ -66,9 +66,9 @@ import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.Email;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
-import org.fao.geonet.services.util.Email;
 import org.fao.geonet.util.LangUtils;
 import org.geotools.gml3.GMLConfiguration;
 import org.jdom.Attribute;
@@ -432,9 +432,8 @@ public final class Utils {
 		String query = "SELECT email,id FROM Users WHERE id="
 				+ mkString(args.emailInfo.keySet(), " OR id=");
 		Element emailRecords = args.dbms.select(query);
-		org.fao.geonet.services.util.Email emailService = new org.fao.geonet.services.util.Email(
-				args.context, args.testing);
-
+		GeonetContext gc = (GeonetContext) args.context.getHandlerContext(Geonet.CONTEXT_NAME);
+		
 		try {
 			Set<String> unnotifiedIds = new HashSet<String>();
 
@@ -452,8 +451,8 @@ public final class Utils {
 									+ args.baseURL
 									+ "/srv/eng/metadata.show?id=");
 
-					emailService.sendEmail(email, args.subject, args.msgHeader
-							+ emailBody);
+					gc.getEmail().send(email, args.subject, args.msgHeader
+							+ emailBody,args.testing);
 				}
 			}
 
@@ -464,10 +463,7 @@ public final class Utils {
 						+ "/srv/eng/metadata.show?id="
 						+ mkString(unnotifiedIds, "\n" + args.baseURL
 								+ "/srv/eng/metadata.show?id=");
-				if (Email.isValidEmailAddress(emailService.feedbackAddress)) {
-					emailService.sendEmail(emailService.feedbackAddress,
-							args.subject, emailBody);
-				}
+				gc.getEmail().sendToAdmin(args.subject, emailBody,args.testing);
 				Log.warning(Geocat.Module.REUSABLE, emailBody);
 			}
 		} catch (Exception e) {

@@ -41,8 +41,9 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.XMLLayout;
+import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geocat;
-import org.fao.geonet.services.util.Email;
+import org.fao.geonet.constants.Geonet;
 
 /**
  * Logs to the records to the associated logger based on the record type and
@@ -166,7 +167,7 @@ public class ReusableObjectLogger
             return;
         }
 
-        Email email = new Email(context, testing);
+        GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         String emailSubject = "New potential shared metadata elements";
 
         String start = SimpleDateFormat.getDateTimeInstance().format(new Date(startTime));
@@ -185,7 +186,7 @@ public class ReusableObjectLogger
         }
 
         try {
-            email.sendEmail(email.feedbackAddress, emailSubject, emailBody.toString());
+            gc.getEmail().sendToAdmin(emailSubject, emailBody.toString(),testing);
         } catch (Exception e) {
             Log.error(Geocat.Module.REUSABLE,
                     "Unable to send message to admin about new missed reusable objects");

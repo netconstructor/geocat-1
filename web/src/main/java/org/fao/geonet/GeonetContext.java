@@ -26,6 +26,7 @@ package org.fao.geonet;
 import jeeves.server.ServiceConfig;
 import org.fao.geonet.kernel.AccessManager;
 import org.fao.geonet.kernel.DataManager;
+import org.fao.geonet.kernel.Email;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.ThesaurusManager;
 import org.fao.geonet.kernel.csw.CatalogDispatcher;
@@ -60,6 +61,7 @@ public class GeonetContext
 	/* package */ ApplicationContext app_context;
   /* package */ MetadataNotifierManager metadataNotifierMan;
 	/* package */ ThreadPool        threadPool;
+	/* package */ Email             email;
 
     //---------------------------------------------------------------------------
 	/*package*/ GeonetContext() {}
@@ -74,13 +76,14 @@ public class GeonetContext
 	public SettingManager    getSettingManager()    { return settingMan;   }
 	public HarvestManager    getHarvestManager()    { return harvestMan;   }
 	public ThesaurusManager  getThesaurusManager()  { return thesaurusMan; }
-    public ExtentManager      getExtentManager()     { return extentMan;     }
+    public ExtentManager     getExtentManager()     { return extentMan;     }
     public ReusableObjManager getReusableObjMan()    { return reusableObjMan;}
     public ServiceMonitorManager getServiceMonitorManager() {return monitorMan;}
 	public OaiPmhDispatcher  getOaipmhDispatcher()  { return oaipmhDis;    }
 	public ApplicationContext  getApplicationContext() { return app_context; }
   public MetadataNotifierManager getMetadataNotifier() { return metadataNotifierMan; }
 	public ThreadPool        getThreadPool()        { return threadPool;   }
+    public Email             getEmail()     { return email;     }
 
 	//---------------------------------------------------------------------------
 

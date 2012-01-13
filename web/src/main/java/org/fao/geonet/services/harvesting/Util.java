@@ -38,11 +38,11 @@ import jeeves.utils.Log;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.DataManager;
+import org.fao.geonet.kernel.Email;
 import org.fao.geonet.kernel.harvest.Common.OperResult;
 import org.fao.geonet.kernel.harvest.HarvestManager;
 import org.fao.geonet.kernel.harvest.harvester.ErrorTracker;
 import org.fao.geonet.kernel.setting.SettingManager;
-import org.fao.geonet.services.util.Email;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -100,7 +100,6 @@ public class Util
 	public static void warnAdminByMail(ServiceContext context, String mailBody, String server, String UUID, String filePath) {
 		GeonetContext ctx = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 		SettingManager settings = ctx.getSettingManager();
-		String adminAddress = settings.getValue("system/feedback/email");
 		
 		String fServer = (server == null ? "" : String.format("\n\t- Server : %s", server));
 		String fUUID = (UUID == null ? "" : String.format("\n\t- UUID : %s", UUID));
@@ -109,17 +108,8 @@ public class Util
 		String emailBody = String.format(mailBody, fServer, fUUID, fFile);
 			
 		
-		Email emailWarn = new Email(context, false);
-		
-		try {
-			emailWarn.sendEmail(adminAddress, "[geocat.ch] Harvesting error", emailBody);
-		} catch (AddressException e) {
-			Log.error(Geonet.HARVESTER, "Error sending email message: "+e);
-			Log.error(Geonet.HARVESTER, "Failed email is: \n"+emailBody);
-		} catch (MessagingException e) {
-            Log.error(Geonet.HARVESTER, "Error sending email message: "+e);
-            Log.error(Geonet.HARVESTER, "Failed email is: \n"+emailBody);
-		}
+		GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);		
+		gc.getEmail().sendToAdmin("[geocat.ch] Harvesting error", emailBody, false);
 
 	}
 	private static String SKEL_MAIL_UUID_CLASH = "Hello,\n\n" +
