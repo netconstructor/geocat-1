@@ -88,7 +88,7 @@
 			<!--singlefile target="$INSTALL_PATH/web/geonetwork.war" 
 			src="../web/target/geonetwork.war" override="true"/-->
 			
-			<fileset dir="../web/target/geonetwork"  targetdir="$INSTALL_PATH/web/geonetwork"/>			
+			<fileset dir="../web/target/geonetwork"  targetdir="$INSTALL_PATH/web/geonetwork" />
 
 			<fileset dir="../release/data"   targetdir="$INSTALL_PATH/data" />
 			<fileset dir="../release/schemaPlugins"   targetdir="$INSTALL_PATH/web/geonetwork/schemaPlugins" />
@@ -114,6 +114,34 @@
         <singlefile target="$INSTALL_PATH/web/geoserver.war" src="../geoserver/target/geoserver.war"
         override="true"/>
       -->
+    </pack>
+
+
+    <pack id="inspire" name="European Union INSPIRE Directive configuration pack" required="no" preselected="no">
+        <description/>
+
+        <!-- Enable schematron rules -->
+        <singlefile src="../web/target/geonetwork/xml/schemas/iso19139/schematron-rules-inspire.xsl.disabled"
+                    target="$INSTALL_PATH/web/geonetwork/xml/schemas/iso19139/schematron-rules-inspire.xsl"
+                    override="true"/>
+
+        <!-- Inspire thesaurus files -->
+        <singlefile src="../web/target/thesauri/gemet.rdf"
+                    target="$INSTALL_PATH/web/geonetwork/WEB-INF/data/codelist/external/thesauri/theme/gemet.rdf"
+                    override="true"/>
+
+        <singlefile src="../web/target/thesauri/inspire-service-taxonomy.rdf"
+                    target="$INSTALL_PATH/web/geonetwork/WEB-INF/data/codelist/external/thesauri/theme/inspire-service-taxonomy.rdf"
+                    override="true"/>
+
+        <singlefile src="../web/target/thesauri/inspire-theme.rdf"
+                    target="$INSTALL_PATH/web/geonetwork/WEB-INF/data/codelist/external/thesauri/theme/inspire-theme.rdf"
+                    override="true"/>
+
+        <!-- SQL script with Inspire Settings enabled -->
+        <singlefile src="../web/target/inspire/data-db-default.sql"
+                    target="$INSTALL_PATH//web/geonetwork/WEB-INF/classes/setup/sql/data/data-db-default.sql"
+                    override="true"/>
     </pack>
 
     <pack id="gast" name="GAST" required="no" preselected="no">
