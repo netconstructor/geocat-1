@@ -11,6 +11,7 @@ import org.fao.geonet.exceptions.SchematronValidationErrorEx;
 import org.fao.geonet.services.gm03.TranslateAndValidate;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GM03Iso19139RountripTest
@@ -91,7 +92,7 @@ public class GM03Iso19139RountripTest
         }
     }
 
-    @Test(expected=AssertionError.class)
+    @Test(expected=AssertionError.class) @Ignore
     public void iso19139SchematronVerifyInvalid() throws Throwable
     {
         // This verifies that the schematron test works correctly
