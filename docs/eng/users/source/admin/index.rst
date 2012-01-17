@@ -19,3 +19,4 @@ Administration
     import2/index.rst
     user-self-registration/index.rst
     advanced-configuration/index.rst
+    processing/index.rst
