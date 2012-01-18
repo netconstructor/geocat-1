@@ -806,26 +806,25 @@ emailaddress of the group, informing that the map has been downloaded.
 Attribuer des catégories
 ````````````````````````
 
-As a final step to entering metadata for a map, you should assign categories
-for it. The assigned categories will determine the categories the map will
-display under on the home page. To assign categories for a map, follow these
-steps:
+Pour finaliser le tout, vous pouvez assigner des catégories à vos métadonnées. 
+Les catégories choisies vont déterminer sous quelles catégories votre fiche 
+va s'afficher dans la page de recherche.
+Pour assigner des catégories à une carte, suivrez ces étapes :
 
-- Find your map by using the search option. Whether you have multiple or
-  single results from your search, on top of the individual record or next
-  to the record, you will always see a row of buttons including a
-  **Categories** button.
+ - Trouver votre fiche en utilisant le formulaire de recherche.
+   En fonction du nombre de résultats, positionnez-vous sur la fiche, 
+   ou sur le menu **Autres actions** (sur la droite). Vous allez voir 
+   une liste de boutons, incluant un bouton **Catégories**.
 
-- Click on the **Categories** button. This
-  will take you to a new page. You can assign one or multiple categories
-  selecting or deselecting them from this page. Simply click on the small
-  box next to the category to place or remove a checkmark. (:ref:`categories_management`)
+ - Cliquez sur le bouton **Catégories**. Cela va afficher une nouvelle 
+   fenêtre. Vous pouvez assigner une ou plusieurs catégories en les sélectionnant 
+   ou désélectionnant sur cette page. Cocher ou décocher simplement 
+   les petites cases en face des catégories.
+
 
 .. figure:: categoriesManag.png
 
-  **Category management**
 
-
-Si vous n'avez pas accès à ces informations, consulter `l'administration des catégories <../../admin/advanced/category/index.html>`_.
+Si vous n'avez pas accès à ces informations, consulter :ref:`admin_category`.
 
 
