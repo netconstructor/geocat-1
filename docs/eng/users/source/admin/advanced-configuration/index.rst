@@ -87,15 +87,133 @@ or more metadata records:
    least 5x (and to be safe 10x) the number of records you are expecting to hold and let 
    GeoNetwork create its `data` directory on that filesystem.
 
+.. _system_properties_configuration:
+
+System Properties configuration
+-------------------------------
+
+When customizing Geonetwork for a specific deployment server you need to be able to modify the configuration for that specific server.  One way is to 
+modify the configuration files within Geonetwork web application, however this is a problematic method because you essentially need either a different
+web application for each deployment target or need to patch each after deployment.  Geonetwork provides two methods for addressing this issue
+
+ #. System property configuration
+ #. Configuration override files - Discussed in next section
+ 
+In Geonetwork there are several system properties that can be used to configure different aspects of Geonetwork.  When a webcontainer
+is started the properties can be set.  For example in Tomcat one can set either JAVA_OPTS or CATALINA_OPTS with -D<propertyname>=<value>.
+
+ * <webappname>.lucene.dir - The path to a directory where the lucene indices should be stored
+ * <webappname>.data.dir - The path to a directory where the majority of the geonetwork data should be stored
+ * <webappname>.codeList.dir - The path to a directory where the Thesaurus files will be maintained.
+ * <webappname>.jeeves.configuration.overrides.file - See :ref:`adv_configuration_overriddes`
+ * jeeves.configuration.overrides.file - See :ref:`adv_configuration_overriddes`
+ * mime-mappings -  mime mappings used by jeeves for generating the response content type
+ * http.proxyHost - The internal geonetwork Http proxy uses this for configuring how it can access the external network (Note for harvesters there is also a setting in the Settings page of the administration page)
+ * http.proxyPort - The internal geonetwork Http proxy uses this for configuring how it can access the external network (Note for harvesters there is also a setting in the Settings page of the administration page)
+ 
+There is a usecase where multiple geonetwork instances might be ran in the same webcontainer, because of this many of the system properties 
+listed above have <webappname>.  When declaring the property this should be replaced with the webapp name the setting applies to. Typically this will
+be geonetwork.
 
 .. _adv_configuration_overriddes:
 
-Overrides configuration
------------------------
+Configuration override
+----------------------
 
-  .. TODO
-  
-  
+Configuration override files allow nearly complete access to all the configuration allowing nearly any configuration parameter to be overridden 
+for a particular deployment target.  The concept behind configuration overrides is to have the basic configuration set in the geonetwork webapplication,
+the application is deployed and a particular set of override files are used for the deployment target.  The override files only have the settings that need
+to be different for the deployment target, alleviating the need to deploy and edit the configuration files or have a different web application per deployment target.
+
+Configuration override files are also useful for forked Geonetwork applications that regularily merge the changes from the true Geonetwork code base.
+
+A common scenario is to have test and production instances with different configurations. In both configurations 90% of the configuration is the same 
+but certain parts need to be updated.
+
+An override file to be specified as a system property or as a servlet init parameter: jeeves.configuration.overrides.file.
+
+The order of resolution is:
+ * System property with key: {servlet.getServletContext().getServletContextName()}.jeeves.configuration.overrides.file
+ * Servlet init parameter with key: jeeves.configuration.overrides.file
+ * System property with key: jeeves.configuration.overrides.file
+ * Servlet context init parameters with key: jeeves.configuration.overrides.file
+ 
+The property should be a path or a URL.  The method used to find a overrides file is as follows:
+ #. It is attempted to be used as a URL.  if an exception occurs the next option is tried
+ #. It is assumed to be a path and uses the servlet context to look up the resources.  If it can not be found the next option is tried
+ #. It is assumed to be a file.  If the file is not found then an exception is thrown
+
+An example of a overrides file is as follows::
+   
+   <overrides>
+       <!-- import values.  The imported values are put at top of sections -->
+       <import file="./imported-config-overrides.xml" />
+        <!-- properties allow some properties to be defined that will be substituted -->
+        <!-- into text or attributes where ${property} is the substitution pattern -->
+        <!-- The properties can reference other properties -->
+        <properties>
+            <enabled>true</enabled>
+            <dir>xml</dir>
+            <aparam>overridden</aparam>
+        </properties>
+        <!-- A regular expression for matching the file affected. -->
+        <file name=".*WEB-INF/config\.xml">
+            <!-- This example will update the file attribute of the xml element with the name attribute 'countries' -->
+            <replaceAtt xpath="default/gui/xml[@name = 'countries']" attName="file" value="${dir}/europeanCountries.xml"/>
+            <!-- if there is no value then the attribute is removed -->
+            <replaceAtt xpath="default/gui" attName="removeAtt"/>
+            <!-- If the attribute does not exist it is added -->
+            <replaceAtt xpath="default/gui" attName="newAtt" value="newValue"/>
+
+            <!-- This example will replace all the xml in resources with the contained xml -->
+            <replaceXML xpath="resources">
+              <resource enabled="${enabled}">
+                <name>main-db</name>
+                <provider>jeeves.resources.dbms.DbmsPool</provider>
+                 <config>
+                     <user>admin</user>
+                     <password>admin</password>
+                     <driver>oracle.jdbc.driver.OracleDriver</driver>
+                     <!-- ${host} will be updated to be local host -->
+                     <url>jdbc:oracle:thin:@${host}:1521:fs</url>
+                     <poolSize>10</poolSize>
+                 </config>
+              </resource>
+            </replaceXML>
+            <!-- This example simple replaces the text of an element -->
+            <replaceText xpath="default/language">${lang}</replaceText>
+            <!-- This examples shows how only the text is replaced not the nodes -->
+            <replaceText xpath="default/gui">ExtraText</replaceText>
+            <!-- append xml as a child to a section (If xpath == "" then that indicates the root of the document),
+                 this case adds nodes to the root document -->
+            <addXML xpath=""><newNode/></addXML>
+            <!-- append xml as a child to a section, this case adds nodes to the root document -->
+            <addXML xpath="default/gui"><newNode2/></addXML>
+            <!-- remove a single node -->
+            <removeXML xpath="default/gui/xml[@name = countries2]"/>
+            <!-- The logging files can also be overridden, although not as easily as other files.  
+                 The files are assumed to be property files and all the properties are loaded in order.  
+                 The later properties overriding the previously defined parameters. Since the normal
+                 log file is not automatically located, the base must be also defined.  It can be the once
+                 shipped with geonetwork or another. -->
+            <logging>
+                <logFile>/WEB-INF/log4j.cfg</logFile>
+                <logFile>/WEB-INF/log4j-jeichar.cfg</logFile>
+            </logging>
+        </file>
+        <file name=".*WEB-INF/config2\.xml">
+            <replaceText xpath="default/language">de</replaceText>
+        </file>
+        <!-- a normal file tag is for updating XML configuration files -->
+        <!-- textFile tags are for updating normal text files like sql files -->
+        <textFile name="test-sql.sql">
+            <!-- each line in the text file is matched against the linePattern attribute and the new value is used for substitution -->
+            <update linePattern="(.*) Relations">$1 NewRelations</update>
+            <update linePattern="(.*)relatedId(.*)">$1${aparam}$2</update>
+        </textFile>
+    </overrides>
+
+
 .. _adv_configuration_lucene:
 
 Lucene configuration
