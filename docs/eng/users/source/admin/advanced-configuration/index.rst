@@ -110,6 +110,8 @@ is started the properties can be set.  For example in Tomcat one can set either 
  * mime-mappings -  mime mappings used by jeeves for generating the response content type
  * http.proxyHost - The internal geonetwork Http proxy uses this for configuring how it can access the external network (Note for harvesters there is also a setting in the Settings page of the administration page)
  * http.proxyPort - The internal geonetwork Http proxy uses this for configuring how it can access the external network (Note for harvesters there is also a setting in the Settings page of the administration page)
+ * geonetwork.sequential.execution - (true,false) Force indexing to occur in current thread rather than being queued in the ThreadPool.  Good for debugging issues.
+                                     
  
 There is a usecase where multiple geonetwork instances might be ran in the same webcontainer, because of this many of the system properties 
 listed above have <webappname>.  When declaring the property this should be replaced with the webapp name the setting applies to. Typically this will
