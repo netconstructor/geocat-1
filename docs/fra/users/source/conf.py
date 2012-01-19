@@ -83,7 +83,7 @@ pygments_style = 'sphinx'
 # Options for HTML output
 # -----------------------
 html_theme = 'geonetwork'
-html_theme_path = ['../../themes']
+html_theme_path = ['../../../eng/themes']
 
 if os.environ.get('HTML_THEME_PATH'):
   html_theme_path.append(os.environ.get('HTML_THEME_PATH'))
@@ -107,7 +107,8 @@ if os.environ.get('HTML_THEME_PATH'):
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = '../../../eng/themes/geonetwork/static/favicon.ico'
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
