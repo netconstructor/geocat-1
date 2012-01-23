@@ -331,8 +331,7 @@ public class MetadataLib
 	 * @param md
 	 * @return
 	 */
-	public static String autodetectSchema(Element md)
-	{
+	public static String autodetectSchema(Element md) throws Exception {
 		return _schemaMan.autodetectSchema(md);
 	}
 
