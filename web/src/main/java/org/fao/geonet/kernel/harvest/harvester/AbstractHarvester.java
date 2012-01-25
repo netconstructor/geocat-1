@@ -203,7 +203,7 @@ public abstract class AbstractHarvester
 			Element el = (Element) o;
 			String  id = el.getChildText("id");
 
-			dataMan.deleteMetadata(dbms, id);
+			dataMan.deleteMetadata(context.getUserSession(), dbms, id);
 			dbms.commit();
 		}
 

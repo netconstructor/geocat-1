@@ -153,6 +153,8 @@ var searchTemp =
 '      <title>{TITLE}</title>'+
 '      <abstract>{ABSTRACT}</abstract>'+
 '      <subject>{SUBJECT}</subject>'+
+'      <minscale>{MINSCALE}</minscale>'+
+'      <maxscale>{MAXSCALE}</maxscale>'+
 '    </search>';
 
 

@@ -30,6 +30,7 @@
 			<call name="env" class="org.fao.geonet.guiservices.util.Env" />
 			<call name="results" class="org.fao.geonet.guiservices.search.GetResultsInfo" />
 			<call name="schemalist" class="org.fao.geonet.guiservices.schemas.Get" />
+			<call name="svnmanager" class="org.fao.geonet.guiservices.util.GetSvnDetails"/>
 
 			<!-- this service adds labels and codelists from all schemas -->
 			<call name="schemas" class="org.fao.geonet.guiservices.schemas.GetSchemaInfo" />
@@ -146,7 +147,7 @@
 	      <user>admin</user>
 	      <password>gnos</password>
 	      <driver>org.h2.Driver</driver>
-	      <url>jdbc:h2:geonetwork</url>
+	      <url>jdbc:h2:geonetwork;LOCK_TIMEOUT=20000</url>
 	      <poolSize>33</poolSize>
 	    </config>
 	  </resource>
@@ -167,7 +168,7 @@
 	      <user>admin</user>
 	      <password>gnos</password>
 	      <driver>org.h2.Driver</driver>
-	      <url>jdbc:h2:geonetwork</url>
+	      <url>jdbc:h2:geonetwork;LOCK_TIMEOUT=20000</url>
 	      <poolSize>33</poolSize>
 	    </config>
 	  </resource>
@@ -367,6 +368,11 @@
          faster to load and index records than ApacheDBCP provider
          with PostgisDataStoreFactory and maxWritesInTransaction set to 1 -->	
 		<param name="maxWritesInTransaction" value="1000" />
+
+		<param name="useSubversion" value="true"/>
+		<param name="subversionPath" value="WEB-INF/metadata_subversion"/>
+
+		<param name="statusActionsClass" value="org.fao.geonet.services.metadata.DefaultStatusActions"/>
 	</appHandler>
 
 	<!-- ====================================================================== -->
@@ -388,6 +394,7 @@
 				<call name="groups" class=".guiservices.groups.GetMine" />
 				<call name="services" class="jeeves.guiservices.services.Get" />
 				<call name="categories" class=".services.category.List" />
+				<call name="status" class=".services.status.List" />
 				<call name="regions" class=".guiservices.regions.Get" />
 				<call name="sources" class=".guiservices.util.Sources" />
 				<call name="repositories" class=".services.main.Info">
@@ -1414,6 +1421,11 @@
 			<class name=".services.crs.GetCRS" />
 			<output sheet="crs.xsl" contentType="text/xml; charset=UTF-8" />
 		</service>
+
+        <service name="sequential.execution.set">
+            <class name=".services.config.SetSequentialExecution" />
+        </service>
+
 	</services>
 
 	<!-- ====================================================================== -->

@@ -211,6 +211,12 @@
 	<!-- tooltips -->
 	
 	<tips>
+		<tip id="site.siteId">
+			Unique catalogue identifier.
+			After changing the site identifier, user should update the index and the logo
+			from the administration panel.
+		</tip>
+
 		<tip id="site.name">
 			Used to identify the installation.
 		</tip>
@@ -383,6 +389,7 @@
 	<db.numactive>Database connections in use:</db.numactive>	
 	<db.numidle>Database connections available:</db.numidle>	
 	<db.maxactive>Maximum number of database connections:</db.maxactive>	
-	<db.statserror>Database statistics:</db.statserror>	
+	<db.statserror>Database statistics:</db.statserror>
+    <sequentialExecution>ThreadPool Sequential Execution Mode: </sequentialExecution>
 </strings>
 

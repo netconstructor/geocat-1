@@ -230,7 +230,7 @@ GeoNetwork.mapApp = function() {
 	var createPrintPanel = function() {
         // The printProvider that connects us to the print service
         printProvider = new GeoExt.data.PrintProvider({
-            method: "GET",
+            method: "POST",
             url: GeoNetwork.map.printCapabilities,
             autoLoad: true
         });
@@ -1094,8 +1094,9 @@ GeoNetwork.mapApp = function() {
             border: false,
             //renderTo:'map_container',
             items: [{
+                    id: 'layerManager',
                     region: 'east',
-                    xtype: 'panel',			
+                    xtype: 'panel',
                     collapsible: true,
                     collapsed : true,
                     collapseMode: "mini",
@@ -1118,8 +1119,7 @@ GeoNetwork.mapApp = function() {
                         map: map,
                         tbar: toolbar,
                         border: false,
-                        center: [155000, 463000],
-                        zoom: 2,
+                        extent: GeoNetwork.map.EXTENT,
                         items: [mapOverlay]
                     }]
                 }

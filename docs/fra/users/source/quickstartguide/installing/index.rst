@@ -1,5 +1,7 @@
 .. _installing:
 
+.. include:: ../../substitutions.txt
+
 Installation
 ============
 
@@ -9,34 +11,79 @@ Nouvelle version - nouvelles fonctionnalités
 
 .. figure:: Home_page_s.png
 
-    *Standard home page of GeoNetwork opensource*
+    *Page d'accueil standard de |project_name|*
 
 
-Version 2.7
-```````````
+Version 2.7.x
+`````````````
+
+- Nouvelle traduction : finlandais
+
+- Nouvelle interface de consultation et d'édition
 
 - Recherche
 
- - Recherche distribuée utilisant le protocole Z39.50
+ - Recherche distribuée utilisant le protocole Z39.50 (interface classique)
 
-- Standard
- 
- - Chargement dynamique de profiles
-  
+ - CSW virtuel
+
 - Editeur
 
- - Publication dans GeoServer
+ - Amélioration du formulaire de saisie et consultation pour le dublin-core 
 
+ - Possibilité de faire une modification mineure
+
+ - :ref:`editor_geopublication`
+ 
+  - Support de la publication de ressources externes (fichier ou url)
+
+  - Possibilité de choisir les types de liens à ajouter (WMS et/ou WFS et/ou WCS)
+ 
+ - Persistence des résultats de validation
+ 
+ - :ref:`auto_correction`
+ 
+ - Suivi du statut des métadonnées
+ 
+ - Gestion des versions des métadonnées
+ 
 - Administration
 
- - Module de statistiques
+ - Nouvelle interface de gestion des thésaurus
+
+ - Nouvelle interface de création d'annuaires (eg. annuaire de contact)
+ 
+ - Moissonnage / Protocol GeoNetwork / Transfert des catégories et des données associées
+
+ - Module de statistiques sur les recherches (cf. :ref:`stat_config`)
 
  - Chargement de thésaurus par URL
  
- - Gestion des logos
+ - :ref:`logo_config`
 
- - Configuration avancée de l'index Lucene
+ - Configuration avancée de l'index Lucene (cf. :ref:`lucene_index`)
+ 
+ - :ref:`system_info`
+
+ - :ref:`wfs_harvesting`
+
+ - :ref:`thredds_harvester`
+ 
+ - :ref:`z3950_harvester`
+
+- Base de données / Support JNDI
+
+- GAST supprimé
+
+- Standard
+ 
+ - :ref:`admin_add_standard`
+ 
+ - Amélioration de la compatibilité INSPIRE (cf. :ref:`inspire`)
   
+
+`Liste des changements <http://trac.osgeo.org/|project_name|/query?status=assigned&status=closed&status=new&status=reopened&order=priority&col=id&col=summary&col=status&col=type&col=priority&col=milestone&col=component&milestone=v2.7.0>`_
+
 
 Version 2.6 (Septembre 2010)
 ````````````````````````````
@@ -98,6 +145,8 @@ Version 2.5 (Mai 2010)
  - Configuration des catégories
  
  - MEF 2
+ 
+ - :ref:`arcsde_harvester`
 
 
 Version 2.4 (juillet 2009)
@@ -138,18 +187,18 @@ Version 2.3
 Où télécharger le programme d'installation ?
 --------------------------------------------
 
-Vous trouverez les différentes version de GeoNetwork sur le dépôt SourceForge.net http://sourceforge.net/projects/geonetwork/files/.
+Vous trouverez les différentes versions de |project_name| sur le dépôt SourceForge.net <http://sourceforge.net/projects/|project_name|/files/.
 
 Utiliser l'installer multi plate-forme (.jar), l'installer exécutable pour Windows (.exe) ou l'archive web (.war).
 
 
-.. _installation_requirements
+.. _installation_requirements:
 
 Pré-requis système
 ------------------
 
 
-GeoNetwork est multi plate-forme. Il fonctionne sous **MS Windows**, **Linux** ou **Mac OS X** .
+|project_name| est multi plate-forme. Il fonctionne sous **MS Windows**, **Linux** ou **Mac OS X** .
 
 Pré-requis système :
 
@@ -161,7 +210,7 @@ Pré-requis système :
 
 **Autres logiciels** : 
 
-- `Java Runtime Environment <http://www.oracle.com/technetwork/java/index.html>`_ (JRE 1.5.0 ou sup). 
+- `Java Runtime Environment <http://www.oracle.com/technetwork/java/index.html>`_ (JRE 1.6.0 ou sup). 
 
 - Jetty ou Apache Tomcat ou tout autre container Java
 
@@ -170,7 +219,7 @@ Pré-requis système :
 Autres logiciels
 ````````````````
 
-Ces logiciels ne sont pas nécessaire pour le fonctionnement de GeoNetwork mais peuvent être utilisés en complément :
+Ces logiciels ne sont pas nécessaires pour le fonctionnement de |project_name| mais peuvent être utilisés en complément :
 
 #. `Druid <http://druid.sourceforge.net/>`_ pour voir le contenu la base de données
 
@@ -181,7 +230,7 @@ Ces logiciels ne sont pas nécessaire pour le fonctionnement de GeoNetwork mais 
 Navigateurs supportés
 `````````````````````
 
-GeoNetwork devrait fonctionner normalement avec les navigateurs suivant :
+|project_name| devrait fonctionner normalement avec les navigateurs suivant :
 
 #. Firefox v1.5 ou sup
 #. Internet Explorer v7 ou sup
@@ -192,26 +241,30 @@ GeoNetwork devrait fonctionner normalement avec les navigateurs suivant :
 
 .. _how_to_install:
 
-Comment installer GeoNetwork ?
-------------------------------
+Comment installer |project_name| ?
+----------------------------------
 
-Avant d'installer GeoNetwork, vérifier que les pré-requis (cf. :ref:`installation_requirements`) sont disponibles et en particulier vérifier que Java est disponible.
+Avant d'installer |project_name|, vérifier que les pré-requis (cf. :ref:`installation_requirements`) sont disponibles et en particulier vérifier que Java est disponible.
 
 
 
 Création de la base de données
 ``````````````````````````````
-Si l'utilisateur ne souhaite pas utiliser la base de données par défaut (ie. `Mckoi <http://www.mckoi.com/Mckoi%20SQL%20Database.html>`_), 
+Si l'utilisateur ne souhaite pas utiliser la base de données par défaut (ie. `H2 <http://www.h2database.com/>`_), 
 il est nécessaire de créer une base de données au préalable. Par exemple, dans le cas de `PostgreSQL <http://www.postgresql.org/>`_, 
 il faut donc installer PostgreSQL puis créer une base de données (avec `PgAdmin <http://www.pgadmin.org/>`_ par exemple). 
 
 
-Une fois créée, il est nécessaire de configurer GeoNetwork pour utiliser cette 
-base de données au lancement. Pour cela modifier la configuration dans le fichier web/geonetwork/WEB-INF/config.xml (cf. :ref:`admin_how_to_config_db`).
+Une fois créée, il est nécessaire de configurer |project_name| pour utiliser cette 
+base de données au lancement. Pour cela modifier la configuration dans le fichier web/|project_name|/WEB-INF/config.xml (cf. :ref:`admin_how_to_config_db`).
 
 
-La base de données est créée au lancement de GeoNetwork. Il est également possible de la créer manuellement en utilisant les scripts SQL
-placés dans /web/geonetwork/WEB-INF/classes/setup/sql/create et /web/geonetwork/WEB-INF/classes/setup/sql/data.
+La base de données est créée au lancement de |project_name|. Il est également possible de la créer manuellement en utilisant les scripts SQL
+placés dans /web/|project_name|/WEB-INF/classes/setup/sql/create et /web/|project_name|/WEB-INF/classes/setup/sql/data.
+
+
+
+
 
 Archive web
 ```````````
@@ -230,7 +283,7 @@ Si cela ne fonctionne toujours pas, il est possible de lancer l'installation en 
 :: 
 
     cd /repertoire/de/telechargement/de/l/installer
-    java -jar geonetwork-install-x.y.z.jar
+    java -jar |project_name|-install-x.y.z.jar
 
 
 Suivre les instructions à l'écran.
@@ -246,11 +299,11 @@ Installer sous Windows
 
 Si vous utilisez Windows, il est également possible d'utiliser l'exécutable. Les étapes sont les suivantes :
 
-1. Double cliquer sur **geonetwork-install-x.y.z.exe** pour lancer l'installation de GeoNetwork opensource
+1. Double cliquer sur **|project_name|-install-x.y.z.exe** pour lancer l'installation de |project_name| 
 2. Suivre les instructions à l'écran
-3. Après l'installation, un menu 'GeoNetwork' est ajouté dans le menu principal de Windows
-4. Cliquer Start\>Programs\>GeoNetwork opensource\>Start server pour lancer Geonetwork opensource Web server (ie. Jetty par défaut).
-5. Cliquer Start\>Programs\>Geonetwork opensource\>Open GeoNetwork opensource pour ouvrir votre navigateur sur la page d'accueil de GeoNetwork, ou lancer votre navigateur sur la page `http://localhost:8080/geonetwork/ <http://localhost:8080/geonetwork/>`_
+3. Après l'installation, un menu '|project_name|' est ajouté dans le menu principal de Windows
+4. Cliquer Start\>Programs\>|project_name| \>Start server pour lancer |project_name|  Web server (ie. Jetty par défaut).
+5. Cliquer Start\>Programs\>|project_name| \>Open |project_name| pour ouvrir votre navigateur sur la page d'accueil de |project_name|, ou lancer votre navigateur sur la page `http://localhost:8080/|project_name|/ <http://localhost:8080/|project_name|/>`_
 
 .. figure:: installer.png
 
@@ -272,7 +325,7 @@ Sinon, il est possible de réaliser une installation en ligne de commande
 
 ::
 
-    java -jar geonetwork-install-x.y.z.jar install.xml
+    java -jar |project_name|-install-x.y.z.jar install.xml
     [ Starting automated installation ]
     [ Starting to unpack ]
     [ Processing package: Core (1/3) ]
@@ -284,12 +337,40 @@ Sinon, il est possible de réaliser une installation en ligne de commande
 
 Pour activer le mode trace ajouter le paramètre *-DTRACE=true*::
 
-  java -DTRACE=true -jar geonetwork-install-x.y.z.jar
+  java -DTRACE=true -jar |project_name|-install-x.y.z.jar
+
+
+Configurer le catalogue
+-----------------------
+
+Après l'installation, il est recommandé de modifier les paramètres
+Nom, Hôte, Port à partir de l'interface de configuration (cf. :ref:`configuration_system`).
 
 
 
-Comment migrer une installation GeoNetwork existante ?
-------------------------------------------------------
+
+Configurer le serveur web
+-------------------------
+
+Par défaut, le serveur web `Jetty <http://jetty.codehaus.org/jetty/>`_ est installé. Pour modifier la configuration de Jetty, 
+modifier le fichier **jetty.xml placé dans le répertoire bin**. Il est possible, entre autre, de modifier :
+
+- le port (8080 par défaut)
+
+- d'autoriser jetty à écouter sur l'ensemble des adresses de la machine en commentant la ligne suivant (**par défaut Jetty n'écoute que sur localhost**)::
+
+
+            <Set name="host"><SystemProperty name="jetty.host" default="localhost"/></Set>
+
+
+Il est également possible d'utiliser le catalogue avec `Tomcat <http://tomcat.apache.org/>`_ ou tout autre container Java.
+
+
+
+.. _how_to_migrate:
+
+Comment migrer une installation existante ?
+-------------------------------------------
 
 La procédure de migration est réalisée en 4 étapes :
 
@@ -304,18 +385,18 @@ La procédure de migration est réalisée en 4 étapes :
 
 Tout d'abord, réaliser une installation par défaut (cf. :ref:`how_to_install`).
 
-Version 2.6.x et supérieure
-```````````````````````````
+|project_name| Version 2.6.x et supérieure
+``````````````````````````````````````````
 
-Depuis la version 2.6.x, GeoNetwork dispose d'un **mécanisme de migration de la base de données automatique** au démarrage.
+Depuis la version 2.6.x, |project_name| dispose d'un **mécanisme de migration de la base de données automatique** au démarrage.
 Ce mécanisme fonctionne pour la plupart des versions. Pour vérifier, si la version utilisée peut être migrée automatiquement,
 vérifier dans la table *Settings* la valeur du paramètre *version*, puis vérifier qu'un répertoire 
-existe dans */web/geonetwork/WEB-INF/classes/setup/sql/migrate/{ancienne-version}-to-{nouvelle-version}*.
+existe dans */web/|project_url|/WEB-INF/classes/setup/sql/migrate/{ancienne-version}-to-{nouvelle-version}*.
 Si ce n'est pas le cas, il est possible d'utiliser le fichier SQL le plus proche de la version utilisée et l'exécuter manuellement.
 
 Configurer la connexion à la base de données (cf. :ref:`admin_how_to_config_db`).
 
-Lancer la nouvelle version. Dans le fichier *geonetwork.log*, il est possible de vérifier la présence du message suivant:::
+Lancer la nouvelle version. Dans le fichier *|project_url|.log*, il est possible de vérifier la présence du message suivant::
 
 	2011-01-12 18:34:26,681 INFO  [jeeves.apphand] -   - Migration ...
 	2011-01-12 18:34:26,681 DEBUG [jeeves.apphand] -       Webapp   version:2.7.0 subversion:SNAPSHOT
@@ -329,11 +410,11 @@ Lancer la nouvelle version. Dans le fichier *geonetwork.log*, il est possible de
 	2011-01-12 18:34:29,233 INFO  [jeeves.apphand] -   - Thesaurus..
 
 
-Si une nouvelle installation est lancée sur une ancienne base GeoNetwork et qu'aucun script de migration n'est défini, le message suivant est affiché dans les logs:::
+Si une nouvelle installation est lancée sur une ancienne base |project_name| et qu'aucun script de migration n'est défini, le message suivant est affiché dans les logs:::
 
 	No migration task found between webapp and database version.
 	The system may be unstable or may failed to start if you try to run
-	the current GeoNetwork 2.7.0 with an older database (ie. 2.4.0
+	the current |project_name| 2.7.0 with an older database (ie. 2.4.0
 	). Try to run the migration task manually on the current database
 	before starting the application or start with a new empty database.
 	Sample SQL scripts for migration could be found in WEB-INF/sql/migrate folder.
@@ -342,15 +423,95 @@ Si une nouvelle installation est lancée sur une ancienne base GeoNetwork et qu'
 Une fois lancée, il est nécessaire de **migrer les données** :
 
 - Tout d'abord, les données associées aux métadonnées. Pour cela, il faut copier le contenu du répertoire data
-  (par défaut à la racine de l'installation de GeoNetwork) vers la nouvelle installation (par défaut dans le répertoire web/geonetwork/WEB-INF/data). 
+  (par défaut à la racine de l'installation de |project_name|) vers la nouvelle installation (par défaut dans le répertoire web/|project_name|/WEB-INF/data). 
 
-- Ensuite les logos. Copier le répertoire web/geonetwork/images/logo et web/geonetwork/images/harvesting vers la nouvelle installation.
+- Ensuite les logos. Copier le répertoire web/|project_url|/images/logos et web/|project_url|/images/harvesting vers la nouvelle installation.
+
+
+Depuis la version 2.7, les thésaurus sont placés dans le répertoire des données.
 
 
 
-Version 2.4.x
-`````````````
+|project_name| Version 2.4.x
+````````````````````````````
 
 GAST permet de réaliser la migration d'une version précédente (2.2.x ou 2.0.x) vers la série des versions 2.4.x.
 
 Pour ces versions là, il est également recommandé d'utiliser GAST pour migrer les métadonnées de l'ancien format ISO19115 vers l'ISO19139.
+
+
+|project_name| Version 2.7
+``````````````````````````
+Cf. |project_name| Version 2.6.x et supérieure dans :ref:`how_to_migrate`.
+
+|project_name| Version 2.3
+``````````````````````````
+La procédure de migration vers la version 2.3 est accessible à l'adresse : http://trac.osgeo.org/geonetwork/wiki/Fr_HowToMigrateTo23
+
+
+Migration des annuaires de contacts de GéoSource 2.7.0 ou inf.
+``````````````````````````````````````````````````````````````
+
+Le format de l'annuaire de contact a été modifié dans la version 2.7.1 de GéoSource. Pour la migration, il est donc
+nécessaire de charger l'annuaire de contact au format XML dans la base de données (GéoSource 2.7.1 ou sup). Pour cela,
+un utilitaire est disponible dans la liste des modules lors de l'installation.
+
+
+Celui-ci est un programme autonome permettant la conversion des données du format XML dans la base de données du catalogue.
+
+Le processus est le suivant :
+
+
+.. figure:: loadContactDirAsSubTemplate.png
+
+
+Pour lancer le processus, tout d'abord dézipper l'archive.
+
+Ensuite, 2 solutions sont disponibles pour l'exécution :
+
+- Lancer en ligne de commande
+
+Pour cela, modifier les paramètres suivant du processus dans le fichier
+ loadContactDirAsSubTemplate/geonetwork/loadcontactdirassubtemplate_0_1/contexts/\*.properties ::
+
+ - jdbcUrl : URL de connexion à la base de données (cf. config.xml du catalogue)
+ 
+ - jdbcUsername : Nom d'utilisateur pour la connexion à la base de données (cf. config.xml du catalogue)
+ 
+ - jdbcPassword : Mot de passe
+
+ - backupFile : Chemin vers le fichier de sauvegarde
+ 
+ - xmlFile : Chemin vers l'annuaire de contact au format XML
+
+Une fois les paramètres adaptés, se placer dans le répertoire loadContactDirAsSubTemplate et lancer le script de lancement loadContactDirAsSubTemplate_run.bat sous Windows et loadContactDirAsSubTemplate_run.sh sous Unix/Max/Linux (éventuellement éditer ce fichier pour modifier le paramètre --context=).
+
+
+- Lancer dans Talend Open Studio, importer le job, configurer les paramètres et lancer le job.
+
+
+
+
+
+Mise à jour des XLinks
+``````````````````````
+
+Certains catalogue utilise le mécanisme des XLinks pour associer les mots-clés ou les contacts. Dans le cas où la nouvelle
+installation est déployée sur un autre serveur (modification du nom de la machine ou du port), il est nécessaire de réaliser une mise
+à jour des XLinks. Observer les logs pour vérifier que des problèmes de résolutions des liens sont bien présents.
+
+
+La procédure de mise à jour des XLinks est la suivante :
+
+- Recherche l'ensemble des fiches à traiter : http://localhost:8080/|project_url|/srv/fr/xml.search
+
+- Les sélectionner : http://localhost:8080/|project_url|/srv/fr/metadata.select?id=0&selected=add-all
+
+- Lancer le processus de mise à jour des XLinks :
+ 
+ - le paramètre **search** étant l'ancienne URL du serveur, le paramètre **replace** étant le nouvelle.
+ 
+ - http://localhost:8080/|project_url|/srv/en/metadata.massive.processing?process=xlinks-href-update&search=http://localhost:8080/old_url&replace=http://localhost:8080/new_url
+
+
+

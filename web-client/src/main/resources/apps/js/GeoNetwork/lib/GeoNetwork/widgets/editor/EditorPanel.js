@@ -33,6 +33,8 @@ Ext.namespace('GeoNetwork.editor');
  *     Create a GeoNetwork editor panel
  *
  *
+ *  Known limitation: only one editor panel could be created in one application
+ *
  */
 GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
     border: false,
@@ -527,9 +529,15 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
                                     url: url,
                                     method: 'GET',
                                     success: function(result, request){
-                                        // TODO : check if error.
-                                        // Refresh
-                                        editorPanel.relationPanel.reload();
+                                        var urlProcessing = panel.catalogue.services.mdProcessing +
+                                            '?uuidref=' +
+                                            metadata[0].data.uuid +
+                                            '&id=' +
+                                             document.mainForm.id.value +
+                                            "&process=update-attachFeatureCatalogue";
+
+                                        editorPanel.process(urlProcessing);
+                                        //editorPanel.relationPanel.reload();
                                     },
                                     failure: function(result, request){
                                         Ext.MessageBox.alert(

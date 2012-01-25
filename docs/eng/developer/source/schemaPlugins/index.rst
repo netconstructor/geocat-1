@@ -132,11 +132,177 @@ Each of the elements is as follows:
 - **id** - a unique identifier for the schema.
 - **version** - the version number of the schema. Multiple versions of the schema can be present in GeoNetwork.
 - **schemaLocation** - a set of pairs, where the first member of the pair is a namespace URI and the second member is the official URL of the XSD. The contents of this element will be added to the root element of any metadata record displayed by GeoNetwork as a schemaLocation/noNamespaceSchemaLocation attribute, if such as attribute does not already exist. It will also be used whenever an official schemaLocation/noNamespaceSchemaLocation is required (eg. in response to a ListMetadataFormats OAI request). 
-- **autodetect** - contains elements (with content) that must be present in any metadata record that belongs to this schema. This is used during schema detection whenever GeoNetwork receives a metadata record of unknown schema.
+- **autodetect** - contains elements or attributes (with content) that must be present in any metadata record that belongs to this schema. This is used during schema detection whenever GeoNetwork receives a metadata record of unknown schema.
 
-After creating this file you can validate it manually using the XML schema definition (XSD) in `INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd`. This XSD is also used to validate this file when the schema is loaded.
+After creating this file you can validate it manually using the XML schema definition (XSD) in `INSTALL_DIR/web/geonetwork/xml/validation/schemaPlugins/schema-ident.xsd`. This XSD is also used to validate this file when the schema is loaded. If schema-ident.xml failes validation, the schema will not be loaded.
 
-At this stage, our new GeoNetwork plugin schema for MCP contains:
+~~~~~~~~~~~~~~~~~~
+More on autodetect
+~~~~~~~~~~~~~~~~~~
+
+The autodetect section of schema-ident.xml is used when GeoNetwork needs to identify which metadata schema a record belongs to.
+
+The five rules that can be used in this section in order of evaluation are:
+
+**1. Attributes** - Find one or more attributes and/or namespaces in the document. An example use case is a profile of ISO19115/19139 that adds optional elements under a new namespace to gmd:identificationInfo/gmd:MD_DataIdentification. To detect records that belong to this profile the autodetect section in the schema-ident.xml file could look something like the following:
+
+::
+
+	<autodetect xmlns:cmar="http://www.marine.csiro.au/schemas/cmar.xsd">
+		<!-- catch all cmar records that have the cmar vocab element -->
+		<attributes cmar:vocab="http://www.marine.csiro.au/vocabs/projectCodes.xml"/>
+	</autodetect>
+
+
+Some other points about attributes autodetect:
+
+- multiple attributes can be specified - all must be match for the record to be recognized as belonging to this schema.
+- if the attributes have a namespace then the namespace should be specified on the autodetect element or somewhere in the schema-ident.xml document.
+
+**2. Elements** - Find one or more elements in the document. An example use case is the one shown in the example schema-ident.xml file earlier:
+
+::
+
+    <autodetect xmlns:mcp="http://bluenet3.antcrc.utas.edu.au/mcp" 
+                xmlns:gmd="http://www.isotc211.org/2005/gmd" 
+                xmlns:gco="http://www.isotc211.org/2005/gco">
+      <elements>
+        <gmd:metadataStandardName>
+          <gco:CharacterString>
+            Australian Marine Community Profile of ISO 19115:2005/19139
+          </gco:CharacterString>
+        </gmd:metadataStandardName>
+        <gmd:metadataStandardVersion>
+          <gco:CharacterString>MCP:BlueNet V1.5</gco:CharacterString>
+        </gmd:metadataStandardVersion>
+      </elements>
+    </autodetect>
+
+Some other points about elements autodetect:
+
+- multiple elements can be specified - eg. as in the above, both metadataStandardName and metadataStandardVersion have been specified - all must be match for the record to be recognized as belonging to this schema.
+- if the elements have a namespace then the namespace(s) should be specified on the autodetect element or somewhere in the schema-ident.xml document before the element in which they are used - eg. in the above there are there namespace declarations on the autodetect element so as not to clutter the content.
+
+**3. Root element** - root element of the document must match. An example use case is the one used for the eml-gbif schema. Documents belonging to this schema always have root element of eml:eml so the autodetect section for this schema is:
+
+::
+
+		<autodetect xmlns:eml="eml://ecoinformatics.org/eml-2.1.1">
+			<elements type="root">
+				<eml:eml/>
+			</elements>
+		</autodetect>
+
+Some other points about root element autodetect:
+
+- multiple elements can be specified - any element in the set that matches the root element of the record will trigger a match.
+- if the elements have a namespace then the namespace(s) should be specified on the autodetect element or somewhere in the schema-ident.xml document before the element that uses them - eg. as in the above there is a namespace declaration on the autodetect element for clarity.
+
+**4. Namespaces** - Find one or more namespaces in the document. An example use case is the one used for the csw:Record schema. Records belonging to the csw:Record schema can have three possible root elements: csw:Record, csw:SummaryRecord and csw:BriefRecord, but instead of using a multiple element root autodetect, we could use the common csw namespace for autodetect as follows:
+
+::
+
+    <autodetect>
+      <namespaces xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"/>
+    </autodetect>
+
+Some other points about namespaces autodetect:
+
+- multiple namespaces can be specified - all must be present for the record to be recognized as belonging to this schema.
+- the prefix is ignored. A namespace match occurs if the namespace URI found in the record matches the namespace URI specified in the namespaces autodetect element.
+
+**5. Default schema** - This is the fail-safe provision for records that don't match any of the installed schemas. The value for the default schema is specified in the appHandler configuration of the `INSTALL_DIR/web/geonetwork/WEB-INF/config.xml` config file or it could be a default specified by the operation calling autodetect (eg. a value parsed from a user bulk loading some metadata records). For flexibility and accuracy reasons it is preferable that records be detected using the autodetect information of an installed schema. The default schema is just a 'catch all' method of assigning records to a specific schema. The config element in `INSTALL_DIR/web/geonetwork/WEB-INF/config.xml` looks like the following:
+
+::
+
+	<appHandler class="org.fao.geonet.Geonetwork">
+		.....
+		<param name="preferredSchema" value="iso19139" />
+		.....
+	</appHandler>
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+More on autodetect evaluation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The rules for autodetect are evaluated as follows:
+
+::
+
+	for-each autodetect rule type in ( 'attributes/namespaces', 'elements', 
+	                                   'namespaces', 'root element' )
+		for-each schema 
+			if schema has autodetect rule type then 
+				check rule for a match
+				if match add to list of previous matches
+			end if
+		end for-each
+
+		if more than one match throw 'SCHEMA RULE CONFLICT EXCEPTION'
+		if one match then set matched = first match and break loop
+	end for-each
+
+	if no match then 
+	  if namespaces of record and default schema overlap then 
+			set match = default schema
+		else throw 'NO SCHEMA MATCHES EXCEPTION'
+	end if
+
+	return matched schema
+
+As an example, suppose we have three schemas iso19139.mcp, iso19139.mcp-1.4 and iso19139.mcp-cmar with the following autodetect elements:
+
+**iso19139.mcp-1.4:**
+
+::
+
+    <autodetect xmlns:mcp="http://bluenet3.antcrc.utas.edu.au/mcp" 
+                xmlns:gmd="http://www.isotc211.org/2005/gmd" 
+                xmlns:gco="http://www.isotc211.org/2005/gco">
+      <elements>
+        <gmd:metadataStandardName>
+          <gco:CharacterString>
+            Australian Marine Community Profile of ISO 19115:2005/19139
+          </gco:CharacterString>
+        </gmd:metadataStandardName>
+        <gmd:metadataStandardVersion>
+          <gco:CharacterString>MCP:BlueNet V1.4</gco:CharacterString>
+        </gmd:metadataStandardVersion>
+      </elements>
+    </autodetect>
+
+	
+**iso19139.mcp-cmar:**
+
+::
+
+	<autodetect>
+	    <attributes xmlns:mcp-cmar="http://www.marine.csiro.au/schemas/mcp-cmar">
+	</autodetect>
+
+**iso19139.mcp:**
+
+::
+
+	<autodetect xmlns:mcp="http://bluenet3.antcrc.utas.edu.au/mcp">
+		<elements type="root">
+			<mcp:MD_Metadata/>
+		</elements>
+	</autodetect>
+
+A record going through autodetect processing (eg. on import) would be checked against:
+
+- iso19139.mcp-cmar first as it has an 'attributes' rule 
+- then iso19139.mcp-1.4 as it has an 'elements' rules
+- then finally against iso19139.mcp, as it has a 'root element' rule. 
+
+The idea behind this processing algorithm is that base schemas will use a 'root element' rule (or the more difficult to control 'namespaces' rule) and profiles will use a finer or more specific rule such as 'attributes' or 'elements'.
+
+
+
+
+After setting up schema-ident.xml, our new GeoNetwork plugin schema for MCP contains:
 
 ::
 
@@ -226,7 +392,7 @@ Creating the extract-... XSLTs
 
 GeoNetwork needs to extract certain information from a metadata record and translate it into a common, simplified XML structure that is independent of the metadata schema. Rather than do this with Java coded XPaths, XSLTs are used to process the XML and return the common, simplified XML structure.
 
-The four xslts we'll create are:
+The three xslts we'll create are:
 
 - **extract-date-modified.xsl** - this XSLT processes the metadata record and extracts the date the metadata record was last modified. For the MCP, this information is held in the mcp:revisionDate element which is a child of mcp:MD_Metadata. The easiest way to create this for MCP is to copy extract-date-modified.xsl from the iso19139 schema and modify it to suit the MCP namespace and to use mcp:revisionDate in place of gmd:dateStamp.
 - **extract-gml.xsl** - this XSLT processes the metadata record and extracts the spatial extent as a gml GeometryCollection element. The gml is passed to geotools for insertion into the spatial index (either a shapefile or a spatial database). For ISO19115/19139 and profiles, this task is quite easy because spatial extents (apart from the bounding box) are encoded as gml in the metadata record. Again, the easiest way to create this for the MCP is to copy extract-gml.xsd from the iso19139 schema ad modify it to suit the MCP namespace.
@@ -427,7 +593,7 @@ After adding the localized strings, our new GeoNetwork plugin schema for MCP con
    loc  present  schema-ident.xml  schema.xsd  schema
 
 
-Creating the presentations xslts in the present directory
+Creating the presentations XSLTs in the present directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Each metadata schema should contain XSLTs that display and possibly edit metadata records that belong to the schema. These XSLTs are held in the `present` directory.
@@ -438,29 +604,7 @@ Any XSLTs included by the presentation XSLT should also be in the present direct
 
 There are certain XSLT templates that the presentation XSLT must have:
 
-- the **main** template, which must be called: metadata-<schema-name>. Here is an example for the eml-gbif schema:
-
-::
-
-  <!-- main template - the way into processing eml-gbif -->
-  <xsl:template name="metadata-eml-gbif">
-    <xsl:param name="schema"/>
-    <xsl:param name="edit" select="false()"/>
-    <xsl:param name="embedded"/>
-
-    <xsl:apply-templates mode="eml-gbif" select="." >
-      <xsl:with-param name="schema" select="$schema"/>
-      <xsl:with-param name="edit"   select="$edit"/>
-      <xsl:with-param name="embedded" select="$embedded" />
-    </xsl:apply-templates>
-  </xsl:template>
-
-Analyzing this template:
-
-#. The name="metadata-eml-gbif" is used by the main element processing template in metadata.xsl: elementEP. The main metadata services, show and edit, end up calling metadata-show.xsl and metadata-edit.xsl respectively with the metadata record passed from the Java service. Both these XSLTs, process the metadata record by applying the elementEP template from metadata.xsl to the root element. elementEP calls the appropriate main schema template using the schema name.
-#. The job of this main template is set to process all the elements of the metadata record using templates declared with a mode name that matches the schema name. This modal processing is to ensure that only templates intended to process metadata elements from this schema are applied.
-
-If creating a presentation XSLT for a profile such as MCP, then the main template is slightly different. Here is an example for the MCP from metadata-iso19139.mcp.xsl:
+- the **main** template, which must be called: metadata-<schema-name>. For the MCP profile of iso19139 the main template would look like the following (taken from metadata-iso19139.mcp.xsl):
 
 ::
 
@@ -476,7 +620,10 @@ If creating a presentation XSLT for a profile such as MCP, then the main templat
     </xsl:apply-templates>
   </xsl:template>
 
-Notice that main template is processing in the mode of the base iso19139 schema? The reason for this is that almost all profiles change or add a small number of elements to those in the base schema. So most of the metadata elements in a profile can be processed in the mode of the base schema. We'll see later in this section how to override processing of an element in the base schema.
+Analyzing this template:
+
+#. The name="metadata-iso19139.mcp" is used by the main element processing template in metadata.xsl: elementEP. The main metadata services, show and edit, end up calling metadata-show.xsl and metadata-edit.xsl respectively with the metadata record passed from the Java service. Both these XSLTs, process the metadata record by applying the elementEP template from metadata.xsl to the root element. The elementEP template calls this main schema template using the schema name iso19139.mcp.
+#. The job of this main template is set to process all the elements of the metadata record using templates declared with a mode name that matches the schema name or the name of the base schema (in this case iso19139). This modal processing is to ensure that only templates intended to process metadata elements from this schema or the base schema are applied. The reason for this is that almost all profiles change or add a small number of elements to those in the base schema. So most of the metadata elements in a profile can be processed in the mode of the base schema. We'll see later in this section how to override processing of an element in the base schema.
 
 - a **completeTab** template, which must be called: <schema-name>CompleteTab. This template will display all tabs, apart from the 'default' (or simple mode) and the 'XML View' tabs, in the left hand frame of the editor/viewer screen. Here is an example for the MCP:
 
@@ -938,8 +1085,8 @@ As for most of GeoNetwork, the output of this rule can be localized to different
 Procedure for adding schematron rules, working within the schematrons directory:
 
 #. Place your schematron rules in 'rules'. Naming convetion is 'schematron-rules-<suffix>.sch' eg. 'schematron-rules-iso-mcp.sch'. Place localized strings for the rule assertions into 'rules/loc/<language_prefix>'.
-#. Edit 'build.xml'
-#. Add a "clean-schema-dir" target for your plugin schema directory. This target will remove the schematron rules from plugin schema directory (basically removes all files with pattern schematron-rules-*.xsl).
+#. Edit 'build.xml'.
+#. Add a "clean-schema-dir" target for your plugin schema directory. This target will remove the schematron rules from plugin schema directory (basically removes all files with pattern schematron-rules-\*.xsl).
 #. Add a "compile-schematron" target for your rules - value attribute is the suffix used in the rules name. eg. for 'schematron-rules-iso-mcp.sch' the value attribute should be "iso-mcp". This target will turn the .sch schematron rules into an XSLT using the saxon XSLT engine and 'resources/iso_svrl_for_xslt2.xsl'.
 #. Add a "publish-schematron" target. This target copies the compiled rules (in XSLT form) into the plugin schema directory.
 #. Run 'ant' to create the schematron XSLTs.

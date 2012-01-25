@@ -26,11 +26,14 @@ import jeeves.interfaces.Logger;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
+import jeeves.utils.Log;
 import jeeves.utils.Xml;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.NoSchemaMatchesException;
 import org.fao.geonet.kernel.DataManager;
+import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.harvest.harvester.CategoryMapper;
 import org.fao.geonet.kernel.harvest.harvester.GroupMapper;
 import org.fao.geonet.kernel.harvest.harvester.Privileges;
@@ -63,6 +66,7 @@ class Harvester {
 
 		GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 		dataMan = gc.getDataManager();
+		schemaMan = gc.getSchemamanager ();
 	}
 
 	//---------------------------------------------------------------------------
@@ -73,7 +77,14 @@ class Harvester {
 
 	public WebDavResult harvest() throws Exception {
 		log.debug("Retrieving remote metadata information for : "+ params.name);
-		RemoteRetriever rr = new WebDavRetriever();
+		
+		RemoteRetriever rr = null;		
+		if(params.subtype.equals("webdav"))
+			rr = new WebDavRetriever();
+		else if(params.subtype.equals("waf"))
+			rr = new WAFRetriever();
+		
+		Log.info(Log.SERVICE, "webdav harvest subtype : "+params.subtype);		
 		rr.init(log, context, params);
 		List<RemoteFile> files = rr.retrieve();
 		log.debug("Remote files found : "+ files.size());
@@ -104,7 +115,7 @@ class Harvester {
 				// only one metadata record created per uri by this harvester 
 				String id = localUris.getRecords(uri).get(0).id;
 				log.debug("  - Removing old metadata with local id:"+ id);
-				dataMan.deleteMetadata(dbms, id);
+				dataMan.deleteMetadataGroup(context.getUserSession(), dbms, id);
 				dbms.commit();
 				result.locallyRemoved++;
 			}
@@ -173,7 +184,12 @@ class Harvester {
 		log.debug("  - Setting uuid for metadata with remote path : "+ rf.getPath());
 
 		//--- set uuid inside metadata and get new xml
-		md = dataMan.setUUID(schema, uuid, md);
+		try {
+			md = dataMan.setUUID(schema, uuid, md);
+		} catch(Exception e) {
+			log.error("  - Failed to set uuid for metadata with remote path : "+ rf.getPath());
+			return;
+		}
 
 		log.debug("  - Adding metadata with remote path : "+ rf.getPath());
 
@@ -183,7 +199,7 @@ class Harvester {
         int userid = 1;
         String group = null, isTemplate = null, docType = null, title = null, category = null;
         boolean ufo = false, indexImmediate = false;
-        String id = dataMan.insertMetadata(dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, params.uuid,
+        String id = dataMan.insertMetadata(context.getUserSession(), dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, params.uuid,
                      isTemplate, docType, title, category, rf.getChangeDate(), rf.getChangeDate(), ufo, indexImmediate);
 
 
@@ -205,11 +221,18 @@ class Harvester {
 	private Element retrieveMetadata(RemoteFile rf) {
 		try {
 			log.debug("Getting remote file : "+ rf.getPath());
-			Element md = rf.getMetadata();
+			Element md = rf.getMetadata(schemaMan);
 			log.debug("Record got:\n"+ Xml.getString(md));
 
 			String schema = dataMan.autodetectSchema(md);
-			if (schema == null) {
+			if (!params.validate || validates(schema, md)) {
+				return (Element) md.detach();
+			}
+
+			log.warning("Skipping metadata that does not validate. Path is : "+ rf.getPath());
+			result.doesNotValidate++;
+		}
+		catch (NoSchemaMatchesException e) {
 				log.warning("Skipping metadata with unknown schema. Path is : "+ rf.getPath());
 				result.unknownSchema++;
 			}
@@ -275,7 +298,7 @@ class Harvester {
 			}
 			else {
 				log.debug("    - Setting category : "+ name);
-				dataMan.setCategory(dbms, id, catId);
+				dataMan.setCategory(context.getUserSession(), dbms, id, catId);
 			}
 		}
 	}
@@ -297,7 +320,7 @@ class Harvester {
 					//--- allow only: view, dynamic, featured
 					if (opId == 0 || opId == 5 || opId == 6) {
 						log.debug("       --> "+ name);
-						dataMan.setOperation(dbms, id, priv.getGroupId(), opId +"");
+						dataMan.setOperation(context.getUserSession(), dbms, id, priv.getGroupId(), opId +"");
 					}
 					else {
 						log.debug("       --> "+ name +" (skipped)");
@@ -361,6 +384,7 @@ class Harvester {
 	private GroupMapper localGroups;
 	private UriMapper localUris;
 	private WebDavResult result;
+	private SchemaManager  schemaMan;
 }
 
 //=============================================================================
@@ -376,7 +400,7 @@ interface RemoteRetriever {
 interface RemoteFile {
 	public String  getPath();
 	public String  getChangeDate();
-	public Element getMetadata() throws JDOMException, IOException, Exception;
+	public Element getMetadata(SchemaManager  schemaMan) throws JDOMException, IOException, Exception;
 	public boolean isMoreRecentThan(String localDate);
 }
 

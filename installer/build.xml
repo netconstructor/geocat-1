@@ -32,6 +32,7 @@
 	<property name="propsdir" value="../.props" />
 	<property name="ant.build.javac.target" value="1.5"/>
 	<property name="debugOn" value="on"/> <!-- on off true false yes no -->
+    <property name="thesaurusUrl" value="https://geonetwork.svn.sourceforge.net/svnroot/geonetwork/utilities/gemet/thesauri" />
 
 	<!-- =================================================================================== -->
 	
@@ -45,7 +46,44 @@
 
 	<!-- =================================================================================== -->
 
-	<target name="setProperties">
+    <target name="thesaurusDownload">
+        <mkdir	dir ="../web/target/thesauri" />
+
+        <get src="${thesaurusUrl}/gemet.rdf"
+             dest="../web/target/thesauri/gemet.rdf" />
+
+        <get src="${thesaurusUrl}/inspire-service-taxonomy.rdf"
+             dest="../web/target/thesauri/inspire-service-taxonomy.rdf" />
+
+         <get src="${thesaurusUrl}/inspire-theme.rdf"
+             dest="../web/target/thesauri/inspire-theme.rdf" />
+    </target>
+
+    <target name="inspireDbSettings">
+        <mkdir	dir ="../web/target/inspire" />
+
+        <copy file="../web/target/geonetwork/WEB-INF/classes/setup/sql/data/data-db-default.sql" tofile="../web/target/inspire/data-db-default.sql" overwrite="true"/>
+        <replace file="../web/target/inspire/data-db-default.sql">
+            <replacefilter>
+                <replacetoken><![CDATA[INSERT INTO Settings VALUES (721,720,'enable','false');]]></replacetoken>
+                <replacevalue><![CDATA[INSERT INTO Settings VALUES (721,720,'enable','true');]]></replacevalue>
+            </replacefilter>
+
+            <replacefilter>
+                <replacetoken><![CDATA[INSERT INTO Settings VALUES (722,720,'enableSearchPanel','false');]]></replacetoken>
+                <replacevalue><![CDATA[INSERT INTO Settings VALUES (722,720,'enableSearchPanel','true');]]></replacevalue>
+            </replacefilter>
+
+            <replacefilter>
+                <replacetoken><![CDATA[INSERT INTO Settings VALUES (913,910,'enableInspireView','false');]]></replacetoken>
+                <replacevalue><![CDATA[INSERT INTO Settings VALUES (913,910,'enableInspireView','true');]]></replacevalue>
+            </replacefilter>
+        </replace>
+    </target>
+
+    <target name="inspireTarget" depends="thesaurusDownload,inspireDbSettings" />
+
+    <target name="setProperties">
 	
 		<delete	dir ="${propsdir}" />
 		<mkdir	dir ="${propsdir}" />
@@ -133,7 +171,7 @@
 
 	<!-- =================================================================================== -->
 
-	<target name="installer" depends="setProperties">
+	<target name="installer" depends="setProperties,inspireTarget">
 
         <ant dir="." target="jarinstall"  />
 		<ant dir="." target="wininstall"  />	
@@ -142,7 +180,7 @@
 
     <!-- =================================================================================== -->
 
-    <target name="jarinstall" depends="setProperties">
+    <target name="jarinstall" depends="setProperties,inspireTarget">
 
         <property file="../web/src/main/webapp/WEB-INF/server.prop"/>
 

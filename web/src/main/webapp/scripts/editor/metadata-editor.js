@@ -298,6 +298,9 @@ function doMoveElementAction(action, ref, id)
 			method: 'get',
 			parameters: pars,
 			onSuccess: function(req) {
+				if (req.status == 0) {
+					alert("Browser returned status 0 - Element has been moved but we didn't get the right response - please 'Save' record");
+				}
 				if (action.include('elem.up')) { 
 					var upElement = thisElement.previous();
 					upElement = upElement.remove();
@@ -397,6 +400,9 @@ function doNewElementAjax(action, ref, name, child, id, what, max, orElement, ex
 			method: 'get',
 			parameters: pars,
 			onSuccess: function(req) {
+				if (req.status == 0) {
+					alert("Got back status 0 - element has been added but we didn't receive the response - 'Save' record now");
+				}
 				var html = req.responseText;
 				
 				if (child == "geonet:attribute") {	// Need #122 to be fixed
@@ -475,6 +481,10 @@ function doSaveAction(action,validateAction)
 				method: 'post',
 				parameters: $('editForm').serialize(true),
 				onSuccess: function(req) {
+					if (req.status == 0) {
+						alert("Save succeeded but browser returned status 0");
+					}
+
 					var html = req.responseText;
 					if (divToRestore) divToRestore.removeClassName('editing');
 					if (html.startsWith("<?xml") < 0) { // service returns xml on success
@@ -486,7 +496,7 @@ function doSaveAction(action,validateAction)
 				},
 				onFailure: function(req) { 
 					alert(translate("errorSaveFailed") + "/ status " + req.status + " text: " + req.statusText + " - " + translate("tryAgain"));
- 					$('editorBusy').hide();
+                    Element.remove($("editorOverlay"));
 					setBunload(true); // reset warning for window destroy
 				}
 			}
@@ -511,6 +521,8 @@ function doSaveAction(action,validateAction)
 						setBunload(true); // reset warning for window destroy
 						initCalendar();
 						validateMetadataFields();
+					} else {
+						alert("Status returned was "+req.status+" this could be a problem");
 					}
 				},
 				onFailure: function(req) { 
@@ -1140,7 +1152,8 @@ function showLinkedMetadataSelectionPanel(ref, name) {
     				} else {
     					// Create relation between current record and selected one
     					if (this.mode=='iso19110') {
-    						var url = 'xml.relation.insert?parentId=' + document.mainForm.id.value + 
+                            // For backwards compatibility the Feature Catalogue relations are stored in database also
+    						var url = 'xml.relation.insert?parentId=' + document.mainForm.id.value +
     								'&childUuid=' + metadata[0].data.uuid;
     						
 
@@ -1151,7 +1164,11 @@ function showLinkedMetadataSelectionPanel(ref, name) {
     								var html = result.responseText;
     								// TODO : check if error.
     								// Refresh current edits
-    								doAction('metadata.update');
+
+                                    // Stores the he Feature Catalogue relation in the metadata, updating the editor view
+    								window.location.replace("metadata.processing?uuidref=" + metadata[0].data.uuid +
+                                        "&id=" + document.mainForm.id.value +
+                                        "&process=update-attachFeatureCatalogue");
     							},
     							failure:function (result, request) { 
     								Ext.MessageBox.alert(translate("error") 
@@ -1192,6 +1209,37 @@ function showLinkedMetadataSelectionPanel(ref, name) {
     linkedMetadataSelectionWindow.show();
 }
 
+/**
+ * Detaches a Feature Catalogue relation
+ *
+ * For backwards compatibility the Feature Catalogue relations are stored in database also
+ *
+ * @param parentUuid
+ * @param childUuid
+ * @param id
+ */
+function detachFeatureCatalogueMd(parentUuid, childUuid, id) {
+     	var url = 'xml.relation.delete?parentUuid=' + parentUuid +
+    								'&childUuid=' + childUuid;
+
+        var myExtAJaxRequest = Ext.Ajax.request({
+            url: url,
+            method: 'GET',
+            success: function(result, request) {
+                var html = result.responseText;
+                // TODO : check if error.
+                // Refresh current edits
+                window.location.replace("metadata.processing?uuidref=" + childUuid +
+                    "&id=" + id +
+                    "&process=update-detachFeatureCatalogue");
+            },
+            failure:function (result, request) {
+                Ext.MessageBox.alert(translate("error")
+                            + " / status " + result.status + " text: " + result.statusText + " - " + translate("tryAgain"));
+                setBunload(true); // reset warning for window destroy
+            }
+        });
+}
 
 /**
  * Property: geoPublisherWindow
@@ -1654,6 +1702,10 @@ function getValidationReport()
 			method: 'get',
 			parameters: pars,
 			onSuccess: function(req) {
+				if (req.status == 0) {
+					alert("Browser returned status 0 and validation report has been lost - try again?");
+					getValidationReport();
+				}
 				var html = req.responseText;
 				displayBox(html, 'validationReport', false);
 				updateValidationReportVisibilityRules($('checkError').checked);

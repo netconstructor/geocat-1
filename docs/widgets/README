@@ -1,6 +1,6 @@
 == How-to build doc ? ==
 
-easy_install Sphynx
+easy_install Sphinx
 easy_install JSTools
 ant
 

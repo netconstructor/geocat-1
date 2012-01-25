@@ -37,6 +37,8 @@ import jeeves.utils.Log;
 import org.fao.geonet.constants.Geonet;
 
 public class ThreadPool {
+    public static final String SEQUENTIAL_EXECUTION = "geonetwork.sequential.execution";
+
 	int poolSize = 5;
 
 	int maxPoolSize = 10;
@@ -61,9 +63,13 @@ public class ThreadPool {
 	}
 
 	public void runTask(Runnable task) {
+        if(Boolean.parseBoolean(System.getProperty(SEQUENTIAL_EXECUTION, "false"))) {
+            task.run();
+        } else {
 		this.task = task;
 		threadPool.execute(task);
-		Log.debug(Geonet.THREADPOOL, toString());
+        if(Log.isDebug(Geonet.THREADPOOL)) Log.debug(Geonet.THREADPOOL, toString());
+        }
 	}
 
 	

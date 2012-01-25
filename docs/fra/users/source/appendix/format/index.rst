@@ -1,3 +1,5 @@
+.. include:: ../../substitutions.txt
+
 .. _supported_format:
 
 Formats supportés
@@ -42,9 +44,9 @@ Protocoles de moissonnage
 -------------------------
 
 
-- GeoNetwork version 2.0.x
+- |project_name| version 2.0.x
 
-- GeoNetwork version supérieure à 2.1.x
+- |project_name| version supérieure à 2.1.x
  
 - WebDav
 
@@ -66,4 +68,17 @@ Protocoles de moissonnage
 
 
 Voir la section :ref:`how_to_harvest` pour plus d'information.
+
+
+.. _mef:
+
+Le format MEF (Metadata Exchange Format)
+========================================
+
+Le format MEF est un format utilisé par |project_name| pour échanger des métadonnées et les ressources associées.
+Il a en général un extension **.mef** mais **.zip** est également autorisée.
+
+La description du format est disponible dans le manuel du développeur (cf. http://geonetwork-opensource.org/docs.html).
+
+
 

@@ -125,17 +125,19 @@ public class Insert implements Service
 		String localId = null;
 		md.add(xml);
 		
+
+        DataManager dm = gc.getDataManager();
+        Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
+        
 		// Import record
 		Importer.importRecord(uuid, localId , uuidAction, md, schema, 0,
 				gc.getSiteId(), gc.getSiteName(), context, id, date,
-				date, group, isTemplate);
+				date, group, isTemplate, dbms);
 		
 		int iId = Integer.parseInt(id.get(0));
 		
 		
 		// Set template
-		DataManager dm = gc.getDataManager();
-		Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
 		dm.setTemplate(dbms, iId, isTemplate, null);
 
 		
@@ -147,12 +149,11 @@ public class Insert implements Service
 			categs.addContent((new Element("category")).setAttribute(
 					"name", category));
 
-			Importer.addCategories(dm, dbms, id.get(0), categs);
+			Importer.addCategories(context.getUserSession(), dm, dbms, id.get(0), categs);
 		} 
 
 		// Index
-        boolean indexGroup = false;
-        dm.indexMetadata(dbms, id.get(0), indexGroup, true);
+        dm.indexInThreadPool(context, id.get(0), dbms);
         
 		// Return response
 		Element response = new Element(Jeeves.Elem.RESPONSE);

@@ -114,13 +114,12 @@ public class UpdateAdminOper implements Service
 				String groupId = st.nextToken();
 				String operId  = st.nextToken();
 
-				dm.setOperation(dbms, id, groupId, operId);
+				dm.setOperation(us, dbms, id, groupId, operId);
 			}
 		}
 
 		//--- index metadata
-        boolean indexGroup = false;
-        dm.indexMetadata(dbms, id, indexGroup,false);
+        dm.indexInThreadPool(context,id, dbms);
 
 		//--- return id for showing
 		return new Element(Jeeves.Elem.RESPONSE).addContent(new Element(Geonet.Elem.ID).setText(id));

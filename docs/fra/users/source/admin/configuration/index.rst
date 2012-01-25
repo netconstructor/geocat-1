@@ -1,81 +1,284 @@
 .. _configuration:
+.. include:: ../../substitutions.txt
 
 .. toctree::
    :maxdepth: 2
 
-Configuration simple
-====================
+Paramètres du catalogue
+=======================
+
+.. _configuration_system:
 
 Configuration du système
 ------------------------
 
-Most of the GeoNetwork system configuration parameters can be changed using the
-web interface. Those parameters that cannot be changed through the web interface can
-usually be changed using the GAST application.
+La majorité des options de configuration du catalogue sont accessibles depuis la page
+web d'administration. Il est important de bien configurer ces options, car un catalogue
+mal configuré pourrait avoir des problèmes pour permettre le téléchargement des fichiers, 
+des imagettes, ou lors du moissonnage par d'autres catalogues.
 
-.. important:: Configuration of these parameters is critically important for a proper
-   functioning of the GeoNetwork catalogue in an operational context. Failing to
-   properly change these settings may result in a system that does not function as
-   expected. For example, downloads may fail to be correctly processed, or metadata
-   harvesting from other servers may not work.
+Pour configurer le catalogue, l'utilisateur doit être connecté en tant qu'administrateur.
 
-To get to the System configuration, you must be logged on as administrator first. Open the Administration page and select System configuration (The link is surrounded with a red rectangle).
+Aller à la page d'administration, puis sélectionner configuration du système.
 
-.. important:: New installations of GeoNetwork use admin for both username
-   and password. It is important to change this from the Administration page once
-   you logged on!
+
+.. important:: Lors d'une installation par défaut du catalogue, l'utilisateur admin est identifié
+    par le mot de passe admin. Il est important de changer ces valeurs par défaut.
+
 
 .. figure:: web-config-where.png
 
-    *The link to the System configuration page*
+    Lien vers la page de configuration du système
 
-Clicking the page’s link you will get the set of parameters that you can change. Here follows a detailed description of them:
 
-.. figure:: web-config-options.png
+.. FIXME too large ::figure:: web-config-options.png
 
-    *The configuration options*
+    Les options de configuration
 
-At the bottom of the page there are some buttons with the following purpose:
+Les boutons au bas de la page permettent de retourner à la page administration, de sauver les changements
+ou recharger la configuration.
 
-Back Simply returns to the main administration page. Save Saves the current
-options. If some options are invalid, the system will show a dialogue with the wrong
-parameter and will focus its text field on the page. Once the configuration is saved
-a success dialogue will be shown. Refresh This button simply refreshes the displayed
-options taking the new values from the server. This can be useful if some options
-get changed dynamically (for example by another user).
 
-Public host and port usage
 
-Up to now, the server’s host and port are used in these cases:
+Les paramètres publics hôte et port
+```````````````````````````````````
 
-#. During an editing session, when adding data links to a metadata. The host and port will be used to build download links to store inside the metadata.
+Ces 2 paramètres sont utilisés dans les cas suivants :
 
-#. During CSW requests. The GetCapabilities operation returns an XML document with HTTP links to the CSW services. These links are dynamically built using the host and port values.
+#. Lors d'une session d'édition, lors de l'ajout de données associées à une métadonnée. 
+    ces paramètres sont utilisés pour construire l'URL pour le téléchagement dans la métadonnée
 
-Site General site parameters
-````````````````````````````
+#. Lors de requête CSW. Le document GetCapabilities retourne des liens HTTP vers le service CSW. 
 
-*Name* The name of the GeoNetwork installation. This name will be used to identify the node in operations like the harvesting.
 
-*Organization* The organization the node belongs to. Just for informative reasons.
+Paramètres généraux du site
+```````````````````````````
 
-*Server* Here you have to enter the address of your GeoNetwork’s node. This address is important because it will be used to access the node.
+- Site
 
-*Host* The node’s address or IP number. If your node is publicly accessible from the Internet, you have to use the machine’s domain/address. If your node is hidden into your private network and you have a firewall or web server that redirects incoming calls to the node, you have to enter the public address of the firewall or web server. A typical configuration is to have an Apache web server on address A that is publicly accessible and redirects the requests to a Tomcat server on a private address B. In this case you have to enter A in the host parameter.
+ - Nom : Le nom du catalogue est utilisé dans le critère de recherche **catalogue**, ou dans le moissonnage
 
-*Port* The node’s port (usually 80 or 8080). If the node is hidden, you have to enter the port on the public firewall or web server.
+ - Organisme : Le nom de l'organisation à laquelle appartient le catalogue
 
-*Intranet* A common need for an organisation is to discriminate between internal anonymous users (users that access the node from within the organisation) and external ones (users from the Internet). Node’s administrators can specify different privileges for internal and external anonymous users and, in order to do so, they have to specify the parameters of the internal network.
+- Serveur reseigne sur l'adresse publique du catalogue
 
-*Network* The internal network’s address in IP form.
+ - **Hôte** L'URL publique ou l'adresse IP du catalogue. 
+ 
+ - **Port** Le port est en général 80 (ie. http) ou plus rarement 8080.
 
-*Netmask* The network’s mask.
+- Intranet est utilisé pour distinguer les utilisateurs du catalogue sur le réseau Intranet de l'organisation
 
-Catalogue services (CSW, Z39.50)
-````````````````````````````````
+ - **Network** adresse IP du réseau
 
-OGC CSW configuration
-~~~~~~~~~~~~~~~~~~~~~
+ - **Masque de sous réseau**
+
+
+Paramètre de recherches et indexation
+`````````````````````````````````````
+- Résultat de recherche
+
+ - Nombre maximum d'items sélectionnés permet de limiter la sélection d'un trop grand nombre d'enregistrement à la fois. 
+   Ce paramètre évite des problèmes de performance sur les opérations massives.
+    
+- Optimisation de l'index : Activé par défaut. Ce processus permet de régulièrement "ranger" l'index Lucene.
+  L'opération est rapide pour des catalogues peu volumineux.
+
+Paramètre de configuration du services Z39.50
+`````````````````````````````````````````````
+
+Le catalogue supporte le protocol serveur Z39.50 qui est un protocole d'interrogation de métadonnées.
+
+- **Activé** : Cette option permet d'activer ou pas au démarrage le protocole. Le redémarrage est nécessaire 
+  pour la prise en compte de ce paramètre. Activé par défaut.
+
+- **port** : Port d'écoute pour les requêtes Z39.50. Par défaut ce port est le 2100. 
+  Il est possible de changer ce port, si plusieurs catalogues sont déployés sur le même serveur. 
+  Ce port doit être ouvert si un pare-feu se trouve devant le catalogue.
+
+
+Paramètre de configuration du services OAI-PMH
+``````````````````````````````````````````````
+
+Le catalogue support le protocol serveur OAI-PMH.
+
+Les paramètres suivants sont disponibles :
+
+- Datesearch : Utilisé l'étendue temporelle ou la date de modification sur les recherches temporelles
+
+- Resumption token timeout
+
+- Taille du cache
+
+
+XLink
+`````
+
+Activé ou désactivé la résolution des XLinks présents dans les métadonnées.
+
+
+Statistique sur les recherches
+``````````````````````````````
+
+Activé ou désactivé la génération de statistique sur les recherches (cf :ref:`stat_config`).
+
+
+Service de téléchargement
+`````````````````````````
+
+Les fichiers associés aux métadonnées peuvent être accessible au téléchargement selon 3 modes :
+
+- Utiliser le service de téléchargement |project_name| (resources.get)
+
+- Utiliser le service analysant les contraintes d'accès |project_name| (file.disclaimer)
+
+- Utiliser les liens de la section distribution - sans changement
+
+
+
+Hyperliens cliquables
+`````````````````````
+
+Activé ou désactivé la recherche de liens dans le contenu des métadonnées. Ces liens sont transformés
+en lien <a href=".."> pour les url http et les adresses emails. Cette option affecte légérement les performances d'affichage.
+
+
+Evaluation locale
+`````````````````
+
+Activé ou désactivé l'évaluation locale des métadonnées. Lorsqu'un utilisateur note une métadonnée, la note est transmie 
+au catalogue source lorsque cette métadonnée est moissonnée selon le protocol |project_name|.
+
+
+Correction automatique
+``````````````````````
+
+Activé ou désactivé la correction automatique. Lors de la sauvegarde d'une métadonnée des informations sont mises à jour
+automatiquement par le catalogue (eg. ajout des attributs gco:isoType obligatoire, gco:nilReason pour les champs textes vide
+définition des liens pour le téléchargement).
+Il est fortement recommandé de conserver cette option activée sauf si vous savez ce que vous faites !
+
+
+
+
+INSPIRE
+```````
+Activé ou désactivé les options INSPIRE :
+
+- CSW GetCapabilities INSPIRE
+
+- Indexation des thèmes INSPIRE (nécessite de relancer l'indexation)
+
+- Formulaire de recherche INSPIRE (selon l'interface)
+
+
+
+Moissonnage
+```````````
+
+Permettre ou non l'édition de fiche moissonnée (sachant que fonction du protocol de moissonnage, la fiche pourra
+être écrasé si le moissonnage est relancé).
+
+Configuration du proxy
+``````````````````````
+
+
+Dans certaines situations, le catalogue doit être capable d'accèder à des sites distants. Il est 
+alors nécessaire pour lui de passer par le proxy de l'organisation.
+
+.. figure:: web-config-options-proxy.png
+
+
+
+- *Hôte*: Adresse IP ou nom du proxy
+
+- *Port*: Le port du proxy
+
+- *Utilisateur* (optionel)
+
+- *Mot de passe* (optionel)
+
+Alert et notification
+`````````````````````
+
+Le catalogue peut notifier par email lorsqu'une métadonnée est téléchargée ou lorsqu'un utilisateur
+rempli le formulaire de contact. Dans ce cas, il est nécessaire de configurer le serveur de mail
+
+.. figure:: web-config-options-mailserver.png
+
+    Configuration du serveur de mail
+
+- **Email**: adresse utilisée pour l'envoi des mails (ie. From:)
+
+- **Serveur SMTP**: IP du serveur de mail
+
+- **Port SMTP**: Port du serveur de mail (en général 25).
+
+Métadonnée supprimée
+````````````````````
+
+Permet de définir le répertoire à utiliser pour la sauvegarde lors de la suppression d'une métadonnée.
+Ce répertoire permet pour les administrateurs du système de récupérer des métadonnées supprimées par erreur.
+
+
+Configuration de l'authentication
+`````````````````````````````````
+
+Cette section permet de définir le mode d'authentification pour le catalogue.
+
+.. figure:: web-config-options-authentication.png
+
+    Options de configuration du mode d'authentification
+    
+
+Par défaut, les utilisateus sont identifiés par la base de données du catalogue. 
+Dans ce mode là, il est possible d'activer l'option d'enregistrement libre des internautes (alors membre du groupe invité).
+
+LDAP (lightweight directory access protocol) est un autre mode d'authentification supporté par le catalogue.  ).
+
+Shibboleth est un autre mode d'authentification utilisable en complément des 2 autres modes. Tous les utilisateurs
+de la fédération peuvent alors s'authentifier auprès du catalogue.
+
+
+Configuration de l'authentification LDAP
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The section defines how to connect to an LDAP authentication system.
+
+.. figure:: web-config-options-ldap.png
+
+    *The LDAP configuration options*
+
+Typically all users must have their details in the LDAP directory to login to |project_name|. 
+However if a user is added to the |project_name| database with the Administrator profile then they will be able to login without 
+their details being present in the LDAP directory.
+
+Configuration de l'authentification Shibboleth
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using either the |project_name| database or LDAP for authentication, you can also configure 
+shibboleth to allow authentication against access federations.
+
+.. figure:: web-config-options-shibboleth.png
+
+    *The Shibboleth configuration options*
+
+Shibboleth authentication requires interaction with Apache web server. In particular, 
+the apache web server must be configured to require Shibboleth authentication to access the path 
+entered in the configuration. The apache web server configuration will contain the details of the shibboleth 
+server that works out where a user is located (sometimes called a 'where are you from' server).
+
+The remainder of the shibboleth login configuration describes how shibboleth authentication 
+attributes are mapped to |project_name| user database fields as once a user is authenticated against shibboleth, 
+their details are copied to the local |project_name| database.
+
+
+.. _csw_configuration:
+
+Configuration CSW
+-----------------
+
+Configuration minimale
+``````````````````````
 
 When using Open Geospatial Catalogue Service for the Web (OGC-CSW) service,
 a client will ask for a description of the
@@ -107,114 +310,95 @@ content.
 public viewable unless a user with proper rights, sets later the metadata permissions to be public 
 viewable. If this option is checked all metatada inserted with CSW Transation is public viewable by default.
 
-.. COMMENT: TODO : Add documentation about config-csw.xml options
 
-Z39.50 configuration
-~~~~~~~~~~~~~~~~~~~~
+.. figure:: csw-configuration.png
 
-*Z39.50*: GeoNetwork can act as a Z39.50 server, which
-is an OGC communication protocol to query and retrieve metadata.
+Configuration avancée
+`````````````````````
 
-*Enable*: Check this option to start the Z39.50
-submodule. Please, notice that GeoNetwork must be restarted in order to make
-this change active.
+Une configuration plus fine du CSW est possible via le fichier **WEB-INF/config-csw.xml**. Les options suivantes sont disponibles :
 
-*port*: This is the port on which GeoNetwork will be
-listening for incoming Z39.50 requests. Usually, the value of 2100 is a
-standard one, but to have multiple GeoNetwork nodes on the same machine you
-have to change this value in order to avoid port conflicts between the
-different nodes.
+- Nombre de mots clés retournés dans la réponse du GetCapabilities
 
-Clickable hyperlinks
-````````````````````
-Enables/disables hyperlinks in metadata content for urls.
+- Nombre de métadonnées analysées pour le calcul des mots clés les plus fréquents::
 
-INSPIRE
-```````
-Enables/disables the INSPIRE search options in advanced search panel.
+        <operation name="GetCapabilities">
+            <!-- Defines the number of keywords displayed in capabilities, ordered by frequency -->
+            <numberOfKeywords>10</numberOfKeywords>
+            <!-- Defines the number of records that will be processed to build the keyword frequency list  -->
+            <maxNumberOfRecordsForKeywords>1000</maxNumberOfRecordsForKeywords>
+        </operation>
 
-Proxy configuration
-```````````````````
+- La section GetRecord indique les correspondances entre les champs définis dans la spécification CSW (ou INSPIRE) et les champs
+  de l'index Lucene. Un champ non présent dans cette liste et existant dans l'index est intérrogeable avec le nom de ce champ dans l'index.
 
-*Proxy*: In some occasions (like harvesting) GeoNetwork must
-be able to connect to remote sites and this may be denied if an organisation
-uses proxy servers. In this cases, GeoNetwork must be configured to use the
-proxy server in order to route outgoing requests.
+.. _system_info:
 
-.. figure:: web-config-options-proxy.png
+Information sur le système
+--------------------------
 
-    *The proxy configuration options*
+La page d'information permet de récupérer les principales caractéristiques du catalogue. Ces informations
+peuvent être utils pour la résolution des problèmes.
 
-*Host*: The proxy’s name or address to use (usually an IP address).
+.. figure:: info.png
 
-*Port*: The proxy’s port to use.
 
-*Username* (optional): a username should be provided if the proxy server requires authentication.
 
-*Password* (optional): a password should be provided if the proxy server requires authentication.
+.. _logo_config:
 
-Email & notification
-````````````````````
+Configuration et gestion des logos
+----------------------------------
 
-*Feedback* GeoNetwork can sometimes send email, for example if a metadata is downloaded or
-if a user provides feedback using the online form. You have to configure
-the mail server GeoNetwork should use in order to enable it to send email.
+A partir de la page administration il est possible de gérer les logos. Les actions possibles sont :
 
-.. figure:: web-config-options-mailserver.png
+- ajout de logo dans le catalogue (utilisé pour la définition du logo du catalogue et ceux des points de moissonnage)
 
-    *The mail server configuration options*
+- définition du logo du catalogue
 
-*Email*: This is the email address that will be used to send
-the email (the From address).
+- définition de l'icône favorite du catalogue (il est recommandé d'utiliser une image de forme carré pour cela car elle
+    sera redimmensionnée au format 16x16 px)
+    
+    
+.. figure:: config-logo.png
 
-*SMTP host*: the mail server address to use when sending
-email.
 
-*SMTP port*: the mail server SMTP port (usually 25).
+.. _stat_config:
 
-Removed metadata
-````````````````
+Statistique sur les recherches
+------------------------------
 
-Defines the directory used to store a backup of metadata and data after a delete action. This
-directory is used as a backup directory to allow system administrators to recover metadata and possibly
-related data after erroneous deletion. By default the removed directory
-is created under the data folder
+Une fois activé, il est possible d'accéder à la page de consultation des statistiques.
 
-Authentication
-``````````````
+Cette page présente un certain nombre d'indicateurs produit à partir des logs de recherches.
 
-In this section you define the source against which GeoNetwork will authenticate users and passwords.
+Par exemple :
 
-.. figure:: web-config-options-authentication.png
+- Mots les plus recherchés
+- Nombre de recherche (par an/mois/jours, par type)
+- Adresse IP des clients
+- Popularité des métadonnées
 
-    *Authentication configuration options*
 
-By default, users are authenticated against info held in the GeoNetwork database. When the GeoNetwork database is used as the authentication source, the user self-registation function can be enabled.
+.. figure:: admin-statistical.png
 
-You may choose to authenticate logins against either the GeoNetwork database tables or LDAP (the lightweight directory access protocol) but not both. The next section describes how to authenticate against LDAP.
 
-In addition to either of these options, you may also configure other authentication sources. At present, Shibboleth is the only additional authentication source that can be configured. Shibboleth is typically used for national access federations such as the Australian Access Federation. Configuring shibboleth authentication in GeoNetwork to use such a federation would allow not only users from a local database or LDAP directory to use your installation, but any user from such a federation.
+Ces statistiques peuvent être téléchargé au format CSV.
 
-LDAP Authentication
-~~~~~~~~~~~~~~~~~~~
 
-The section defines how to connect to an LDAP authentication system.
+Dans le fichier de configuration WEB-INF/config.xml, des options avancées sont disponibles pour choisir les champs
+de recherche à enregistrer, activé ou pas le log des critéres géographiques ... ::
 
-.. figure:: web-config-options-ldap.png
+        <!-- search statistics stuff -->
+        <!-- true to log into DB WKT of spatial objects involved in a search operation
+        CAUTION ! this can lead to HUGE database and CSV export if detailed geo objects are used:
+        several Gb for instance...-->
+        <param name="statLogSpatialObjects" value="false" />
+        <param name="statLogAsynch" value="true" />
+        <!-- The list of Lucene term fields to exlucde from log, to avoid storing unecessary information -->
+        <param name="statLuceneTermsExclude" value="_op0,_op1,_op2,_op3,_op4,_op5,_op6,_isTemplate,_locale,_owner,_groupOwner,_dummy,type" />
+    </appHandler>
 
-    *The LDAP configuration options*
 
-Typically all users must have their details in the LDAP directory to login to GeoNetwork. However if a user is added to the GeoNetwork database with the Administrator profile then they will be able to login without their details being present in the LDAP directory.
 
-Shibboleth Authentication
-~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When using either the GeoNetwork database or LDAP for authentication, you can also configure shibboleth to allow authentication against access federations.
 
-.. figure:: web-config-options-shibboleth.png
-
-    *The Shibboleth configuration options*
-
-Shibboleth authentication requires interaction with Apache web server. In particular, the apache web server must be configured to require Shibboleth authentication to access the path entered in the configuration. The apache web server configuration will contain the details of the shibboleth server that works out where a user is located (sometimes called a 'where are you from' server).
-
-The remainder of the shibboleth login configuration describes how shibboleth authentication attributes are mapped to GeoNetwork user database fields as once a user is authenticated against shibboleth, their details are copied to the local GeoNetwork database.

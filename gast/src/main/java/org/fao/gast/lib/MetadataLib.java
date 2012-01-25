@@ -25,6 +25,7 @@ package org.fao.gast.lib;
 
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.resources.ProviderManager;
+import jeeves.server.UserSession;
 import jeeves.utils.Xml;
 import org.fao.gast.boot.Config;
 import org.fao.geonet.constants.Geonet;
@@ -32,6 +33,7 @@ import org.fao.geonet.constants.Params;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.XmlSerializer;
+import org.fao.geonet.kernel.XmlSerializerDb;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
 import org.jdom.Element;
@@ -45,6 +47,8 @@ import java.util.Set;
 public class MetadataLib
 {
 	private static SchemaManager _schemaMan;
+	private XmlSerializer _xmlSerializer;
+	private UserSession _session;
 
 	//---------------------------------------------------------------------------
 	//---
@@ -55,6 +59,9 @@ public class MetadataLib
 	public MetadataLib() throws Exception
 	{
 		_schemaMan = SchemaManager.getInstance(Config.getConfig().getWebapp()+"/", "", "en", "iso19139");
+		UserSession _session = new UserSession();
+		/* Set user as admin */
+		_session.authenticate("1", "admin", "GAST", "ADMIN", "administrator", "admin@localhost");
 	}
 
 	//---------------------------------------------------------------------------
@@ -62,7 +69,7 @@ public class MetadataLib
 
 	public void init(Dbms dbms) throws Exception
 	{
-		XmlSerializer.setSettingManager(new SettingManager(dbms, new ProviderManager()));
+		_xmlSerializer = new XmlSerializerDb(new SettingManager(dbms, new ProviderManager()));
 	}
 
 	//---------------------------------------------------------------------------
@@ -73,7 +80,7 @@ public class MetadataLib
 
 	public Element getMetadata(Dbms dbms, String id) throws Exception
 	{
-		return XmlSerializer.select(dbms, "Metadata", id);
+		return _xmlSerializer.select(dbms, "Metadata", id);
 	}
 
 	//---------------------------------------------------------------------------
@@ -177,7 +184,7 @@ public class MetadataLib
 				Element md = updateFixedInfo(id, Xml.loadString(data, false),
 													  uuid, date, schema, siteURL, settings, sm);
 
-				XmlSerializer.update(dbms, id, md, date, true);
+				_xmlSerializer.update(dbms, id, md, date, true, _session);
 				dbms.commit();
 			}
 		}
@@ -246,7 +253,7 @@ public class MetadataLib
 
 	public Element getThumbnails(Dbms dbms, String schema, String id) throws Exception
 	{
-		Element md = XmlSerializer.select(dbms, "Metadata", id);
+		Element md = _xmlSerializer.select(dbms, "Metadata", id);
 
 		if (md == null)
 			return null;
@@ -314,8 +321,9 @@ public class MetadataLib
 		//--- force namespace prefix for iso19139 metadata
 		DataManager.setNamespacePrefix(md);
 
-		XmlSerializer.insert(dbms, schema, md, id, source, uuid, createDate,
-											 changeDate, template, title, owner, groupOwner, "");
+		_xmlSerializer.insert(dbms, schema, md, id, source, uuid, createDate,
+											 changeDate, template, title, owner, groupOwner, "",
+											 _session);
 	}
 
 	/**
@@ -323,8 +331,7 @@ public class MetadataLib
 	 * @param md
 	 * @return
 	 */
-	public static String autodetectSchema(Element md)
-	{
+	public static String autodetectSchema(Element md) throws Exception {
 		return _schemaMan.autodetectSchema(md);
 	}
 

@@ -1,124 +1,86 @@
+.. include:: ../../substitutions.txt
 
+.. _metadata_create:
 
-Saisie de l'information
-=======================
+Création et édition de métadonnées
+==================================
 
 Cette partie présente la manière de créer et saisir des métadonnées dans le catalogue
-en utilisant soit l'éditeur en ligne, soit l'outil d'insertion basé sur les documents
-XML. Dans les deux cas, vous utiliserez le système de modèles (templates), l'ajout
-d'aperçu, le téléchargement de données, le lien vers des services et la gestion des
-privilèges pour l'accès aux données et aux métadonnées.
+en utilisant l'éditeur en ligne. Pour cela le système de modèles (templates en anglais) est utilisé.
+Les sujets abordés sont les suivants :
 
-Pour ajouter et éditer une métadonnée, vous devez être **enregistré** comme **Editeur** dans le groupe
-dans lequel vous souhaitez l'ajouter. Si ce n'est pas le cas, contactez
-l'administrateur.
+.. contents:: :local:
 
-Pour la création d'une métadonnée utilisant l'éditeur en ligne, Géosource fournit un
-certain nombre de modèles de métadonnées basés sur les normes ISO 19115/119. Ces modèles
-permettent de décrire divers types de ressource (données vecteur ou raster, services
-WMS/MFS, service de téléchargement...) avec un nombre minimal d'éléments pré-remplis
-dans la vue découverte. Ces modèles peuvent être complétés avec des éléments de la vue
-avancée.
+Pour ajouter et éditer une métadonnée, un utilisateur doit être **enregistré** comme **Editeur** dans au moins un groupe. 
+Si ce n'est pas le cas, contactez l'administrateur.
 
-Afin de saisir correctement une métadonnée, vous devez donner un maximum de détails
-pour décrire la ressource en prenant en compte les éléments qui ont été présentés dans
-le chapitre précédent.
+Pour la création d'une métadonnée utilisant l'éditeur en ligne, 2 options sont possibles :
 
-Les champs les plus importants à remplir sont les suivants :**Le
-titre, la date de création et de publication, le résumé, la langue utilisée pour
-documenter la donnée, le thème, l'échelle, la maintenance et la fréquence de mise à
-jour, la langue de la métadonnée**.
+- partir d'un modèle de saisie à partir du menu **Créer une métadonnée**
+- dupliquer un fiche à partir des résultats de recherche
 
-En plus des champs obligatoires, nous recommandons de remplir ces champs optionnels
-mais importants (si ces informations sont disponibles) :**l'objectif, les mots-clés, la forme, l'état, le type de erprésentation spatiale, la
-localisation géographique, les informations sur le système de référence, l'étendue
-temporelle, les informations sur la qualité, les contraintes d'accès et
-d'utilisation, le point de contact, les informations sur la distribution (ressource
-en ligne)**
 
-- Vous avez également la possibilité de fournir un aperçu de la ressource, qui apparaîtra dans les résultats de la recherche.
+Les modèles de saisie
+---------------------
 
-- La prochaine section vous guidera vers le processus de création utilisant l'éditeur en ligne.
+
+Le catalogue fournit un
+certain nombre de modèle de métadonnées basés sur les différents standards supportés (cf. :ref:`supported_format`). Ces modèles
+permettent de décrire divers types de ressources (eg. données vecteur ou raster, services
+WMS/MFS, service de téléchargement) avec un nombre minimal d'éléments pré-remplis. 
+Ces modèles peuvent être édités et complétés avec des éléments de la vue
+avancée tout comme une métadonnée.
+
+Si aucun modèle n'est disponible, il est possible de les ajouter à partir de l'interface d'administration (cf. :ref:`samplemetadata`).
 
 
 Créer une nouvelle métadonnée
 -----------------------------
 
-#. Dans la page d'accueil, cliquez sur **l'onglet "administration"**.
+Une fois l'utilisateur authentifié (cf. :ref:`how_to_login`), **dans la barre d'outil de présentation des résultats** 
+ou bien dans la page d'accueil, cliquer sur **Administration** puis :
 
 #. Selectionner **"nouvelle métadonnée"**.
-
 #. Selectionner le modèle de métadonnée sachant que d'autres modèles peuvent être créés.
-
 #. Selectionner le **Groupe** auquel sera rattaché la métadonnée. Les groupes proposés sont ceux autorisés par l'administrateur pour l'utilisateur en cours d'édition.
-
 #. Cliquez sur **"créer"**.
 
-En détail
-`````````
 
-#. Entrez votre identifiant et mot de passe et cliquez sur le bouton
-   "Connecter" (:ref:`login_adding`). Le système vous
-   identifiera et vous assignera les privilèges correspondant à votre
-   compte.
+.. figure: create.png
 
+   Formulaire de création d'une métadonnée
 
-   .. figure:: login.png
+Le formulaire permet de trier les métadonnées par schéma, par titre en cliquant sur les en-têtes des colonnes.
 
-     *Login*
-
-#. Ouvrez la page d'administration en cliquant sur le bouton
-   "Administration" puis cliquez sur le lien de la nouvelle métadonnée
-
-   .. figure:: Admin.png
-  
-     *Administration panel*
-
-#. A partir de la page de création de métadonnée, sélectionnez le
-   standard
-
-   .. figure:: metadataCreation.png
-  
-     *Sélection du modèle*
-
-#. Après avoir sélectionné le modèle correct, vous devez identifier à
-   quel groupe d'utilisateurs se rattachera la métadonnée créée (:ref:`select_group`)puis cliquez sur **"Créer"**.
-
-   .. figure:: selectGroup.png
-    
-   *Sélection du groupe*
-    
-Une nouvelle métadonnée basée sur le modèle sélectionné est ensuite créée.
+Une nouvelle métadonnée basée sur le modèle sélectionné est ensuite créée. Un identifiant unique lui est attribué. Par défaut, 
+elle n'est visible que pour les utilisateurs du groupe.
 
 
 
 Basculer entre les vues
 ```````````````````````
 
-Les vues ont été présentées `précédemment <../gui/index.html#les-vues>`_.
+Les vues ont été présentées précédemment (cf. :ref:`metadata_edit_mode`).
 
 Lorsque vous créez un nouvel enregistrement, vous pouvez choisir entre
-**Vue découverte**, **Vue
-avancée**, **Vue complète** ou
-**Vue XML**. Pour charger la vue, cliquez
-simplement sur la vue correspondante dans la colonne de gauche de la page. La
-vue en **gras** correspond à la vue courante.
+les différentes vues du standard. Pour charger la vue, cliquez simplement sur la vue correspondante dans le menu **Affichage**.
+La vue désactivée dans le menu correspond à la vue courante.
 
-  .. figure:: switchViews.png
 
-  *Options sur la vue de métadonnée*
-
-Les champs obligatoires et conditionnelles
+Les champs obligatoires et conditionnels
 ``````````````````````````````````````````
-Les champs obligatoires sont signalés par une astérisque.
+Les champs obligatoires sont en gras avec un cadre gris ou rouge si ils ont une valeur invalide.
 
-Les champs dont la saisie est invalides sont entourés en rouge.
+.. figure: invalidField.png
+
+   Champ titre obligatoire valide mais un résumé invalide (car vide)
+
+
+Les champs dont la saisie est invalide sont entourés en rouge.
 Il peut s'agir :
 
 - d'un champ obligatoire non rempli
-
 - d'un champ numérique contenant du texte (avec ou sans décimale)
-
 - d'une adresse email invalide.
 
 
@@ -126,334 +88,306 @@ Il existe par ailleurs des champs conditionnels.
 Par exemple, pour les contacts, 
 
 - un des champs nom, organisation ou position pour un contact
-  doit être renseigné selon l'ISO.
-
-- un des champs organisation ou email doit être renseigné selon INSPIRE 
+  doit être renseigné pour le standard ISO 19139.
+- un des champs organisation ou email doit être renseigné pour les règles d'implémentation d'INSPIRE 
 
   .. figure:: PoC_Maint.png
 
   *Point de contact*
 
-Pour identifier les erreurs sur les champs conditionnels, utiliser le `rapport
-de validation <#valider-les-metadonnees>`_.
+Pour identifier les erreurs sur les champs conditionnels, utiliser le rapport
+de validation (cf. :ref:`metadata_validation`).
 
 
 L'aide
 ``````
 
-La définition de chacun des champs peut
-être lu en cliquant sur le libellé du champ.
+La définition de chacun des champs est visible dans la section **Aide** du panneau de droite.
+Cette aide indique :
+
+- le nom de l'élément
+- la définition de l'élément
+- l'identifiant du standard (eg. iso19139.fra)
+- le nom de la balise de l'élément (eg. gmd:title)
+
+La description de l'élément parent est également présentée.
+
+.. figure:: helpPanel.png
+
+   Aide contextuel sur l'élément titre court contenu dans la section identification
 
 
+.. _editor_control:
 
 Utiliser les contrôles des champs de l'éditeur
-````````````````````````````````````````````````````````````````````
+``````````````````````````````````````````````
 
-Les champs ont soit **des domaines de texte
-libre** soit **des lstes de codes**.
-Texte libre signifie que vous pouvez écrire n'importe quel texte dans ce champ.
-Drop down lists allow you to select only one option from the list. You can add
-multiple fields of the same kind by clicking on the **[+]** symbol next to the element. Every new field that you will
-add in the advanced view will then be visible in the default view. You can also
-delete existing fields by clicking on the **[x]**
-symbol next to the element. Clearly, mandatory fields cannot be deleted. One
-example of the need to add multiple fields can arise if the content of your
-dataset has some text written in two different languages (:ref:`multilingual_data`).
+Différents types de champs existent :
 
-.. figure:: multipleElement.png
+- les champs de type texte simple
+- les champs de type zone de texte
 
-  **Describing multilingual data**
+.. figure:: textField.png
+
+
+- les listes de valeurs
+- les dates
+
+.. figure:: dateFieldAndCodeList.png
+
+   Champ date avec une liste de valeur pour le type de date
+
+- la saisie d'emprise géographique (cf. :ref:`geobox_editor`)
+- la saisie des champs de type périodes
+
+.. figure:: periodField.png
+
+   Champ de type période
+
+
+
+La cardinalité des champs est définie dans le schéma du standard de métadonnées. Ce schéma est utilisé pour placer les 
+contrôles correspondants à côté des champs de saisie.
+
+Ces contrôles sont :
+
+- le plus pour ajouter un champ
+- le moins pour supprimer un champ
+- la flêche vers le haut pour déplacer le champ vers le haut
+- la flêche vers le bas pour déplacer le champ vers le bas
+
+
+.. figure:: editorControl.png
+
+   Bouton de contrôle dans l'éditeur
+
+
+En complément, l'icône jumelle permet la recherche dans des dictionnaires. Elle est disponible pour les champs de type :
+
+- mots clés
+- projection
+- (optionel) contact
+
+La flêche présente devant les titres de section permettent de cacher le bloc placé en dessous.
+
+.. figure:: toggleControl.png
 
 
 Saisir les métadonnées pour vos données géographiques
 -----------------------------------------------------
 
+.. TODO : cf la version anglaise http://geonetwork-opensource.org/manuals/trunk/users/quickstartguide/new_metadata/index.html#entering-metadata-for-your-map
 
 
-As we mentioned in the introduction to this guide, GNos provides tools to describe
-any type of geographic data (vector layers, raster, tables, map services, etc.) as
-well as general document like reports, projects, papers, etc. For the purpose of
-this Quick Start Guide, an example of required and useful metadata elements to
-properly describe a thematic map will be provided hereafter. You should gather as
-much information as possible to identify and understand the map’s resource and
-characteristics you want to describe. Use the default view to start. If necessary,
-you can always switch to advanced view or come back later and edit the record with
-the additonal information collected.
+.. _geobox_editor:
 
-Entering Metadata For Your Map
-``````````````````````````````
+Saisir une emprise géographique
+-------------------------------
 
-Please follow these steps to enter your map's metadata. Note that we will only
-go through the fields that have been identified as compulsory (i.e. those fields
-marked with the asterix **[\*],** mandatory or
-highly recommended).
+Dans la section identification, il est possible de saisir l'emprise géographique de la métadonnée.
+Celle-ci est en générale un rectangle (ie. LatLongBoundingBox). L'interface de saisir permet :
+
+- la saisie manuelle des coordonnées dans une des projections configurées pour le catalogue
+- la saisie d'un rectangle sur la carte
+- le choix d'une région dans la liste déroulante
+- l'effacement de l'objet
 
 
-**Titre** : Dans les informations d'identification saisir le nom par défaut de votre jeu de données.
+.. figure:: geoboxField.png
 
 
-**Date ** : Indique la **date** exacte de **création**,
-**publication** ou **révision** de votre jeu de données
+A noter qu'il est également possible de calculer l'emprise à partir des mots clés géographique (cf. :ref:`compute_extent`).
+
+Il est possible de saisir plusieurs emprises pour une fiche de métadonnée. Ceci se révèle util pour un jeu de donnée
+sur la france métropolitaine et les COM par exemple.
 
 
-**Forme de présentation**: spécifie le type de
-présentation i.e. **digital**, **document papier**, **table**, etc.
+Le standard ISO permet également la saisir d'un polygone. Dans ce cas, l'interface de saisir propose un
+outil de saisie de polygone ou de cercle.
+
+.. figure:: geoField.png
+
+La case à cocher **Exclusion** permet d'indiquer si le polygone est une surface recouverte par des données ou ne comportant pas de données.
 
 
-**résumé** : description du jeu de données
+L'aide à la saisie
+------------------
+
+Suggestion simple
+`````````````````
+
+Pour certains champs, il est possible d'avoir une liste de suggestion. Cette liste est placé à côté du champ de saisie.
 
 
-**Objectifs**: un court résumé des objectifs du jeu
-de données.
+.. figure:: scaleField.png
+
+   Suggestion pour le champ niveau d'échelle
 
 
-**Etat**: Spécifie l'état de votre jeu de données,
-avec différents choix possibles : complété, archive historique, obsolète, en
-cours, planifié, requis, en cours de développement.
+.. figure:: dqField.png
+
+   Suggestion pour les champs nom du test et définition (Annexe C de l'ISO19138)
+   
+   
+Une suggestion permet d'accèder rapidement à des listes classiques de valeurs et de simplifier la saisie.
 
 
-**Point de Contact**: Saisir l'information sur le
-contact sur la ressource. A noter que certains champs sont conditionnels, comme
-le nom de l'organisation si le nom individuel ou la position ne sont pas
-renseignés.
+.. _auto_correction:
+
+Mécanisme de suggestion par analyse des métadonnées et correction automatique
+`````````````````````````````````````````````````````````````````````````````
+
+Dans le paneau droit de l'éditeur, le bloc **Suggestion** permet d'avoir les règles applicables à la métadonnée en cours d'édition.
+Ces règles dépendent du standard de métadonnées.
+
+Prenons le cas d'une métadonnée contenant un mot clé contenant des virgules :
 
 
-**Maintenance and update frequency *** : Specify
-the frequency with which you expect to make changes and additions to your map
-after the initial version is completed. If any changes are scheduled you can
-leave As Needed selected from the drop-down list.
+.. figure:: suggestion1.png
+   
+   Mots clés contenant des virgules comme séparateur. Ceci n'est pas recommandé.
 
 
-**Descriptive Keywords**: Enter keywords that
-describe your map. Also specify the type of keyword you are entering, i.e.
-place, theme, etc. Remember that you can add another keyword field if you need
-to add different types of keywords.
+.. figure:: suggestion2.png
+ 
+   Le mécanisme d'auto-correction, propose à l'éditeur de séparer les mots clés.
 
 
-**Access Constraints**: Enter an access constraint
-here, such as a copyright, trademark, etc. to assure the protection of privacy
-and intellectual property.
+.. figure:: suggestion3.png
+
+   Résultat après le traitement automatique
+  
+  
+Les mécanismes de contrôle pour le standard ISO19139 sont les suivants :
+
+- Séparation des mots clés contenant des virgules
+- Correction des niveaux d'échelle contenant des 1/25000 ou 1:25000 en 25000
+- Calcul de l'emprise à partir des mots clés géographique
+- Ajout d'une section conformité INSPIRE si un thème INSPIRE se trouve dans les mots clés
+- Ajout des systèmes de projection si un service WMS est associé
+- Ajout d'un aperçu si un service WMS est associé
+- Ajout de l'emprise si un service WMS est associé
 
 
-**User Constraints**: Enter a user constraint here
-to assure the protection of privacy and intellectual property.
-
-
-**Other Constraints *** : Enter other constraint
-here to assure the protection of privacy and intellectual property. Note that
-this field is conditionally mandatory if Access and Use constraints are not
-entered.
-
-
-**Spatial representation type**: Select, from the
-drop-down list the method used to spatially represent your data. The options
-are: vector, grid, text table, stereo model, video.
-
-
-**Scale Denominator *** : Enter the denominator for
-an equivalent scale of a hard copy of the map.
-
-
-**Language *** : Select the language used within
-your map
-
-
-**Topic category *** : Specify the main ISO
-category/ies through which your map could be classified (see Annex for the
-complete list of ISO topic categories).
-
-
-**Temporal Extent *** : Enter the starting and
-ending date of the validity period.
-
-
-**Geographic Bounding Box *** : Enter the longitude
-and latitude for the map or select a region from the predefined drop-down list.
-Make sure you use degrees for the unit of the geographic coordinates as they are
-the basis for the geographic searches.
-
-
-**Supplemental Information**: Enter any other
-descriptive information about your map that can help the user to better
-understand its content.
-
-
-**Distribution Info**: Enter information about the
-distributor and about options for obtaining your map.
-
-
-**Online Resource**: Enter information about online
-resources for the map, such as where a user may download it, etc. This
-information should include a link, the link type (protocol) and a description of
-the resource.
-
-
-**Reference System Info**: Enter information about
-the spatial reference system of your map. The **default view
-contains** one element to provide the **alphanumeric value** identifying the reference system used. GNos
-uses the **EPSG codes** which are numeric codes
-associated with coordinate system definitions. For instance, EPSG:4326 is
-Geographic lat-long WGS84, and EPSG:32611 is "UTM zone 11 North, WGS84". Using
-elements **from the advanced view**, you may add
-**more details** on **data
-projection,**
-**ellipsoid** and **datum**. Note that if this information is provided, a reference
-system identifier is not mandatory.
-
-
-**Data Quality**: Specify the hierarchal level of
-the data (**dataset series**, **dataset**, **features**, **attributes**, etc.) and provide a **general explanation on the production processes** (lineage) used
-for creating the data. The statement element is mandatory if the hierarchical
-level element is equal to dataset or
-series. Detailed information on **completeness, logical consistency** and **positional**, **thematic** and
-**temporal accuracy** can be directly added
-**into the advanced form**.
-
-
-**Metadata Author** : Provide information about
-the author of the map, including the person’s name, organization, position, role
-and any other contact information available.
-
-After completion of this section, you may select the **Type** of document that you are going to save in the catalogue.
-You have three options: **Metadata**, **Template**, **Sub-template**. By default **Metadata** is set up.
-
-When done, you may click Save or Save and
-Close to close the editing session.
-
-
-
+.. _metadata_validation:
 
 Valider les métadonnées
 -----------------------
 
-In editing mode, editors could validate the current metadata record against standard rules and recommendations.
+Dans le paneau droit de l'éditeur, le bloc **Validation** permet d'obtenir le niveau de validité de la métadonnée en cours d'édition
+vis à vis :
 
-For all standards, a first level of validation is made for XML metadata validation based on XML Schema (XSD).
-For ISO19139 records, other rules are checked:
+- du schéma du standard (Schéma XSD)
+- des recommandations ISO
+- des recommandations INSPIRE (optionel)
+- des recommandations |project_name|
 
-- ISO recommandations
-
-- GeoNetwork recommandations
-
-- (Optional and not available by default) INSPIRE recommandations
-
-
-The validation report display the list of rules checked and their status (pass or failed). The top checkbox allows to display only errors or all.
 
 .. figure:: validationreport.png
 
 
-.. TODO : Maybe add more details on how to solve XSD error messages ?
+
+Saisir des métadonnées en plusieurs langues
+-------------------------------------------
+
+De prime abord, il pourrait être envisagé de dupliquer une fiche pour la rendre accessible en plusieurs langues.
+Cependant la norme ISO19139 définie une manière de traduire tout ou partie d'une métadonnées.
+
+Un éditeur peut donc créer des métadonnées ISO en plusieurs langues. Pour cela, il est nécessaire de déclarer une
+nouvelle langue dans la fiche :
+
+- Tout d'abord, vérifiez que la langue de la métadonnée est définie dans la section sur les métadonnées.
+
+- Ensuite, ajouter une ou plusieurs autres langues dans cette même section.
+
+
+
+En édition, chaque élément pouvant être traduit est composé de :
+
+- une zone de texte
+
+- une liste de sélection de la langue (langues déclarées dans la section autres langues)
+
+
+
+Par défaut, la langue sélectionnée est la langue de l'interface si la langue est définie dans la métadonnée. 
+Sinon la langue principale de la métadonnée est affichée.
+
+
+.. figure:: editor-multilingual.png
+
+
+En option, le service de traduction de Google peut être utilisé. 
+Les traductions peuvent être suggérées pour l'éditeur en cliquant sur la petite icône située à droite du sélecteur de langue. 
+Le service de traduction traduit le texte dans la langue principale de la métadonnée dans la langue sélectionnée.
+
+
+En mode consultation, en fonction de langue de l'interface, si cette langue est définie dans les métadonnées, 
+les éléments sont affichés dans cette langue
+sinon dans la langue par défaut de la métadonnée.
+Ce comportement est également appliqué pour les réponses au format dublin-core via CSW pour une fiche en ISO.
+
+
+
+Associer des aperçus
+--------------------
+
+Au sein de la fiche de métadonnée, dans la section identification, il est possible
+d'ajouter des aperçus pour donner une idée des données. Le catalogue permet d'associer 2 types d'aperçus : 
+
+- les aperçus chargés dans le catalogue
+- les aperçus associés par un lien sur le web
+
+
+L'ensemble des aperçus sont présentés en mode édition dans le paneau de droite, en mode consultation et dans les résultats de recherche.
+
+.. figure:: thumbnailManager.png
+
+
+Le premier type d'aperçu est chargé dans le catalogue via l'assistant suivant :
+
+.. figure:: thumbnailAdd.png
+
+Ces aperçus peuvent être redimensionné lors du chargement. Une petite et une grand vignette peuvent être créée. Elles sont alors automatiquement
+référencées dans la métadonnée. Ces vignettes seront présente dans le répertoire public du format MEF (cf. :ref:`mef`).
+
+Il est également possible de saisir l'URL d'une image disponible sur Internet via l'éditeur :
+
+.. figure:: thumbnailEdit.png
 
 
 
 
 
+Associer des logos aux contacts
+-------------------------------
 
-Créer une imagette
-``````````````````
+TODO
 
-Next, you need to create a graphic overview of your map which will be for a
-double purpose; as small thumbnail will be displayed in search results and as
-large thumbnail with much more details, to allow users to properly evaluate the
-data usefulness. As for the latest, the image that you will use as source should
-be a significant reproduction of the real dataset, possibly inclusive of the
-legend.
-
-To create a thumbnail, go to the editing menu for your map. If you are no
-longer in editing mode, retrieve the map from one of the search options then
-click on Edit. Then follow these simple steps:
-
-- From the editing menu, click on the Thumbnails
-  button on the top or bottom of the page. (:ref:`thumbnail_toolbar`)
-
-.. figure:: thumButton.png
-
-  **The thumbnail wizard button**
-
-- You will be taken to the Thumbnail Management
-  wizard (:ref:`thumbnail_wizard`).
-
-- To create a small or large thumbnail, click on the
-  Browse button next to either one. It is
-  recommended that you use 180 pixels for small thumbnails and 800x600 for
-  large thumbnails. Using the ‘Large thumbnail’ option allows you to
-  create both a small and large thumbnail in one go.
-
-- You can use GIF, PNG and JPEG images as input for the
-  thumbnails.
-
-- A pop up window will appear allowing you to browse your files on your
-  computer. Select the file you wish to create a
-  thumbnail with by double-clicking on it.
-
-- Click on Add.
-
-- Your thumbnail will be added and displayed on the following
-  page.
-
-- You can then click on Back to Editing and save your
-  record (:ref:`completed_thumbnail_wizard`).
-
-.. figure:: thumbManag.png
-
-  **Thumbnail wizard**
-
-.. figure:: thumbManag2.png
-
-  **Completed thumbnail wizard**
 
 Associer des données à télécharger
-``````````````````````````````````
+----------------------------------
 
-Finally, you can upload the dataset stored on your local computer and then
-create a link between data and related description. Files in whatever format can
-be uploaded: doc, PDF, images, vector layers, etc. For the latter the
-distribution in a compressed file is recommended. You can include the vector
-data, the legend, any documentation that can help the interpretation of the
-data, related reports, detailed descriptions of the data processing, base data
-used to create the dataset specified and/or other relevant information. Follow
-these guidelines for uploading datasets:
+Il est possible de décharger des fichiers dans le catalogue et ainsi associer
+des données ou des documents à une fiche (eg. ESRI Shapefile, ZIP, PDF, image). Ces fichiers sont alors
+accessible fonction des privilèges de téléchargement associés à la fiche.
 
-- Make sure the total size of the compressed file is reasonable (less
-  than 50 MB). Should your data be bigger than 50MB, consider a different
-  mechanism to serve this data, e.g. through an FTP or HTTP server and
-  than link the resource through an online resource ‘Web address
-  (URL)’.
+Afin d'ajouter des documents, suivre les étapes suivantes :
 
-- You can create several smaller files when appropriate and upload them
-  sequentially.
+#. Vérifier que la taille du fichier est raisonnable (par défaut, la taille maximale est configurée à 100Mo).
+ 
+#. Le champ URL peut être laissé vide. Celui-ci sera mis à jour après l'ajout
 
-- You add the size of the file at the end of the description
-  field.
+#. Sélectionner le **protocole** fichier à télécharger. Cette sélection déclenchera l'affichage du bouton d'ajout.
 
-To Upload a Dataset, follow these steps :
+#. Cliquer sur le bouton **import de fichier** puis sélectionner un fichier sur votre machine.
 
-#. The **URL** field can be left empty when
-   uploading a file. The system will automatically fill this field
-   out;
-
-#. Select the correct **protocol** to be
-   used. If you do not see the buttons to browse and upload when File for
-   download is selected, save the metadata and return to the upload
-   section. Both buttons should appear;
-
-#. Provide a short **description** of the
-   data;
-
-#. Click the Browse button and navigate to the folder
-   where the file to be released is stored. Consider if you want to upload
-   multiple files as one unique zip file or as multiple separate downloads.
-   It is a good idea to add additional documentation with the datasets that
-   provide the user with information related to the data described. Remind:
-   the size of a single file to upload can't exceed 50 Mbytes;
-
-#. Click Upload and then
-   Save.
+#. Valider en cliquant sur le bouton **transférer**
 
 .. figure:: uploadData.png
 
-  *An online resource*
+
+Il est recommandé d'ajouter une **description** qui sera utilisé comme nom du lien hypertexte pour le fichier.
 
 
 
@@ -511,14 +445,17 @@ La representation XML sera la suivante :
 
 
 
-Publier les données téléchargées en WMS, WFS avec GeoServer
------------------------------------------------------------
+.. _editor_geopublication:
+
+
+Publier les données téléchargées en WMS, WFS, WCS
+-------------------------------------------------
 
 Les interactions avec un serveur cartographique tel que GeoServer permettent à l'utilisateur de rapidement configurer les données pour leur diffusion.
 
 Les serveurs cartographiques supportés sont :
 
-- GeoServer embarqué avec GeoNetwork
+- GeoServer embarqué avec |project_name|
 
 - Un GeoServer distant (version 2.x ou sup.)
 
@@ -528,58 +465,161 @@ Les serveurs cartographiques supportés sont :
 
 Ce mécanisme permet aux utilisateurs la publication de fichier de type :
 
-- GeoTiff
+- RASTER GeoTiff, ECW : non zippé, zippé ou URL du fichier
 
-- ESRI Shapefile zippé
+- ESRI Shapefile : zippé ou URL du fichier
+
+- Table PostGIS
 
 
-La données doit être associé à la métadonnée tel que décrit dans le chapitre `associer des données à télécharger <#associer-des-donnees-a-telecharger>`_.
-Une fois télécharger, un bouton permet de géopublié la couche. La section ressource en ligne est mise à jour en conséquence avec la création d'un lien 
-vers la couche WMS.
+Dans le cas des fichiers zippés, le jeu de données doit être associé à la métadonnée tel que décrit dans 
+le chapitre `associer des données à télécharger <#associer-des-donnees-a-telecharger>`_.
+Une fois téléchargé, un bouton permet de publier la couche dans le service cartographique. 
+Un autre permet la mise à jour de la section ressource en ligne pour associer le service
+ou les services.
 
 
 Configuration
 `````````````
-Si après l'envoi de la données, vous ne voyez pas le bouton de géopublication, demandez à l'administrateur de vérifier la configuration.
-Cette fonctionnalité est désactivée par défaut. Elle peut être activée par configuration dans le fichier config-gui.xml.
+Si après l'ajout de la données à une fiche, vous ne voyez pas le bouton de géopublication, 
+demandez à l'administrateur de vérifier la configuration.
+Cette fonctionnalité est désactivée par défaut. Elle peut être activée par configuration dans le fichier config-gui.xml::
 
-Si vous ne voyez pas de noeud GeoServer dans l'assistant de publication, demandez à l'administrateur d'ajouter un noeud dans la configuration
-dans le fichier geoserver-nodes.xml.
+  <!-- Display the geopublisher option for all updloaded files-->
+  <editor-geopublisher/>
+
+
+Si vous ne voyez pas de serveur cartographique dans l'assistant de publication, demandez à l'administrateur d'ajouter un noeud dans la configuration
+dans le fichier geoserver-nodes.xml::
+
+     <!-- 
+		Add here all geoserver node which could
+		be configure by GeoNetwork.
+		
+		GeoServer 2.x or later are supported. The REST API must be installed in the GeoServer node.
+		If you want to be able to publish in different workspaces, create as many nodes as 
+		workspaces.
+		
+		@param name 		Name of the GeoServer node, display to metadata editor
+		@param namespace	Namespace to use. If not set, GeoServer will link store to another namespace.
+		@param adminUrl		GeoServer REST service config URL
+		@param wmsUrl		GeoServer WMS service URL use to display map preview
+		@param wfsUrl		(Not used) GeoServer WFS service URL use to display map preview
+		@param stylerUrl	(Optional) GeoServer WFS service URL use to display map preview
+		@param user			GeoServer user login
+		@param password		GeoServer user password 
+	-->
+	<node>
+		<id>geoserverEmbedded</id>
+		<name>GeoServer (workspace: gn)</name>
+		<namespacePrefix>gn</namespacePrefix>
+		<namespaceUrl>http://geonetwork-opensource.org</namespaceUrl>
+		<adminUrl>http://localhost:8080/geoserver/rest</adminUrl>
+		<wmsUrl>http://localhost:8080/geoserver/wms</wmsUrl>
+		<wfsUrl>http://localhost:8080/geoserver/wfs</wfsUrl>
+		<wcsUrl>http://localhost:8080/geoserver/wcs</wcsUrl>
+		<stylerUrl>http://localhost:8080/geoserver/styler/index.html</stylerUrl>
+		<user>admin</user>
+		<password>geoserver</password>
+	</node>
+
+
+Associer vos données
+````````````````````
+
+Pour associer un jeu de données, la procédure est la suivante :
+
+* Editer une fiche de métadonnée
+
+* Dans le cas d'un zip ou d'une image à télécharger, déposer un fichier tel que décrit dans le 
+  chapitre `associer des données à télécharger <#associer-des-donnees-a-telecharger>`_
+
+============   ============================================================= ===============================
+Champs         Vecteur (Shapefile zippé)                                     RASTER (zippé ou non)
+============   ============================================================= ===============================
+URL            URL vers le fichier générée par le catalogue lors du dépôt    idem
+               http://localhost:8080/geonetwork/srv/en/resources.get?id=1631
+               &fname=CCM.zip&access=private                                 
+Protocole      Fichier à télécharger                                         idem
+               WWW:DOWNLOAD                                                  
+Nom            Nom du fichier (lecture seul)                                 idem
+============   ============================================================= ===============================
+
+* Dans le cas d'une table PostGIS ou d'un fichier sur le réseau local, saisir les informations suivantes :
+
+============   ============================================================= ===============================
+Champs         Vecteur (Table PostGIS)                                       RASTER
+============   ============================================================= ===============================
+URL            Chaîne de connexion à la base de données                      Nom du répertoire 
+               jdbc:postgresql://localhost:5432/login:password@db            file:///home/geodata/
+Protocole      Table PostGIS                                                 Fichier RASTER
+               DB:POSTGIS                                                    FILE:RASTER
+Nom            Nom de la table                                               Nom du fichier
+============   ============================================================= ===============================
 
 
 Publier vos données
 ```````````````````
 
-* Editer une métadonnée
+Une fois associé par téléchargement ou par référencement de l'URL du fichier ou de la table, l'assistant de géopublication 
+est disponible en mode édition pour chaque ressource en ligne. L'édition des ressources en ligne est en générale accessible
+depuis la majorité des modes d'édition. Quoiqu'il en soit, il est possible en mode avancé, d'aller dans la 
+section ISO distribution > ressource en ligne pour accèder à l'ensemble des champs. Le bouton d'ouverture de l'assistant 
+est placé à côté du champ fichier :
 
-* Déposer un fichier tel que décrit dans le chapitre `associer des données à télécharger <#associer-des-donnees-a-telecharger>`_
+.. figure:: geopub-wizard-button.png
 
 
-En mode édition, dans la section ressource en ligne, l'assistant de géopublication est disponible :
+Remarque :
 
-* Choisir un noeud vers lequel publier la donnée
-* GeoNetwork vérifie :
+  Si le bouton n'apparaît pas et que le système semble bien configuré, cliquer sur le bouton sauver pour rafraîchir l'éditeur.
+
+
+Une fois l'assistant ouvert, les étapes sont les suivantes :
+
+* Choisir un noeud vers lequel publier la donnée depuis la liste des serveurs cartographiques disponibles
+
+.. figure:: geopub-node-selector.png
+
+
+* |project_name| vérifie alors :
 
     - que le fichier est valide (eg. le ZIP contient un seul Shapefile ou tiff)
     - que la couche est déjà publiée dans le serveur distant. Dans l'affirmative, la couche est ajoutée à l'aperçu.
 
-* Bouton publier : Publie la couche dans le géoservice. Si la donnée est déjà présente, elle est mise à jour.
-* Bouton dépublier : Supprime la donnée du géoservice sélectionné.
-* Ajouter la section ressource en ligne : Ajouter les informations pour faire la liaison avec la couche dans le service WMS.
-* Bouton style : Ce bouton est disponible si le styler GeoServer est installé et déclaré dans la configuration.
+.. figure:: geopub-menu.png
+
+* Le bouton **publier** publie la couche dans le serveur cartographique. Si la donnée est déjà présente, elle est mise à jour.
+* Le bouton **dépublier** supprime la donnée du serveur cartographique sélectionné.
+* Le bouton **style** est disponible si un outil de gestion de style est installé et déclaré
+  dans la configuration du serveur cartographique.
 
 Aucun nom de couche n'est demandé à l'utilisateur car celui-ci est généré à partir du nom du fichier.
+Dans le cas de fichier ZIP, le nom du fichier ZIP DOIT être égale à celui du Shapefile ou du GeoTiff 
+(ie. dans le cas de rivers.shp, le fichier ZIP sera rivers.zip). Un entrepôt, une couche et un style
+sont créés pour chaque couche.
 
-Dans le cas de fichier ZIP, le nom du fichier ZIP DOIT être égale à celui du Shapefile ou du GeoTiff (ie. dans le cas de rivers.shp, le fichier ZIP sera rivers.zip).
 
-Un entrepôt, un couche et un style sont créés pour chaque couche (one to one relation).
+Référencer les données après publication
+````````````````````````````````````````
+
+Le bouton **lier le service à la fiche** ajoute les informations pour faire la liaison avec la couche dans les services sélectionnés :
+
+     - sélectionner un ou plusieurs protocoles (WMS, WFS, WCS) fonction du serveur cartographique et de la donnée publiée
+     - cliquer sur ajouter les liens
+
+.. figure:: geopub-service-type.png
+
+La création de ces liens permettra par la suite au catalogue de créer les boutons ajouter à la carte pour visualiser les 
+données sur la carte interactive (cf. `associer un service WMS <#associer-un-service-wms-pour-la-visualisation-des-donnees>`_).
+
 
 
 
 Associer les métadonnées
 ------------------------
 
-En utilisant l'éditeur de métadonnée de GeoNetwork, l'utilisateur peut définir 3 types de relation :
+En utilisant l'éditeur de métadonnée de |project_name|, l'utilisateur peut définir 3 types de relation :
 
 - relation parent /enfant via l'élément gmd:parentIdentifier dans la section métadonnées
 
@@ -638,7 +678,7 @@ L'ISO19119 définie la section "identification du service".
 Il est alors possible de décrire 4 types de relations dans les MDD et MDS :
 
 #. Les métadonnées de données >> la couche correspondante diffusée par le service
-   Aucune méthode n'est définie par l'ISO ou INSPIRE pour créer cette relation. Cependant, GeoNetwork a utilisé la section distribution pour cela. Voir `la section sur l'association d'un service WMS <#associer-un-service-wms-pour-la-visualisation-des-donnees>`_.
+   Aucune méthode n'est définie par l'ISO ou INSPIRE pour créer cette relation. Cependant, |project_name| a utilisé la section distribution pour cela. Voir `la section sur l'association d'un service WMS <#associer-un-service-wms-pour-la-visualisation-des-donnees>`_.
    
 #. Les métadonnées de service OGC >> métadonnée de données
    
@@ -697,14 +737,16 @@ sont réalisés avec le menu associer un catalogue d'attribut.
 
 
 Note : La relation n'est pas stockée dans la métadonnée mais dans la base de données.
-Un catalogue moissonnant l'une des deux métadonnées n'aura pas connaissance de cette relation. Elle est gérée par GeoNetwork.
+Un catalogue moissonnant l'une des deux métadonnées n'aura pas connaissance de cette relation. Elle est gérée par |project_name|.
 
 
+
+.. _compute_extent:
 
 Calcul de l'étendue par analyse des mots clés
 ---------------------------------------------
 
-L'éditeur peut demander à GeoNetwork d'analyser les mots clés de la fiche en cours d'édition pour calculer l'emprise. Ce mécanisme permet une saisie plus efficace.
+L'éditeur peut demander à |project_name| d'analyser les mots clés de la fiche en cours d'édition pour calculer l'emprise. Ce mécanisme permet une saisie plus efficace.
 Par exemple, dans la section identification saisissez "FRANCE", "GUADELOUPE", "MARTINIQUE" dans les mots clés puis cliquer sur calculer les emprises pour ajouter les 3 emprises automatiquement.
 
 L'approche est la suivante :
@@ -745,87 +787,29 @@ Sauvegarder la métadonnée avant le lancement de l'opération si vous avez fait
 
 
 
-Attribuer les privilèges
+Attribuer des catégories
 ------------------------
 
-As an important step of entering metadata to your map, you need to assign
-privileges for each map. This means that you will identify which work groups
-have which privileges, i.e. view, download, etc. for your particular map.
+Pour finaliser le tout, vous pouvez assigner des catégories à vos métadonnées. 
+Les catégories choisies vont déterminer sous quelles catégories votre fiche 
+va s'afficher dans la page de recherche.
+Pour assigner des catégories à une carte, suivrez ces étapes :
 
-For instance, you can define if the information and related services is
-visible to all (Internet users) or just to internal users only (Intranet).
-Privileges are assigned on a per group basis. Depending on the user profile
-(Guest, Registered User, Editor, Admin etc.) access to these functions may
-differ on a per user basis.
+ - Trouver votre fiche en utilisant le formulaire de recherche.
+   En fonction du nombre de résultats, positionnez-vous sur la fiche, 
+   ou sur le menu **Autres actions** (sur la droite). Vous allez voir 
+   une liste de boutons, incluant un bouton **Catégories**.
 
-To assign privileges for your map, follow these steps:
+ - Cliquez sur le bouton **Catégories**. Cela va afficher une nouvelle 
+   fenêtre. Vous pouvez assigner une ou plusieurs catégories en les sélectionnant 
+   ou désélectionnant sur cette page. Cocher ou décocher simplement 
+   les petites cases en face des catégories.
 
-- Find your map by using the search option. Whether you have multiple or
-  single results from the search, on top of the individual record or next
-  to the record you will always see a row of buttons including a
-  Privileges button (:ref:`privileges_button`).
-
-.. figure:: privilegesButton.png
-
-  *The editing toolbar with Privileges button*
-
-- Click on the Privileges button. This will take you to a new page. You
-  can assign certain privileges to specific groups by selecting or
-  deselecting them from this page. Simply click on the small box next to
-  the privilege to place or remove a checkmark. ****Set Al**l** and
-  **Clear All** buttons allow you to
-  place and remove the checkmarks all at once (:ref:`privileges_settings`).
-
-.. figure:: privilegesSetting1.png
-
-  *Privileges settings*
-
-Below is a brief description for each privilege to help you identify which
-ones you should assign to which group(s).
-
-**Publish**: Users in the specified group/s are
-able to see the map, i.e. if searching with matching criteria.
-
-**Download**: Users in the specified group/s are
-able to download the map.
-
-**Interactive Map**: Users in the specified
-group/s are able to get an interactive map. **The
-interactive map** has to be created separately using a Web Map
-Server, which is part of the GeoNetwork opensource application.
-
-**Featured**: When selected, the map is placed in
-the Features Maps of the home page and it appears there randomly.
-
-**Editing**: When selected, the editors of the
-group(s) concerned can edit the respective metadata record.
-
-**Notify**: A notification email is send to the
-emailaddress of the group, informing that the map has been downloaded.
-
-Attribuer des catégories
-````````````````````````
-
-As a final step to entering metadata for a map, you should assign categories
-for it. The assigned categories will determine the categories the map will
-display under on the home page. To assign categories for a map, follow these
-steps:
-
-- Find your map by using the search option. Whether you have multiple or
-  single results from your search, on top of the individual record or next
-  to the record, you will always see a row of buttons including a
-  **Categories** button.
-
-- Click on the **Categories** button. This
-  will take you to a new page. You can assign one or multiple categories
-  selecting or deselecting them from this page. Simply click on the small
-  box next to the category to place or remove a checkmark. (:ref:`categories_management`)
 
 .. figure:: categoriesManag.png
 
-  **Category management**
 
+Si vous n'avez pas accès à ces informations, consulter :ref:`admin_category`.
 
-Si vous n'avez pas accès à ces informations, consulter `l'administration des catégories <../../admin/advanced/category/index.html>`_.
 
 

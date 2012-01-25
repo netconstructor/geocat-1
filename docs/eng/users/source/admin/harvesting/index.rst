@@ -402,6 +402,8 @@ will go back to the main page.
 
     *Adding a new harvesting node*
 
+.. _harvesting_gn:
+
 Adding a GeoNetwork node
 ````````````````````````
 
@@ -416,6 +418,16 @@ following:
     *Adding a GeoNetwork node*
 
 - **Site** - Here you put information about the GeoNetwork’s node you want to harvest from (host, port and servlet). If you want to search protected metadata you have to specify an account. The name parameter is just a short description that will be shown in the main page beside each node. 
+
+- **Set categories if exist locally** - This option allows to propagate categories from one node to another for existing 
+  categories in the local node.
+
+- **Use full MEF format** - This option will use the MEF format including document (eg. thumbnails) to retrieve the remote records.
+
+- **XSL filter name** - This option will apply a custom XSL filter before the record is inserted in local node. A common use case is 
+  to anoymize metadata records using the anonymizer process which remove or rename contact personal information (See the :ref:`processing` 
+  section for more information).
+
 
 - **Search criteria** - In this section you can specify search parameters: they are the same present in the GeoNetwork homepage. Before doing that, it is important to remember that the GeoNetwork’s harvesting can be hierarchical so a remote node can contain both its metadata and metadata harvested from other nodes and sources. At the beginning, the Source drop down is empty and you have to use the **Retrieve sources** button to fill it. The purpose of this button is to query GeoNetwork about all sources which it is currently harvesting from. Once you get the drop down filled, you can choose a source name to constrain the search to that source only. Leaving the drop down blank, the search will spread over all metadata (harvested and not). You can add several search criteria for each site through the **Add** button: several searches will be performed and results merged. Each search box can be removed pressing the small button on the left of the site’s name. If no search criteria is added, a global unconstrained search will be performed. 
 

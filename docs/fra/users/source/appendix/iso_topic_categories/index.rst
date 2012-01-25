@@ -1,4 +1,5 @@
-
+.. _iso_topic_categories:
+.. include:: ../../substitutions.txt
 
 ISO Topic Categories
 ####################

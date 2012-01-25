@@ -1,9 +1,10 @@
 .. _foss4g:
+.. include:: ../../substitutions.txt
 
 Free and Open Source Software for Geospatial Information Systems
 ================================================================
 
-A range of related software packages can be used in addition to GeoNetwork opensource to deploy a full Spatial Data
+A range of related software packages can be used in addition to |project_name| to deploy a full Spatial Data
 Infrastructure. These include Web Map Server software, GIS desktop applications and Web Map Viewers.
 
 Below you will find some examples of open source software available for each categories.

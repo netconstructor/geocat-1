@@ -103,7 +103,7 @@ Adding a new CSW entry point to GeoNetwork opensource requires these steps (supp
 Configuration using GeoNetwork overrides
 ````````````````````````````````````````
 
-In this section is described how to use GeoNetwork overrides feature to configure a new CSW entry point. This feature allows to use different configurations to handle multiple deployment platforms. See additional documentation of this feature in http://trac.osgeo.org/geonetwork/wiki/ConfigOverride.
+In this section is described how to use GeoNetwork overrides feature to configure a new CSW entry point. This feature allows to use different configurations to handle multiple deployment platforms. See additional documentation of this feature in :ref:`adv_configuration_overriddes`.
 
 * Add the next override to a configuration override file, for example ``WEB-INF/config-overrides-csw.xml``::
 
@@ -125,6 +125,6 @@ In this section is described how to use GeoNetwork overrides feature to configur
      </file>
     </overrides>
 
-* Check in http://trac.osgeo.org/geonetwork/wiki/ConfigOverride how to configure Geonetwork catalog to use the override file.
+For more information about configuration overrides see :ref:`adv_configuration_overriddes`
 
 * Restart the application. The new CSW entry point is accessible in http://localhost:8080/srv/en/csw-with-my-filter-environment

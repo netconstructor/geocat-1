@@ -1,7 +1,8 @@
 .. _edit:
+.. include:: ../substitutions.txt
 
-Saisie de l'information
-#######################
+Création et édition de métadonnées
+##################################
 
 
 
@@ -9,7 +10,6 @@ Saisie de l'information
     :maxdepth: 2
 
     gui/index.rst
-    viewing/index.rst
     new_metadata/index.rst
     metadata_ownership/index.rst
 

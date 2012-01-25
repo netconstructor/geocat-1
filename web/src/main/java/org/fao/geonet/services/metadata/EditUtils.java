@@ -63,12 +63,14 @@ class EditUtils {
         this.context = context;
         this.gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
         this.dataManager = gc.getDataManager();
+        this.xmlSerializer = gc.getXmlSerializer();
         this.accessMan = gc.getAccessManager();
         this.session = context.getUserSession();
 
     }
     protected ServiceContext context;
     protected DataManager dataManager;
+    protected XmlSerializer xmlSerializer;
 	protected GeonetContext gc;
 	protected AccessManager accessMan;
 	protected UserSession session;

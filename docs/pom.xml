@@ -93,7 +93,7 @@
              </configuration>
            </execution>
 
-<!-- Developer documentation -->
+          <!-- Developer documentation -->
            <execution>
              <id>developer-docs-clean</id>
              <phase>prepare-package</phase>
@@ -214,14 +214,7 @@
                <workingDirectory>${basedir}/eng/docguide/build/latex</workingDirectory>
              </configuration>
            </execution>
-        </executions>      
-      </plugin>
-
-<!--      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
+      
 
             <execution>
               <id>user-docs-clean-fra</id>
@@ -252,99 +245,34 @@
                <workingDirectory>${basedir}/fra/users</workingDirectory>
              </configuration>
            </execution>
-
-            <execution>
-             <id>user-docs-build-latex-fra</id>
-             <phase>prepare-package</phase>
-             <goals>
-               <goal>exec</goal>
-             </goals>
-             <configuration>
-               <executable>make</executable>
-                 <arguments>
-                   <argument>latex</argument>
-                 </arguments>
-               <workingDirectory>${basedir}/fra/users</workingDirectory>
-             </configuration>
-           </execution>
-
-            <execution>
-             <id>user-docs-build-all-pdf-fra</id>
-             <phase>prepare-package</phase>
-             <goals>
-               <goal>exec</goal>
-             </goals>
-             <configuration>
-               <executable>make</executable>
-                 <arguments>
-                   <argument>all-pdf</argument>
-                 </arguments>
-               <workingDirectory>${basedir}/fra/users/build/latex</workingDirectory>
-             </configuration>
-           </execution>
-
-           <execution>
-             <id>developer-docs-clean-fra</id>
-             <phase>prepare-package</phase>
-             <goals>
-               <goal>exec</goal>
-             </goals>
-             <configuration>
-               <executable>make</executable>
-                 <arguments>
-                   <argument>clean</argument>
-                 </arguments>
-               <workingDirectory>${basedir}/fra/developer</workingDirectory>
-             </configuration>
-           </execution>
-
-           <execution>
-             <id>developer-docs-build-html-fra</id>
-             <phase>prepare-package</phase>
-             <goals>
-               <goal>exec</goal>
-             </goals>
-             <configuration>
-               <executable>make</executable>
-                 <arguments>
-                   <argument>html</argument>
-                 </arguments>
-               <workingDirectory>${basedir}/fra/developer</workingDirectory>
-             </configuration>
-           </execution>
-
-            <execution>
-             <id>developer-docs-build-latex-fra</id>
-             <phase>prepare-package</phase>
-             <goals>
-               <goal>exec</goal>
-             </goals>
-             <configuration>
-               <executable>make</executable>
-                 <arguments>
-                   <argument>latex</argument>
-                 </arguments>
-               <workingDirectory>${basedir}/fra/developer</workingDirectory>
-             </configuration>
-           </execution>
-
-            <execution>
-             <id>developer-docs-build-all-pdf-fra</id>
-             <phase>prepare-package</phase>
-             <goals>
-               <goal>exec</goal>
-             </goals>
-             <configuration>
-               <executable>make</executable>
-                 <arguments>
-                   <argument>all-pdf</argument>
-                 </arguments>
-               <workingDirectory>${basedir}/fra/developer/build/latex</workingDirectory>
-             </configuration>
-           </execution>
             
+
+          <execution>
+            <id>ant-widgets-clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>ant</executable>
+              <commandlineArgs>clean</commandlineArgs>               
+              <workingDirectory>${basedir}/widgets</workingDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ant-widgets</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>ant</executable>
+              
+              <workingDirectory>${basedir}/widgets</workingDirectory>
+            </configuration>
+          </execution>
         </executions>      
-      </plugin> -->
+      </plugin>
     </plugins>
   </build>
 

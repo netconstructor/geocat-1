@@ -701,14 +701,13 @@ public class AjaxEditUtils extends EditUtils {
 		md = dataManager.processSharedObjects(dbms, id, md, srvContext.getLanguage());
 		
         String changeDate = null;
-		XmlSerializer.update(dbms, id, md, changeDate, false);
+				xmlSerializer.update(dbms, id, md, changeDate, false, session);
 
         // Notifies the metadata change to metatada notifier service
         dataManager.notifyMetadataChange(dbms, md, id);
 
 		//--- update search criteria
-        boolean indexGroup = false;
-        dataManager.indexMetadata(dbms, id, indexGroup,false);
+        dataManager.indexInThreadPoolIfPossible(dbms,id);
 
 		return true;
 	}
@@ -759,14 +758,13 @@ public class AjaxEditUtils extends EditUtils {
         md = dataManager.processSharedObjects(dbms, id, md, srvContext.getLanguage());
         
         String changeDate = null;
-		XmlSerializer.update(dbms, id, md, changeDate, false);
+				xmlSerializer.update(dbms, id, md, changeDate, false, session);
 
         // Notifies the metadata change to metatada notifier service
         dataManager.notifyMetadataChange(dbms, md, id);
 
 		//--- update search criteria
-        boolean indexGroup = false;
-        dataManager.indexMetadata(dbms, id, indexGroup, false);
+        dataManager.indexInThreadPoolIfPossible(dbms, id);
 
 		return true;
 	}

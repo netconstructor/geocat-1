@@ -34,10 +34,7 @@ import org.fao.geonet.kernel.DataManager;
 import org.jdom.Element;
 
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  *
@@ -89,7 +86,7 @@ public class Transfer implements Service {
 			int opId = Integer.parseInt(st.nextToken());
 			int mdId = Integer.parseInt(st.nextToken());
 
-			dm.unsetOperation(dbms, mdId, sourceGrp, opId);
+			dm.unsetOperation(context.getUserSession(), dbms, mdId, sourceGrp, opId);
 
 			if (!targetPriv.contains(priv))
 				dbms.execute("INSERT INTO OperationAllowed(metadataId, groupId, operationId) " +
@@ -104,10 +101,12 @@ public class Transfer implements Service {
 		dbms.commit();
 
 		//--- reindex metadata
+        List<String> list = new ArrayList<String>();
 		for (int mdId : metadata) {
-            boolean indexGroup = false;
-            dm.indexMetadata(dbms, Integer.toString(mdId), indexGroup,true);
+            list.add(Integer.toString(mdId));
         }
+        
+        dm.indexInThreadPool(context,list, dbms);
 
 		//--- return summary
 		return new Element("response")

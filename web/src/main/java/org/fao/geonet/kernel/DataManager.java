@@ -48,7 +48,6 @@ import java.util.concurrent.ThreadFactory;
 
 import jeeves.constants.Jeeves;
 import jeeves.exceptions.JeevesException;
-import jeeves.exceptions.OperationNotAllowedEx;
 import jeeves.exceptions.XSDValidationErrorEx;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
@@ -66,6 +65,8 @@ import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
 import org.fao.geonet.exceptions.SchematronValidationErrorEx;
+import org.fao.geonet.exceptions.SchemaMatchConflictException;
+import org.fao.geonet.exceptions.NoSchemaMatchesException;
 import org.fao.geonet.kernel.csw.domain.CswCapabilitiesInfo;
 import org.fao.geonet.kernel.harvest.HarvestManager;
 import org.fao.geonet.kernel.reusable.ProcessParams;
@@ -86,13 +87,20 @@ import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.filter.ElementFilter;
 
+import java.io.File;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Handles all operations on metadata (select,insert,update,delete etc...).
  *
  */
 public class DataManager {
+    
 
-	//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
 	//---
 	//--- Constructor
 	//---
@@ -109,6 +117,8 @@ public class DataManager {
     /**
      * initializes the search manager and index not-indexed metadata.
      * @param context
+     * @param svnManager
+     * @param xmlSerializer
      * @param scm
      * @param sm
      * @param am
@@ -124,8 +134,7 @@ public class DataManager {
      * @param appPath
      * @throws Exception
      */
-	public DataManager(final Element params, ServiceContext context, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, ThesaurusManager thesMan, ReusableObjManager reusableObjMan, ExtentManager extentMan, String baseURL, String htmlCacheDir, String dataDir, String appPath) throws Exception
-	{
+	public DataManager(final Element params, ServiceContext context, SvnManager svnManager, XmlSerializer xmlSerializer, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, String baseURL, String htmlCacheDir, String dataDir, String thesaurusDir, ReusableObjManager reusableObjMan, ExtentManager extentMan, String appPath) throws Exception {
 		searchMan = sm;
 		accessMan = am;
 		settingMan= ss;
@@ -154,17 +163,11 @@ public class DataManager {
 		indexThreadPool = new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
 		stylePath = context.getAppPath() + FS + Geonet.Path.STYLESHEETS + FS;
 
-		XmlSerializer.setSettingManager(ss);
+		this.xmlSerializer = xmlSerializer;
+		this.svnManager    = svnManager;
 
 		init(context, dbms, false);
 	}
-
-    /**
-     *
-     */
-    private synchronized void finishRebuilding() {
-        rebuilding = false;
-    }
 
 	/**
 	 * Init Data manager and refresh index if needed. 
@@ -178,8 +181,6 @@ public class DataManager {
 	 **/
 	public synchronized void init(ServiceContext context, Dbms dbms, Boolean force) throws Exception {
 
-		if (rebuilding) throw new OperationNotAllowedEx("Index rebuilding already in progress");
-
 		// get all metadata from DB
 		Element result = dbms.select("SELECT id, changeDate FROM Metadata ORDER BY id ASC");
 		
@@ -189,7 +190,7 @@ public class DataManager {
 		HashMap<String,String> docs = searchMan.getDocsChangeDate();
 
 		// set up results HashMap for post processing of records to be indexed
-		ArrayList<Integer> toIndex = new ArrayList<Integer>();
+		ArrayList<String> toIndex = new ArrayList<String>();
 
 		Log.debug(Geonet.DATA_MANAGER, "INDEX CONTENT:");
 
@@ -207,7 +208,7 @@ public class DataManager {
 			// if metadata is not indexed index it
 			if (idxLastChange == null) {
 				Log.debug(Geonet.DATA_MANAGER, "-  will be indexed");
-				toIndex.add(iId);
+				toIndex.add(id);
 	
 			// else, if indexed version is not the latest index it
 			} else {
@@ -221,7 +222,7 @@ public class DataManager {
 				// date in index contains 't', date in DBMS contains 'T'
 				if (force || !idxLastChange.equalsIgnoreCase(lastChange)) {
 					Log.debug(Geonet.DATA_MANAGER, "-  will be indexed");
-					toIndex.add(iId);
+					toIndex.add(id);
 				}
 			}
 		}
@@ -229,7 +230,7 @@ public class DataManager {
 		// if anything to index then schedule it to be done after servlet is
 		// up so that any links to local fragments are resolvable
 		if ( toIndex.size() > 0 ) {
-			startThreadsToReindex(context,toIndex);
+            batchRebuild(context,toIndex);
 		}
 
 		if (docs.size() > 0) { // anything left?
@@ -252,109 +253,143 @@ public class DataManager {
      */
 	public synchronized void rebuildIndexXLinkedMetadata(ServiceContext context) throws Exception {
 		
-		if (rebuilding) throw new OperationNotAllowedEx("Index rebuilding already in progress");
-
 		// get all metadata with XLinks
 		ArrayList<Integer> toIndex = searchMan.getDocsWithXLinks();
 
 		Log.debug(Geonet.DATA_MANAGER, "Will index "+toIndex.size()+" records with XLinks");
 		if ( toIndex.size() > 0 ) {
 			// clean XLink Cache so that cache and index remain in sync
-			Processor.clearCache();	
+			Processor.clearCache();
 
-			// execute indexing operation
-			startThreadsToReindex(context,toIndex);
+            ArrayList<String> stringIds = new ArrayList<String>();
+            for (Integer id : toIndex) {
+                stringIds.add(id.toString());
+            }
+            // execute indexing operation
+            batchRebuild(context,stringIds);
 		}
 	}
+    
+    private void batchRebuild(ServiceContext context, List<String> ids) {
+
+        // split reindexing task according to number of processors we can assign
+        int threadCount = ThreadUtils.getNumberOfThreads();
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+
+        int perThread;
+        if (ids.size() < threadCount) perThread = ids.size();
+        else perThread = ids.size() / threadCount;
+        int index = 0;
+
+        while(index < ids.size()) {
+            int start = index;
+            int count = Math.min(perThread,ids.size()-start);
+            // create threads to process this chunk of ids
+            Runnable worker = new IndexMetadataTask(context, ids, start, count);
+            executor.execute(worker);
+            index += count;
+        }
+
+        executor.shutdown();
+    }
+
+    public void indexInThreadPoolIfPossible(Dbms dbms, String id) throws Exception {
+        if(ServiceContext.get() == null ) {
+            boolean indexGroup = false;
+            indexMetadata(dbms, id, indexGroup);
+        } else {
+            indexInThreadPool(ServiceContext.get(), id, dbms);
+        }
+    }
 
     /**
-     * Splits a list of metadata ids into groups and assigned them to threads
-		 * for reindexing.
-		 *
+     * Add metadata ids to the thread pool for indexing.
+     *
+     * @param context
+     * @param id
+     */
+	public void indexInThreadPool(ServiceContext context, String id, Dbms dbms) throws SQLException {
+        indexInThreadPool(context, Collections.singletonList(id), dbms);
+    }
+    /**
+     * Add metadata ids to the thread pool for indexing.
+     *
      * @param context
      * @param ids
      */
-	public void startThreadsToReindex(ServiceContext context, ArrayList<Integer> ids) {
+    public void indexInThreadPool(ServiceContext context, List<String> ids, Dbms dbms) throws SQLException {
 
-			try {
+        if(dbms != null) dbms.commit();
+        try {
+            GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 
-				// split reindexing task according to number of processors we can
-				// assign
-				int threadCount = ThreadUtils.getNumberOfThreads();
-    		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-
-				int perThread;
-    		if (ids.size() < threadCount) perThread = ids.size();
-    		else perThread = ids.size() / threadCount;
-    		int index = 0;
-
-    		while(index < ids.size()) {
-      		int start = index;
-      		int count = Math.min(perThread,ids.size()-start);
-      		// create threads to process this chunk of ids
-      		Runnable worker = new IndexMetadataTask(context, ids, start, count);
-      		executor.execute(worker);
-      		index += count;
-    		}
-
-    		executor.shutdown();
-
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-
-				finishRebuilding();
-			}
-		}
-
-  /**
-    * Task to reindex the entire catalog at startup or from the 
-	  * Administration menu. Creates number of threads according to 
-		* number allocated to JVM.
-    */
-	class IndexMetadataTask implements Runnable {
-
-		private final ServiceContext context;
-		private final ArrayList<Integer> ids;
-		private final int beginIndex, count;
-
-		IndexMetadataTask(ServiceContext context, ArrayList<Integer> ids, int beginIndex, int count) {
-			this.context = context;
-			this.ids = ids;
-			this.beginIndex = beginIndex;
-			this.count = count;
-		}
-
-    public void run() {
-			try {
-				Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
-				// poll context to see whether servlet is up yet
-				while (!context.isServletInitialized()) {
-					Log.debug(Geonet.DATA_MANAGER, "Waiting for servlet to finish initializing.."); 
-					Thread.sleep(10000); // sleep 10 seconds
-				}
-	
-				// servlet up so safe to index all metadata that needs indexing
-				startIndexGroup();
-				try {
-     			for(int i=beginIndex; i<beginIndex+count; i++) {
-						indexMetadataGroup(dbms, ids.get(i).toString(), true);
-					}
-				} finally {
-					endIndexGroup();
-				}
-
-				//-- commit Dbms resource (which makes it available to pool again) 
-				//-- to avoid exhausting Dbms pool
-				context.getResourceManager().close(Geonet.Res.MAIN_DB, dbms);
-			} catch (Exception e) {
-				Log.error(Geonet.DATA_MANAGER, "Reindexing thread threw exception");
-				e.printStackTrace();
-			}
+            if (ids.size() > 0) {
+                Runnable worker = new IndexMetadataTask(context, ids);
+                gc.getThreadPool().runTask(worker);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-  }
+    final class IndexMetadataTask implements Runnable {
+
+        private final ServiceContext context;
+        private final List<String> ids;
+        private int beginIndex;
+        private int count;
+
+        IndexMetadataTask(ServiceContext context, List<String> ids) {
+            this.context = context;
+            this.ids = ids;
+            this.beginIndex = 0;
+            this.count = ids.size();
+        }
+        IndexMetadataTask(ServiceContext context, List<String> ids, int beginIndex, int count) {
+            this.context = context;
+            this.ids = ids;
+            this.beginIndex = beginIndex;
+            this.count = count;
+        }
+
+        public void run() {
+            try {
+                // poll context to see whether servlet is up yet
+                while (!context.isServletInitialized()) {
+                    Log.debug(Geonet.DATA_MANAGER, "Waiting for servlet to finish initializing..");
+                    Thread.sleep(10000); // sleep 10 seconds
+                }
+                Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
+                try {
+
+                    if (ids.size() > 1) {
+                        // servlet up so safe to index all metadata that needs indexing
+                        startIndexGroup();
+                        try {
+                            for(int i=beginIndex; i<beginIndex+count; i++) {
+                                try {
+                                    indexMetadataGroup(dbms, ids.get(i).toString());
+                                } catch (Exception e) {
+                                    Log.error(Geonet.INDEX_ENGINE, "Error indexing metadata '"+ids.get(i)+"': "+e.getMessage()+"\n"+ Util.getStackTrace(e));
+                                }
+                            }
+                        } finally {
+                            endIndexGroup();
+                        }
+                    } else {
+                        indexMetadata(dbms, ids.get(0), false);
+                    }
+                } finally {
+                    //-- commit Dbms resource (which makes it available to pool again)
+                    //-- to avoid exhausting Dbms pool
+                    context.getResourceManager().close(Geonet.Res.MAIN_DB, dbms);
+                }
+            } catch (Exception e) {
+                Log.error(Geonet.DATA_MANAGER, "Reindexing thread threw exception");
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      *
@@ -439,7 +474,7 @@ public class DataManager {
             		Log.error(Geonet.DATA_MANAGER, "error while trying to update shared objects of metadata, "+id+" "+e.getMessage()); //DEBUG
             	}
             }
-            if (XmlSerializer.resolveXLinks()) {
+            if (xmlSerializer.resolveXLinks()) {
                 List<Attribute> xlinks = Processor.getXLinks(md);
                 if (xlinks.size() > 0) {
                     moreFields.add(SearchManager.makeField("_hasxlinks", "1", true, true));
@@ -448,7 +483,7 @@ public class DataManager {
                         sb.append(xlink.getValue()); sb.append(" ");
                     }
                     moreFields.add(SearchManager.makeField("_xlink", sb.toString(), true, true));
-                    Processor.processXLink(md,servContext); 
+                    Processor.detachXLink(md);
                 }
                 else {
                     moreFields.add(SearchManager.makeField("_hasxlinks", "0", true, true));
@@ -517,6 +552,17 @@ public class DataManager {
                 String categoryName = category.getChildText("name");
                 moreFields.add(SearchManager.makeField("_cat", categoryName, true, true));
             }
+
+            // get status
+            List<Element> statuses = dbms.select("SELECT statusId, userId, changeDate FROM MetadataStatus WHERE metadataId = ? ORDER BY changeDate DESC", id$)
+                                    .getChildren();
+						if (statuses.size() > 0) {
+							Element stat = (Element)statuses.get(0);
+							String status = stat.getChildText("statusid");
+              moreFields.add(SearchManager.makeField("_status", status, true, true));
+							String statusChangeDate = stat.getChildText("changedate");
+              moreFields.add(SearchManager.makeField("_statusChangeDate", statusChangeDate, true, true));
+						}
 
             // getValidationInfo
             // -1 : not evaluated
@@ -737,6 +783,18 @@ public class DataManager {
 
     /**
      *
+     * @param session
+     * @param id
+     * @throws Exception
+     */
+	public void versionMetadata(UserSession session, String id, Element md) throws Exception {
+	    if (svnManager != null) {
+	        svnManager.createMetadataDir(id, session, md);
+	    }
+	}
+
+    /**
+     *
      * @param md
      * @return
      * @throws Exception
@@ -757,7 +815,7 @@ public class DataManager {
      */
 	public static void validateMetadata(String schema, Element xml, ServiceContext context) throws Exception
 	{
-		validateMetadata(schema,xml,context," ");
+		validateMetadata(schema, xml, context, " ");
 	}
 
     /**
@@ -1201,9 +1259,7 @@ public class DataManager {
      */
 	public void setTemplate(Dbms dbms, int id, String isTemplate, String title) throws Exception {
 		setTemplateExt(dbms, id, isTemplate, title);
-        boolean indexGroup = false;
-        indexMetadata(dbms, Integer.toString(id), indexGroup,true);
-
+        indexInThreadPoolIfPossible(dbms,Integer.toString(id));
 	}
 
     /**
@@ -1277,14 +1333,29 @@ public class DataManager {
 	}
 
     /**
-     *
-     * @param md
+		 * Checks autodetect elements in installed schemas to determine whether 
+		 * the metadata record belongs to that schema. Use this method when you 
+		 * want the default schema from the geonetwork config to be returned when
+		 * no other match can be found.
+		 *
+     * @param md Record to checked against schemas
      * @return
      */
-	public String autodetectSchema(Element md) {
+	public String autodetectSchema(Element md) throws SchemaMatchConflictException, NoSchemaMatchesException {
 		return autodetectSchema(md, schemaMan.getDefaultSchema());
 	}
-	public String autodetectSchema(Element md, String defaultSchema) {
+
+    /**
+		 * Checks autodetect elements in installed schemas to determine whether 
+		 * the metadata record belongs to that schema. Use this method when you 
+		 * want to set the default schema to be returned when no other match can 
+		 * be found.
+		 *
+     * @param md Record to checked against schemas
+     * @param defaultSchema Schema to be assigned when no other schema matches
+     * @return
+     */
+	public String autodetectSchema(Element md, String defaultSchema) throws SchemaMatchConflictException, NoSchemaMatchesException {
 		
 		Log.debug(Geonet.DATA_MANAGER, "Autodetect schema for metadata with :\n * root element:'" + md.getQualifiedName()
 				 + "'\n * with namespace:'" + md.getNamespace()
@@ -1354,8 +1425,8 @@ public class DataManager {
         //
 		query = "UPDATE Metadata SET rating=? WHERE id=?";
 		dbms.execute(query, rating, id);
-        boolean indexGroup = false;
-        indexMetadata(dbms, Integer.toString(id), indexGroup,false);
+
+        indexInThreadPoolIfPossible(dbms,Integer.toString(id));
 
 		return rating;
 	}
@@ -1369,6 +1440,7 @@ public class DataManager {
     /**
      * Creates a new metadata duplicating an existing template.
      *
+     * @param session
      * @param dbms
      * @param templateId
      * @param groupOwner
@@ -1380,7 +1452,7 @@ public class DataManager {
      * @return
      * @throws Exception
      */
-	public String createMetadata(Dbms dbms, String templateId, String groupOwner,
+	public String createMetadata(UserSession session, Dbms dbms, String templateId, String groupOwner,
 										  SerialFactory sf, String source, int owner,
 										  String parentUuid, String isTemplate) throws Exception {
 		String query = "SELECT schemaId, data FROM Metadata WHERE id="+ templateId;
@@ -1405,8 +1477,8 @@ public class DataManager {
 		}
 		
 		//--- store metadata
-		String id = XmlSerializer.insert(dbms, schema, xml, serial, source, uuid, null, null, isTemplate, null, owner, groupOwner, "");
-		copyDefaultPrivForGroup(dbms, id, groupOwner);
+		String id = xmlSerializer.insert(dbms, schema, xml, serial, source, uuid, null, null, isTemplate, null, owner, groupOwner, "", session);
+		copyDefaultPrivForGroup(session, dbms, id, groupOwner);
 
 		//--- store metadata categories copying them from the template
 		List categList = dbms.select("SELECT categoryId FROM MetadataCateg WHERE metadataId = "+templateId).getChildren();
@@ -1414,18 +1486,18 @@ public class DataManager {
         for (Object aCategList : categList) {
             Element elRec = (Element) aCategList;
             String catId = elRec.getChildText("categoryid");
-            setCategory(dbms, id, catId);
+            setCategory(session, dbms, id, catId);
         }
 
 		//--- index metadata
-        boolean indexGroup = false;
-        indexMetadata(dbms, id, indexGroup,true);
+        indexInThreadPoolIfPossible(dbms,id);
 		return id;
 	}
 
     /**
      * Inserts a metadata into the database, optionally indexing it, and optionally applying automatic changes to it (update-fixed-info).
      *
+     * @param session the UserSession
      * @param dbms the database
      * @param schema XSD this metadata conforms to
      * @param metadata the metadata to store
@@ -1445,7 +1517,7 @@ public class DataManager {
      * @return id, as a string
      * @throws Exception hmm
      */
-    public String insertMetadata(Dbms dbms, String schema, Element metadata, int id, String uuid, int owner, String group, String source,
+    public String insertMetadata(UserSession session, Dbms dbms, String schema, Element metadata, int id, String uuid, int owner, String group, String source,
                                  String isTemplate, String docType, String title, String category, String createDate, String changeDate, boolean ufo, boolean index) throws Exception {
 
         // TODO resolve confusion about datatypes
@@ -1476,17 +1548,16 @@ public class DataManager {
         }
         
         //--- store metadata
-        XmlSerializer.insert(dbms, schema, metadata, id, source, uuid, createDate, changeDate, isTemplate, title, owner, group, docType);
+        xmlSerializer.insert(dbms, schema, metadata, id, source, uuid, createDate, changeDate, isTemplate, title, owner, group, docType, session);
 
-        copyDefaultPrivForGroup(dbms, id$, group);
+        copyDefaultPrivForGroup(session, dbms, id$, group);
 
         if (category != null) {
-            setCategory(dbms, id$, category);
+            setCategory(session, dbms, id$, category);
         }
 
         if(index) {
-            boolean indexGroup = false;
-            indexMetadata(dbms, id$, indexGroup,true);
+            indexInThreadPoolIfPossible(dbms,id$);
         }
 
         // Notifies the metadata change to metatada notifier service
@@ -1515,6 +1586,22 @@ public class DataManager {
 	}
 
     /**
+     * Retrieves a metadata (in xml) given its id. Use this method when you
+		 * must retrieve a metadata in the same transaction.
+     * @param dbms
+     * @param id
+     * @return
+     * @throws Exception
+     */
+	public Element getMetadata(Dbms dbms, String id) throws Exception {
+		boolean doXLinks = xmlSerializer.resolveXLinks();
+		Element md = xmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
+		if (md == null) return null;
+		md.detach();
+		return md;
+	}
+
+    /**
      * Retrieves a metadata (in xml) given its id; adds editing information if requested and validation errors if requested.
      * 
      * @param srvContext
@@ -1530,8 +1617,8 @@ public class DataManager {
 	}
 	public Element getGeocatMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes, boolean elementsHide) throws Exception {
 		Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
-		boolean doXLinks = XmlSerializer.resolveXLinks();
-		Element md = XmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
+		boolean doXLinks = xmlSerializer.resolveXLinks();
+		Element md = xmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id);
 		if (md == null) return null;
 
 		String version = null;
@@ -1689,7 +1776,7 @@ public class DataManager {
         }
         
 		//--- write metadata to dbms
-        XmlSerializer.update(dbms, id, md, changeDate, updateDateStamp);
+        xmlSerializer.update(dbms, id, md, changeDate, updateDateStamp, session);
 
         String isTemplate = getMetadataTemplate(dbms, id);
         // Notifies the metadata change to metatada notifier service
@@ -1707,8 +1794,7 @@ public class DataManager {
         finally {
             if(index) {
                 //--- update search criteria
-                boolean indexGroup = false;
-                indexMetadata(dbms, id, indexGroup, false);
+                indexInThreadPoolIfPossible(dbms,id);
             }
 		}
 		return true;
@@ -1733,8 +1819,8 @@ public class DataManager {
      * @return true if metadata is valid
      */
     public boolean validate(Element xml) {
-        String schema = autodetectSchema(xml);
         try {
+        		String schema = autodetectSchema(xml);
             validate(schema, xml);
             return true;
         }
@@ -1958,9 +2044,10 @@ public class DataManager {
      *
      * @param dbms
      * @param id
+		 * @param session
      * @throws Exception
      */
-	public void deleteMetadata(Dbms dbms, String id) throws Exception {
+	public synchronized void deleteMetadata(UserSession session, Dbms dbms, String id) throws Exception {
         String uuid = getMetadataUuid(dbms, id);
         String isTemplate = getMetadataTemplate(dbms, id);
 
@@ -1973,8 +2060,10 @@ public class DataManager {
 		dbms.execute("DELETE FROM MetadataRating WHERE metadataId=?", new Integer(id));
 		dbms.execute("DELETE FROM Validation WHERE metadataId=?", new Integer(id));
 
+		dbms.execute("DELETE FROM MetadataStatus WHERE metadataId=?", new Integer(id));
+
 		//--- remove metadata
-		XmlSerializer.delete(dbms, "Metadata", id);
+		xmlSerializer.delete(dbms, "Metadata", id, session);
 
         // Notifies the metadata change to metatada notifier service
         if (isTemplate.equals("n")) {
@@ -1989,9 +2078,10 @@ public class DataManager {
      *
      * @param dbms
      * @param id
+     * @param session
      * @throws Exception
      */
-	public synchronized void deleteMetadataGroup(Dbms dbms, String id) throws Exception {
+	public synchronized void deleteMetadataGroup(UserSession session, Dbms dbms, String id) throws Exception {
 		//--- remove operations
 		deleteMetadataOper(dbms, id, false);
 
@@ -2000,12 +2090,13 @@ public class DataManager {
 
 		dbms.execute("DELETE FROM MetadataRating WHERE metadataId=?", new Integer(id));
         dbms.execute("DELETE FROM Validation WHERE metadataId=?", new Integer(id));
+		dbms.execute("DELETE FROM MetadataStatus WHERE metadataId=?", new Integer(id));
 
 		//--- remove metadata
-		XmlSerializer.delete(dbms, "Metadata", id);
+		xmlSerializer.delete(dbms, "Metadata", id, session);
 
 		//--- update search criteria
-		searchMan.deleteGroup("_id", id+"");
+		searchMan.deleteGroup("_id", id + "");
 	}
 
     /**
@@ -2051,7 +2142,7 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getThumbnails(Dbms dbms, String id) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
+		Element md = xmlSerializer.select(dbms, "Metadata", id);
 
 		if (md == null)
 			return null;
@@ -2071,7 +2162,6 @@ public class DataManager {
 
     /**
      *
-     * @param dbms
      * @param id
      * @param small
      * @param file
@@ -2090,7 +2180,6 @@ public class DataManager {
 
     /**
      *
-     * @param dbms
      * @param id
      * @param small
      * @throws Exception
@@ -2103,7 +2192,6 @@ public class DataManager {
 
     /**
      *
-     * @param dbms
      * @param id
      * @param small
      * @param env
@@ -2129,12 +2217,13 @@ public class DataManager {
 		//--- setup environment
 		String type = small ? "thumbnail" : "large_thumbnail";
 		env.addContent(new Element("type").setText(type));
-		transformMd(dbms,id,md,env,schema,styleSheet);
+		transformMd(dbms,context.getUserSession(),id,md,env,schema,styleSheet);
 	}
 
     /**
      *
      * @param dbms
+		 * @param session
      * @param id
      * @param md
      * @param env
@@ -2142,7 +2231,7 @@ public class DataManager {
      * @param styleSheet
      * @throws Exception
      */
-	private void transformMd(Dbms dbms, String id, Element md, Element env, String schema, String styleSheet) throws Exception {
+	private void transformMd(Dbms dbms, UserSession session, String id, Element md, Element env, String schema, String styleSheet) throws Exception {
 		//--- setup root element
 		Element root = new Element("root");
 		root.addContent(md);
@@ -2153,15 +2242,13 @@ public class DataManager {
 
 		md = Xml.transform(root, styleSheet);
         String changeDate = null;
-		XmlSerializer.update(dbms, id, md, changeDate, true);
+		xmlSerializer.update(dbms, id, md, changeDate, true, session);
 
         // Notifies the metadata change to metatada notifier service
         notifyMetadataChange(dbms, md, id);
 
 		//--- update search criteria
-        boolean indexGroup = false;
-        indexMetadata(dbms, id, indexGroup,true);
-
+        indexInThreadPoolIfPossible(dbms,id);
 	}
 
     /**
@@ -2175,7 +2262,7 @@ public class DataManager {
      * @param type
      * @throws Exception
      */
-	public void setDataCommons(Dbms dbms, String id, String licenseurl, String imageurl, String jurisdiction, String licensename, String type) throws Exception {
+	public void setDataCommons(Dbms dbms, UserSession session, String id, String licenseurl, String imageurl, String jurisdiction, String licensename, String type) throws Exception {
 		Element env = new Element("env");
 		env.addContent(new Element("imageurl").setText(imageurl));
 		env.addContent(new Element("licenseurl").setText(licenseurl));
@@ -2183,7 +2270,7 @@ public class DataManager {
 		env.addContent(new Element("licensename").setText(licensename));
 		env.addContent(new Element("type").setText(type));
 
-		manageCommons(dbms,id,env,Geonet.File.SET_DATACOMMONS);
+		manageCommons(dbms,session,id,env,Geonet.File.SET_DATACOMMONS);
 	}
 
     /**
@@ -2197,7 +2284,7 @@ public class DataManager {
      * @param type
      * @throws Exception
      */
-	public void setCreativeCommons(Dbms dbms, String id, String licenseurl, String imageurl, String jurisdiction, String licensename, String type) throws Exception {
+	public void setCreativeCommons(Dbms dbms, UserSession session, String id, String licenseurl, String imageurl, String jurisdiction, String licensename, String type) throws Exception {
 		Element env = new Element("env");
 		env.addContent(new Element("imageurl").setText(imageurl));
 		env.addContent(new Element("licenseurl").setText(licenseurl));
@@ -2205,7 +2292,7 @@ public class DataManager {
 		env.addContent(new Element("licensename").setText(licensename));
 		env.addContent(new Element("type").setText(type));
 
-		manageCommons(dbms,id,env,Geonet.File.SET_CREATIVECOMMONS);
+		manageCommons(dbms,session,id,env,Geonet.File.SET_CREATIVECOMMONS);
 	}
 
     /**
@@ -2216,8 +2303,8 @@ public class DataManager {
      * @param styleSheet
      * @throws Exception
      */
-	private void manageCommons(Dbms dbms, String id, Element env, String styleSheet) throws Exception {
-		Element md = XmlSerializer.select(dbms, "Metadata", id,servContext);
+	private void manageCommons(Dbms dbms, UserSession session, String id, Element env, String styleSheet) throws Exception {
+		Element md = xmlSerializer.select(dbms, "Metadata", id);
 
 		if (md == null) {
 			return;
@@ -2226,7 +2313,7 @@ public class DataManager {
 		md.detach();
 
 		String schema = getMetadataSchema(dbms, id);
-		transformMd(dbms,id,md,env,schema,styleSheet);
+		transformMd(dbms,session,id,md,env,schema,styleSheet);
 	}
 
 	//--------------------------------------------------------------------------
@@ -2238,74 +2325,85 @@ public class DataManager {
     /**
      *  Adds a permission to a group. Metadata is not reindexed.
      *
+     * @param session
      * @param dbms
      * @param mdId
      * @param grpId
      * @param opId
      * @throws Exception
      */
-	public void setOperation(Dbms dbms, String mdId, String grpId, String opId) throws Exception {
-		setOperation(dbms,new Integer(mdId),new Integer(grpId),new Integer(opId));
+	public void setOperation(UserSession session, Dbms dbms, String mdId, String grpId, String opId) throws Exception {
+		setOperation(session, dbms,new Integer(mdId),new Integer(grpId),new Integer(opId));
 	}
 
     /**
      *
+     * @param session
      * @param dbms
      * @param mdId
      * @param grpId
      * @param opId
      * @throws Exception
      */
-	public void setOperation(Dbms dbms, int mdId, int grpId, int opId) throws Exception {
+	public void setOperation(UserSession session, Dbms dbms, int mdId, int grpId, int opId) throws Exception {
 		String query = "SELECT metadataId FROM OperationAllowed WHERE metadataId=? AND groupId=? AND operationId=?";
 		Element elRes = dbms.select(query, mdId, grpId, opId);
 		if (elRes.getChildren().size() == 0) {
 			dbms.execute("INSERT INTO OperationAllowed(metadataId, groupId, operationId) VALUES(?,?,?)", mdId, grpId, opId);
+			if (svnManager != null) {
+			    svnManager.setHistory(dbms, mdId+"", session);
+			}
 		}
 	}
 
     /**
      *
+     * @param session
      * @param dbms
      * @param mdId
      * @param grpId
      * @param opId
      * @throws Exception
      */
-	public void unsetOperation(Dbms dbms, String mdId, String grpId, String opId) throws Exception {
-		unsetOperation(dbms,new Integer(mdId),new Integer(grpId),new Integer(opId));
+	public void unsetOperation(UserSession session, Dbms dbms, String mdId, String grpId, String opId) throws Exception {
+		unsetOperation(session,dbms,new Integer(mdId),new Integer(grpId),new Integer(opId));
 	}
 
     /**
      *
+     * @param session
      * @param dbms dbms
      * @param mdId metadata id
      * @param groupId group id
      * @param operId operation id
      * @throws Exception hmm
      */
-	public void unsetOperation(Dbms dbms, int mdId, int groupId, int operId) throws Exception {
+	public void unsetOperation(UserSession session, Dbms dbms, int mdId, int groupId, int operId) throws Exception {
 		String query = "DELETE FROM OperationAllowed WHERE metadataId=? AND groupId=? AND operationId=?";
 		dbms.execute(query, mdId, groupId, operId);
+		if (svnManager != null) {
+		    svnManager.setHistory(dbms, mdId+"", session);
+		}
 	}
 
     /**
      * Sets VIEW and NOTIFY privileges for a metadata to a group.
      *
+     * @param session the UserSession
      * @param dbms the database
      * @param id metadata id
      * @param groupId group id
      * @throws Exception hmmm
      */
-	public void copyDefaultPrivForGroup(Dbms dbms, String id, String groupId) throws Exception {
+	public void copyDefaultPrivForGroup(UserSession session, Dbms dbms, String id, String groupId) throws Exception {
         if(StringUtils.isBlank(groupId)) {
             Log.info(Geonet.DATA_MANAGER, "Attempt to set default privileges for metadata " + id + " to an empty groupid");
             return;
         }
 		//--- store access operations for group
 
-		setOperation(dbms, id, groupId, AccessManager.OPER_VIEW);
-		setOperation(dbms, id, groupId, AccessManager.OPER_NOTIFY);
+		setOperation(session, dbms, id, groupId, AccessManager.OPER_VIEW);
+		setOperation(session, dbms, id, groupId, AccessManager.OPER_NOTIFY);
 		//
 		// Restrictive: new and inserted records should not be editable, 
 		// their resources can't be downloaded and any interactive maps can't be 
@@ -2314,6 +2412,98 @@ public class DataManager {
 		// setOperation(dbms, id, groupId, AccessManager.OPER_DOWNLOAD);
 		// setOperation(dbms, id, groupId, AccessManager.OPER_DYNAMIC);
 		// Ultimately this should be configurable elsewhere
+	}
+
+	//--------------------------------------------------------------------------
+	//---
+	//--- Check User Id to avoid foreign key problems
+	//---
+	//--------------------------------------------------------------------------
+
+	public boolean isUserMetadataOwner(Dbms dbms, int userId) throws Exception {
+		String query = "SELECT id FROM Metadata WHERE owner=?";
+		Element elRes = dbms.select(query, userId);
+		return (elRes.getChildren().size() != 0);
+	}
+
+	public boolean isUserMetadataStatus(Dbms dbms, int userId) throws Exception {
+		String query = "SELECT metadataId FROM MetadataStatus WHERE userId=?";
+		Element elRes = dbms.select(query, userId);
+		return (elRes.getChildren().size() != 0);
+	}
+
+	//--------------------------------------------------------------------------
+	//---
+	//--- Status API
+	//---
+	//--------------------------------------------------------------------------
+
+
+    /**
+     * Return all status records for the metadata id - current status is the
+		 * first child due to sort by DESC on changeDate
+		 *
+     * @param dbms
+     * @param id
+		 * @return 
+     * @throws Exception
+		 *
+     */
+	public Element getStatus(Dbms dbms, int id) throws Exception {
+		String query = "SELECT statusId, userId, changeDate, changeMessage, name FROM StatusValues, MetadataStatus WHERE statusId=id AND metadataId=? ORDER BY changeDate DESC";
+		return dbms.select(query, id);
+	}
+
+    /**
+     * Return status of metadata id.
+     *
+     * @param dbms
+     * @param id
+		 * @return 
+     * @throws Exception
+		 *
+     */
+	public String getCurrentStatus(Dbms dbms, int id) throws Exception {
+		Element status = getStatus(dbms, id);
+		if (status == null) return Params.Status.UNKNOWN;
+		List<Element> statusKids = status.getChildren();
+		if (statusKids.size() == 0) return Params.Status.UNKNOWN;
+		return statusKids.get(0).getChildText("statusid");
+	}
+
+    /**
+     * Set status of metadata id and reindex metadata id afterwards.
+     *
+     * @param session
+     * @param dbms
+     * @param id
+     * @param status
+     * @param changeDate
+     * @param changeMessage
+     * @throws Exception
+     */
+	public void setStatus(UserSession session, Dbms dbms, int id, int status, String changeDate, String changeMessage) throws Exception {
+		setStatusExt(session, dbms, id, status, changeDate, changeMessage);
+    boolean indexGroup = false;
+    indexMetadata(dbms, Integer.toString(id), indexGroup);
+	}
+
+    /**
+     * Set status of metadata id and do not reindex metadata id afterwards.
+     *
+     * @param session
+     * @param dbms
+     * @param id
+     * @param status
+     * @param changeDate
+     * @param changeMessage
+     * @throws Exception
+     */
+	public void setStatusExt(UserSession session, Dbms dbms, int id, int status, String changeDate, String changeMessage) throws Exception {
+		dbms.execute("INSERT into MetadataStatus(metadataId, statusId, userId, changeDate, changeMessage) VALUES (?,?,?,?,?)", id, status, session.getUserIdAsInt(), changeDate, changeMessage);
+		if (svnManager != null) {
+		    svnManager.setHistory(dbms, id+"", session);
+		}
 	}
 
 	//--------------------------------------------------------------------------
@@ -2329,11 +2519,15 @@ public class DataManager {
      * @param categId
      * @throws Exception
      */
-	public void setCategory(Dbms dbms, String mdId, String categId) throws Exception {
+	public void setCategory(UserSession session, Dbms dbms, String mdId, String categId) throws Exception {
 		Object args[] = { new Integer(mdId), new Integer(categId) };
 
-		if (!isCategorySet(dbms, mdId, categId))
+		if (!isCategorySet(dbms, mdId, categId)) {
 			dbms.execute("INSERT INTO MetadataCateg(metadataId, categoryId) VALUES(?,?)", args);
+			if (svnManager != null) {
+			    svnManager.setHistory(dbms, mdId+"", session);
+			}
+		}
 	}
 
     /**
@@ -2357,9 +2551,12 @@ public class DataManager {
      * @param categId
      * @throws Exception
      */
-	public void unsetCategory(Dbms dbms, String mdId, String categId) throws Exception {
+	public void unsetCategory(UserSession session, Dbms dbms, String mdId, String categId) throws Exception {
 		String query = "DELETE FROM MetadataCateg WHERE metadataId=? AND categoryId=?";
 		dbms.execute(query, new Integer(mdId), new Integer(categId));
+		if (svnManager != null) {
+		    svnManager.setHistory(dbms, mdId+"", session);
+		}
 	}
 
     /**
@@ -2639,7 +2836,7 @@ public class DataManager {
 			Element childForUpdate = new Element("root");
 			childForUpdate = Xml.transform(rootEl, styleSheet, params);
 			
-			XmlSerializer.update(dbms, childId, childForUpdate, new ISODate().toString(), true);
+			xmlSerializer.update(dbms, childId, childForUpdate, new ISODate().toString(), true, srvContext.getUserSession());
 
 
             // Notifies the metadata change to metatada notifier service
@@ -2796,7 +2993,6 @@ public class DataManager {
 	 * 
 	 * @param context
 	 * @param id
-	 * @param dbms
 	 * @param info
 	 * @throws Exception
 	 */
@@ -3034,9 +3230,10 @@ public class DataManager {
 	private String thesaurusDir;
     private ServiceContext servContext;
 	private String appPath;
-	private boolean rebuilding = false;
 	private String stylePath;
 	private static String FS = File.separator;
+	private XmlSerializer xmlSerializer;
+	private SvnManager svnManager;
 
 	
 	private final Validator validator;

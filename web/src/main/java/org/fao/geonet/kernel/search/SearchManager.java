@@ -22,8 +22,27 @@
 
 package org.fao.geonet.kernel.search;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.index.SpatialIndex;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Vector;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import jeeves.exceptions.JeevesException;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.ConfigurationOverrides;
@@ -32,6 +51,7 @@ import jeeves.server.sources.http.JeevesServlet;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
+
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
@@ -56,6 +76,7 @@ import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
+import org.fao.geonet.kernel.search.function.DocumentBoosting;
 import org.fao.geonet.kernel.search.spatial.ContainsFilter;
 import org.fao.geonet.kernel.search.spatial.CrossesFilter;
 import org.fao.geonet.kernel.search.spatial.EqualsFilter;
@@ -103,6 +124,8 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.index.SpatialIndex;
 
 /**
  * Indexes metadata using Lucene.
@@ -131,6 +154,7 @@ public class SearchManager
      * Used when adding documents to the Lucene index, and also to analyze query terms at search time.
      */
 	private static PerFieldAnalyzerWrapper _analyzer;
+	private static Object _documentBoostClass;
 	private String         _luceneTermsToExclude;
 	private boolean        _logSpatialObject;
 	private SchemaManager  _scm;
@@ -329,7 +353,6 @@ public class SearchManager
    * @param htmlCacheDir
    * @param thesauriDir
 	 * @param summaryConfigXmlFile
-   * @param luceneConfigXmlFile
    * @param logSpatialObject
    * @param luceneTermsToExclude
 	 * @param dataStore
@@ -358,7 +381,8 @@ public class SearchManager
 
         _inspireEnabled = si.getInspireEnabled();
         createAnalyzer(si);
-
+        createDocumentBoost();
+        
 		if (!_stylesheetsDir.isDirectory())
 			throw new Exception("directory " + _stylesheetsDir + " not found");
 
@@ -392,13 +416,39 @@ public class SearchManager
     }
 	}
 
-	/**
+	private void createDocumentBoost() {
+	    String className = _luceneConfig.getDocumentBoostClass();
+	    if (className != null) {
+    	    try {
+    	        Class clazz = Class.forName(className);
+                Class[] clTypesArray = _luceneConfig.getDocumentBoostParameterClass();
+                Object[] inParamsArray = _luceneConfig.getDocumentBoostParameter();
+                try {
+                    Log.debug(Geonet.SEARCH_ENGINE, " Creating document boost object with parameter");
+                    Constructor c = clazz.getConstructor(clTypesArray);
+                    _documentBoostClass = c.newInstance(inParamsArray);
+                }
+                catch (Exception x) {
+                    Log.warning(Geonet.SEARCH_ENGINE, "   Failed to create document boost object with parameter: " + x.getMessage());
+                    x.printStackTrace();
+                    // Try using a default constructor without parameter
+                    Log.warning(Geonet.SEARCH_ENGINE, "   Now trying without parameter");
+                    _documentBoostClass = clazz.newInstance();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
 	 * Reload Lucene configuration:
 	 *  * update analyzer
 	 */
 	public void reloadLuceneConfiguration (LuceneConfig lc) {
 		_luceneConfig = lc;
 		createAnalyzer(_settingInfo);
+		createDocumentBoost();
 	}
 
 	public LuceneConfig getCurrentLuceneConfiguration () {
@@ -714,7 +764,7 @@ public class SearchManager
             defaultDoc.setAttribute("locale", Geocat.DEFAULT_LANG);
             xmlDoc.addContent(defaultDoc);
 
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			allText(metadata, sb);
 			addField(xmlDoc, "title", title, true, true);
 			addField(xmlDoc, "any", sb.toString(), true, true);
@@ -783,11 +833,12 @@ public class SearchManager
 	/**
 	 * Extracts text from metadata record.
 	 *
-	 * @param metadata
-	 * @param sb
-	 * @return all text in the metadata elements for indexing
+	 *
+     * @param metadata
+     * @param sb
+     * @return all text in the metadata elements for indexing
 	 */
-	private void allText(Element metadata, StringBuffer sb) {
+	private void allText(Element metadata, StringBuilder sb) {
 		String text = metadata.getText().trim();
 		if (text.length() > 0) {
 			if (sb.length() > 0)
@@ -1040,112 +1091,19 @@ public class SearchManager
                 documents.addContent(otherLanguages);
             }
             documents.addContent(defaultLang);
-
-            return documents;
+			return documents;
         } catch (Exception e) {
-            Log.error(Geonet.INDEX_ENGINE,
-                    "Indexing stylesheet contains errors : " + e.getMessage());
-            throw e;
-        }
-	}
-
-
-    /**
-     * If otherLanguages has a document that is the same locale as the default then remove it from
-     * otherlanguages and merge the fields with those in defaultLang
-     */
-    private void mergeDefaultLang(Element defaultLang, List<Element> otherLanguages)
-    {
-        final String langCode;
-        if( defaultLang.getAttribute("locale") == null ){
-            langCode = "";
-        } else {
-            langCode = defaultLang.getAttributeValue("locale");
-        }
-
-        Element toMerge = null;
-
-        for (Element element : otherLanguages) {
-            String clangCode;
-            if( element.getAttribute("locale") == null ){
-                clangCode = "";
-            } else {
-                clangCode = element.getAttributeValue("locale");
-            }
-
-            if(clangCode.equals(langCode)){
-                toMerge = element;
-                break;
-            }
-        }
-
-        SortedSet<Element> toInclude = new TreeSet<Element>(new Comparator<Element>()
-        {
-
-
-            public int compare(Element o1, Element o2)
-            {
-                // <Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
-
-                int name = compare(o1, o2, "name");
-                int string = compare(o1, o2, "string");
-                int store = compare(o1, o2, "store");
-                int index = compare(o1, o2, "index");
-
-                if( name != 0){
-                    return name;
-                }
-
-                if( string != 0){
-                    return string;
-                }
-
-                if( store != 0){
-                    return store;
-                }
-
-                if( index != 0){
-                    return index;
-                }
-
-                return 0;
-
-            }
-
-            private int compare(Element o1, Element o2, String attName)
-            {
-                return safeGet(o1, attName).compareTo(safeGet(o2, attName));
-            }
-
-            public String safeGet(Element e, String attName){
-                String att = e.getAttributeValue(attName);
-                if( att == null ){
-                    return "";
-                }
-                else {
-                    return att;
-                }
-            }
-        });
-
-        if( toMerge != null ){
-            toMerge.detach();
-            otherLanguages.remove(toMerge);
-
-            for (Element element : (List<Element>) defaultLang.getChildren()) {
-                toInclude.add(element);
-            }
-            for (Element element : (List<Element>) toMerge.getChildren()) {
-                toInclude.add(element);
-            }
-            toMerge.removeContent();
-            defaultLang.removeContent();
-            defaultLang.addContent(toInclude);
-        }
-
+            Log.error(Geonet.INDEX_ENGINE, "Indexing stylesheet contains errors : " + e.getMessage() + "\n\t Marking the metadata as _nonIndexed=true in index");
+            Element xmlDoc = new Element("Document");
+            addField(xmlDoc, "_indexingError", "1", true, true);
+            addField(xmlDoc, "_indexingErrorMsg", e.getMessage(), true, false);
+            StringBuilder sb = new StringBuilder();
+            allText(xml, sb);
+            addField(xmlDoc, "any", sb.toString(), false, true);
+            return xmlDoc;        }
     }
 
-	//-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
 	// utilities
 
     /**
@@ -1332,13 +1290,31 @@ public class SearchManager
                 if (isNumeric) {
                 	addNumericField(doc, name, string, store, bIndex);
                 } else {
-                	doc.add(new Field(name, string, store, index));
+                    Field f = new Field(name, string, store, index);
+
+                    // Boost a particular field according to Lucene config. 
+                    Float boost = _luceneConfig.getFieldBoost(name);
+                    if (boost != null) {
+                        Log.debug(Geonet.INDEX_ENGINE, "Boosting field: " + name + " with boost factor: " + boost);
+                        f.setBoost(boost);
+                    }
+                    doc.add(f);
                 }
             }
         }
         
         if(!hasLocalField) {
         	doc.add(new Field(Geocat.LUCENE_LOCALE_KEY,Geocat.DEFAULT_LANG,Field.Store.YES,Field.Index.NOT_ANALYZED));
+        }
+        
+        
+        // Set boost to promote some types of document selectively according to DocumentBoosting class
+        if (_documentBoostClass != null) {
+            Float f = ((DocumentBoosting)_documentBoostClass).getBoost(doc);
+            if (f != null) {
+                Log.debug(Geonet.INDEX_ENGINE, "Boosting document with boost factor: " + f);
+                doc.setBoost(f);
+            }
         }
         
 		return doc;

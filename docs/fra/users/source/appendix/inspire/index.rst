@@ -1,7 +1,9 @@
+.. include:: ../../substitutions.txt
+
 .. _inspire:
 
-La directive INSPIRE et GeoNetwork
-==================================
+La directive INSPIRE et |project_name|
+======================================
 
 
 Cette section explique les options de configuration permmettant la
@@ -68,7 +70,7 @@ service de découverte <http://inspire.jrc.ec.europa.eu/index.cfm/pageid/5>`_
 Affiner la configuration des suggestions dans l'éditeur
 -------------------------------------------------------
 
-GeoNetwork permet de contrôler quels éléments sont ajoutés lorsque l'utilisateur ajoutes des éléments
+|project_name| permet de contrôler quels éléments sont ajoutés lorsque l'utilisateur ajoutes des éléments
 dans l'éditeur. Par défaut, tous les éléments obligatoires sont ajoutés automatiquement. Les autres (les optionnels)
 peuvent être contrôlé via le mécanisme de suggestion.
 
@@ -77,7 +79,7 @@ Ceci est possible, en configurant le fichier *xml/schemas/iso19139/schema-sugges
 
 	<!-- INSPIRE Suggestion for contact suggest 
 		organisation name and email address as defined in metadata IR.
-		ie. less fields than in GeoNetwork default behaviour.-->
+		ie. less fields than in |project_name| default behaviour.-->
 	<field name="gmd:CI_ResponsibleParty">
 		<suggest name="gmd:organisationName"/>
 		<suggest name="gmd:contactInfo"/>
@@ -112,7 +114,7 @@ Cette configuration permet une saisie plus rapide de l'essentiel des information
 Indexation de l'étendue temporelle
 ----------------------------------
 
-Par défaut, GeoNetwork n'indexe pas les dates de publication, révision, création en tant qu'étendue temporelle.
+Par défaut, |project_name| n'indexe pas les dates de publication, révision, création en tant qu'étendue temporelle.
 
 Pour activer cette option, modifier le paramètre *useDateAsTemporalExtent* dans le fichier *xml/schemas/iso19139/index-fields.xml* ::
 
@@ -126,7 +128,7 @@ Pour activer cette option, modifier le paramètre *useDateAsTemporalExtent* dans
 Configurer les listes de valeurs de suggestions
 -----------------------------------------------
 
-GeoNetwork dispose d'un mécanisme permettant d'ajouter des listes de propositions à côté des champs en édition.
+|project_name| dispose d'un mécanisme permettant d'ajouter des listes de propositions à côté des champs en édition.
 Par example, pour le champ dénominateur de l'échelle, une liste composée des valeurs 10000, 25000, 50000, ... est proposée.
 
 INSPIRE demande la saisie de certaine valeur pour le champ type de service. Pour cela, modifier le fichier 

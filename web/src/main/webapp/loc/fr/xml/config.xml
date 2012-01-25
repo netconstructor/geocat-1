@@ -232,6 +232,12 @@
 	<!-- tooltips -->
 
 	<tips>
+		<tip id="site.siteId">
+			Identifiant du catalogue.
+			Après changement de l'identifiant, il est nécessaire de mettre à jour l'index et redéfinir le logo
+			à partir de l'interface d'administration.
+		</tip>
+		
 		<tip id="site.name">Used to identify the installation.</tip>
 
 		<!-- server -->
@@ -388,6 +394,7 @@
   <db.numactive>Base de données / connexions utilisées :</db.numactive>	
   <db.numidle>Base de données / connexions disponibles :</db.numidle>	
   <db.maxactive>Base de données / nombre maximum de connexions :</db.maxactive>	
-  <db.statserror>Base de données / statistique :</db.statserror>	
+  <db.statserror>Base de données / statistique :</db.statserror>
+    <sequentialExecution>ThreadPool Sequential Execution Mode: </sequentialExecution>
 </strings>
 

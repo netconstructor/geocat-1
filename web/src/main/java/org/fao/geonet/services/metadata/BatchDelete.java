@@ -108,17 +108,18 @@ public class BatchDelete implements Service
 					FileCopyMgr.removeDirectoryOrFile(pb);
 	
 					//--- delete metadata and return status
-					dataMan.deleteMetadata(dbms, id);
+					dataMan.deleteMetadata(session, dbms, id);
 					context.debug("  Metadata with id " + id + " deleted.");
 					metadata.add(new Integer(id));
 				}
 			} else
 				context.debug("  Metadata not found in db:"+ uuid);
 				// TODO : add to notFound set
-
+			}
 		}
-		}
-
+		// Clear the selection after delete
+		SelectionManager.updateSelection("metadata", session, params.addContent(new Element("selected").setText("remove-all")), context);
+		
 		// -- for the moment just return the sizes - we could return the ids
 		// -- at a later stage for some sort of result display
 		return new Element(Jeeves.Elem.RESPONSE)

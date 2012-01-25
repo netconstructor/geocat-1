@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Heron MC documentation build configuration file, created by
+# GeoNetwork widgets doc inspired by Heron MC documentation 
+# build configuration file, created by
 # sphinx-quickstart on Wed Apr 15 14:35:45 2009.
 #
 # This file is execfile()d with the current directory set to its containing dir.

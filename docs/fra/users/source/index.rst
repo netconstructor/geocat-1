@@ -1,27 +1,23 @@
 .. _index.rst:
+.. include:: substitutions.txt
 
-Introduction
-============
+Manuel d'utilisation de |project_name| |version|
+================================================
 
-Ce document est le **manuel d'utilisation de GeoNetwork**. 
+Ce document est le manuel d'utilisation de |project_name|. 
 
 .. toctree::
     :maxdepth: 2
 
-    preface.rst
-    introduction.rst
-    history.rst
+    preface/preface.rst
+    introduction/introduction.rst
     quickstartguide/index.rst
     search/index.rst
     editor/index.rst
     admin/index.rst
-    appendix/inspire/index.rst
-    appendix/format/index.rst
-    appendix/glossary_of_metadata/index.rst
-    appendix/iso_topic_categories/index.rst
-    appendix/foss4g/index.rst
-    faq.rst
-    glossary.rst   
+    appendix/index.rst
+    faq/faq.rst
+    jeevlet/jeevlet.rst
 
 Autres documents :
 

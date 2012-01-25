@@ -1,141 +1,133 @@
+.. include:: ../../substitutions.txt
+
 .. _user_admin:
 
-Gestion des groupes et des utilisateurs
-=======================================
 
-GeoNetwork uses the concept of Users, Groups and User Profiles. A User can be part of several Groups.
-A User also has a User Profile
+Utilisateurs et groupes
+=======================
 
-A User can only have one User Profile associated.
-The combination of User Profile and Group defines what tasks the User can perform on the system
-or on specific metadata records.
+|project_name| utilise les concepts suivants : "utilisateurs", "groupes" et "profils d'utilisateurs". Un utilisateur peut appartenir à plusieurs groupes. Chaque utilisateur possède un seul et unique profil. La combinaison du profil et des groupes, auxquels l'utilisateur appartient, définit le périmètre des tâches qu'il peut réaliser avec le catalogue.
 
-Creating new user Groups
-------------------------
+Les groupes d'utilisateurs peuvent par exemple correspondre à des services, des secteurs d'activités ou des éléments structurels au sein d'une entité ou d'une organisation. Exemple de groupes : Pêche, Agriculture, Eau, Santé etc.
 
-The administrator can create new groups of users. User groups can correspond
-to logical units within an organisation. For example groups for Fisheries, Agriculture, Land
-and Water, Health etcetera.
 
-To create new groups you should be logged on with an account that has administrative privileges.
-To log in, simply go to the home page and enter your username and password in the top
-right corner fields, then click on the login button.
+Créer de nouveaux groupes d'utilisateurs
+----------------------------------------
+
+L'administrateur peut créer de nouveaux groupes d'utilisateurs. 
+
+Pour créer de nouveaux groupes, il faut être identifié à l'aide d'un compte ayant les privilèges d'administrateur. Pour s'identifier:
+
+- Dans la page d'accueil : Entrer votre nom d'utilisateur et votre mot de passe;
+- Cliquer sur le bouton "Connecter" dans la partie supérieure-droite de l'IHM.
 
 .. warning:: 
-    New installations of GeoNetwork use *admin* for both username and password.
-    It is important to change this from the Administration page once you logged on!
+    Par défaut, une version fraichement installée de |project_name| dispose d'un compte administrateur dont le nom et le mot de passe sont "admin".
+    Pour une question de sécurité, il est très important de modifier le mot de passe de ce compte dans la page Administration après s'être identifié sous ce compte.
 
 .. figure:: login.png
 
-  *Login form*
+  *Formulaire de connexion*
     
-#. Select the Administration button in the menu. On the Administration page, select Group management.
+#. Cliquer sur le bouton Administration du menu. Dans la page Administration, sélectionner le lien Gestion des groupes.
     
-      .. figure:: administration_panel.png
+      .. figure:: administrationPanel.png
     
-        *Administration page*
+        *Page Administration*
 
-#. Select *Add a new group*. You may want to rename or remove the *Sample* group;
+#. Cliquer sur *Ajouter un groupe*.
   
-      .. figure:: GroupManag.png
+      .. figure:: groupManag.png
     
-        *Group management*
+        *Gestion des groupes*
 
-#. Fill out the details. The email address will be used to send feedback on data downloads when they occur for resources that are part of the Group.
+#. Remplir le formulaire. L'adresse e-mail sera utilisée pour informer du téléchargement de ressources qui appartiennent au groupe.
     
       .. figure:: addGroup.png
       
-        *Group edit form*
+        *Formulaire d'édition d'un groupe*
 
-#. Click on *Save*
+#. Cliquer sur *Sauver*
 
 .. warning:: 
-    The Name should *NOT* contain spaces! You can use the Localisation functions to provide localised names for groups.
+    Le nom ne doit pas contenir d'espace ! Les descriptions des groupes peuvent être internationalisés (cf. lien Internationalisation de la page Administration).
 
-Access privileges can be set per metadata record. You can define privileges on a per Group basis.
-Privileges that can be set relate to visibility of the Metadata (*Publish*),
-data Download, Interactive Map access and display of the record in the Featured section of the home page.
+Les privilèges d'accès peuvent être définis pour chaque fiche de métadonnées. Ils peuvent être définis sur la base des groupes d'utilisateurs.
+Les privilèges concernent la publication des métadonnées (Publier), le téléchargement des données (Télécharger), la consultation cartographique des données (Carte interactive), la capacité à ajouter la ressource dans le panneau "la sélection" de la page d'accueil (Epingler), la possibilité de modifier les métadonnées (Editer), la réception d'une notification lorsque un fichier géré par le catalogue est téléchargé (Notifier).
 
-Editing defines the groups for which editors can edit the metadata record.
-
-Notify defines what groups are notified when a file managed by GeoNetwork is downloaded.
-
-Below is an example of the privileges management table related to a dataset.
+L'image ci-dessous donne un exemple de privilèges associés à une ressource cataloguée.
 
 .. figure:: privilegesSetting1.png
 
-  *Privilege settings*
+  *Paramétrage des privilèges pour une ressource*
 
-Creating new Users
-------------------
+Créer de nouveaux utilisateurs
+------------------------------
 
-To add a new user to the GeoNetwork system you do the following:
+Pour ajouter un nouvel utilisateur il faut réaliser les opérations suivantes :
 
-#. Select *User Management* from the Administration link in the toolbar;
+#. Dans la page Administration, cliquer sur *Gestion des utilisateurs* ;
 
-#. Click the button *Add a new user*;
-
-  .. figure:: AddUser.png
+      .. figure:: addUser.png
   
-    *User administration form*
+    *Interface de gestion des utilisateurs*
+    
+#. Cliquer sur le bouton *Ajouter un utilisateur* ;
 
-#. Provide the *information* required for the new user;
-
-  .. figure:: InsertUserInfo.png
+      .. figure:: insertUserInfo.png
   
-    *User information form*
-
-#. Assign the correct *profile*;
-
-#. Assign the user to a *group*;
-
-#. Click on *Save*.
-
-User Profiles
--------------
-
-Users can have different profiles depending on their role in the GeoNetwork system.
-A profile defines what tasks the user can perform.
-
-User profiles are hierarchical and based on inheritance. This means that a user with an Editor profile
-can create and modify new metadata records, but can also use all functions a Registered user can use.
-
-Rights associated with the profiles are illustrated in detail in the list below:
-
-#.  Administrator Profile
-
-    The Administrator has special privileges that give access to all available functions.
-    These include:
+    *Formulaire d'ajout d'un utilisateur*
     
-    - Full rights for creating new groups and new users
-    - Rights to change users/groups’ profiles
-    - Full rights for creating/editing/deleting new/old metadata
-    - Perform system administration and configuration tasks.
+#. Saisir les informations requises pour la création de l'utilisateur ;
 
-#.  User Administrator Profile
+#. Affecter un profil à l'utilisateur ;
 
-    The User Administrator is the administrator of his/her own group with the
-    following privileges:
+#. Affecter un ou plusieurs groupes à l'utilisateur ;
+
+#. Cliquer sur *Sauver*.
+
+
+.. _user_profiles:
+
+Profils d'utilisateurs
+----------------------
+
+Le profil d'un utilisateur définit quels tâches il peut réaliser dans le catalogue. Le profil doit être choisi en fonction du rôle de l'utilisateur.
+
+Les profils des utilisateurs sont hiérarchiques et exploitent des mécanismes d'héritage. Cela signifie qu'un utilisateur disposant d'un profil *Editeur* peut créer et modifier des fiches de métadonnées et qu'il peut également utiliser les fonctions accessibles à tout utilisateur dont le profil est *Utilisateur enregistré*.
+
+Les droits associés aux profils sont décrits ci-dessous :
+
+#.  Administrateur
+
+    L'administrateur a accès à toutes les fonctions du catalogue. Cela inclut :
     
-    - Full rights on creating new users within the own group
-    - Rights to change users profiles within the own group
-    - Full rights on creating/editing/ deleting new/old data within the own group
+    - Création de nouveaux groupes et utilisateurs
+    - Modification du profil et des groupes des utilisateurs
+    - Création, modification et suppression de fiches de métadonnées
+    - Réalisation de tâches d'administration et de configuration du catalogue
 
-#.  Content Reviewer Profile
+#.  Administrateur d'Utilisateurs
 
-    The content reviewer is the only person allowed to give final clearance on
-    the metadata publication on the Intranet and/or on the Internet:
+    L'administrateur d'utilisateurs est l'administrateur de son propre groupe d'utilisateurs. Il dispose des privilèges suivants :
     
-    - Rights on reviewing metadata content within the own group and authorising its publication
+    - Création de nouveaux utilisateurs dans son propre groupe
+    - Modification des privilèges des utilisateurs de son groupe
+    - Création, modification et suppression de fiches de métadonnées au sein de son groupe
 
-#.  Editor Profile
+#.  Relecteur
 
-    The editor works on metadata with following privileges:
+    Le relecteur est l'utilisateur donnant l'autorisation finale de publication d'une fiche de métadonnées de son groupe sur l'Intranet ou Internet.
+
+#.  Editeur
+
+    L'éditeur dispose des droits suivants lui permettant de travailler sur les fiches de métadonnées :
     
-    - Full rights on creating/editing/ deleting new/old data within the own group
+    - Création, modification et suppression de fiches de métadonnées au sein de son groupe
 
-#.  Registered User Profile
+#.  Utilisateur Enregistré
 
-    The Registered User has more access privileges than non-authenticated Guest users:
+    L'utilisateur enregsitré dispose de droits supplémentaires par rapport aux utilisateurs anonymes :
     
-    - Right to download protected data
+    - Téléchargement de données protégées
+

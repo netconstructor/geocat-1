@@ -98,7 +98,8 @@
 		<allow service="xml.config.set"/>
 		<allow service="xml.config.doActions"/>
 		<allow service="lucene.config.reload"/>
-		
+        <allow service="sequential.execution.set"/>
+
 		<allow service="metadata.admin.index.rebuild"/>
 		<allow service="metadata.admin.index.rebuildxlinks"/>
 		<allow service="metadata.admin.index.optimize"/>
@@ -190,6 +191,12 @@
 		<allow service="metadata.batch.category.form"/>
 		<allow service="metadata.batch.update.categories"/>
 
+		<!-- These are the metadata status forms -->
+		<allow service="metadata.status"/>
+		<allow service="metadata.status.form"/>
+		<allow service="xml.metadata.status.set"/>
+		<allow service="metadata.batch.status.form"/>
+		<allow service="metadata.batch.update.status"/>
 
 		<!-- Allow to add a metadata record -->
 		<allow service="metadata.add"/>
@@ -200,6 +207,10 @@
 		<allow service="metadata.admin.form"/>
 		<allow service="metadata.batch.admin.form"/>
 		<allow service="metadata.batch.update.privileges"/>
+
+		<!-- Allow to version a metadata record -->
+		<allow service="metadata.version"/>
+		<allow service="metadata.batch.version"/>
 
 		<!-- Allow to delete a metadata record -->
 		<allow service="metadata.delete"/>
@@ -377,6 +388,8 @@
 		<allow service="xml.keyword.get"/>
 		<allow service="xml.file.disclaimer"/>
 		<allow service="xml.file.download"/>
+		<allow service="xml.metadata.status.values.list"/>
+		<allow service="xml.metadata.status.get"/>
 	  <allow service="search"/>
 	  <allow service="view"/>
 	  <allow service="edit"/>

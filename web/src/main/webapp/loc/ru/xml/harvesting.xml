@@ -24,7 +24,7 @@
 
 	<info type="webdav">
 		<short>Web DAV</short>
-		<long>Сервер Web DAV</long>
+		<long>Web Access Folder/Сервер Web DAV</long>
 	</info>
 
 	<info type="csw">
@@ -129,6 +129,8 @@
 	<title>Заголовок</title>
 	<abstract>Реферат</abstract>
 	<keywords>Ключевые слова</keywords>
+	<minscale>Min scale denominator</minscale>
+	<maxscale>Max scale denominator</maxscale>
 	<subject>Subject</subject>
 	<digital>Digital</digital>
 	<hardcopy>Hardcopy</hardcopy>

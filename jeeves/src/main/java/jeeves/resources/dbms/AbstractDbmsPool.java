@@ -163,6 +163,10 @@ public abstract class AbstractDbmsPool implements ResourceProvider {
 
 	public void close(Object resource) throws Exception {
 		Dbms dbms = (Dbms) resource;
+		synchronized (hsListeners) {
+			for (ResourceListener l : hsListeners)
+				l.beforeClose(resource);
+		}
 		try {
 			dbms.commit();
 		} finally {

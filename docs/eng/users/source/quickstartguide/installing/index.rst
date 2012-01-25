@@ -85,6 +85,17 @@ If you use Windows, the following steps will guide you to complete the installat
 
    *Packages to be installed*
 
+The installer allows to install these additional packages:
+
+1. GeoNetwork User Interface: Experimental UI for GeoNetwork using javascript components based on ExtJs library.
+2. GeoServer: Web Map Server that provides default base layers for the GeoNetwork map viewer.
+3. European Union INSPIRE Directive configuration pack: Enables INSPIRE support in GeoNetwork.
+ #. INSPIRE validation rules.
+ #. Thesaurus files (GEMET, Inspire themes).
+ #. INSPIRE search panel.
+ #. INSPIRE metadata view.
+4. GAST: Installs GeoNetwork's Administrator Survival Tool. See :ref:`gast`.
+
 Installation using the platform independent installer
 `````````````````````````````````````````````````````
 

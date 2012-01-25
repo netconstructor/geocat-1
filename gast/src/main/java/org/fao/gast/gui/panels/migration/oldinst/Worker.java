@@ -45,7 +45,6 @@ import org.fao.gast.lib.druid.Codec;
 import org.fao.gast.lib.druid.DdfLoader;
 import org.fao.gast.lib.druid.ImportField;
 import org.fao.gast.localization.Messages;
-import org.fao.geonet.kernel.XmlSerializer;
 import org.jdom.Element;
 
 //==============================================================================
@@ -402,7 +401,7 @@ public class Worker implements Runnable
 
 			md.getChild("source").setText(newSiteId);
 
-			Element xml = XmlSerializer.select(oldDbms, "Metadata", id);
+			Element xml = selectMd(oldDbms, "Metadata", id);
 			oldDbms.commit();
 
 			//--- Identify the best owner
@@ -869,6 +868,19 @@ public class Worker implements Runnable
 		newDbms.execute(query, source.getZ3950Port(),  42);
 
 		newDbms.commit();
+	}
+
+	//---------------------------------------------------------------------------
+
+	private Element selectMd(Dbms dbms, String table, String id) throws Exception {
+		String query = "SELECT * FROM " + table + " WHERE id = ?";
+		Element rec = dbms.select(query, new Integer(id)).getChild("record");
+
+		if (rec == null) return null;
+
+		String xmlData = rec.getChildText("data");
+		rec = Xml.loadString(xmlData, false);
+		return (Element) rec.detach();
 	}
 
 	//---------------------------------------------------------------------------

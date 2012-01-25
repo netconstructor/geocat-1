@@ -4,6 +4,7 @@
 
 DELETE FROM MetadataCateg;
 DELETE FROM MetadataRating;
+DELETE FROM MetadataStatus;
 DELETE FROM OperationAllowed;
 DELETE FROM Metadata;
 DELETE FROM CategoriesDes;
@@ -544,6 +545,21 @@ INSERT INTO IsoLanguages VALUES  (484,'zza');
 
 
 -- ======================================================================
+-- === Table: StatusValues
+-- ======================================================================
+
+INSERT INTO StatusValues VALUES  (0,'unknown','y');
+INSERT INTO StatusValues VALUES  (1,'draft','y');
+INSERT INTO StatusValues VALUES  (2,'approved','y');
+INSERT INTO StatusValues VALUES  (3,'retired','y');
+INSERT INTO StatusValues VALUES  (4,'submitted','y');
+INSERT INTO StatusValues VALUES  (5,'rejected','y');
+
+-- ======================================================================
+-- === Table: StatusValuesDes
+-- ======================================================================
+
+-- ======================================================================
 -- === Table: Operations
 -- ======================================================================
 
@@ -870,6 +886,7 @@ INSERT INTO Settings VALUES (14,1,'platform',NULL);
 -- FIXME : needs to use maven filter for version and subVersion
 INSERT INTO Settings VALUES (15,14,'version','2.7.0-SNAPSHOT');
 INSERT INTO Settings VALUES (16,14,'subVersion','SNAPSHOT');
+INSERT INTO Settings VALUES (17,10,'svnUuid','');
 INSERT INTO Settings VALUES (20,1,'server',NULL);
 INSERT INTO Settings VALUES (21,20,'host','localhost');
 INSERT INTO Settings VALUES (22,20,'port','8080');

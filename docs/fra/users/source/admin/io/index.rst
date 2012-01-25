@@ -1,4 +1,5 @@
 .. _io:
+.. include:: ../../substitutions.txt
 
 Import, export et moissonnage
 #############################
@@ -6,7 +7,7 @@ Import, export et moissonnage
 .. toctree::
     :maxdepth: 2
 
-    import/index.rst
+    fileImport/index.rst
+    batchImport/index.rst
     harvesting/index.rst
-    import2/index.rst
     

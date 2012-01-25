@@ -52,6 +52,8 @@ import org.geotools.xml.Parser;
 import org.jdom.Element;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
@@ -80,11 +82,10 @@ import java.util.logging.Level;
 public class SpatialIndexWriter implements FeatureListener
 {
 
-    static final String                                          IDS_ATTRIBUTE_NAME        = "id";
-    static final String                                          GEOM_ATTRIBUTE_NAME       = "the_geom";
-    static final String                                          SPATIAL_INDEX_TYPENAME    = "spatialindex";
-		static final String                                          SPATIAL_FILTER_JCS        = "SpatialFilterCache";
-    public static final int                                      MAX_WRITES_IN_TRANSACTION = 5000;
+    static final String _IDS_ATTRIBUTE_NAME = "id";
+    static final String _SPATIAL_INDEX_TYPENAME = "spatialindex";
+    static final String                                          SPATIAL_FILTER_JCS        = "SpatialFilterCache";
+    public static final int                                      MAX_WRITES_IN_TRANSACTION = 1000;
 
     private final Parser                              _parser;
     private final Transaction                         _transaction;
@@ -94,7 +95,12 @@ public class SpatialIndexWriter implements FeatureListener
     private STRtree                                   _index;
     private static int                                _writes;
 
-		/**
+    private Name _idColumn;
+    private Name _geomColumn;
+    private boolean _autocommit;
+
+
+    /**
 			* TODO: javadoc.
 			* 
 			* @param dataStore
@@ -115,10 +121,13 @@ public class SpatialIndexWriter implements FeatureListener
         _parser.setStrict(false);
         _parser.setValidating(false);
         _transaction = transaction;
-				_maxWrites = maxWrites;
+		_maxWrites = maxWrites;
 
         _featureStore = createFeatureStore(datastore);
-        _featureStore.setTransaction(_transaction);
+        _autocommit = maxWrites < 2;
+        if(!_autocommit) {
+            _featureStore.setTransaction(_transaction);
+        }
         _featureStore.addFeatureListener(this);
 
     }
@@ -162,7 +171,7 @@ public class SpatialIndexWriter implements FeatureListener
 
                 _writes++;
 
-                if (_writes > _maxWrites) {
+                if (!_autocommit && _writes > _maxWrites) {
                     _transaction.commit();
                     _writes = 0;
                 }
@@ -200,7 +209,7 @@ public class SpatialIndexWriter implements FeatureListener
             FilterFactory2 factory = CommonFactoryFinder
                     .getFilterFactory2(GeoTools.getDefaultHints());
             Filter filter = factory.equals(
-                    factory.property(IDS_ATTRIBUTE_NAME), factory.literal(id));
+                    factory.property(_idColumn), factory.literal(id));
 
             _index = null;
 
@@ -365,7 +374,7 @@ public class SpatialIndexWriter implements FeatureListener
         try {
             while (features.hasNext()) {
                 SimpleFeature feature = features.next();
-                Pair<FeatureId, Object> data = Pair.read(feature.getIdentifier(), feature.getAttribute("id"));
+                Pair<FeatureId, Object> data = Pair.read(feature.getIdentifier(), feature.getAttribute(_idColumn));
                 _index.insert(((Geometry) feature.getDefaultGeometry())
                         .getEnvelopeInternal(), data);
             }
@@ -375,13 +384,45 @@ public class SpatialIndexWriter implements FeatureListener
         }
     }
 
-	private FeatureStore<SimpleFeatureType, SimpleFeature> createFeatureStore(DataStore datastore) throws Exception
-    {
+	private FeatureStore<SimpleFeatureType, SimpleFeature> createFeatureStore(DataStore datastore) throws Exception {
+        final String IDS_ATTRIBUTE_NAME = "id";
+        final String SPATIAL_INDEX_TYPENAME = "spatialindex";
 
-        return (FeatureStore<SimpleFeatureType, SimpleFeature>) datastore.getFeatureSource(SPATIAL_INDEX_TYPENAME);
+        FeatureStore<SimpleFeatureType, SimpleFeature> featureSource = null;
+
+        featureSource = findSpatialIndexStore(datastore);
+        if (featureSource != null) {
+            _idColumn = findIdColumn(featureSource);
+
+            return featureSource;
+
+        }
+        return null;
     }
 
-	public static MultiPolygon toMultiPolygon(Geometry geometry)
+    /**
+     * Find the spatialindex featureStore or return null
+     */
+    public static FeatureStore<SimpleFeatureType, SimpleFeature> findSpatialIndexStore(DataStore datastore) throws IOException {
+        for (String name : datastore.getTypeNames()) {
+            if (_SPATIAL_INDEX_TYPENAME.equalsIgnoreCase(name)) {
+                return (FeatureStore<SimpleFeatureType, SimpleFeature>) datastore.getFeatureSource(name);
+            }
+        }
+        return null;
+    }
+
+    public static Name findIdColumn(FeatureSource<SimpleFeatureType, SimpleFeature> featureSource) {
+        for (AttributeDescriptor descriptor : featureSource.getSchema().getAttributeDescriptors()) {
+
+            if (_IDS_ATTRIBUTE_NAME.equalsIgnoreCase(descriptor.getLocalName())) {
+                return descriptor.getName();
+            }
+        }
+        return null;
+    }
+
+    public static MultiPolygon toMultiPolygon(Geometry geometry)
     {
         if (geometry instanceof Polygon) {
             Polygon polygon = (Polygon) geometry;
