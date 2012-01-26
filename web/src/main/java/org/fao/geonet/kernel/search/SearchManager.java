@@ -1107,6 +1107,101 @@ public class SearchManager
 	// utilities
 
     /**
+     * If otherLanguages has a document that is the same locale as the default then remove it from
+     * otherlanguages and merge the fields with those in defaultLang
+     */
+    private void mergeDefaultLang(Element defaultLang, List<Element> otherLanguages)
+    {
+        final String langCode;
+        if( defaultLang.getAttribute("locale") == null ){
+            langCode = "";
+        } else {
+            langCode = defaultLang.getAttributeValue("locale");
+        }
+
+        Element toMerge = null;
+
+        for (Element element : otherLanguages) {
+            String clangCode;
+            if( element.getAttribute("locale") == null ){
+                clangCode = "";
+            } else {
+                clangCode = element.getAttributeValue("locale");
+            }
+
+            if(clangCode.equals(langCode)){
+                toMerge = element;
+                break;
+            }
+        }
+
+        SortedSet<Element> toInclude = new TreeSet<Element>(new Comparator<Element>()
+        {
+
+
+            public int compare(Element o1, Element o2)
+            {
+                // <Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
+
+                int name = compare(o1, o2, "name");
+                int string = compare(o1, o2, "string");
+                int store = compare(o1, o2, "store");
+                int index = compare(o1, o2, "index");
+
+                if( name != 0){
+                    return name;
+                }
+
+                if( string != 0){
+                    return string;
+                }
+
+                if( store != 0){
+                    return store;
+                }
+
+                if( index != 0){
+                    return index;
+                }
+
+                return 0;
+
+            }
+
+            private int compare(Element o1, Element o2, String attName)
+            {
+                return safeGet(o1, attName).compareTo(safeGet(o2, attName));
+            }
+
+            public String safeGet(Element e, String attName){
+                String att = e.getAttributeValue(attName);
+                if( att == null ){
+                    return "";
+                }
+                else {
+                    return att;
+                }
+            }
+        });
+
+        if( toMerge != null ){
+            toMerge.detach();
+            otherLanguages.remove(toMerge);
+
+            for (Element element : (List<Element>) defaultLang.getChildren()) {
+                toInclude.add(element);
+            }
+            for (Element element : (List<Element>) toMerge.getChildren()) {
+                toInclude.add(element);
+            }
+            toMerge.removeContent();
+            defaultLang.removeContent();
+            defaultLang.addContent(toInclude);
+        }
+
+    }
+
+    /**
      * TODO javadoc.
      *
      * @param styleSheetName

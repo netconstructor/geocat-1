@@ -340,7 +340,7 @@ public class Importer {
 					addOperations(context.getUserSession(), dm, dbms, privileges, id.get(index), groupId);
 
 				if (indexGroup) {
-					dm.indexMetadataGroup(dbms, id.get(index));
+					dm.indexMetadataGroup(dbms, id.get(index), context);
 				}
                 else {
                     dm.indexInThreadPool(context,id.get(index),dbms);

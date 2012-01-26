@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import jeeves.resources.dbms.Dbms;
+import jeeves.server.context.ServiceContext;
 
 import org.apache.lucene.document.Document;
 import org.fao.geonet.kernel.XmlSerializer;
@@ -41,9 +42,11 @@ public class MetadataRecord
     public final List<String> xlinks;
     private String ownerEmail = null;
     private String ownerName = null;
+    private XmlSerializer xmlSerializer;
 
-    public MetadataRecord(Document element, List<String> xlinks, Dbms dbms, boolean loadMetadata) throws Exception
+    public MetadataRecord(XmlSerializer xmlSerializer, Document element, List<String> xlinks, Dbms dbms, boolean loadMetadata) throws Exception
     {
+        this.xmlSerializer = xmlSerializer;
         id = element.get("_id");
         ownerId = element.get("_owner");
         this.xlinks = Collections.unmodifiableList(xlinks);
@@ -56,9 +59,9 @@ public class MetadataRecord
         }
     }
 
-    public void commit(Dbms dbms) throws SQLException
+    public void commit(Dbms dbms, ServiceContext srvContext) throws Exception
     {
-        XmlSerializer.update(dbms, id, xml, new ISODate() .toString(),true);
+        xmlSerializer.update(dbms, id, xml, new ISODate() .toString(),true, srvContext.getUserSession(), srvContext);
     }
 
     public String email(Dbms dbms) throws SQLException {

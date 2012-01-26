@@ -26,6 +26,7 @@ package org.fao.geonet.kernel;
 import jeeves.constants.Jeeves;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
+import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
@@ -60,9 +61,9 @@ public class XmlSerializerDb extends XmlSerializer {
      * @return
      * @throws Exception
      */
-	public Element select(Dbms dbms, String table, String id) throws Exception {
-		Element rec = internalSelect(dbms, table, id);
-		if (resolveXLinks()) Processor.detachXLink(rec);
+	public Element select(Dbms dbms, String table, String id, ServiceContext srvContext) throws Exception {
+		Element rec = internalSelect(dbms, table, id, srvContext);
+		if (resolveXLinks()) Processor.detachXLink(rec, srvContext);
 		return rec;
 	}
 
@@ -77,8 +78,8 @@ public class XmlSerializerDb extends XmlSerializer {
      * @return
      * @throws Exception
      */
-	public Element selectNoXLinkResolver(Dbms dbms, String table, String id) throws Exception {
-		return internalSelect(dbms, table, id);
+	public Element selectNoXLinkResolver(Dbms dbms, String table, String id, ServiceContext srvContext) throws Exception {
+		return internalSelect(dbms, table, id, srvContext);
 	}
 
     /**
@@ -124,7 +125,7 @@ public class XmlSerializerDb extends XmlSerializer {
      *
      * @throws SQLException
      */
-	public void update(Dbms dbms, String id, Element xml, String changeDate, boolean updateDateStamp, UserSession session) throws SQLException {
+	public void update(Dbms dbms, String id, Element xml, String changeDate, boolean updateDateStamp, UserSession session, ServiceContext srvContext) throws SQLException {
 
 		updateDb(dbms, id, xml, changeDate, xml.getQualifiedName(), updateDateStamp);
 	}

@@ -209,7 +209,7 @@ public class Aligner
 		addCategories(id);
 
 		dbms.commit();
-		dataMan.indexMetadataGroup(dbms, id);
+		dataMan.indexMetadataGroup(dbms, id, context);
 		result.addedMetadata++;
 	}
 
@@ -315,7 +315,7 @@ public class Aligner
 				addCategories(id);
 
 				dbms.commit();
-				dataMan.indexMetadataGroup(dbms, id);
+				dataMan.indexMetadataGroup(dbms, id, context);
 				result.updatedMetadata++;
 			}
 		}

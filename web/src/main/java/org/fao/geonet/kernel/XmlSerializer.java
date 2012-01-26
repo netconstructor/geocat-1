@@ -88,13 +88,12 @@ public abstract class XmlSerializer {
      * @return
      * @throws Exception
      */
-	protected Element internalSelect(Dbms dbms, String table, String id) throws Exception {
+	protected Element internalSelect(Dbms dbms, String table, String id, ServiceContext srvContext) throws Exception {
 		String query = "SELECT * FROM " + table + " WHERE id = ?";
 		Element rec = dbms.select(query, new Integer(id)).getChild(Jeeves.Elem.RECORD);
 
 		if (rec == null)
 			return null;
-        if (resolveXLinks()) Processor.detachXLink(rec,srvContext);
 
 		String xmlData = rec.getChildText("data");
 		rec = Xml.loadString(xmlData, false);
@@ -254,7 +253,7 @@ public abstract class XmlSerializer {
 	   throws Exception;
 
 	public abstract void update(Dbms dbms, String id, Element xml, 
-		 String changeDate, boolean updateDateStamp, UserSession session) 
+		 String changeDate, boolean updateDateStamp, UserSession session, ServiceContext srvContext) 
 		 throws Exception;
 
 	public abstract String insert(Dbms dbms, String schema, Element xml, 
@@ -263,10 +262,10 @@ public abstract class XmlSerializer {
 			 int owner, String groupOwner, String docType, UserSession session) 
 			 throws Exception;
 
-	public abstract Element select(Dbms dbms, String table, String id) 
+	public abstract Element select(Dbms dbms, String table, String id, ServiceContext srvContext) 
 			 throws Exception;
 
 	public abstract Element selectNoXLinkResolver(Dbms dbms, String table, 
-				String id) 
+				String id, ServiceContext srvContext) 
 				throws Exception;
 } 

@@ -212,7 +212,7 @@ class Harvester {
 		addCategories(id);
 
 		dbms.commit();
-		dataMan.indexMetadataGroup(dbms, id);
+		dataMan.indexMetadataGroup(dbms, id, context);
 		result.added++;
 	}
 
@@ -227,43 +227,38 @@ class Harvester {
 			String schema = dataMan.autodetectSchema(md);
 			if (!params.validate || validates(schema, md)) {
 				return (Element) md.detach();
-			}
-
-			log.warning("Skipping metadata that does not validate. Path is : "+ rf.getPath());
-			result.doesNotValidate++;
-		}
-		catch (NoSchemaMatchesException e) {
-				log.warning("Skipping metadata with unknown schema. Path is : "+ rf.getPath());
-				result.unknownSchema++;
-			}
-			else {
-				if (md.getName() == "TRANSFER") {
-					// we need to convert to CHE
-				    try {
+			} else {
+                if (md.getName() == "TRANSFER") {
+                    // we need to convert to CHE
+                    try {
                         String styleSheetPath = context.getAppPath() + "xsl/conversion/import/GM03_2-to-ISO19139CHE.xsl";
                         Element tmp = Xml.transform(md, styleSheetPath);
                         md = tmp;
-				    } catch (Throwable e) {
+                    } catch (Throwable e) {
                         String styleSheetPath = context.getAppPath() + "xsl/conversion/import/GM03-to-ISO19139CHE.xsl";
                         Element tmp = Xml.transform(md, styleSheetPath);
                         md = tmp;
-				    }
-				}
+                    }
+                }
 
-				if (!params.validate || validates(schema, md)) {
-					return (Element) md.detach();
-				}
-				log.warning("Skipping metadata that does not validate. Path is : "+ rf.getPath());
-				result.doesNotValidate++;
-			}
-		}
-		catch(JDOMException e) {
+                if (!params.validate || validates(schema, md)) {
+                    return (Element) md.detach();
+                }
+                log.warning("Skipping metadata that does not validate. Path is : "+ rf.getPath());
+                result.doesNotValidate++;
+            }
+
+			log.warning("Skipping metadata that does not validate. Path is : "+ rf.getPath());
+			result.doesNotValidate++;
+		} catch (NoSchemaMatchesException e) {
+				log.warning("Skipping metadata with unknown schema. Path is : "+ rf.getPath());
+				result.unknownSchema++;
+		} catch(JDOMException e) {
 			log.warning("Skipping metadata with bad XML format. Path is : "+ rf.getPath());
 			// issue #21546 : warn the admin by mail
 			Util.warnAdminByMail(context, Util.SKEL_MAIL_WEBDAV_ERROR, params.url, null, rf.getPath());
 			result.badFormat++;
-		}
-		catch(Exception e) {
+		} catch(Exception e) {
 			log.warning("Raised exception while getting metadata file : "+ e);
 			// issue #21546 : warn the admin by mail
 			Util.warnAdminByMail(context, Util.SKEL_MAIL_WEBDAV_ERROR, params.url, null, rf.getPath());
@@ -364,7 +359,7 @@ class Harvester {
 			dbms.execute("DELETE FROM MetadataCateg WHERE metadataId=?", Integer.parseInt(record.id));
 			addCategories(record.id);
 			dbms.commit();
-			dataMan.indexMetadataGroup(dbms, record.id);
+			dataMan.indexMetadataGroup(dbms, record.id, context);
 			result.updated++;
 		}
 	}

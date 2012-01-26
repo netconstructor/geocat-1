@@ -197,7 +197,7 @@ class EditUtils {
      * @throws Exception
      */
     private Element applyChanges(Dbms dbms, String id, Hashtable changes, String currVersion, String lang) throws Exception {
-        Element md = XmlSerializer.select(dbms, "Metadata", id, context);
+        Element md = xmlSerializer.select(dbms, "Metadata", id, context);
 
 		//--- check if the metadata has been deleted
 		if (md == null) {

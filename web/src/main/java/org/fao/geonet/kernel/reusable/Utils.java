@@ -121,7 +121,7 @@ public final class Utils {
                 }
 
             }
-            metadataRecord.commit(dbms);
+            metadataRecord.commit(dbms, context);
         }
         Element e = new Element("id");
         e.setText(id);
@@ -253,7 +253,7 @@ public final class Utils {
                         }
                     }
                     if (!xlinks.isEmpty()) {
-                        MetadataRecord record = new MetadataRecord(element, xlinks, dbms, loadMetadata);
+                        MetadataRecord record = new MetadataRecord(gc.getXmlSerializer(), element, xlinks, dbms, loadMetadata);
                         results.add(record);
                     }
 

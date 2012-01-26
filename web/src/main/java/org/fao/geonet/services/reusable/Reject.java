@@ -137,7 +137,7 @@ public class Reject implements Service
         }
         strategy.performDelete(ids, dbms, session, strategySpecificData);
 
-        gc.getDataManager().startThreadsToReindex(context, allAffectedMdIds);
+        gc.getDataManager().indexInThreadPool(context, Arrays.asList(ids), dbms);
 
         return result;
 
@@ -179,7 +179,7 @@ public class Reject implements Service
             }
 
 
-            metadataRecord.commit(dbms);
+            metadataRecord.commit(dbms, context);
         }
         
         return newIds;
