@@ -3,6 +3,147 @@
 Advanced configuration
 ======================
 
+.. _Database_JNDI_configuration:
+
+Database configuration
+----------------------
+
+GeoNetwork has two options for pooled connections to the relational database:
+
+#. Manage its own database configuration and pool directly using Apache Commons Database Connection Pool (DBCP)
+#. Use database configuration and pool managed by the web application server (also known as the container) such as tomcat or jetty via the Java Naming and Directory Interface (JNDI).
+
+Managing the database connection pool through Apache DBCP
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This option is the one that most users would use as it is the default option for managing the database in GeoNetwork. A typical configuration in the resources element of `INSTALL_DIR/web/geonetwork/WEB-INF/config.xml` uses the `jeeves.resources.dbms.ApacheDBCPool` class and looks something like:
+
+::
+
+	<resource enabled="true">
+		<name>main-db</name>
+		<provider>jeeves.resources.dbms.ApacheDBCPool</provider>
+		<config>
+			<user>www-data</user>
+			<password>www-data</password>
+			<driver>org.postgis.DriverWrapper</driver>
+			<url>jdbc:postgresql_postGIS://localhost:5432/geonetwork</url>
+			<poolSize>10</poolSize>
+			<validationQuery>SELECT 1</validationQuery>
+		</config>
+	</resource>	 
+
+The parameters that can be specified to control the Apache Database Connection Pool are described at http://commons.apache.org/dbcp/configuration.html. You can configure a subset of these parameters in your resource element. The parameters that can be specified are:
+
+
+===================================   =====================================================================   ================================
+Parameter                             Description                                                             Default               
+===================================   =====================================================================   ================================
+maxActive                             pool size/maximum number of active connections                          10                     
+maxIdle                               maximum number of idle connections                                      maxActive             
+minIdle                               minimum number of idle connections                                      0                     
+maxWait                               number of milliseconds to wait for a connection to become available     200                   
+validationQuery                       sql statement for verifying a connection, must return a least one row   no default            
+timeBetweenEvictionRunsMillis         time between eviction runs (-1 means next three params are ignored)     -1                    
+testWhileIdle                         test connections when idle                                              false                 
+minEvictableIdleTimeMillis            idle time before connection can be evicted                              30 x 60 x 1000 msecs  
+numTestsPerEvictionRun                number of connections tested per eviction run                           3                     
+defaultTransactionIsolation           see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29       SERIALIZABLE (except for Oracle)
+===================================   =====================================================================   ================================
+
+
+The following parameters are set by GeoNetwork and cannot be configured by the user:
+
+- removeAbandoned - true
+- removeAbandonedTimeout - 60 x 60 seconds = 1 hour
+- logAbandoned - true
+- testOnBorrow - true
+- defaultReadOnly - false
+- defaultAutoCommit - false
+- initialSize - maxActive
+
+Note: Some firewalls kill idle connections to databases after say 1 hour (= 3600 secs). To keep idle connections alive by testing them with the validationQuery, set minEvictableIdleTimeMillis to something less than timeout, interval (eg. 2 mins = 120 secs = 120000 millisecs), set testWhileIdle to true and set timeBetweenEvictionRunsMillis and numTestsPerEvictionRun high enough to visit connections frequently eg 15 mins = 900 secs = 900000 millisecs and 4 connections per test. For example:
+
+::
+
+	<testWhileIdle>true</testWhileIdle>
+	<minEvictableIdleTimeMillis>120000</minEvictableIdleTimeMillis>
+	<timeBetweenEvictionRunsMillis>900000</timeBetweenEvictionRunsMillis>
+	<numTestsPerEvictionRun>4</numTestsPerEvictionRun>
+
+
+**Note:**
+
+- When GeoNetwork manages the database connection pool, PostGIS database is the only database that can hold the spatial index in the database. All other database choices hold the spatial index as a shapefile. If using PostGIS, two pools of database connections are created. The first is managed and configured using parameters in this section, the second is created by GeoTools and cannot be configured. If you want to use the database to hold the spatial index you should use the JNDI configuration described in the next section because it uses a single, configurable database pool through GeoTools.
+- The Oracle database should not be configured to use SERIALIZABLE as the transaction isolation level (use READ_COMMITTED instead) - SERIALIZABLE seems to cause a lot of failed Oracle transactions.
+
+
+Database connection pool managed by the container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A typical configuration in the resources element of `INSTALL_DIR/web/geonetwork/WEB-INF/config.xml` uses the `jeeves.resources.dbms.JNDIPool` class and looks something like:
+
+::
+
+	<resource enabled="true">
+		<name>main-db</name>
+		<provider>jeeves.resources.dbms.JNDIPool</provider>
+		<config>
+			<context>java:/comp/env</context>
+			<resourceName>jdbc/geonetwork</resourceName>
+			<url>jdbc:oracle:thin:@localhost:1521:oracle-XE</url>
+			<provideDataStore>true</provideDataStore>
+		</config>
+	</resource>	
+
+The configuration parameters and their meanings are as follows:
+
+===========================   =======================================================================================================
+Config Parameter              Description
+===========================   =======================================================================================================
+context                       The name of the context from which to obtain the resource - almost always this is java:/comp/env
+resourceName                  The name of the resource in the context to use
+url                           The URL of the database - this is needed to let GeoTools know the database type
+provideDataStore              If set to true then the database will be used for the spatial index, otherwise a shapefile will be used
+===========================   =======================================================================================================
+
+The remainder of the configuration is done in the container context. eg. for tomcat this configuration is in conf/context.xml in the resource called jdbc/geonetwork. Here is an example for the Oracle database:
+
+::
+
+	<Resource name="jdbc/geonetwork"
+		auth="Container"
+		type="javax.sql.DataSource"
+		username="system"
+		password="oracle"
+		factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+		driverClassName="oracle.jdbc.OracleDriver"             
+		url="jdbc:oracle:thin:@localhost:1521:XE"
+		maxActive="10"
+		maxIdle="10"
+		removeAbandoned="true"
+		removeAbandonedTimeout="3600"
+		logAbandoned="true"
+		testOnBorrow="true"
+		defaultAutoCommit="false" 
+		validationQuery="SELECT 1 FROM DUAL"
+		accessToUnderlyingConnectionAllowed="true"
+	/> 	
+
+The parameters that can be specified to control the Apache Database Connection Pool used by the container are described at http://commons.apache.org/dbcp/configuration.html.
+
+The following parameters should be set to ensure GeoNetwork operates correctly:
+
+- defaultAutoCommit="false"
+- accessToUnderlyingConnectionAllowed="true"
+
+Notes:
+
+- both PostGIS and Oracle will build and use a table in the database for the spatialindex if provideDataStore is set to true. Other databases could be made to do the same if a spatialindex table is created - see the definition for the spatialIndex table in `INSTALL_DIR/web/geonetwork/WEB-INF/classes/setup/sql/create/create-db-postgis.sql` for example.
+- you should install commons-dbcp-1.3.jar and commons-pool-1.5.5.jar in the container class path (eg. `common/lib` for tomcat5) as the only supported DataSourceFactory in geotools is apache commons dbcp. Naturally you should always use the `factory="org.apache.commons.dbcp.BasicDataSourceFactory"` in the JNDI context as well.
+- the default tomcat-dbcp.jar version of apache commons dbcp appears to work correctly for geotools and PostGIS but does not work for those databases that need to unwrap the connection in order to do spatial operations (eg. Oracle).
+- Oracle ojdbc-14.jar or ojdbc5.jar or ojdbc6.jar (depending on the version of Java being used) should also be installed in the container `common/lib` area (you may need to remove ojdbc-14.jar that appears in `INSTALL_DIR/web/geonetwork/WEB-INF/lib`.) 
+- advanced: if you are using the subversion metadata history/versioning feature, you should set the default transaction isolation to SERIALIZED ie. you should have `defaultTransactionIsolation="SERIALIZABLE"` in your database config. The reason for this is that prior to a commit the current state of a versioned metadata record and its properties (privileges, status, owner, categories) is read and stored in the subversion repository. If transactions are not serialized then there is a small chance that another transaction may commit other/more changes before the changes to the metadata state in the current transaction are recorded. The exception to this rule is ORACLE which appears to fail to serialize transactions that other systems serialize without issues. Do not use SERIALIZABLE with Oracle, instead use READ_COMMITTED. For more on transaction isolation see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29.
 
 .. _adv_configuration_larger_catalogs:
 
