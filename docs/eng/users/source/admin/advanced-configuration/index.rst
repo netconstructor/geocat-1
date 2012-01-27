@@ -36,9 +36,9 @@ This option is the one that most users would use as it is the default option for
 The parameters that can be specified to control the Apache Database Connection Pool are described at http://commons.apache.org/dbcp/configuration.html. You can configure a subset of these parameters in your resource element. The parameters that can be specified are:
 
 
-===================================   =====================================================================   ================================
+===================================   =====================================================================   =========================================
 Parameter                             Description                                                             Default               
-===================================   =====================================================================   ================================
+===================================   =====================================================================   =========================================
 maxActive                             pool size/maximum number of active connections                          10                     
 maxIdle                               maximum number of idle connections                                      maxActive             
 minIdle                               minimum number of idle connections                                      0                     
@@ -48,8 +48,8 @@ timeBetweenEvictionRunsMillis         time between eviction runs (-1 means next 
 testWhileIdle                         test connections when idle                                              false                 
 minEvictableIdleTimeMillis            idle time before connection can be evicted                              30 x 60 x 1000 msecs  
 numTestsPerEvictionRun                number of connections tested per eviction run                           3                     
-defaultTransactionIsolation           see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29       SERIALIZABLE (except for Oracle)
-===================================   =====================================================================   ================================
+defaultTransactionIsolation           see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29       SERIALIZABLE (for Oracle READ_COMMITTED)
+===================================   =====================================================================   =========================================
 
 
 The following parameters are set by GeoNetwork and cannot be configured by the user:
@@ -75,7 +75,7 @@ Note: Some firewalls kill idle connections to databases after say 1 hour (= 3600
 **Note:**
 
 - When GeoNetwork manages the database connection pool, PostGIS database is the only database that can hold the spatial index in the database. All other database choices hold the spatial index as a shapefile. If using PostGIS, two pools of database connections are created. The first is managed and configured using parameters in this section, the second is created by GeoTools and cannot be configured. If you want to use the database to hold the spatial index you should use the JNDI configuration described in the next section because it uses a single, configurable database pool through GeoTools.
-- The Oracle database should not be configured to use SERIALIZABLE as the transaction isolation level (use READ_COMMITTED instead) - SERIALIZABLE seems to cause a lot of failed Oracle transactions.
+- advanced: if you are using the subversion metadata history/versioning feature, you should set the default transaction isolation to SERIALIZED ie. you should have `<defaultTransactionIsolation>SERIALIZABLE</defaultTransactionIsolation>` in your database config. The reason for this is that prior to a commit the current state of a versioned metadata record and its properties (privileges, status, owner, categories) is read and stored in the subversion repository. If transactions are not serialized then there is a small chance that another transaction may commit other/more changes before the changes to the metadata state in the current transaction are recorded. The exception to this rule is ORACLE which appears to fail to serialize transactions that other systems serialize without issues. Do not use SERIALIZABLE with Oracle, instead use READ_COMMITTED. For more on transaction isolation see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29.
 
 
 Database connection pool managed by the container
