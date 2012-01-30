@@ -1,0 +1,21 @@
+<overrides>
+  <import file="/WEB-INF/overrides-config-geocat.xml"/>
+
+    <properties>
+      <postgis.user>@POSTGIS_USER@</postgis.user>
+      <postgis.pass>@POSTGIS_PASS@</postgis.pass>
+      <postgis.host>@POSTGIS_HOST@</postgis.host>
+      <postgis.port>@POSTGIS_PORT@</postgis.port>
+      <postgis.db>@POSTGIS_DATABASE@</postgis.db>
+      <wfs.host>@WFS_HOST@</wfs.host>
+      <wfs.port>@WFS_PORT@</wfs.port>
+    </properties>
+
+    <file name=".*/WEB-INF/config.xml">
+      <replaceText xpath="general/uploadDir">@UPLOAD_DIR@</replaceText>
+      <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="@DATA_DIR@/schemaPluginsDir"/>
+      <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="@HTML_CACHE_DIR@"/>
+      <replaceAtt xpath="appHandler/param[@name = 'useSubversion']" attName="value" value="false"/>
+      <replaceAtt xpath="appHandler/param[@name = 'subversionPath']" attName="value" value="@DATA_DIR@/metadata_subversion"/>
+    </file>
+</overrides>
