@@ -17,27 +17,30 @@
         <xsl:for-each select="root/response/keyword">
             <gmd:MD_Keywords>
                 <gmd:keyword xsi:type="gmd:PT_FreeText_PropertyType">
-                    <xsl:choose>
-                        <xsl:when test="count(value)&gt;1">
-                            <!-- multilingual keyword -->
-                            <gmd:PT_FreeText>
-                                <xsl:for-each select="value">
-                                    <gmd:textGroup>
-                                        <gmd:LocalisedCharacterString locale="#{substring(@lang,1,2)}"
-                                            ><xsl:value-of select="."/></gmd:LocalisedCharacterString>
-                                    </gmd:textGroup>
-                                </xsl:for-each>
-                            </gmd:PT_FreeText>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <gco:CharacterString><xsl:value-of select="value"/></gco:CharacterString>        
-                        </xsl:otherwise>
-                    </xsl:choose>
+	                <!-- multilingual keyword -->
+	                <gmd:PT_FreeText>
+	                    <xsl:for-each select="value">
+	                        <gmd:textGroup>
+	                            <gmd:LocalisedCharacterString locale="#{substring(@lang,1,2)}"
+	                                ><xsl:value-of select="."/></gmd:LocalisedCharacterString>
+	                        </gmd:textGroup>
+	                    </xsl:for-each>
+	                </gmd:PT_FreeText>
                 </gmd:keyword>
                 <xsl:if test="@type!='_none_'">
                     <gmd:type>
                         <gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_KeywordTypeCode" codeListValue="{@type}"/>
                     </gmd:type>
+                </xsl:if>
+                <xsl:if test="thesaurus!=''">
+                	<gmd:thesaurusName>
+                		<gmd:CI_Citation>
+                			<gmd:title>
+                				<gco:CharacterString><xsl:value-of select="thesaurus"/></gco:CharacterString>
+                			</gmd:title>
+                			<gmd:date gco:nilReason="missing"/>
+               			</gmd:CI_Citation>
+               		</gmd:thesaurusName>
                 </xsl:if>
             </gmd:MD_Keywords>
         </xsl:for-each>

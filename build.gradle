@@ -32,9 +32,10 @@ configure(subprojects.findAll {it.name != 'web-client' && it.name != 'schematron
       'xmlunit:xmlunit:1.2')
   
   repositories {
-//      mavenLocal()
       maven {url "file://${rootDir}/maven_repo"}
       maven {url 'http://dev.mapfish.org/maven/repository'}
+//      maven {url 'http://developer.k-int.com/maven2'}
+      maven {url 'http://maven.tmatesoft.com/content/repositories/releases/'}
       mavenCentral()
       maven {url 'http://download.osgeo.org/webdav/geotools'}
       maven {url 'http://mvnrepository.com/artifact'}
