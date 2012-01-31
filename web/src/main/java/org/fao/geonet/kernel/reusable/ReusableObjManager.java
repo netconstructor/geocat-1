@@ -332,7 +332,7 @@ public class ReusableObjManager
                 
                 changed = updateXLinkAsRequired(dbms, defaultMetadataLang, strategy,
 						updatedElements, currentXLinkElements, changed,
-						placeholder, originalElem, srvContext);
+						placeholder, originalElem, srvContext, originalElementName, logger);
                 continue;
             }
             if(originalElem != null) {
@@ -348,14 +348,21 @@ public class ReusableObjManager
 			ReplacementStrategy strategy, HashSet<String> updatedElements,
 			Map<String, Element> currentXLinkElements, boolean changed,
 			Element placeholder, Element originalElem, 
-			ServiceContext srvContext) throws IOException,
+			ServiceContext srvContext, String originalElementName, ReusableObjectLogger logger) throws IOException,
 			JDOMException, CacheException, AssertionError, Exception {
 		
 		if(!isValidated(originalElem)) {
 			String href = XLink.getHRef(originalElem);
 			Element current = resolveXLink(currentXLinkElements, href,srvContext);
 			
-			if(originalElem.getChildren().isEmpty()) return false;
+			if(originalElem.getChildren().isEmpty()) {
+			    originalElem.removeAttribute(XLink.HREF, XLink.NAMESPACE_XLINK);
+			    originalElem.removeAttribute(XLink.ROLE, XLink.NAMESPACE_XLINK);
+			    originalElem.removeAttribute(XLink.TITLE, XLink.NAMESPACE_XLINK);
+			    originalElem.removeAttribute(XLink.SHOW, XLink.NAMESPACE_XLINK);
+			    return replaceSingleElement(placeholder, originalElem, strategy, defaultMetadataLang, false, dbms,
+                        originalElementName, logger);
+			}
 			
 			boolean equals = Utils.equalElem((Element) originalElem.getChildren().get(0),current);
 			if(current.getName().equalsIgnoreCase("error")) {
