@@ -355,13 +355,13 @@ public class ReusableObjManager
 			String href = XLink.getHRef(originalElem);
 			Element current = resolveXLink(currentXLinkElements, href,srvContext);
 			
-			if(originalElem.getChildren().isEmpty()) {
-			    originalElem.removeAttribute(XLink.HREF, XLink.NAMESPACE_XLINK);
-			    originalElem.removeAttribute(XLink.ROLE, XLink.NAMESPACE_XLINK);
-			    originalElem.removeAttribute(XLink.TITLE, XLink.NAMESPACE_XLINK);
-			    originalElem.removeAttribute(XLink.SHOW, XLink.NAMESPACE_XLINK);
-			    return replaceSingleElement(placeholder, originalElem, strategy, defaultMetadataLang, false, dbms,
-                        originalElementName, logger);
+			if(current==null || originalElem.getChildren().isEmpty()) {
+			    if(current.getChildren().isEmpty()) {
+			        updatePlaceholder(placeholder, originalElem);
+			    } else {
+			        updatePlaceholder(placeholder, current);
+			    }
+			    return false;
 			}
 			
 			boolean equals = Utils.equalElem((Element) originalElem.getChildren().get(0),current);
@@ -385,6 +385,8 @@ public class ReusableObjManager
 		            }
 		            changed = true;
 				}
+			} else {
+			    updatePlaceholder(placeholder, originalElem);
 			}
 		} else {
 		    updatePlaceholder(placeholder, originalElem);
