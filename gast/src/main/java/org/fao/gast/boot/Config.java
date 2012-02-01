@@ -99,6 +99,7 @@ public class Config {
         props.setProperty("config-xml", configXml);
     }
 
+/*
     public String getLogos() {
         return resolvePath(props.getProperty("logos"), false);
     }
@@ -106,27 +107,28 @@ public class Config {
     public void setLogos(String logos) {
         props.setProperty("logos", logos);
     }
-
+*/
     public String getSetupConfig() {
         return resolvePath(props.getProperty("setup-config"), false);
     }
-
+/*
     public void setSetupConfig(String setupConfig) {
         props.setProperty("setup-config", setupConfig);
     }
-
+*/
     public String getEmbeddedDb() {
         return resolvePath(props.getProperty("embedded-db"), false);
     }
 
+/*
     public void setEmbeddedDb(String embeddedDb) {
         props.setProperty("embedded-db", embeddedDb);
     }
-
+*/
     public String getWebXml() {
         return resolvePath(props.getProperty("web-xml"), false);
     }
-
+/*
     public void setWebXml(String webXml) {
         props.setProperty("web-xml", webXml);
     }
@@ -147,19 +149,20 @@ public class Config {
         props.setProperty("schemas", schemas);
     }
 
+*/
     public int getJettyPort() {
         try {
             return Integer.parseInt(props.getProperty("jetty-port"));
         } catch (NumberFormatException e) {
-            setJettyPort(8080);
+            //setJettyPort(8080);
             return 8080;
         }
     }
-
+/*
     public void setJettyPort(int jettyPort) {
         props.setProperty("jetty-port", ""+jettyPort);
     }
-
+*/
     public String getLogOutputDir() {
         return resolvePath(props.getProperty("logOutputDir"),false);
     }
