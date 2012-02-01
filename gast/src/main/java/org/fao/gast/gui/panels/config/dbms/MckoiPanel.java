@@ -21,26 +21,17 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.gast.gui.panels.manag.mefimport;
+package org.fao.gast.gui.panels.config.dbms;
 
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.dlib.gui.FlexLayout;
-import org.dlib.gui.GuiUtil;
-import org.dlib.gui.ProgressDialog;
-import org.fao.gast.gui.panels.FormPanel;
+import org.fao.gast.lib.Lib;
 import org.fao.gast.localization.Messages;
 
 //==============================================================================
 
-public class MainPanel extends FormPanel
+public class MckoiPanel extends DbmsPanel
 {
 	//---------------------------------------------------------------------------
 	//---
@@ -51,77 +42,80 @@ public class MainPanel extends FormPanel
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8295082760129011650L;
-	public MainPanel()
+	private static final long serialVersionUID = 7290449012011589464L;
+
+	public MckoiPanel()
 	{
-		txtInputDir.setText(System.getProperty("user.home", ""));
-		jfcBrowser .setDialogTitle(Messages.getString("chooseInputFolder"));
-		jfcBrowser .setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	}
-
-	//---------------------------------------------------------------------------
-	//---
-	//--- ActionListener
-	//---
-	//---------------------------------------------------------------------------
-
-	public void actionPerformed(ActionEvent e)
-	{
-		String cmd = e.getActionCommand();
-
-		if (cmd.equals("browse"))
-			browse();
-
-		else if (cmd.equals("import"))
-			doImport();
-	}
-
-	//---------------------------------------------------------------------------
-
-	private void browse()
-	{
-		jfcBrowser.setSelectedFile(new File(txtInputDir.getText()));
-
-		int res = jfcBrowser.showDialog(this, Messages.getString("choose"));
-
-		if (res == JFileChooser.APPROVE_OPTION)
-			txtInputDir.setText(jfcBrowser.getSelectedFile().getAbsolutePath());
-	}
-
-	//---------------------------------------------------------------------------
-
-	private void doImport()
-	{
-		Frame          owner  = GuiUtil.getFrame(this);
-		ProgressDialog dialog = new ProgressDialog(owner, Messages.getString("importData"));
-		Worker         worker = new Worker(dialog);
-
-		worker.setInputDir(txtInputDir.getText());
-		dialog.run(worker);
-	}
-
-	//---------------------------------------------------------------------------
-	//---
-	//--- Protected methods
-	//---
-	//---------------------------------------------------------------------------
-
-	protected JComponent buildInnerPanel()
-	{
-		JPanel p = new JPanel();
-
 		FlexLayout fl = new FlexLayout(3,1);
 		fl.setColProp(1, FlexLayout.EXPAND);
-		p.setLayout(fl);
+		setLayout(fl);
 
-		p.add("0,0",   new JLabel(Messages.getString("inputFolder")));
-		p.add("1,0,x", txtInputDir);
-		p.add("2,0",   btnBrowse);
+		add("0,0", new JLabel(Messages.getString("port")));
+		add("1,0", txtPort);
+		add("2,0", new JLabel("<html><font color='red'>(REQ)</font>"));
 
-		btnBrowse.addActionListener(this);
-		btnBrowse.setActionCommand("browse");
+		txtPort.setText("9157");
+		txtPort.setToolTipText(Messages.getString("mckoi.defaultPort"));
+	}
 
-		return p;
+	//---------------------------------------------------------------------------
+	//---
+	//--- DbmsPanel methods
+	//---
+	//---------------------------------------------------------------------------
+
+	public String getLabel() { return Messages.getString("mckoi"); }
+
+	//---------------------------------------------------------------------------
+
+	public boolean isJNDI()
+	{
+		return false;
+	}
+
+	//---------------------------------------------------------------------------
+
+	public boolean matches(String url, boolean isJNDI)
+	{
+		if (!isJNDI) {
+			return url.startsWith(PREFIX);
+		} else {
+			return false;
+		}
+	}
+
+	//---------------------------------------------------------------------------
+
+	public void retrieve()
+	{
+		txtPort.setText(Lib.embeddedDB.getPort());
+	}
+
+	//---------------------------------------------------------------------------
+
+	public void save(boolean createNew) throws Exception
+	{
+		// checks on input
+		String port = txtPort.getText();
+		String user = Lib.embeddedDB.getUser();
+		String pass = Lib.embeddedDB.getPassword();
+
+		if (!Lib.type.isInteger(port))
+			throw new Exception(Messages.getString("portInt"));
+
+		// save input
+		Lib.config.setupDbmsConfig(createNew, false);
+		Lib.config.setDbmsDriver  ("com.mckoi.JDBCDriver");
+		Lib.config.setDbmsURL     (PREFIX+"//localhost:"+port+"/");
+		Lib.config.setDbmsUser    (user);
+		Lib.config.setDbmsPassword(pass);
+		Lib.config.setDbmsPoolSize("10");
+		Lib.config.setDbmsValidQuery("SELECT 1");
+		Lib.config.addActivator();
+		Lib.config.save();
+
+		Lib.embeddedDB.setPort(port);
+		Lib.embeddedDB.save();
 	}
 
 	//---------------------------------------------------------------------------
@@ -130,9 +124,9 @@ public class MainPanel extends FormPanel
 	//---
 	//---------------------------------------------------------------------------
 
-	private JTextField   txtInputDir= new JTextField(20);
-	private JButton      btnBrowse  = new JButton(Messages.getString("browse"));
-	private JFileChooser jfcBrowser = new JFileChooser();
+	private JTextField txtPort = new JTextField(6);
+	private static final String PREFIX = "jdbc:mckoi:";
+
 }
 
 //==============================================================================

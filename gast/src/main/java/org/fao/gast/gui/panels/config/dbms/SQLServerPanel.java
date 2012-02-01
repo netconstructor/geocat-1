@@ -33,7 +33,7 @@ import org.fao.gast.localization.Messages;
 
 //==============================================================================
 
-public class MySQLPanel extends DbmsPanel
+public class SQLServerPanel extends DbmsPanel
 {
 	//---------------------------------------------------------------------------
 	//---
@@ -44,30 +44,26 @@ public class MySQLPanel extends DbmsPanel
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1702859833329424934L;
+	private static final long serialVersionUID = 776417193492019459L;
 
-	public MySQLPanel()
+	public SQLServerPanel()
 	{
 		FlexLayout fl = new FlexLayout(3,5);
 		fl.setColProp(1, FlexLayout.EXPAND);
 		setLayout(fl);
 
 		add("0,0", new JLabel(Messages.getString("server")));
-		add("0,1", new JLabel(Messages.getString("port")));
-		add("0,2", new JLabel(Messages.getString("database")));
-		add("0,3", new JLabel(Messages.getString("username")));
-		add("0,4", new JLabel(Messages.getString("password")));
+		add("0,1", new JLabel(Messages.getString("database")));
+		add("0,2", new JLabel(Messages.getString("username")));
+		add("0,3", new JLabel(Messages.getString("password")));
 
 		add("1,0", txtServer);
-		add("1,1", txtPort);
-		add("1,2", txtDatabase);
-		add("1,3", txtUser);
-		add("1,4", txtPass);
+		add("1,1", txtDatabase);
+		add("1,2", txtUser);
+		add("1,3", txtPass);
 
 		add("2,0", new JLabel("<html><font color='red'>(REQ)</font>"));
-		add("2,2", new JLabel("<html><font color='red'>(REQ)</font>"));
-
-		txtPort.setToolTipText(Messages.getString("MySQLPan.defaultPort"));
+		add("2,1", new JLabel("<html><font color='red'>(REQ)</font>"));
 	}
 
 	//---------------------------------------------------------------------------
@@ -76,7 +72,7 @@ public class MySQLPanel extends DbmsPanel
 	//---
 	//---------------------------------------------------------------------------
 
-	public String getLabel() { return "MySQL"; }
+	public String getLabel() { return "SQLServer"; }
 
 	//---------------------------------------------------------------------------
 
@@ -90,40 +86,25 @@ public class MySQLPanel extends DbmsPanel
 	}
 
 	//---------------------------------------------------------------------------
-	//--- jdbc:mysql://<host><:port>/<database>
+	//--- jdbc:sqlserver://SERVER;database=NAME;integratedSecurity=false;
 
 	public void retrieve()
 	{
 		String url = Lib.config.getDbmsURL();
 
-		//--- cut prefix
-		url = url.substring(PREFIX.length());
+		//--- cut prefix +'@'
+		url = url.substring(PREFIX.length() +1);
 
-		String server   = "";
-		String port     = "";
-		String database = url;
+		StringTokenizer st = new StringTokenizer(url, ";");
 
-		if (url.startsWith("//") && url.length() > 2)
-		{
-			StringTokenizer st = new StringTokenizer(url.substring(2), "/");
+		String server   = st.nextToken();
+		String database = st.hasMoreTokens() ? st.nextToken() : "";
+		database = StringUtils.substringAfter(database, "=");
 
-			server   = st.nextToken();
-			database = st.hasMoreTokens() ? st.nextToken() : "";
-
-			int pos = server.indexOf(':');
-
-			if (pos != -1)
-			{
-				port   = server.substring(pos+1);
-				server = server.substring(0, pos);
-			}
-		}
-
-		txtServer  .setText(server);
-		txtPort    .setText(port);
-		txtDatabase.setText(database);
-		txtUser    .setText(Lib.config.getDbmsUser());
-		txtPass    .setText(Lib.config.getDbmsPassword());
+		txtServer  	.setText(server);
+		txtDatabase	.setText(database);
+		txtUser  		.setText(Lib.config.getDbmsUser());
+		txtPass  		.setText(Lib.config.getDbmsPassword());
 	}
 
 	//---------------------------------------------------------------------------
@@ -132,28 +113,25 @@ public class MySQLPanel extends DbmsPanel
 	{
 
 		// checks on input
-		String server  = txtServer  .getText();
-		String port    = txtPort    .getText();
-		String database= txtDatabase.getText();
+		String server = 		txtServer.getText();
+		String database =		txtDatabase.getText();
 
 		if (StringUtils.isBlank(server)) {
 			throw new Exception(Messages.getString("serverNotEmpty"));
 		}
 
-		if (!StringUtils.isBlank(port) &&!Lib.type.isInteger(port)) {
-			throw new Exception(Messages.getString("portInt"));
+		if (StringUtils.isBlank(database)) {
+			throw new Exception(Messages.getString("databaseNotEmpty"));
 		}
 
-		if (StringUtils.isBlank(database))
-			throw new Exception(Messages.getString("dbNotEmpty"));
-
-		String url = StringUtils.isBlank(port) 
-							? PREFIX +"//"+ server            +"/"+ database
-							: PREFIX +"//"+ server +":"+ port +"/"+ database;
+		String url = PREFIX +"//"+ server +";database="+ database;
+		if (!url.contains("integratedSecurity")) {
+			url += ";integratedSecurity=false;";
+		}
 
 		// save input
 		Lib.config.setupDbmsConfig(createNew, false);
-		Lib.config.setDbmsDriver  ("com.mysql.jdbc.Driver");
+		Lib.config.setDbmsDriver  ("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		Lib.config.setDbmsURL     (url);
 		Lib.config.setDbmsUser    (txtUser.getText());
 		Lib.config.setDbmsPassword(txtPass.getText());
@@ -169,15 +147,14 @@ public class MySQLPanel extends DbmsPanel
 	//---
 	//---------------------------------------------------------------------------
 
-	private JTextField txtServer  = new JTextField(15);
-	private JTextField txtPort    = new JTextField(6);
-	private JTextField txtDatabase= new JTextField(12);
-	private JTextField txtUser    = new JTextField(12);
-	private JTextField txtPass    = new JTextField(12);
+	private JTextField txtServer 		= new JTextField(15);
+	private JTextField txtDatabase	= new JTextField(12);
+	private JTextField txtUser   		= new JTextField(12);
+	private JTextField txtPass   		= new JTextField(12);
 
 	//---------------------------------------------------------------------------
 
-	private static final String PREFIX = "jdbc:mysql:";
+	private static final String PREFIX = "jdbc:sqlserver:";
 
 }
 

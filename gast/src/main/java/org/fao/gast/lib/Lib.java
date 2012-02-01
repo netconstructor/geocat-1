@@ -34,14 +34,9 @@ public class Lib
 	public static TypeLib       type   = new TypeLib();
 	public static GuiLib        gui    = new GuiLib();
 	public static IOLib         io     = new IOLib();
-	public static ServiceLib    service= new ServiceLib();
-	public static SiteLib       site   = new SiteLib();
-	public static MefLib        mef    = new MefLib();
 	public static ConfigLib     config;
 	public static EmbeddedSCLib embeddedSC;
 	public static EmbeddedDBLib embeddedDB;
-	public static DatabaseLib   database;
-	public static MetadataLib   metadata;
 	public static ServerLib     server;
 	public static LogLib        log;
 
@@ -56,8 +51,6 @@ public class Lib
 		config     = new ConfigLib    ();
 		embeddedSC = new EmbeddedSCLib();
 		embeddedDB = new EmbeddedDBLib();
-		database   = new DatabaseLib  ();
-		metadata   = new MetadataLib  ();
 		server     = new ServerLib    ();
 		log        = new LogLib       ();
 	}

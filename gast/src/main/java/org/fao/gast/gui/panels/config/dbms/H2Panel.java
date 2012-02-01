@@ -23,15 +23,17 @@
 
 package org.fao.gast.gui.panels.config.dbms;
 
+import java.util.StringTokenizer;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import org.apache.commons.lang.StringUtils;
 import org.dlib.gui.FlexLayout;
 import org.fao.gast.lib.Lib;
 import org.fao.gast.localization.Messages;
 
 //==============================================================================
 
-public class EmbeddedPanel extends DbmsPanel
+public class H2Panel extends DbmsPanel
 {
 	//---------------------------------------------------------------------------
 	//---
@@ -42,20 +44,27 @@ public class EmbeddedPanel extends DbmsPanel
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7290449012011589464L;
+	private static final long serialVersionUID = -9139785892791080773L;
 
-	public EmbeddedPanel()
+	public H2Panel()
 	{
-		FlexLayout fl = new FlexLayout(3,1);
+		FlexLayout fl = new FlexLayout(3,5);
 		fl.setColProp(1, FlexLayout.EXPAND);
 		setLayout(fl);
 
-		add("0,0", new JLabel(Messages.getString("port")));
-		add("1,0", txtPort);
-		add("2,0", new JLabel("<html><font color='red'>(REQ)</font>"));
+		add("0,0", new JLabel(Messages.getString("dbLocation")));
+		add("0,1", new JLabel(Messages.getString("username")));
+		add("0,2", new JLabel(Messages.getString("password")));
 
-		txtPort.setText("9157");
-		txtPort.setToolTipText(Messages.getString("mckoi.defaultPort"));
+		add("1,0", txtDbLocation);
+		add("1,1", txtUser);
+		add("1,2", txtPass);
+
+		add("2,0", new JLabel("<html><font color='red'>(REQ)</font>"));
+		add("2,1", new JLabel("<html><font color='red'>(REQ)</font>"));
+		add("2,2", new JLabel("<html><font color='red'>(REQ)</font>"));
+
+		txtDbLocation.setToolTipText(Messages.getString("h2.dblocation"));
 	}
 
 	//---------------------------------------------------------------------------
@@ -64,42 +73,67 @@ public class EmbeddedPanel extends DbmsPanel
 	//---
 	//---------------------------------------------------------------------------
 
-	public String getLabel() { return Messages.getString("embedded"); }
+	public String getLabel() { return "H2"; }
 
 	//---------------------------------------------------------------------------
 
-	public boolean matches(String url)
+	public boolean matches(String url, boolean isJNDI)
 	{
-		return url.startsWith("jdbc:mckoi:");
+		if (!isJNDI) {
+			return url.startsWith(PREFIX);
+		} else {
+			return false;
+		}
 	}
 
 	//---------------------------------------------------------------------------
 
 	public void retrieve()
 	{
-		txtPort.setText(Lib.embeddedDB.getPort());
+		String url = Lib.config.getDbmsURL();
+
+		//--- cut prefix
+		url = url.substring(PREFIX.length());
+
+		txtDbLocation 	.setText(url);
+		txtUser    			.setText(Lib.config.getDbmsUser());
+		txtPass    			.setText(Lib.config.getDbmsPassword());
 	}
 
 	//---------------------------------------------------------------------------
 
-	public void save() throws Exception
+	public void save(boolean createNew) throws Exception
 	{
-		String port = txtPort.getText();
-		String user = Lib.embeddedDB.getUser();
-		String pass = Lib.embeddedDB.getPassword();
 
-		if (!Lib.type.isInteger(port))
-			throw new Exception(Messages.getString("portInt"));
+		// checks on input
+		String dbLocation  = txtDbLocation .getText();
+		if (StringUtils.isEmpty(dbLocation)) {
+			throw new Exception(Messages.getString("dbLocationNotEmpty"));
+		}
 
-		Lib.config.setDbmsDriver  ("com.mckoi.JDBCDriver");
-		Lib.config.setDbmsURL     ("jdbc:mckoi://localhost:"+port+"/");
+		String user = txtUser.getText();
+		if (StringUtils.isEmpty(user)) {
+			throw new Exception(Messages.getString("userNotEmpty"));
+		}
+
+		String pass = txtPass.getText();
+		if (StringUtils.isEmpty(pass)) {
+			throw new Exception(Messages.getString("passNotEmpty"));
+		}
+
+		String url = PREFIX + dbLocation;
+		if (!url.contains("LOCK_TIMEOUT")) url += ";LOCK_TIMEOUT=20000";
+
+		// save input 
+		Lib.config.setupDbmsConfig(createNew, false);
+		Lib.config.setDbmsDriver  ("org.h2.Driver");
+		Lib.config.setDbmsURL     (url);
 		Lib.config.setDbmsUser    (user);
 		Lib.config.setDbmsPassword(pass);
-		Lib.config.addActivator();
+		Lib.config.setDbmsPoolSize("33");
+		Lib.config.setDbmsValidQuery("SELECT 1");
+		Lib.config.removeActivator();
 		Lib.config.save();
-
-		Lib.embeddedDB.setPort(port);
-		Lib.embeddedDB.save();
 	}
 
 	//---------------------------------------------------------------------------
@@ -108,7 +142,13 @@ public class EmbeddedPanel extends DbmsPanel
 	//---
 	//---------------------------------------------------------------------------
 
-	private JTextField txtPort = new JTextField(6);
+	private JTextField txtDbLocation  = new JTextField(25);
+	private JTextField txtUser    = new JTextField(12);
+	private JTextField txtPass    = new JTextField(12);
+
+	//---------------------------------------------------------------------------
+
+	private static final String PREFIX = "jdbc:h2:";
 }
 
 //==============================================================================

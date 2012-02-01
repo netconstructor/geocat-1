@@ -23,7 +23,7 @@
 
 package org.fao.gast.gui.panels.config.dbms;
 
-import java.util.StringTokenizer;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +33,7 @@ import org.fao.gast.localization.Messages;
 
 //==============================================================================
 
-public class MySQLPanel extends DbmsPanel
+public class JNDIPanel extends DbmsPanel
 {
 	//---------------------------------------------------------------------------
 	//---
@@ -44,30 +44,37 @@ public class MySQLPanel extends DbmsPanel
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1702859833329424934L;
+	private static final long serialVersionUID = -9139785892791080773L;
 
-	public MySQLPanel()
+	public JNDIPanel()
 	{
+		for (String vendor : dbmsVendors) {
+			cmbDbmsVendor.addItem(vendor);
+		}
+		cmbSpatialIndexInDatabase.addItem("true");
+		cmbSpatialIndexInDatabase.addItem("false");
+
 		FlexLayout fl = new FlexLayout(3,5);
 		fl.setColProp(1, FlexLayout.EXPAND);
 		setLayout(fl);
 
-		add("0,0", new JLabel(Messages.getString("server")));
-		add("0,1", new JLabel(Messages.getString("port")));
-		add("0,2", new JLabel(Messages.getString("database")));
-		add("0,3", new JLabel(Messages.getString("username")));
-		add("0,4", new JLabel(Messages.getString("password")));
+		add("0,0", new JLabel(Messages.getString("context")));
+		add("0,1", new JLabel(Messages.getString("resourceName")));
+		add("0,2", new JLabel(Messages.getString("databaseVendor")));
+		add("0,3", new JLabel(Messages.getString("spatialIndexInDatabase")));
 
-		add("1,0", txtServer);
-		add("1,1", txtPort);
-		add("1,2", txtDatabase);
-		add("1,3", txtUser);
-		add("1,4", txtPass);
+		add("1,0", txtContext);
+		add("1,1", txtResourceName);
+		add("1,2", cmbDbmsVendor);
+		add("1,3", cmbSpatialIndexInDatabase);
 
 		add("2,0", new JLabel("<html><font color='red'>(REQ)</font>"));
+		add("2,1", new JLabel("<html><font color='red'>(REQ)</font>"));
 		add("2,2", new JLabel("<html><font color='red'>(REQ)</font>"));
 
-		txtPort.setToolTipText(Messages.getString("MySQLPan.defaultPort"));
+		txtContext.setToolTipText(Messages.getString("jndi.context"));
+		txtResourceName.setToolTipText(Messages.getString("jndi.resourceName"));
+		cmbSpatialIndexInDatabase.setToolTipText(Messages.getString("jndi.spatialIndexInDatabase"));
 	}
 
 	//---------------------------------------------------------------------------
@@ -76,54 +83,32 @@ public class MySQLPanel extends DbmsPanel
 	//---
 	//---------------------------------------------------------------------------
 
-	public String getLabel() { return "MySQL"; }
+	public String getLabel() { return "JNDI"; }
 
 	//---------------------------------------------------------------------------
 
 	public boolean matches(String url, boolean isJNDI)
 	{
-		if (!isJNDI) {
-			return url.startsWith(PREFIX);
-		} else {
-			return false;
-		}
+		return isJNDI;
 	}
 
 	//---------------------------------------------------------------------------
-	//--- jdbc:mysql://<host><:port>/<database>
 
 	public void retrieve()
 	{
-		String url = Lib.config.getDbmsURL();
+		txtContext        				.setText(Lib.config.getDbmsContext());
+		txtResourceName   				.setText(Lib.config.getDbmsResourceName());
 
-		//--- cut prefix
-		url = url.substring(PREFIX.length());
-
-		String server   = "";
-		String port     = "";
-		String database = url;
-
-		if (url.startsWith("//") && url.length() > 2)
-		{
-			StringTokenizer st = new StringTokenizer(url.substring(2), "/");
-
-			server   = st.nextToken();
-			database = st.hasMoreTokens() ? st.nextToken() : "";
-
-			int pos = server.indexOf(':');
-
-			if (pos != -1)
-			{
-				port   = server.substring(pos+1);
-				server = server.substring(0, pos);
+		String dbmsVendor = Lib.config.getDbmsURL().toLowerCase();
+		cmbDbmsVendor.setSelectedItem("");
+		for (String vendor : dbmsVendors) {
+			if (dbmsVendor.contains(vendor)) {
+				cmbDbmsVendor.setSelectedItem(vendor);
 			}
 		}
 
-		txtServer  .setText(server);
-		txtPort    .setText(port);
-		txtDatabase.setText(database);
-		txtUser    .setText(Lib.config.getDbmsUser());
-		txtPass    .setText(Lib.config.getDbmsPassword());
+		cmbSpatialIndexInDatabase.setSelectedItem("false");
+		cmbSpatialIndexInDatabase.setSelectedItem(Lib.config.getDbmsSpatialIndexInDatabase().toLowerCase());
 	}
 
 	//---------------------------------------------------------------------------
@@ -132,33 +117,28 @@ public class MySQLPanel extends DbmsPanel
 	{
 
 		// checks on input
-		String server  = txtServer  .getText();
-		String port    = txtPort    .getText();
-		String database= txtDatabase.getText();
-
-		if (StringUtils.isBlank(server)) {
-			throw new Exception(Messages.getString("serverNotEmpty"));
+		String context = txtContext.getText();
+		if (StringUtils.isEmpty(context)) {
+			throw new Exception(Messages.getString("contextNotEmpty"));
 		}
 
-		if (!StringUtils.isBlank(port) &&!Lib.type.isInteger(port)) {
-			throw new Exception(Messages.getString("portInt"));
+		String resourceName = txtResourceName.getText();
+		if (StringUtils.isEmpty(resourceName)) {
+			throw new Exception(Messages.getString("resourceNameNotEmpty"));
 		}
 
-		if (StringUtils.isBlank(database))
-			throw new Exception(Messages.getString("dbNotEmpty"));
-
-		String url = StringUtils.isBlank(port) 
-							? PREFIX +"//"+ server            +"/"+ database
-							: PREFIX +"//"+ server +":"+ port +"/"+ database;
+		String vendor = (String)cmbDbmsVendor.getSelectedItem();
+		if (StringUtils.isEmpty(vendor)) {
+			throw new Exception(Messages.getString("vendorNotEmpty"));
+		}
 
 		// save input
-		Lib.config.setupDbmsConfig(createNew, false);
-		Lib.config.setDbmsDriver  ("com.mysql.jdbc.Driver");
-		Lib.config.setDbmsURL     (url);
-		Lib.config.setDbmsUser    (txtUser.getText());
-		Lib.config.setDbmsPassword(txtPass.getText());
-		Lib.config.setDbmsPoolSize("10");
-		Lib.config.setDbmsValidQuery("SELECT 1");
+		Lib.config.setupDbmsConfig(createNew, true);
+		Lib.config.setDbmsContext									(context);
+		Lib.config.setDbmsResourceName						(resourceName);
+
+		Lib.config.setDbmsURL     								(vendor);
+		Lib.config.setDbmsSpatialIndexInDatabase	((String)cmbSpatialIndexInDatabase.getSelectedItem());
 		Lib.config.removeActivator();
 		Lib.config.save();
 	}
@@ -169,15 +149,12 @@ public class MySQLPanel extends DbmsPanel
 	//---
 	//---------------------------------------------------------------------------
 
-	private JTextField txtServer  = new JTextField(15);
-	private JTextField txtPort    = new JTextField(6);
-	private JTextField txtDatabase= new JTextField(12);
-	private JTextField txtUser    = new JTextField(12);
-	private JTextField txtPass    = new JTextField(12);
+	private JTextField txtContext 								= new JTextField(20);
+	private JTextField txtResourceName    				= new JTextField(20);
+	private JComboBox	 cmbDbmsVendor              = new JComboBox();
+	private JComboBox	 cmbSpatialIndexInDatabase	= new JComboBox();
 
-	//---------------------------------------------------------------------------
-
-	private static final String PREFIX = "jdbc:mysql:";
+	private static String[] dbmsVendors = { "", "postgis", "db2", "oracle", "mysql", "sqlserver", "h2" };
 
 }
 

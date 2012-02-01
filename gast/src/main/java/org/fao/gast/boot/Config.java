@@ -14,7 +14,6 @@ import java.util.Properties;
  */
 public class Config {
 
-    public static final Config DEV_CONFIG = new Config(Config.class.getResourceAsStream("dev-config.properties"));
     private static final Config STD_CONFIG = new Config(Config.class.getResourceAsStream("std-config.properties"));
     private static final Config PREV_CONFIG;
 
@@ -27,6 +26,7 @@ public class Config {
         Config config = STD_CONFIG;
         
         if(PREV_CONFIG_FILE.exists()) {
+					  System.out.println("Using config file "+PREV_CONFIG_FILE);
             try {
                 config = new Config(new FileInputStream(PREV_CONFIG_FILE));
             } catch (FileNotFoundException e) {
@@ -48,8 +48,6 @@ public class Config {
                 } else {
                     queryForWebapp();
                 }
-            } else if(DEV_CONFIG.isValid()) {
-                CONFIG = DEV_CONFIG;
             } else {
                 queryForWebapp();
             }
