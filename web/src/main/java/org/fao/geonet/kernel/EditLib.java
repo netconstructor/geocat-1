@@ -38,6 +38,7 @@ import java.util.Vector;
 
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
+import jeeves.xlink.Processor;
 import jeeves.xlink.XLink;
 
 import org.fao.geonet.constants.Edit;
@@ -97,7 +98,7 @@ public class EditLib
 		Log.debug(Geonet.EDITOR,"MD before editing infomation:\n" + jeeves.utils.Xml.getString(md));
 		
 		Map<String, Integer> xlinks = new HashMap<String,Integer>();
-        enumerateTree(md,id,parent,xlinks);
+        enumerateTree(md,id,parent,xlinks, false);
 		expandTree(scm.getSchema(schema), md);
 		Log.debug(Geonet.EDITOR,"MD after editing infomation:\n" + jeeves.utils.Xml.getString(md));
 	}
@@ -107,7 +108,7 @@ public class EditLib
 	public void enumerateTree(Element md) throws Exception
 	{
         Map<String, Integer> xlinks = new HashMap<String,Integer>();
-		enumerateTree(md,1,0,xlinks);
+		enumerateTree(md,1,0,xlinks, false);
 	}
 
 	//--------------------------------------------------------------------------
@@ -115,7 +116,7 @@ public class EditLib
 	public void enumerateTreeStartingAt(Element md, int id, int parent) throws Exception
 	{
 	      Map<String, Integer> xlinks = new HashMap<String,Integer>();
-	      enumerateTree(md,id,parent,xlinks);
+	      enumerateTree(md,id,parent,xlinks, false);
 	}
 
 	//--------------------------------------------------------------------------
@@ -655,34 +656,37 @@ public class EditLib
 
 	//--------------------------------------------------------------------------
 	/** Does a pre-order visit enumerating each node
+	 * @param parentInDisabledXLinkElem if node's parent is within an xlink that is for some reason disabled, forexample is the second element in the document
 	  */
-
-	private int enumerateTree(Element md, int originalRef, int parent, Map<String,Integer> xlinks) throws Exception
+	private int enumerateTree(Element md, int originalRef, int parent, Map<String,Integer> xlinks, boolean parentInDisabledXLinkElem) throws Exception
 	{
 	    int ref = originalRef;
 		int thisRef = ref;
 		int thisParent = ref;
-
+		boolean inDisabledXlinkElem = parentInDisabledXLinkElem;
         String href = XLink.getHRef(md);
         if(href!=null) {
+            href = Processor.mapURI(href);
             if(xlinks.containsKey(href)) {
-                thisRef = xlinks.get(href);
+                inDisabledXlinkElem = true;
             }
             xlinks.put(href, thisRef);
         }
 
 		List list = md.getChildren();
-
 		
         for (Object aList : list) {
             Element child = (Element) aList;
             if (!Edit.NS_PREFIX.equals(child.getNamespacePrefix())) {
-                ref = enumerateTree(child, ref + 1, thisParent, xlinks);
+                ref = enumerateTree(child, ref + 1, thisParent, xlinks, inDisabledXlinkElem);
             }
         }
 
 		Element elem = new Element(Edit.RootChild.ELEMENT, Edit.NAMESPACE);
-		elem.setAttribute(new Attribute(Edit.Element.Attr.REF, thisRef +""));
+		elem.setAttribute(new Attribute(Edit.Element.Attr.REF, (inDisabledXlinkElem ? "d_" : "")+thisRef));
+		if(inDisabledXlinkElem) {
+		    elem.setAttribute(new Attribute(Edit.Element.Attr.DISABLED, "true"));
+		}
 		elem.setAttribute(new Attribute(Edit.Element.Attr.PARENT, parent +""));
 		elem.setAttribute(new Attribute(Edit.Element.Attr.UUID, md.getQualifiedName()+"_"+UUID.randomUUID().toString()));
 		md.addContent(elem);

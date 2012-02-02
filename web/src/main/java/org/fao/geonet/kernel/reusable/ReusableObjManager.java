@@ -1,8 +1,5 @@
 package org.fao.geonet.kernel.reusable;
 
-import static org.fao.geonet.kernel.reusable.Utils.gml2Conf;
-import static org.fao.geonet.kernel.reusable.Utils.gml3Conf;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,7 +32,6 @@ import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.ThesaurusManager;
-import org.fao.geonet.kernel.XmlSerializer;
 import org.fao.geonet.kernel.reusable.log.Record;
 import org.fao.geonet.kernel.reusable.log.ReusableObjectLogger;
 import org.fao.geonet.kernel.search.spatial.Pair;
@@ -370,7 +366,13 @@ public class ReusableObjManager
 			}
 			if(!equals && !current.getName().equalsIgnoreCase("error")) {
 				if(updatedElements.contains(href)) {
-					throw new AssertionError("The same xlink was updated twice");
+				    Log.error(Geocat.Module.REUSABLE, "The same xlinks was updated twice, the second xlink is being processed as if new. HREF="+href);
+					originalElem.removeAttribute(XLink.HREF, XLink.NAMESPACE_XLINK);
+					originalElem.removeAttribute(XLink.ROLE, XLink.NAMESPACE_XLINK);
+					originalElem.removeAttribute(XLink.SHOW, XLink.NAMESPACE_XLINK);
+					originalElem.removeAttribute(XLink.TITLE, XLink.NAMESPACE_XLINK);
+					originalElem.removeAttribute(XLink.TYPE, XLink.NAMESPACE_XLINK);
+					replaceSingleElement(placeholder, originalElem, strategy, defaultMetadataLang, false, dbms, originalElementName, logger);
 				} else {
 					updatedElements.add(href);
 		            Processor.uncacheXLinkUri(XLink.getHRef(originalElem));
