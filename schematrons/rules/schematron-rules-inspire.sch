@@ -257,11 +257,13 @@ USA.
 			<sch:let name="inspire-theme" value="$inspire-thesaurus//skos:Concept"/>
 			
 			<!-- Display error if INSPIRE Theme thesaurus is not available. -->
-			<sch:assert test="count($inspire-theme) > 0">
-				INSPIRE Theme thesaurus not found. Check installation in codelist/external/thesauri/theme.
-				Download thesaurus from https://geonetwork.svn.sourceforge.net/svnroot/geonetwork/utilities/gemet/thesauri/.
-			</sch:assert>
 			
+			<!-- GEOCAT: disabled until geocat metadata has all been migrated to have a theme
+    			<sch:assert test="count($inspire-theme) > 0">
+    				INSPIRE Theme thesaurus not found. Check installation in codelist/external/thesauri/theme.
+    				Download thesaurus from https://geonetwork.svn.sourceforge.net/svnroot/geonetwork/utilities/gemet/thesauri/.
+    			</sch:assert>
+			-->
 			
 			<sch:let name="thesaurus_name" value="gmd:descriptiveKeywords/*/gmd:thesaurusName/*/gmd:title/*/text()"/>
 			<sch:let name="thesaurus_date" value="gmd:descriptiveKeywords/*/gmd:thesaurusName/*/gmd:date/*/gmd:date/*/text()"/>

@@ -9,11 +9,18 @@
       <postgis.db>@POSTGIS_DATABASE@</postgis.db>
       <wfs.host>@WFS_HOST@</wfs.host>
       <wfs.port>@WFS_PORT@</wfs.port>
+      <datadir>@DATA_DIR@</datadir>
     </properties>
+    <file name=".*/WEB-INF/config-geocat.xml">
+      <replaceAtt xpath="services/service[@name='metadata.xsl.register']/class/param[@name = 'user_xsl_dir']" attName="value" value="${datadir}/user_xsl"/>
+      <replaceAtt xpath="services/service[@name='metadata.xsl.remove']/class/param[@name = 'user_xsl_dir']" attName="value" value="${datadir}/user_xsl"/>
+      <replaceAtt xpath="services/service[@name='metadata.formatter.html']/class/param[@name = 'user_xsl_dir']" attName="value" value="${datadir}/user_xsl"/>
+      <replaceAtt xpath="services/service[@name='metadata.formatter.xml']/class/param[@name = 'user_xsl_dir']" attName="value" value="${datadir}/user_xsl"/>
+    </file>
 
     <file name=".*/WEB-INF/config.xml">
       <replaceText xpath="general/uploadDir">@UPLOAD_DIR@</replaceText>
-      <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="@DATA_DIR@/schemaPluginsDir"/>
+      <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="/schemaPluginsDir"/>
       <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="@HTML_CACHE_DIR@"/>
       <replaceAtt xpath="appHandler/param[@name = 'useSubversion']" attName="value" value="false"/>
       <replaceAtt xpath="appHandler/param[@name = 'subversionPath']" attName="value" value="@DATA_DIR@/metadata_subversion"/>

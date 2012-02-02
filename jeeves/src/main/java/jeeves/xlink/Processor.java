@@ -225,7 +225,7 @@ public final class Processor {
 		return res;
 	}
 
-	private static String mapURI( String uri ) {
+	public static String mapURI( String uri ) {
 	    uri = uri.replaceAll("&+","&").toLowerCase();
 	    for(URIMapper mapper: uriMapper) {
 	        uri = mapper.map(uri);
