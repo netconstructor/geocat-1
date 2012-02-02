@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:util="xalan://org.fao.geonet.util.XslUtil">
 	
 	<xsl:include href="modal.xsl"/>
 
@@ -16,9 +16,17 @@
 			
 				<xsl:variable name="lang" select="substring(/root/gui/language,0,3)"/>
 				<xsl:variable name="disabled" select="(/root/response/owner='false')"/>
+				<xsl:variable name="path" select="string(/root/response/luceneIndexPath)"/>
+				<xsl:variable name="id" select="/root/response/id"/>
+				
+				<xsl:variable name="validXsd" select="util:getIndexFieldById($path, $id, '_valid_xsd', $lang)"/>
+				<xsl:variable name="validSch-iso" select="util:getIndexFieldById($path, $id, '_valid_schematron-rules-iso', $lang)"/>
+				<xsl:variable name="validSch-iso-che" select="util:getIndexFieldById($path, $id, '_valid_schematron-rules-iso-che', $lang)"/>
+				<xsl:variable name="validSch-inspire" select="util:getIndexFieldById($path, $id, '_valid_schematron-rules-inspire', $lang)"/>
+				<xsl:variable name="validSch-geonetwork" select="util:getIndexFieldById($path, $id, '_valid_schematron-rules-geonetwork', $lang)"/>
 
 				<div id="privileges">
-					<input name="metadataid" id="metadataid" type="hidden" value="{/root/response/id}"/>
+					<input name="metadataid" id="metadataid" type="hidden" value="{$id}"/>
 					<table>
 						<tr>
 							<th class="padded"><xsl:value-of select="/root/gui/strings/groups"/></th>
@@ -148,6 +156,9 @@
 								</td>
 							</tr>
 						</xsl:if>
+						<tr><td>xsd - <xsl:value-of select="$validXsd"></xsl:value-of></td></tr>
+						<tr><td>xsd - <xsl:value-of select="$validXsd"></xsl:value-of></td></tr>
+						
 					</table>			
 				</div>
 			</xsl:with-param>

@@ -155,6 +155,7 @@ public class GetAdminOper implements Service
 			}
 		}
 
+		Element luceneIndexPath = new Element("luceneIndexPath").setText(gc.getSearchmanager().getLuceneDir().getAbsolutePath());
 		//-----------------------------------------------------------------------
 		//--- put all together
 
@@ -163,7 +164,8 @@ public class GetAdminOper implements Service
 										.addContent(elOper)
 										.addContent(elGroup)
 										.addContent(ownerId)
-										.addContent(hasOwner);
+                                        .addContent(hasOwner)
+                                        .addContent(luceneIndexPath);
 
 		return elRes;
 	}
