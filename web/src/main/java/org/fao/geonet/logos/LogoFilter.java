@@ -22,20 +22,19 @@ import java.util.List;
 public class LogoFilter implements Filter {
     private String logosDir;
     private byte[] defaultImage;
+    private FilterConfig config;
 
     public void init(FilterConfig config) throws ServletException {
-        final String appPath = config.getServletContext().getContextPath();
-        logosDir = Logos.locateLogosDir(config.getServletContext(), appPath);
-        try {
-            defaultImage = Logos.loadDummyImage(logosDir, config.getServletContext(), appPath);
-        } catch (IOException e) {
-            defaultImage = new byte[0];
-            e.printStackTrace();
-        }
+        this.config = config;
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if(isGet(request)) {
+            synchronized(this) {
+                if(logosDir == null) {
+                    initFields();
+                }
+            }
             String servletPath = ((HttpServletRequest) request).getServletPath();
             List<String> pathSegments = new ArrayList<String>(Arrays.asList(servletPath.split("/")));
 
@@ -68,6 +67,17 @@ public class LogoFilter implements Filter {
             }
 
         }
+    }
+
+    private void initFields() {
+        final String appPath = config.getServletContext().getContextPath();
+        logosDir = Logos.locateLogosDir(config.getServletContext(), appPath);
+        try {
+            defaultImage = Logos.loadDummyImage(logosDir, config.getServletContext(), appPath);
+        } catch (IOException e) {
+            defaultImage = new byte[0];
+            e.printStackTrace();
+        }        
     }
 
     private boolean isGet(ServletRequest request) {
