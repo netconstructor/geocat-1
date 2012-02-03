@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -37,14 +38,25 @@ public class LogoFilter implements Filter {
         if(isGet(request)) {
             String servletPath = ((HttpServletRequest) request).getServletPath();
             List<String> pathSegments = new ArrayList<String>(Arrays.asList(servletPath.split("/")));
-            pathSegments.remove(0); // remove images part of servlet path
-            pathSegments.remove(0); // remove logos part of servlet path
+
+            Iterator<String> iter = pathSegments.iterator();
+
             StringBuilder path = new StringBuilder(logosDir);
             path.append(File.separator);
 
-            for (String segment : pathSegments) {
-                path.append(segment);
-                path.append(File.separator);
+            // dropped is only incremented when non-empty segment is dropped
+            int dropped = 0;
+            while(iter.hasNext()) {
+                String segment = iter.next();
+                if(segment.trim().isEmpty()) continue;
+                if(dropped < 2 && (segment.equalsIgnoreCase("images")
+                        || segment.equalsIgnoreCase("logos"))) {
+                    // do nothing we don't want to include images and logos
+                } else {
+                    path.append(segment);
+                    path.append(File.separator);
+                }
+                dropped ++;
             }
 
             path.deleteCharAt(path.length() - 1);
