@@ -35,6 +35,7 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.harvest.harvester.AbstractHarvester;
 import org.fao.geonet.kernel.harvest.harvester.AbstractParams;
 import org.fao.geonet.lib.Lib;
+import org.fao.geonet.logos.Logos;
 import org.jdom.Element;
 
 //=============================================================================
@@ -77,7 +78,7 @@ public class ThreddsHarvester extends AbstractHarvester
 
 	protected void doDestroy(Dbms dbms) throws SQLException
 	{
-		File icon = new File(context.getAppPath() +"images/logos", params.uuid +".gif");
+        File icon = new File(Logos.locateLogosDir(context), params.uuid +".gif");
 
 		icon.delete();
 		Lib.sources.delete(dbms, params.uuid);

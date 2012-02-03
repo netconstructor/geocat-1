@@ -28,8 +28,10 @@ import jeeves.server.context.ServiceContext;
 import jeeves.utils.BinaryFile;
 import jeeves.utils.XmlRequest;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.logos.Logos;
 import org.jdom.Element;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -87,7 +89,7 @@ public class SourcesLib
 	public void copyLogo(ServiceContext context, String icon, String uuid)
 	{
 		File src = new File(context.getAppPath() + icon);
-		File des = new File(context.getAppPath() +"images/logos", uuid +".gif");
+		File des = new File(Logos.locateLogosDir(context), uuid +".gif");
 
 		try
 		{
@@ -121,9 +123,9 @@ public class SourcesLib
 
 		XmlRequest req = new XmlRequest(host, port);
 		Lib.net.setupProxy(context, req);
-		req.setAddress("/"+ servlet + Geonet.Path.LOGOS + logo);
+		req.setAddress("/"+ servlet + "/images/logos/" + logo);
 
-		File logoFile = new File(context.getAppPath() + Geonet.Path.LOGOS + logo);
+		File logoFile = new File(Logos.locateLogosDir(context));
 
 		try
 		{

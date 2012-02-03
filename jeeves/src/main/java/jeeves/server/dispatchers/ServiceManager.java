@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 
 import jeeves.constants.ConfigFile;
@@ -121,9 +122,9 @@ public class ServiceManager
 
 	//---------------------------------------------------------------------------
 
-	public void loadProfiles(JeevesServlet servlet, String file) throws Exception
+	public void loadProfiles(ServletContext servletContext, String file) throws Exception
 	{
-		profilMan = new ProfileManager(servlet, appPath, appPath + Jeeves.Path.WEBINF + file);
+		profilMan = new ProfileManager(servletContext, appPath, appPath + Jeeves.Path.WEBINF + file);
 	}
 
 	//---------------------------------------------------------------------------

@@ -145,7 +145,6 @@ public class Geonet
 		public static final String OGC_STYLESHEETS    = "/convert/OGCWxSGetCapabilitiesto19119";
 		public static final String CONVERT_STYLESHEETS       = "/convert/";
 		public static final String DIF_STYLESHEET     = "/convert/DIFToISO.xsl";
-		public static final String LOGOS              = "/images/logos/";
 		public static final String XML                = Jeeves.Path.XML;
 	}
 

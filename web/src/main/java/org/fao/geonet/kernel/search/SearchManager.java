@@ -124,6 +124,9 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.servlet.ServletContext;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.SpatialIndex;
 
@@ -364,13 +367,14 @@ public class SearchManager
 	public SearchManager(String appPath, String luceneDir, String htmlCacheDir, String thesauriDir,
 			String summaryConfigXmlFile, LuceneConfig lc, 
 			boolean logAsynch, boolean logSpatialObject, String luceneTermsToExclude, 
-			DataStore dataStore, int maxWritesInTransaction, SettingInfo si, SchemaManager scm, JeevesServlet servlet) throws Exception
+			DataStore dataStore, int maxWritesInTransaction, SettingInfo si, SchemaManager scm, ServletContext servletContext) throws Exception
 	{
 		_scm = scm;
 		_thesauriDir = thesauriDir;
 		_summaryConfig = Xml.loadStream(new FileInputStream(new File(appPath,summaryConfigXmlFile)));
-		if (servlet != null) {
-			ConfigurationOverrides.updateWithOverrides(summaryConfigXmlFile, servlet, appPath, _summaryConfig);
+
+		if (servletContext != null) {
+			ConfigurationOverrides.updateWithOverrides(summaryConfigXmlFile, servletContext, appPath, _summaryConfig);
 		}
 
 		_luceneConfig = lc;

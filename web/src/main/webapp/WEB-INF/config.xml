@@ -316,7 +316,7 @@
 	<appHandler class="org.fao.geonet.Geonetwork">
 	  <param name="luceneDir" value="WEB-INF/lucene" />
 	  <param name="dataDir" value="WEB-INF/data" />
-
+	  <param name="logosDir" value="./images/logos" />
 		<!-- this must be a directory in web/geonetwork because html is served -->
 		<param name="htmlCacheDir" value="htmlCache" />
 		

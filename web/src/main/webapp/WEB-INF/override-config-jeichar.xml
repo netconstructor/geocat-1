@@ -17,6 +17,7 @@
       <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="${datadir}/schemaPluginsDir"/>
       <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="${datadir}/htmlCacheDir"/>
       <replaceAtt xpath="appHandler/param[@name = 'useSubversion']" attName="value" value="false"/>
+      <replaceAtt xpath="appHandler/param[@name = 'logosDir']" attName="value" value="${datadir}/logos"/>
       <replaceAtt xpath="appHandler/param[@name = 'subversionPath']" attName="value" value="${datadir}/metadata_subversion"/>
     </file>
     <file name=".*/WEB-INF/config-geocat.xml">

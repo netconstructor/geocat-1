@@ -36,11 +36,13 @@ import org.fao.geonet.kernel.harvest.harvester.CategoryMapper;
 import org.fao.geonet.kernel.harvest.harvester.GroupMapper;
 import org.fao.geonet.kernel.harvest.harvester.Privileges;
 import org.fao.geonet.lib.Lib;
+import org.fao.geonet.logos.Logos;
 import org.fao.geonet.util.ISODate;
 import org.fao.geonet.util.XMLExtensionFilenameFilter;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -123,7 +125,8 @@ public class LocalFilesystemHarvester extends AbstractHarvester {
 
 	@Override
 	protected void doDestroy(Dbms dbms) throws SQLException {
-		File icon = new File(context.getAppPath() +"images/logos", params.uuid +".gif");
+        File icon = new File(Logos.locateLogosDir(context), params.uuid +".gif");
+
 		icon.delete();
 		Lib.sources.delete(dbms, dataMan.getSiteID());
 	}
