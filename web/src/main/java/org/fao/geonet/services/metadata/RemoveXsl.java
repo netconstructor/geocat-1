@@ -41,7 +41,10 @@ import java.io.File;
  */
 public class RemoveXsl implements Service {
 	
-	  public Element exec(Element params, ServiceContext context) throws Exception
+	  private String userXslDir;
+
+
+    public Element exec(Element params, ServiceContext context) throws Exception
 	    {
 	    	String id = Util.getParam(params, Params.ID,null);
 	    	// input sanitization / some checks in accordance of what
@@ -49,10 +52,7 @@ public class RemoveXsl implements Service {
 	    	if (id == null) {
 	    		throw new BadParameterEx("id", "null");
 	    	}
-	    	if( !id.matches(RegisterXsl.ID_XSL_REGEX)) {
-	    		throw new IllegalArgumentException("only letters and characters are permitted in the id");
-	    	}
-    		boolean success = new File(context.getAppPath() + RegisterXsl.USER_XSL_DIR + id + ".xsl").delete();
+    		boolean success = new File(userXslDir + id + ".xsl").delete();
 
     		if (!success) {
     			throw new IllegalArgumentException("Error occured while trying to remove the stylesheet. File not found ?");
@@ -61,6 +61,14 @@ public class RemoveXsl implements Service {
 	    	return new Element("response").addContent("ok");
 	    	
 	    }
-	  
-	    public void init(String appPath, ServiceConfig params) throws Exception {}
+
+	    public void init(String appPath, ServiceConfig params) throws Exception {
+	        userXslDir = params.getMandatoryValue(RegisterXsl.USER_XSL_DIR);
+	        if(!userXslDir.endsWith(File.separator)) {
+	            userXslDir = userXslDir + File.separator;
+	        }
+	        if(!new File(userXslDir).isAbsolute()) {
+	            userXslDir = appPath+File.separator+userXslDir;
+	        }
+	    }
 }

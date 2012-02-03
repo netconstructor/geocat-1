@@ -369,25 +369,38 @@
         <!-- - - - - - - - - - - - - - Format MD services - - - - - - - - - - - - - - - - -->
 
         <service name="metadata.xsl.register">
-            <class name=".services.metadata.RegisterXsl"/>
+            <class name=".services.metadata.RegisterXsl">
+               <param name="user_xsl_dir" value="user_xsl" />
+            </class>
+            <error id="illegal-params" sheet="metadata-error.xsl"/>
+        </service>
+
+        <service name="metadata.xsl.admin">
+            <output sheet="user-xsl-admin.xsl"/>
             <error id="illegal-params" sheet="metadata-error.xsl"/>
         </service>
 
         <service name="metadata.xsl.remove">
-            <class name=".services.metadata.RemoveXsl"/>
+            <class name=".services.metadata.RemoveXsl">
+               <param name="user_xsl_dir" value="user_xsl" />
+            </class>
             <error id="illegal-params" sheet="metadata-error.xsl"/>
         </service>
         
         
         
         <service name="metadata.formatter.html">
-            <class name=".services.metadata.Format2"/>
+            <class name=".services.metadata.Format2">
+               <param name="user_xsl_dir" value="user_xsl" />
+            </class>
             <output sheet="identity.xsl"/>
             <error id="illegal-params" sheet="metadata-error.xsl"/>
         </service>
 
         <service name="metadata.formatter.xml">
-            <class name=".services.metadata.Format2"/>
+            <class name=".services.metadata.Format2">
+               <param name="user_xsl_dir" value="user_xsl" />
+            </class>
             <error id="illegal-params" sheet="metadata-error.xsl"/>
         </service>
 

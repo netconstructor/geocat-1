@@ -1103,3 +1103,26 @@ li.blue-content a {
 	height: 500px;
 	overflow: auto;
 }
+
+.user-xsl-wrap {
+  padding: 5px;
+  border: 1px solid #99bbe8;
+  text-align: left;
+}
+
+.user-xsl {
+  
+}
+
+.user-xsl-selected {
+  background-color: #dddddd;
+  padding: 4px;
+}
+
+.user-xsl-over {
+  border: 1px solid #dddddd;
+}
+
+.div.user-xsl-wrap {
+  
+}

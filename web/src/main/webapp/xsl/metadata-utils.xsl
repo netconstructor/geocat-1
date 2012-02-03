@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
 	xmlns:geonet="http://www.fao.org/geonetwork"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
 	xmlns:exslt="http://exslt.org/common" exclude-result-prefixes="exslt geonet">
 
 	<xsl:include href="metadata-iso19139.che.xsl"/>
@@ -174,8 +175,19 @@
         <xsl:param name="targetPolygon"/>
         <xsl:param name="watchedBbox"/>
         <xsl:param name="eltRef"/>
+
+        <xsl:variable name="isXLinked"><xsl:call-template name="validatedXlink"/></xsl:variable>
+		<xsl:variable name="isDisabled" select="count(ancestor-or-self::*/geonet:element/@disabled) > 0"/>
+		<xsl:variable name="rejected" select="count(ancestor-or-self::*[contains(@xlink:title,'rejected')]) > 0"/>
+
+        <xsl:variable name="finalEdit">
+	        <xsl:choose>
+		        <xsl:when test="$rejected or $isXLinked = 'true' or $isDisabled">false</xsl:when>
+				<xsl:otherwise><xsl:value-of select="$edit"/></xsl:otherwise>
+			</xsl:choose>
+        </xsl:variable>
         <div class="extentViewer" style="width:{/root/gui/config/map/metadata/width}; height:{/root/gui/config/map/metadata/height};" 
-            edit="{$edit}" 
+            edit="{$finalEdit}" 
             target_polygon="{$targetPolygon}" 
             watched_bbox="{$watchedBbox}" 
             elt_ref="{$eltRef}"

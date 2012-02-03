@@ -6,6 +6,9 @@ export PG_PASSWORD="www-data"
 dropdb $DB
 createdb -O www-data $DB -T template_postgis
 
+rm -rf /tmp/gc_data
+rm -rf /tmp/gc_lucene
+
 psql -d $DB -c "ALTER TABLE geometry_columns OWNER TO \"www-data\";"
 psql -d $DB -c "ALTER TABLE spatial_ref_sys OWNER TO \"www-data\";"
 

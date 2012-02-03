@@ -104,6 +104,7 @@
             <!-- Allow a user to specify a XSL -->
             <allow service="metadata.xsl.register"/>
             <allow service="metadata.xsl.remove"/>
+            <allow service="metadata.xsl.admin"/>
 
             <!-- TODO : only administrators ? -->            
             <allow service="metadata.validation.report"/>

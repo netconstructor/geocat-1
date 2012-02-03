@@ -29,8 +29,6 @@ var MapComponent = OpenLayers.Class({
     panelMaxHeight: 410,
     enableNavigation: true,
 
-    mapDivId: null,
-    maxExtent: null,
     initialExtent: null,
     mapControls: null,
     mapLayers: null,
@@ -51,13 +49,10 @@ var MapComponent = OpenLayers.Class({
      *
      */
     initialize: function(divId, options) {
-        this.mapDivId = divId + 'Map';
         this.panelDivId = divId;
         OpenLayers.Util.extend(this, options);
 
         var tcBounds = new OpenLayers.Bounds(420000, 30000, 900000, 350000);
-        var imageBounds = new OpenLayers.Bounds(159000,-238000,1364100,569300);
-        this.maxExtent = tcBounds;  //restricts where we can zoom
         this.initialExtent = new OpenLayers.Bounds(473100, 67000, 891049, 301698);
         this.mapControls = [
             new OpenLayers.Control.ArgParser(),
@@ -77,8 +72,10 @@ var MapComponent = OpenLayers.Class({
             break;
         }
         this.mapLayers = [
+            /* disabled because it doesnt look nice with the new white border around wmts tiles */
+            /*
             new OpenLayers.Layer.Image("BigBackground", "../../images/baseMap.jpg",
-                imageBounds,
+                new OpenLayers.Bounds(159000,-238000,1364100,569300),
                 new OpenLayers.Size(1854, 1242),
                 {
                     isBaseLayer: true,
@@ -87,6 +84,9 @@ var MapComponent = OpenLayers.Class({
                     attribution: "<a href='" + href + "' target='_blank'>&copy; swisstopo</a>"
                 }
             ),
+            */
+            
+            /* old tilecache background layer, replaced by the wmts one
             new OpenLayers.Layer.TileCache("Background", [
                 'http://tile5.bgdi.admin.ch/geoadmin/', 'http://tile6.bgdi.admin.ch/geoadmin/',
                 'http://tile7.bgdi.admin.ch/geoadmin/', 'http://tile8.bgdi.admin.ch/geoadmin/',
@@ -105,9 +105,39 @@ var MapComponent = OpenLayers.Class({
                     return OpenLayers.Layer.TileCache.prototype.calculateInRange.apply(this, arguments);
                 }
             })
+            */
+            new OpenLayers.Layer.WMTS({
+                name: "karte",
+                url: ['http://wmts0.geo.admin.ch/','http://wmts1.geo.admin.ch/','http://wmts2.geo.admin.ch/','http://wmts3.geo.admin.ch/','http://wmts4.geo.admin.ch/'],
+                layer: "ch.swisstopo.pixelkarte-farbe",
+                style: "default",
+                matrixSet: "21781",
+                format: "image/jpeg",
+                isBaseLayer: true,
+                visibility:true,
+                requestEncoding: "REST",
+                dimensions: ['TIME'],
+                params: {'time': '20111027'},
+                formatSuffix: 'jpeg',
+                zoomOffset: 12,
+                serverResolutions: [4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1.5, 1, 0.5, 0.25]
+           })
         ];
 
-        this.map = this.getMap();
+        var mapOptions = {
+            controls: this.mapControls,
+            projection: "EPSG:21781",
+            units: "m",
+            maxExtent: tcBounds,
+            restrictedExtent: tcBounds,
+            resolutions: this.resolutions
+        };
+        if (!this.drawPanel) {
+            mapOptions.div = this.panelDivId;
+        }
+        this.map = new OpenLayers.Map(mapOptions);
+        this.map.addLayers(this.mapLayers);
+        this.zoomToFullExtent();
 
         if (this.enableNavigation) {
             this.navigate = new OpenLayers.Control.Navigation({title: OpenLayers.Lang.translate('mf.control.pan')});
@@ -115,71 +145,13 @@ var MapComponent = OpenLayers.Class({
         }
         if (this.drawPanel) {
             this.panel = this.getPanel();
-            this.toolbar = this.getToolbar();
         }
 
-        this.getMap().updateSize();
+        this.map.updateSize();
     },
 
-    getToolbar: function() {
-        if (this.toolbar) return this.toolbar;
-        this.toolbar = new mapfish.widgets.toolbar.Toolbar({
-            map: this.getMap(),
-            configurable: false
-        });
-        //see http://trac.mapfish.org/trac/mapfish/ticket/126
-        this.toolbar.autoHeight = false;
-        this.toolbar.height = 26;
-
-        return this.toolbar;
-    },
-
-    fillToolbar: function() {
-        this.toolbar.addControl(new OpenLayers.Control.ZoomToMaxExtent({
-                map: this.getMap(),
-                title: OpenLayers.Lang.translate('mf.control.zoomAll')
-            }), {
-                iconCls: 'zoomfull',
-                toggleGroup: 'map'
-        });
-        this.toolbar.addControl(new OpenLayers.Control.ZoomBox({
-                title: OpenLayers.Lang.translate('mf.control.zoomIn')
-            }), {
-                iconCls: 'zoomin',
-                toggleGroup: 'map'
-        });
-        this.toolbar.addControl(new OpenLayers.Control.ZoomBox({
-                out: true,
-                title: OpenLayers.Lang.translate('mf.control.zoomOut')
-            }), {
-                iconCls: 'zoomout',
-                toggleGroup: 'map'
-        });
-        this.toolbar.add(new Ext.Toolbar.Separator());
-
-        if (this.navigate) {
-            this.toolbar.addControl(this.navigate, {
-                    iconCls: 'pan',
-                    toggleGroup: 'map'
-            });
-        }
-    },
-
+    // FIXME: still useful?
     getMap: function() {
-        if (this.map) return this.map;
-        var div = Ext.get(this.panelDivId);
-        div.createChild({id: this.mapDivId});
-
-        this.map = new OpenLayers.Map($(this.mapDivId), {
-            controls: this.mapControls,
-            projection: "EPSG:21781",
-            units: "m",
-            maxExtent: this.maxExtent,
-            restrictedExtent: this.maxExtent,
-            resolutions: this.resolutions
-        });
-        this.map.addLayers(this.mapLayers);
-        this.zoomToFullExtent();
         return this.map;
     },
 
@@ -187,23 +159,59 @@ var MapComponent = OpenLayers.Class({
         this.map.zoomToExtent(this.initialExtent, true);
     },
 
+    getToolbarItems: function() {
+        var items = [
+            new GeoExt.Action({
+                control: new OpenLayers.Control.ZoomToMaxExtent(),
+                map: this.map,
+                tooltip: OpenLayers.i18n('mf.control.zoomAll'),
+                iconCls: 'zoomfull',
+                toggleGroup: 'map'
+            }),
+            new GeoExt.Action({
+                control: new OpenLayers.Control.ZoomBox(),
+                map: this.map,
+                tooltip: OpenLayers.i18n('mf.control.zoomIn'),
+                iconCls: 'zoomin',
+                toggleGroup: 'map'
+            }),
+            new GeoExt.Action({
+                control: new OpenLayers.Control.ZoomBox({out: true}),
+                map: this.map,
+                tooltip: OpenLayers.i18n('mf.control.zoomOut'),
+                iconCls: 'zoomout',
+                toggleGroup: 'map'
+            }),
+            '-'
+        ];
+
+        if (this.navigate) {
+            items.push(new GeoExt.Action({
+                control: this.navigate,
+                iconCls: 'pan',
+                toggleGroup: 'map'
+            }));
+        }
+
+        return items;
+    },
+
     getPanel: function() {
         if (this.panel) return this.panel;
 
-        var panelItems = [];
-        panelItems.push({
+        var panelItems = [new GeoExt.MapPanel({
             region: 'center',
-            contentEl: this.mapDivId,
             layout: 'fit',
-            tbar: this.getToolbar()
-        });
+            map: this.map,
+            tbar: this.getToolbarItems()
+        })];
         if (this.displayLayertree) {
             panelItems.push({
                 region: 'east',
                 title: 'Layers',
                 xtype: 'layertree',
                 id: this.panelDivId+'LayerTree',
-                map: this.getMap(),
+                map: this.map,
                 enableDD: true,
                 ascending: false,
                 width: 150,
@@ -226,8 +234,6 @@ var MapComponent = OpenLayers.Class({
             items: panelItems
         });
 
-        this.fillToolbar();
-
         if (this.resizablePanel) {
             var mapResizer = new Ext.Resizable(this.panelDivId, {
                 pinned: true,
@@ -249,6 +255,6 @@ var MapComponent = OpenLayers.Class({
     },
 
     updateMapSizes: function() {
-        this.getMap().updateSize();
+        this.map.updateSize();
     }
 });

@@ -482,7 +482,7 @@ public class DataManager {
                         sb.append(xlink.getValue()); sb.append(" ");
                     }
                     moreFields.add(SearchManager.makeField("_xlink", sb.toString(), true, true));
-                    Processor.detachXLink(md, servContext);
+                    Processor.processXLink(md,servContext); 
                 }
                 else {
                     moreFields.add(SearchManager.makeField("_hasxlinks", "0", true, true));

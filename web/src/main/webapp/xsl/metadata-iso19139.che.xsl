@@ -630,10 +630,12 @@
             </xsl:variable>
 
             <xsl:variable name="ref" select="$currentNode/../geonet:element/@ref" />
+			<xsl:variable name="disabled" select="$currentNode/../geonet:element/@disabled" />
+			<xsl:variable name="min" select="$currentNode/../geonet:element/@min" />
             <xsl:variable name="guiLang" select="/root/gui/language" />
             <xsl:variable name="language"
                     select="/root/gui/isoLang/record[code=$code]/label/*[name(.)=$guiLang]" />
-            <che:PT_FreeURL>
+            <che:PT_FreeURL xlink:title="{$currentNode/ancestor-or-self::*[contains(@xlink:title,'rejected')]/@xlink:title}">
                 <!-- Propagate xlink attribute to the var which contains translation
                 in order to turn off editing. -->
                 <xsl:if test="$xlinkedAncestor = 'true'">
@@ -648,16 +650,37 @@
                             <xsl:when
                                     test="$currentNode//che:LocalisedURL[@locale=$langId]">
                                     <geonet:element
-                                            ref="{$currentNode//che:LocalisedURL[@locale=$langId]/geonet:element/@ref}" />
+                                            ref="{$currentNode//che:LocalisedURL[@locale=$langId]/geonet:element/@ref}" >
+									<xsl:if test="$disabled">
+										<xsl:attribute name="disabled">true</xsl:attribute>
+									</xsl:if>
+								</geonet:element>
                             </xsl:when>
                             <xsl:otherwise>
-                                    <geonet:element ref="url_{substring($langId,2)}_{$ref}" />
+                                <geonet:element ref="url_{substring($langId,2)}_{$ref}" >
+									<xsl:if test="$disabled">
+										<xsl:attribute name="disabled">true</xsl:attribute>
+									</xsl:if>
+								</geonet:element>
                             </xsl:otherwise>
                         </xsl:choose>
                     </che:LocalisedURL>
-                    <geonet:element ref="" />
+                    <geonet:element ref="" >
+						<xsl:if test="$disabled">
+							<xsl:attribute name="disabled">true</xsl:attribute>
+						</xsl:if>
+					</geonet:element>
                 </che:URLGroup>
-                <geonet:element ref="" />
+                <geonet:element ref="" >
+                <!-- Add min attribute from current node to PT_FreeText
+					child in order to turn on validation criteria. -->
+					<xsl:if test="$min = 1">
+						<xsl:attribute name="min">1</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="$disabled">
+						<xsl:attribute name="disabled">true</xsl:attribute>
+					</xsl:if>
+				</geonet:element>
             </che:PT_FreeURL>
         </xsl:for-each>
     </xsl:template>
@@ -1882,10 +1905,10 @@
 
 <!--  Just stuck in here so xsl compile pre-edit stage of project, really needs to be other place -->
   <xsl:template name="validatedXlink">
-
-     <xsl:variable name="xlinkedAncestor" select="ancestor::node()[@xlink:href]" />
+	<xsl:param name="root" select="."/>
+     <xsl:variable name="xlinkedAncestor" select="$root/ancestor::node()[@xlink:href]" />
      <xsl:choose>
-     <xsl:when test="count($xlinkedAncestor) != 0 and count(ancestor::node()[@xlink:role = 'http://www.geonetwork.org/non_valid_obj']) = 0">
+     <xsl:when test="count($xlinkedAncestor) > 0 and count($root/ancestor::node()[@xlink:role = 'http://www.geonetwork.org/non_valid_obj']) = 0">
          <xsl:value-of select="true()" />
      </xsl:when>
      <xsl:otherwise>

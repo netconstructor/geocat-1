@@ -43,6 +43,7 @@ public class Format2 implements Service
 {
 
     private Show showService;
+    private String userXslDir;
     private static String xslExtension = ".xsl";
     
     public Element exec(Element params, ServiceContext context) throws Exception
@@ -52,9 +53,9 @@ public class Format2 implements Service
         String id = Util.getParam(params, Params.ID, null);
         String list = Util.getParam(params, "list", null);
         
-        if (list != null) {
+        if (list != null || (xslid == null && uuid == null && id == null)) {
         	Element response = new Element("metadata");
-        	String xslFormatters[] = new File(context.getAppPath() + RegisterXsl.USER_XSL_DIR).list(new XslFilter());
+        	String xslFormatters[] = new File(userXslDir).list(new XslFilter());
         	for (String xsl : xslFormatters)
         		response.addContent(new Element("formatter").setText(xsl.substring(0, xsl.indexOf(xslExtension))));
         	
@@ -69,7 +70,7 @@ public class Format2 implements Service
             throw new IllegalArgumentException("only letters and characters are permitted in the id");
         }
         
-        File xslUrl = new File(context.getAppPath()+RegisterXsl.USER_XSL_DIR+xslid+".xsl");
+        File xslUrl = new File(userXslDir+xslid+".xsl");
         
         if(!xslUrl.exists())
             throw new IllegalArgumentException("The 'xsl' parameter must be a valid URL");
@@ -86,8 +87,16 @@ public class Format2 implements Service
     {
         showService = new Show();
         showService.init(appPath, params);
-    }
 
+        userXslDir = params.getMandatoryValue(RegisterXsl.USER_XSL_DIR);
+        if(!userXslDir.endsWith(File.separator)) {
+            userXslDir = userXslDir + File.separator;
+        }
+        if(!new File(userXslDir).isAbsolute()) {
+            userXslDir = appPath+File.separator+userXslDir;
+        }
+    }
+    
 	private class XslFilter implements FilenameFilter {
 		public boolean accept(File directory, String filename) {
 			if (filename.endsWith(xslExtension))
