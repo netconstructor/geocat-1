@@ -4,6 +4,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Servlet for serving up logos.  This solves a largely historical issue because
@@ -32,12 +35,16 @@ public class LogoFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if(isGet(request)) {
-            String[] pathSegments = ((HttpServletRequest) request).getServletPath().split("/");
+            String servletPath = ((HttpServletRequest) request).getServletPath();
+            List<String> pathSegments = new ArrayList<String>(Arrays.asList(servletPath.split("/")));
+            pathSegments.remove(0); // remove images part of servlet path
+            pathSegments.remove(0); // remove logos part of servlet path
             StringBuilder path = new StringBuilder(logosDir);
-            path.append(File.pathSeparator);
+            path.append(File.separator);
+
             for (String segment : pathSegments) {
                 path.append(segment);
-                path.append(File.pathSeparator);
+                path.append(File.separator);
             }
 
             path.deleteCharAt(path.length() - 1);
