@@ -323,6 +323,13 @@
         <xsl:param name="schema"/>
         <xsl:param name="edit"/>
         
+        <xsl:variable name="lang">
+        	<xsl:call-template name="getLangId">
+                <xsl:with-param name="langGui" select="/root/gui/language" />
+                <xsl:with-param name="md"
+                    select="ancestor-or-self::*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']" />
+            </xsl:call-template>
+        </xsl:variable>
         <xsl:variable name="content">
             <xsl:for-each select="che:CHE_CI_ResponsibleParty">
             <tr>
@@ -335,7 +342,7 @@
                                         <xsl:with-param name="schema" select="$schema"/>
                                         <xsl:with-param name="edit"   select="$edit"/>
                                     </xsl:apply-templates>
-                                    
+
                                     <xsl:choose>
 	                                    <xsl:when test="$edit = 'true'">
 		                                    <xsl:apply-templates mode="elementEP" select="che:individualFirstName|geonet:child[string(@name)='individualFirstName']">
@@ -358,7 +365,7 @@
 		                                        <xsl:with-param name="text">
 		                                            <xsl:value-of select="(che:individualFirstName|geonet:child[string(@name)='individualFirstName'])/gco:CharacterString"/>
 		                                            <xsl:text> </xsl:text>
-		                                            <xsl:value-of select="(individualLastName|geonet:child[string(@name)='individualLastName'])/gco:CharacterString"/>
+		                                            <xsl:value-of select="(che:individualLastName|geonet:child[string(@name)='individualLastName'])/gco:CharacterString"/>
 		                                        </xsl:with-param>
 		                                    </xsl:apply-templates>
 	                                    </xsl:otherwise>

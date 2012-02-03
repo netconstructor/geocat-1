@@ -490,7 +490,8 @@ function doSaveAction(action,validateAction)
 					if (html.startsWith("<?xml") < 0) { // service returns xml on success
 						alert(translate("errorSaveFailed") + html);
 					}
-					
+					// always do validation so index is up-to-date
+					getValidationReport(false);
 					setBunload(false);
 					location.replace(getGNServiceURL('metadata.show?id='+metadataId+'&skipPopularity=y'));
 				},
@@ -516,8 +517,8 @@ function doSaveAction(action,validateAction)
 				evalScripts: true,
 				 onComplete: function(req) {
 					if (req.status == 200) {
-						if (typeof validateAction != 'undefined')
-							getValidationReport();
+						// always do validation so index is up-to-date
+						getValidationReport(typeof validateAction != 'undefined');
 						setBunload(true); // reset warning for window destroy
 						initCalendar();
 						validateMetadataFields();
@@ -1692,7 +1693,7 @@ function updateValidationReportVisibilityRules(errorOnly) {
  * Get the validation report for current metadata record
  * and display the report if success.
  */
-function getValidationReport()
+function getValidationReport(showReport)
 {	var metadataId = document.mainForm.id.value;
 	var pars = "&id="+metadataId;
 	var action = 'metadata.validate';
@@ -1702,17 +1703,22 @@ function getValidationReport()
 			method: 'get',
 			parameters: pars,
 			onSuccess: function(req) {
-				if (req.status == 0) {
-					alert("Browser returned status 0 and validation report has been lost - try again?");
-					getValidationReport();
+				if(showReport) {
+					if (req.status == 0) {
+						alert("Browser returned status 0 and validation report has been lost - try again?");
+						getValidationReport();
+					}
+					var html = req.responseText;
+					displayBox(html, 'validationReport', false);
+					updateValidationReportVisibilityRules($('checkError').checked);
 				}
-				var html = req.responseText;
-				displayBox(html, 'validationReport', false);
-				updateValidationReportVisibilityRules($('checkError').checked);
+   				$('editorBusy').hide();
 				setBunload(true); // reset warning for window destroy
 			},
 			onFailure: function(req) { 
-				alert(translate("errorOnAction") + action + " / status " + req.status + " text: " + req.statusText + " - " + translate("tryAgain"));
+				if(showReport) {
+					alert(translate("errorOnAction") + action + " / status " + req.status + " text: " + req.statusText + " - " + translate("tryAgain"));
+				}
    				$('editorBusy').hide();
 				setBunload(true); // reset warning for window destroy
 			}

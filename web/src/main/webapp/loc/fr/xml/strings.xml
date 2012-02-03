@@ -841,7 +841,7 @@
 	<timeoutChoice value="10">10 secondes</timeoutChoice>
 	<timeoutChoice value="20">20 secondes</timeoutChoice>
 	<timeoutChoice value="30">30 secondes</timeoutChoice>
-	<title>GeoNetwork - Portail pour l'information géo-spatiale</title>
+	<title>geocat.ch – Le catalogue géographique suisse</title>
 	<to js="true">Fin</to>
 	<toDateSelector>Select TO date</toDateSelector>
 	<tools>Outils</tools>
