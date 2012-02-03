@@ -60,6 +60,7 @@
 				<xsl:variable name="valid">
 					<xsl:choose>
 						<!-- only apply restriction to iso19139 metadata records -->
+						<xsl:when test="contains(/root/gui/reqService,'metadata.batch')">y</xsl:when>
 						<xsl:when test="not(starts-with($schema, 'iso19139')) and $valid-xsd='1'">y</xsl:when>
 						<xsl:when test="starts-with($schema, 'iso19139') and $valid-xsd='1' and $validSch-iso='1' and $validSch-iso-che='1' and $validSch-geonetwork='1' and $validSch-inspire='1'"><xsl:text>y</xsl:text></xsl:when>
 						<xsl:otherwise><xsl:text>n</xsl:text></xsl:otherwise>
@@ -198,6 +199,7 @@
 							</tr>
 						</xsl:if>
 					</table>
+					<xsl:if test="not(contains(/root/gui/reqService,'metadata.batch'))">
 					<h1><xsl:value-of select="/root/gui/strings/displayValidationReport"/></h1>
 					<table>
 						<tr>
@@ -238,7 +240,8 @@
 							<td class="padded"><xsl:value-of select="/root/gui/strings/inspireValid"/><br/></td>
 						</tr>
 						</xsl:if>
-					</table>			
+					</table>
+					</xsl:if>		
 				</div>
 			</xsl:with-param>
 		</xsl:call-template>

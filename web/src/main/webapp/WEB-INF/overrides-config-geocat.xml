@@ -132,7 +132,6 @@
         <addXML xpath="profile[@name = 'Guest']">
             <allow service="mapfish"/>
             <allow service="geocat"/>
-            <allow service="geocat.migrated"/>
             <allow service="cgp"/>
             <allow service="gm03.xml"/>
             <allow service="gm03small.xml"/>
