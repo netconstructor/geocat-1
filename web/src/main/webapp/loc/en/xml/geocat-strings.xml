@@ -182,7 +182,9 @@
 
 	<displayValidationReport>Validation report</displayValidationReport>
 	<publishOnlyIfAdminOrValid>Metadata could be published only if valid against ISO rules or if you're an administrator.</publishOnlyIfAdminOrValid>
-	<standardValid>ISO and GM03 valid</standardValid>
+	<xsdValid>XSD valid</xsdValid>
+	<isoValid>ISO valid</isoValid>
+	<gm03Valid>GM03 valid</gm03Valid>
 	<inspireValid>INSPIRE valid</inspireValid>
 
     <xsl.admin>Metadata Formatting Stylesheets</xsl.admin>

@@ -1283,7 +1283,6 @@ public class LuceneSearcher extends MetaSearcher
 	        	}
 	        }
 	        
-	        searcher.close();
     	} catch (CorruptIndexException e) {
 			// TODO: handle exception
     		System.out.println (e.getMessage());
@@ -1291,7 +1290,7 @@ public class LuceneSearcher extends MetaSearcher
 			// TODO: handle exception
 			System.out.println (e.getMessage());
 		} finally {
-			searcher.close();
+		    try { searcher.close(); }finally{reader.close();}
 		}
 	
     return values;

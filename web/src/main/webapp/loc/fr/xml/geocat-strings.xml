@@ -173,7 +173,9 @@ Votre équipe geocat.ch</msg>
 
 	<displayValidationReport>Rapport de validation</displayValidationReport>
 	<publishOnlyIfAdminOrValid>Une métadonnée peut être publiée si elle est valide ISO ou si vous êtes un administrateur.</publishOnlyIfAdminOrValid>
-	<standardValid>Valide ISO et GM03</standardValid>
+	<xsdValid>Valide XSD</xsdValid>
+	<isoValid>Valide ISO</isoValid>
+	<gm03Valid>Valide GM03</gm03Valid>
 	<inspireValid>Valide INSPIRE</inspireValid>
 
     <xsl.admin>Metadata Formatting Stylesheets</xsl.admin>

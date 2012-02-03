@@ -704,7 +704,7 @@ public class EditLib
 		while (mdIt.hasNext()) {
 			Element elem = (Element)mdIt.next();
 			String ref = elem.getAttributeValue("ref");
-			if (ref != null) {
+			if (ref != null && !ref.startsWith("d_")) {
 				int i = Integer.parseInt(ref);
 				if (i > iRef) iRef = i; 	
 			}

@@ -156,6 +156,7 @@ public class GetAdminOper implements Service
 		}
 
 		Element luceneIndexPath = new Element("luceneIndexPath").setText(gc.getSearchmanager().getLuceneDir().getAbsolutePath());
+		Element schema = new Element("schema").setText(info.schemaId);
 		//-----------------------------------------------------------------------
 		//--- put all together
 
@@ -165,7 +166,8 @@ public class GetAdminOper implements Service
 										.addContent(elGroup)
 										.addContent(ownerId)
                                         .addContent(hasOwner)
-                                        .addContent(luceneIndexPath);
+                                        .addContent(luceneIndexPath)
+                                        .addContent(schema);
 
 		return elRes;
 	}

@@ -174,7 +174,9 @@ Ihr geocat.ch-Team</msg>
 
 	<displayValidationReport>Validierungsbericht</displayValidationReport>
 	<publishOnlyIfAdminOrValid>Metadaten können nur publiziert werden, wenn sie gültig nach ISO und GM03-Regeln sind und Sie über die nötigen Administrator-Rechte verfügen.</publishOnlyIfAdminOrValid>
-	<standardValid>Gültig nach ISO und GM03</standardValid>
+	<xsdValid>Gültig nach XSD</xsdValid>
+	<isoValid>Gültig nach ISO</isoValid>
+	<gm03Valid>Gültig nach GM03</gm03Valid>
 	<inspireValid>Gültig nach INSPIRE</inspireValid>
     
     <xsl.admin>Metadata Formatting Stylesheets</xsl.admin>

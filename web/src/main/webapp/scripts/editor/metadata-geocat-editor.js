@@ -557,11 +557,17 @@ function displayModalBox(contentDivId, boxTitle) {
     }
 
     if (modalBox) {
-        modalBox.show();
-        modalBox.setHeight(620);
-        modalBox.setTitle(boxTitle);
-        modalBox.setWidth(Ext.get(contentDivId).getWidth() + 14);
-        modalBox.center();
+    	try {
+	        modalBox.show();
+	        modalBox.setHeight(620);
+	        modalBox.setTitle(boxTitle);
+	        modalBox.setWidth(Ext.get(contentDivId).getWidth() + 14);
+	        modalBox.center();
+    	} catch (e) {
+    		modalBox.destroy();
+    		modalBox = undefined;
+    		displayModalBox(contentDivId, boxTitle);
+    	}
     }
 
 }

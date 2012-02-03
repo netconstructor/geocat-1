@@ -516,7 +516,7 @@ function doSaveAction(action,validateAction)
 				evalScripts: true,
 				 onComplete: function(req) {
 					if (req.status == 200) {
-						if (document.mainForm.showvalidationerrors.value=='true')
+						if (typeof validateAction != 'undefined')
 							getValidationReport();
 						setBunload(true); // reset warning for window destroy
 						initCalendar();
