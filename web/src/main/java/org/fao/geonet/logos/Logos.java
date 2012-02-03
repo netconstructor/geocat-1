@@ -10,6 +10,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import java.io.*;
 import java.nio.channels.Channels;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Utility methods for managing logos
@@ -30,16 +32,17 @@ public class Logos {
     public static String locateLogosDir(ServletContext context, String appDir) {
         if (context != null) {
             Element configXml = ConfigurationOverrides.loadXmlFileAndUpdate("/WEB-INF/config.xml", context);
-            Element logosDirElem = configXml.getChild("appHandler").getChild("logosDir");
-            String logosDir;
-            if (logosDirElem == null) {
-                logosDir = context.getRealPath("images/logos");
-            } else {
-                logosDir = logosDirElem.getTextTrim();
-                if (logosDir.startsWith("./")) {
-                    logosDir = context.getRealPath(logosDir);
+            List<Element> logosDirElem = configXml.getChild("appHandler").getChildren("param");
+            String logosDir = null;
+            for(Element e : logosDirElem) {
+                if(e.getAttributeValue("name").equalsIgnoreCase("logosDir")) {
+                    logosDir = e.getAttributeValue("value");
+                    break;
                 }
             }
+            if (logosDirElem == null) {
+                logosDir = context.getRealPath("images/logos");
+            } 
             System.setProperty(context.getServletContextName() + ".logos.dir", logosDir);
 
             return logosDir;
