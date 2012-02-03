@@ -51,7 +51,6 @@
             function initMapComponent() {
                 var mapCmp = new MapComponent('olMap', {displayLayertree: false});
                 drawCmp = new MapDrawComponent(mapCmp.map, {toolbar: mapCmp.toolbar, activate: true});
-                Ext.get("olMapMap").setHeight(Ext.get("olMapMap").dom.parentNode.getHeight())
                 mapCmp.zoomToFullExtent();
             }
 		</script>

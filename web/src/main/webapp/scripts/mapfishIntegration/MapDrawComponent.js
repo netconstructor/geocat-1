@@ -101,10 +101,12 @@ var MapDrawComponent = OpenLayers.Class({
         if (this.toolbar && !options.hideDrawControls) {
             this.toolbar.add(new Ext.Toolbar.Separator());
             for (var i=0; i < this.controls.length; i++) {
-                this.toolbar.addControl(this.controls[i], {
+                this.toolbar.add(new GeoExt.Action({
+                    control: this.controls[i],
+                    map: this.map,
                     iconCls: this.controls[i].toolbarControlDrawIconCls,
                     toggleGroup: this.toolbarControlToggleGroup
-                });
+                }));
             }
             this.toolbar.add({
                 iconCls: this.toolbarControlClearIconCls,

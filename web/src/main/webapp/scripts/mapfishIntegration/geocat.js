@@ -53,9 +53,6 @@ var geocatConf = {
         contentEl : 'header',
         border : false
     },
-    extraSetup : function() {
-        Ext.get("mapMap").setHeight(Ext.get("map").dom.parentNode.getHeight())
-    },
     loadingElemId : "loading"
 };
 
@@ -166,7 +163,7 @@ var geocat = {
 
         Ext.getBody().createChild({id:'map'});
 //        var map = geocat.map = createMap('map', false);
-        var mapCmp = new MapComponent('map', {drawPanel: false, displayLayertree: false});
+        var mapCmp = new MapComponent(null, {drawPanel: false, displayLayertree: false});
         var map = geocat.map = mapCmp.map;
 
         geocat.baseUrl = baseUrl;
@@ -235,7 +232,7 @@ var geocat = {
                                 html: '<div id="switchSearchMode">' + geocat.getSimpleSearchSwitch() + '</div>'
                             }
                         ]
-                    },{
+                    }, new GeoExt.MapPanel({
                         region: 'south',
                         split: true,
                         height: geocat.mapInitHeight,
@@ -243,10 +240,10 @@ var geocat = {
                         maxHeight: geocat.mapMaxHeight,
                         id: 'mapRegion',
                         layout: 'fit',
-                        tbar: toolbar,
+                        tbar: mapCmp.getToolbar(), // TODO: add items from fillSearchToolbar?
                         border: false,
-                        contentEl: 'map'
-                    }
+                        map: map
+                    })
                 ]
             },{
                 region: 'center',
@@ -280,9 +277,6 @@ var geocat = {
         });
 
         geocat.fixLayout();
-
-        mapCmp.fillToolbar();
-        geocat.fillSearchToolbar(toolbar);
 
         Ext.getCmp('mapRegion').on('resize', function() {
             this.map.updateSize();
@@ -1247,7 +1241,6 @@ var geocat = {
         form.doLayout();
         form.doLayout();
         geocat.updateComboSizes.defer(0, this, [form, form.body.dom.clientWidth]);
-        geocatConf.extraSetup();
     },
 
     createCountryStore: function() {

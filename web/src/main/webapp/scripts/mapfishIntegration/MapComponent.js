@@ -132,7 +132,7 @@ var MapComponent = OpenLayers.Class({
             restrictedExtent: tcBounds,
             resolutions: this.resolutions
         };
-        if (!this.drawPanel) {
+        if (!this.drawPanel && this.panelDivId) {
             mapOptions.div = this.panelDivId;
         }
         this.map = new OpenLayers.Map(mapOptions);
@@ -144,6 +144,7 @@ var MapComponent = OpenLayers.Class({
             this.map.addControl(this.navigate);
         }
         if (this.drawPanel) {
+            this.toolbar = this.getToolbar();
             this.panel = this.getPanel();
         }
 
@@ -159,7 +160,9 @@ var MapComponent = OpenLayers.Class({
         this.map.zoomToExtent(this.initialExtent, true);
     },
 
-    getToolbarItems: function() {
+    getToolbar: function() {
+        if (this.toolbar) return this.toolbar;
+
         var items = [
             new GeoExt.Action({
                 control: new OpenLayers.Control.ZoomToMaxExtent(),
@@ -193,17 +196,16 @@ var MapComponent = OpenLayers.Class({
             }));
         }
 
-        return items;
+        return new Ext.Toolbar({items: items});
     },
 
     getPanel: function() {
-        if (this.panel) return this.panel;
 
         var panelItems = [new GeoExt.MapPanel({
             region: 'center',
             layout: 'fit',
             map: this.map,
-            tbar: this.getToolbarItems()
+            tbar: this.getToolbar()
         })];
         if (this.displayLayertree) {
             panelItems.push({

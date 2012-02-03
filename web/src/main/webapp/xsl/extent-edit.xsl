@@ -53,7 +53,6 @@
                         $('geom').value = '';
                     }
                 });
-                Ext.get("olMapMap").setHeight(Ext.get("olMapMap").dom.parentNode.getHeight())
 
                 // Form behaviour
                 Ext.get('geom').on('keyup', function() {
