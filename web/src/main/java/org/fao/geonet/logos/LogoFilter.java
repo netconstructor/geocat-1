@@ -2,6 +2,8 @@ package org.fao.geonet.logos;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,9 +22,13 @@ import java.util.List;
  * Time: 4:03 PM
  */
 public class LogoFilter implements Filter {
+    private static final int FIVE_DAYS = 60*60*24*5;
     private String logosDir;
     private byte[] defaultImage;
     private FilterConfig config;
+    private byte[] favicon;
+    private ServletContext servletContext;
+    private String appPath;
 
     public void init(FilterConfig config) throws ServletException {
         this.config = config;
@@ -40,8 +46,7 @@ public class LogoFilter implements Filter {
 
             Iterator<String> iter = pathSegments.iterator();
 
-            StringBuilder path = new StringBuilder(logosDir);
-            path.append(File.separator);
+            StringBuilder path = new StringBuilder();
 
             // dropped is only incremented when non-empty segment is dropped
             int dropped = 0;
@@ -59,25 +64,36 @@ public class LogoFilter implements Filter {
             }
 
             path.deleteCharAt(path.length() - 1);
-            File file = new File(path.toString());
-            if(!file.exists()) {
-                response.getOutputStream().write(defaultImage);
+            String filename = path.toString();
+            int extIdx = filename.lastIndexOf('.');
+            String ext;
+            if(extIdx > 0) {
+                ext = filename.substring(extIdx);
             } else {
-                Logos.transferTo(path.toString(), response.getOutputStream());
+                ext = "gif"; 
+            }
+            HttpServletResponse httpServletResponse = (HttpServletResponse)response;
+            httpServletResponse.setContentType("image/"+ext);
+            httpServletResponse.addHeader("Cache-Control", "max-age="+FIVE_DAYS+", public");
+            if(filename.equals("favicon.gif")) {
+                httpServletResponse.setContentLength(favicon.length);
+                
+                response.getOutputStream().write(favicon);
+            } else {
+                byte[] loadImage = Logos.loadImage(logosDir, servletContext, appPath, filename, defaultImage);
+                httpServletResponse.setContentLength(loadImage.length);
+                response.getOutputStream().write(loadImage);
             }
 
         }
     }
 
     private void initFields() {
-        final String appPath = config.getServletContext().getContextPath();
+        servletContext = config.getServletContext();
+        appPath = servletContext.getContextPath();
         logosDir = Logos.locateLogosDir(config.getServletContext(), appPath);
-        try {
-            defaultImage = Logos.loadDummyImage(logosDir, config.getServletContext(), appPath);
-        } catch (IOException e) {
-            defaultImage = new byte[0];
-            e.printStackTrace();
-        }        
+        defaultImage = Logos.loadImage(logosDir, config.getServletContext(), appPath, "dummy.gif", new byte[0]);
+        favicon = Logos.loadImage(logosDir, config.getServletContext(), appPath, "favicon.gif", defaultImage);
     }
 
     private boolean isGet(ServletRequest request) {

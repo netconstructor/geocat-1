@@ -180,7 +180,7 @@ public class SearchController
 		// --- If this occur user should probably migrate the catalogue from iso19115 to iso19139.
 		// --- But sometimes you could harvest remote node in iso19115 and make them available through CSW
 		if (schema.equals("iso19115")) {
-		    String FS = File.pathSeparator;
+		    String FS = File.separator;
 			res = Xml.transform(res, context.getAppPath() + "xsl" + FS
 					+ "conversion" + FS + "import" + FS + "ISO19115-to-ISO19139.xsl");
 			schema = "iso19139";

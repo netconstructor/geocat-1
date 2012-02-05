@@ -3,6 +3,9 @@ package org.fao.geonet.logos;
 import jeeves.server.ConfigurationOverrides;
 import jeeves.server.context.ServiceContext;
 import jeeves.server.sources.http.JeevesServlet;
+import jeeves.utils.Log;
+
+import org.fao.geonet.constants.Geonet;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
@@ -44,27 +47,32 @@ public class Logos {
                 logosDir = context.getRealPath("images/logos");
             } 
             System.setProperty(context.getServletContextName() + ".logos.dir", logosDir);
-
+            new File(logosDir).mkdirs();
             return logosDir;
         } else {
             return System.getProperty("logos.dir", appDir + File.separator + "images/logos");
         }
     }
 
-    public static byte[] loadDummyImage(String logosDir, ServletContext context, String appPath) throws IOException {
-        File dummyFile = new File(logosDir, "dummy.gif");
+    public static byte[] loadImage(String logosDir, ServletContext context, String appPath, String filename, byte[] defaultValue) {
+        File dummyFile = new File(logosDir, filename);
         if (!dummyFile.exists()) {
             if(context != null) {
-                dummyFile = new File(context.getRealPath("images/logos/dummy.gif"));
+                dummyFile = new File(context.getRealPath("images/logos/"+filename));
             } else {
-                dummyFile = new File(appPath+File.separator+"images/logos/dummy.gif");
+                dummyFile = new File(appPath, "images/logos/"+filename);
             }
         }
 
         if (dummyFile.exists()) {
+            try {
             ByteArrayOutputStream data = new ByteArrayOutputStream();
             transferTo(dummyFile.getPath(), data);
             return data.toByteArray();
+            } catch (IOException e) {
+                Log.warning(Geonet.LOGOS, "Unable to find logo "+filename);
+                return defaultValue;
+            }
         }
         return new byte[0];
     }

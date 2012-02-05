@@ -758,14 +758,13 @@ public class Geonetwork implements ApplicationHandler
      * @param nodeUuid
      */
     private void createSiteLogo(String nodeUuid, ServletContext servletContext, String appPath) {
-        String fs = File.pathSeparator;
         try {
             String logosDir = Logos.locateLogosDir(servletContext, appPath);
-            File logo = new File(logosDir+fs+ nodeUuid +".gif");
+            File logo = new File(logosDir, nodeUuid +".gif");
             if (!logo.exists()) {
                 FileOutputStream os = new FileOutputStream(logo);
                 try {
-                    os.write(Logos.loadDummyImage(logosDir, servletContext, appPath));
+                    os.write(Logos.loadImage(logosDir, servletContext, appPath, "dummy.gif", new byte[0]));
                     logger.info("      Setting catalogue logo for current node identified by: " + nodeUuid);
                 } finally {
                     os.close();

@@ -527,6 +527,7 @@ public class Geonet
 	public static final String MEF          = GEONETWORK + ".mef";
 	public static final String CSW          = GEONETWORK + ".csw";
 	public static final String LDAP         = GEONETWORK + ".ldap";
+    public static final String LOGOS        =  GEONETWORK + ".logos";
 	public static final String EDITOR				= GEONETWORK + ".editor";
 	public static final String EDITORADDELEMENT = GEONETWORK + ".editoraddelement";
 	public static final String EDITOREXPANDELEMENT = GEONETWORK + ".editorexpandelement";
@@ -544,7 +545,6 @@ public class Geonet
     public static final String MONITORING   = GEONETWORK + ".monitoring";
 	//--------------------------------------------------------------------------
 	//--- services
-
 	public class Service
 	{
 		public static final String XML_LOGIN         = "xml.user.login";
