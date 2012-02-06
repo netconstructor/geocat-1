@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -291,7 +292,7 @@ public class DbLib {
 
 		// --- load the dbms schema
         List<String> basicSchema = new ArrayList<String>(Lib.text.load(servletContext, appPath, file));
-        basicSchema.addAll(Lib.text.load(servletContext, appPath, file));
+        basicSchema.addAll(Lib.text.load(servletContext, appPath, gcFile));
 
 		return basicSchema;
 	}
