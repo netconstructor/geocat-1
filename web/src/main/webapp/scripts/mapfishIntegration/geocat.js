@@ -1348,7 +1348,7 @@ var geocat = {
                 reader: reader,
                 sortInfo: {field: opts.displayField,  direction:"ASC"}
             });
-            searchTools.readWFS(geocat.geoserverUrl + "wfs", ns, type, fields, null, {
+            searchTools.readWFS(geocat.geoserverUrl + "/wfs", ns, type, fields, null, {
                 success: function(response) {
                     ds.loadData(response.responseXML);
                     ds.add(new Record({}));
