@@ -1371,7 +1371,7 @@ var geocat = {
                         if (opts.updateFilter) {
                             filter = opts.updateFilter.call(search, filter);
                         }
-                        searchTools.readWFS(geocat.geoserverUrl + "wfs", ns, type, fields, filter, {
+                        searchTools.readWFS(geocat.geoserverUrl + "/wfs", ns, type, fields, filter, {
                             success: function(response) {
                                 ds.loadData(response.responseXML);
                                 ds.add(new Record({}));
