@@ -764,7 +764,7 @@ public class Geonetwork implements ApplicationHandler
             if (!logo.exists()) {
                 FileOutputStream os = new FileOutputStream(logo);
                 try {
-                    os.write(Logos.loadImage(logosDir, servletContext, appPath, "dummy.gif", new byte[0]));
+                    os.write(Logos.loadImage(servletContext, appPath, "logos/dummy.gif", new byte[0]));
                     logger.info("      Setting catalogue logo for current node identified by: " + nodeUuid);
                 } finally {
                     os.close();

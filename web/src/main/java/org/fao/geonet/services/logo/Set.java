@@ -58,12 +58,14 @@ public class Set implements Service {
     private volatile String nodeLogoDirectory = null;
 
     public void init(String appPath, ServiceConfig params) throws Exception {
-        harvestingLogoDirectory = appPath + "images/harvesting/";
     }
 
     public Element exec(Element params, ServiceContext context)
             throws Exception {
         synchronized (this) {
+            if(harvestingLogoDirectory == null) {
+                harvestingLogoDirectory = Logos.locateHarvesterLogosDir(context);
+            }
             if(nodeLogoDirectory == null) {
                 nodeLogoDirectory = Logos.locateLogosDir(context);
             }

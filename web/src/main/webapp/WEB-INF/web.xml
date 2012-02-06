@@ -33,6 +33,11 @@
         <url-pattern>/images/logos/*</url-pattern>
     </filter-mapping>
 
+    <filter-mapping>
+        <filter-name>logos</filter-name>
+        <url-pattern>/images/harvesting/*</url-pattern>
+    </filter-mapping>
+
     <servlet>
         <servlet-name>gn-servlet</servlet-name>
         <servlet-class>jeeves.server.sources.http.JeevesServlet</servlet-class>

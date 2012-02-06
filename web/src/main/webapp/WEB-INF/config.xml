@@ -316,7 +316,8 @@
 	<appHandler class="org.fao.geonet.Geonetwork">
 	  <param name="luceneDir" value="WEB-INF/lucene" />
 	  <param name="dataDir" value="WEB-INF/data" />
-	  <param name="logosDir" value="./images/logos" />
+	  <!-- the root of the directory containing logos and harvesting images (and in future other images that are site dependent and should not be replaced when a new webapp is deployed) -->
+	  <param name="dataImagesDir" value="./images" />
 		<!-- this must be a directory in web/geonetwork because html is served -->
 		<param name="htmlCacheDir" value="htmlCache" />
 		

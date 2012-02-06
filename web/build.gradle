@@ -129,7 +129,7 @@ minification {
   js(
     minifyGeocat,
     minifiedGeocatFile, 
-    jsFiles(dir: "$scripts/mapfishIntegration", includes: ['geocat.js','searchTools.js']))
+    jsFiles(dir: "$scripts/mapfishIntegration", includes: ['searchTools.js','EMailPDFAction.js','DomQueryNS.js', 'geocat.js']))
 
   js(
     minifyGnPrototypeLibs,

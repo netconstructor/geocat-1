@@ -23,7 +23,7 @@
       <replaceAtt xpath="appHandler/param[@name = 'schemaPluginsDir']" attName="value" value="/schemaPluginsDir"/>
       <replaceAtt xpath="appHandler/param[@name = 'htmlCacheDir']" attName="value" value="@HTML_CACHE_DIR@"/>
       <replaceAtt xpath="appHandler/param[@name = 'useSubversion']" attName="value" value="false"/>
-      <replaceAtt xpath="appHandler/param[@name = 'logosDir']" attName="value" value="@DATA_DIR@/logos"/>
+      <replaceAtt xpath="appHandler/param[@name = 'dataImagesDir']" attName="value" value="@DATA_DIR@/images"/>
       <replaceAtt xpath="appHandler/param[@name = 'subversionPath']" attName="value" value="@DATA_DIR@/metadata_subversion"/>
     </file>
 </overrides>

@@ -106,7 +106,7 @@ public class OgcWxSHarvester extends AbstractHarvester
 
 		storeNode(dbms, params, "id:"+id);
 		Lib.sources.update(dbms, params.uuid, params.name, true);
-		Lib.sources.copyLogo(context, "/images/harvesting/"+ params.icon, params.uuid);
+		Logos.copyLogo(context, "harvesting/"+ params.icon, params.uuid);
 
 		return id;
 	}
@@ -136,7 +136,7 @@ public class OgcWxSHarvester extends AbstractHarvester
 		//--- could be half updated and so it could be in an inconsistent state
 
 		Lib.sources.update(dbms, copy.uuid, copy.name, true);
-		Lib.sources.copyLogo(context, "/images/harvesting/"+ copy.icon, copy.uuid);
+		Logos.copyLogo(context, "harvesting/"+ copy.icon, copy.uuid);
 
 		params = copy;
 	}
