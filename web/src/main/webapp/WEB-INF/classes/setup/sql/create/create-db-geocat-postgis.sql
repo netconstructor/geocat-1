@@ -61,3 +61,14 @@ ALTER TABLE Users
     ADD validated            character(1)           default 'n'
     ;
 -- ======================================================================
+
+CREATE TABLE hiddenmetadataelements (
+    metadataid integer NOT NULL,
+    xpathexpr character varying(255) NOT NULL,
+    level character varying(8) NOT NULL
+);
+
+
+ALTER TABLE public.hiddenmetadataelements OWNER TO "www-data";
+
+ALTER TABLE ONLY hiddenmetadataelements ADD CONSTRAINT hiddenmetadataelements_pkey PRIMARY KEY (metadataid, xpathexpr);

@@ -87,6 +87,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
+import org.jdom.Parent;
 import org.jdom.filter.ElementFilter;
 
 import java.io.File;
@@ -1486,6 +1487,27 @@ public class DataManager {
             setCategory(session, dbms, id, catId);
         }
 
+
+        // --- store metadata hiding by copying them from the template
+        List hidingList = dbms.select(
+                "SELECT xPathExpr, level FROM HiddenMetadataElements WHERE metadataId = " + templateId).getChildren();
+
+        String insertSQL = "INSERT INTO HiddenMetadataElements (metadataId, xPathExpr, level) VALUES (?, ?, ?)";
+        Integer idInteger = new Integer(id);
+        for (int i = 0; i < hidingList.size(); i++)
+        {
+            Element hidingRec = (Element) hidingList.get(i);
+
+            String xPathExpr = hidingRec.getChildText("xpathexpr");
+            String level = hidingRec.getChildText("level");
+            if (xPathExpr == null || level == null) {
+                Log.warning("DataManager", "xPathExpr (" + xPathExpr + ") or level (" + level + ") is null for template=" +templateId);
+                continue;
+            }
+            dbms.execute(insertSQL, idInteger, xPathExpr, level);
+        }
+
+        
 		//--- index metadata
         indexInThreadPoolIfPossible(dbms,id);
 		return id;
@@ -1584,7 +1606,7 @@ public class DataManager {
 
     /**
      * Retrieves a metadata (in xml) given its id. Use this method when you
-		 * must retrieve a metadata in the same transaction.
+     * must retrieve a metadata in the same transaction.
      * @param dbms
      * @param id
      * @return
@@ -1647,9 +1669,17 @@ public class DataManager {
 			}
 		}
 
+        if (elementsHide) {
+            hideElements(srvContext, md, id, forEditing);
+        }
+
 		md.addNamespaceDeclaration(Edit.NAMESPACE);
 		Element info = buildInfoElem(srvContext, id, version);
 		md.addContent(info);
+
+        if (forEditing) {
+            addHidingInfo(srvContext, md, id);
+        }
 
 		md.detach();
 		return md;
@@ -2850,6 +2880,46 @@ public class DataManager {
 		return untreatedChildSet;
 	}
 
+    private void addHidingInfo(ServiceContext context, Element md, String id) throws Exception
+    {
+        md.detach(); // DEBUG
+
+        Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
+        Element xPathExpressions = dbms.select(
+                "SELECT xPathExpr, level FROM ,MetadataElements WHERE metadataId = ?", new Integer(id));
+
+        List elements = Xml.selectNodes(xPathExpressions, "//xpathexpr");
+        xPathExpressions.detach();
+        List levels = Xml.selectNodes(xPathExpressions, "//level");
+
+        Iterator l = levels.iterator();
+
+        // System.out.println(Xml.getString(xPathExpressions)); // DEBUG
+        for (Iterator i = elements.iterator(); i.hasNext();)
+        {
+            try
+            {
+                String expr = ((Element) i.next()).getText();
+                String level = ((Element) l.next()).getText();
+                // System.out.println("expr = " + expr + " - level = " + level);
+                // // DEBUG
+
+                Element t = Xml.selectElement(md, expr);
+                md.detach();
+
+                // System.out.println(Xml.getString(t)); // DEBUG
+
+                t.addContent(new Element("hide", Edit.NAMESPACE).setAttribute("level", level));
+
+            } catch (JDOMException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        md.detach();
+    }
+
     /**
      * TODO : buildInfoElem contains similar portion of code with indexMetadata
      * @param context
@@ -3206,6 +3276,113 @@ public class DataManager {
         dbms.execute("UPDATE CswServerCapabilitiesInfo SET label = ? WHERE langId = ? AND field = ?", cswCapabilitiesInfo.getAbstract(), langId, "abstract");
         dbms.execute("UPDATE CswServerCapabilitiesInfo SET label = ? WHERE langId = ? AND field = ?", cswCapabilitiesInfo.getFees(), langId, "fees");
         dbms.execute("UPDATE CswServerCapabilitiesInfo SET label = ? WHERE langId = ? AND field = ?",  cswCapabilitiesInfo.getAccessConstraints(), langId, "accessConstraints");
+    }
+
+    private void hideElements(ServiceContext context, Element elMd, String id, boolean forEditing) throws Exception {
+        Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
+        try {
+            hideElements(context, dbms, elMd, id, forEditing);
+        } finally {
+            try {
+                dbms.commit();
+            }finally {
+                context.getResourceManager().close(Geonet.Res.MAIN_DB, dbms);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param context Null when called from indexMetadata.
+     * @param elMd
+     * @param id
+     * @param forEditing
+     * @throws Exception
+     */
+    private void hideElements(ServiceContext context, Dbms dbms, Element elMd, String id, boolean forEditing) throws Exception
+    {
+        Element xPathExpressions = dbms.select(
+                "SELECT xPathExpr, level FROM HiddenMetadataElements WHERE metadataId = ?", new Integer(id));
+
+        Namespace ns = Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+
+        AccessManager am = this.getAccessManager();
+
+        // Editors can always see all elements
+        if (forEditing || (context != null && am.canEdit(context, id)))
+        {
+            return;
+        }
+
+        Set<String> groups = null;
+
+        if (context != null)
+            groups = am.getUserGroups(dbms, context.getUserSession(), context.getIpAddress());
+
+        List<?> elements = Xml.selectNodes(xPathExpressions, "//xpathexpr");
+        xPathExpressions.detach();
+        List<?> levels = Xml.selectNodes(xPathExpressions, "//level");
+
+        Iterator<?> l = levels.iterator();
+        Document docMd = new Document(elMd);
+        List<Element> removeElms = new ArrayList<Element>(elements.size());
+
+        for (Iterator<?> i = elements.iterator(); i.hasNext();)
+        {
+            try
+            {
+
+                String expr = ((Element)i.next()).getText();
+                String level = ((Element)l.next()).getText();
+                Log.debug(Geonet.DATA_MANAGER, "Hide expr = " + expr + " - level = " + level);
+
+                // Intranet level for admin groups: no hiding
+                if ((groups != null && groups.contains("0") && "intranet".equals(level)))
+                {
+                    continue;
+                }
+
+                // ASSERT: we must hide the element
+
+                // Find the element using the XPath expr
+                List<?> targetElms = Xml.selectNodes(elMd, expr);
+                if (targetElms == null || targetElms.size() == 0)
+                {
+                    Log.debug(Geonet.DATA_MANAGER, "ERROR no targetElms found for " + expr);
+                    continue;
+                }
+
+                // Found target
+                Element targetElm = (Element)targetElms.get(0);
+
+                // We cannot remove immediately since this will break
+                // XPath expressions: like /descendant::gmd:electronicMailAddress[2]
+                // So we remember the elements to be removed.
+                removeElms.add(targetElm);
+            } catch (JDOMException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        // Remove elements marked for removal
+        for (Iterator<Element> i = removeElms.iterator(); i.hasNext();)
+        {
+            Element removeElm = i.next();
+            Parent removeElmParent = removeElm.getParent();
+
+            // Could happen if parent or ancestor was already removed
+            if (removeElmParent == null) {
+                Log.debug(Geonet.DATA_MANAGER, "No parent found for" + removeElm.getName());
+                continue;
+            }
+
+            Log.debug(Geonet.DATA_MANAGER, "Removing " + removeElm.getName());
+            removeElmParent.removeContent(removeElm);
+            // TODO ?? t.setAttribute("nilreason", "withheld", ns);
+        }
+
+        elMd.detach();
     }
 
 	//--------------------------------------------------------------------------

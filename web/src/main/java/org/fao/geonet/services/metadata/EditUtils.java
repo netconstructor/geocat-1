@@ -152,7 +152,7 @@ class EditUtils {
 			String sPos = el.getName();
 			String sVal = el.getText();
 
-			if (sPos.startsWith("_") && ! sPos.startsWith("d_")) {
+			if (sPos.startsWith("_") && !sPos.startsWith("_d_")) {
 				htChanges.put(sPos.substring(1), sVal);
             }
 		}

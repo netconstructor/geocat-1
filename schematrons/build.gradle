@@ -5,7 +5,13 @@ schemas = schemaDir.listFiles().findAll{it.isDirectory()}
 allRules = file('rules').listFiles().findAll{it.isFile()}.collect{
   it.name.drop("schematron-rules-".length()).reverse().drop(4).reverse()
 }
-rulesToPublish = ['geonetwork', 'iso', 'inspire','iso-che']
+// Declares where to publish rules
+rulesToPublish = [
+  /iso19139.*/:['geonetwork', 'iso', 'inspire','iso-che'],
+  /(csw-record)|(fgdc-std)|(iso19115)|(dublin-core)|(iso19110)/:['schematron-rules-none.sch'],
+]
+// If no rules in rulesToPublish are found then the following rules will be used
+defaultRules = 
 
 task cleanSchematronFiles << {
   schemas.each {
@@ -16,22 +22,22 @@ task cleanSchematronFiles << {
 task publishAll{
   rulesToPublish.each {dependsOn "publish"+it.capitalize()}
 }
-rulesToPublish.each { rule ->
+
+rulesToPublish.each { ruleDef ->
+  def rule = ruleDef.value
+  def schemaMatchRegex = ruleDef.key
   task ("publish"+rule.capitalize()) {
     inputs.file rulesInputFile(rule)
     inputs.files fileTree(dir: "rules/loc", include: "**/${locFileName(rule)}")
-    schemas.each {
+    def matchedSchemas = schemas.findAll {it ==~ schemaMatchRegex}
+    matchedSchemas each {
       outputs.files fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml'])
     }
     
     doLast {
       compileRules(rule)
   
-      if(rule.startsWith ('inspire')) {
-        schemas.findAll{it.name.startsWith 'iso19139'}.each{publish(rule, it)}
-      } else {
-        schemas.each{publish(rule, it)}
-      }
+      matchedSchemas.each{publish(rule, it)}
     }
   }
 }
