@@ -106,7 +106,7 @@
 				</a>
 			</xsl:when>
 			<xsl:when test="contains(geonet:info/schema,'iso19139')">
-				<a class="noprint" href="{/root/gui/locService}/iso19139.xml?id={geonet:info/id}"
+				<a class="noprint" href="{/root/gui/locService}/xml_iso19139?id={geonet:info/id}"
 					target="_blank" title="Download ISO19115/19139 metadata in XML">
 					<img style="border:0px;max-height:16px;" src="{/root/gui/url}/images/xml.png"
 						alt="ISO19115/19139 XML" title="Save ISO19115/19139 metadata as XML"

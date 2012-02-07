@@ -208,7 +208,7 @@ public class Logos {
 
     private static File locateImage( String imagesDir, ServletContext context, String appPath, String filename ) throws IOException {
         File file = new File(imagesDir, filename);
-        file.getParentFile().mkdirs();
+        
         if (!file.exists()) {
             File webappCopy;
             if(context != null) {
@@ -217,6 +217,7 @@ public class Logos {
                 webappCopy = new File(appPath, "images/"+filename);
             }
             if(webappCopy.exists()) {
+                file.getParentFile().mkdirs();
                 transferTo(webappCopy, new FileOutputStream(file), true);
             }
         }
