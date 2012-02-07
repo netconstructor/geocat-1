@@ -7,11 +7,10 @@ allRules = file('rules').listFiles().findAll{it.isFile()}.collect{
 }
 // Declares where to publish rules
 rulesToPublish = [
-  /iso19139.*/:['geonetwork', 'iso', 'inspire','iso-che'],
-  /(csw-record)|(fgdc-std)|(iso19115)|(dublin-core)|(iso19110)/:['schematron-rules-none.sch'],
+  /iso19139.*/:['geonetwork', 'iso', 'inspire'],
+  /iso19139\.che/:['iso-che'],
+  /(csw-record)|(fgdc-std)|(iso19115)|(dublin-core)|(iso19110)/:['none'],
 ]
-// If no rules in rulesToPublish are found then the following rules will be used
-defaultRules = 
 
 task cleanSchematronFiles << {
   schemas.each {
@@ -20,24 +19,28 @@ task cleanSchematronFiles << {
 }
 
 task publishAll{
-  rulesToPublish.each {dependsOn "publish"+it.capitalize()}
+  rulesToPublish.collect{it.value}.flatten().each {dependsOn "publish"+it.capitalize()}
 }
 
 rulesToPublish.each { ruleDef ->
-  def rule = ruleDef.value
+  def rules = ruleDef.value
   def schemaMatchRegex = ruleDef.key
-  task ("publish"+rule.capitalize()) {
-    inputs.file rulesInputFile(rule)
-    inputs.files fileTree(dir: "rules/loc", include: "**/${locFileName(rule)}")
-    def matchedSchemas = schemas.findAll {it ==~ schemaMatchRegex}
-    matchedSchemas each {
-      outputs.files fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml'])
-    }
+  def matchedSchemas = schemas.findAll {it.name ==~ schemaMatchRegex}
+  if(matchedSchemas.size() > 0) {
+    rules.each { rule ->
+      task ("publish"+rule.capitalize()) {
+        inputs.file rulesInputFile(rule)
+        inputs.files fileTree(dir: "rules/loc", include: "**/${locFileName(rule)}")
+        matchedSchemas.each {
+          outputs.files fileTree(dir: it, includes: ['schematron-rules-*.xsl*','**/schematron-rules-*.xml'])
+        }
     
-    doLast {
-      compileRules(rule)
+        doLast {
+          compileRules(rule)
   
-      matchedSchemas.each{publish(rule, it)}
+          matchedSchemas.each{publish(rule, it)}
+        }
+      }
     }
   }
 }
@@ -69,7 +72,8 @@ def publish(rules, schema) {
   to.delete()
   to << from.bytes
   
-  def defaultLocFile = file("rules/loc/$defaultLang/${locFileName(rules)}").bytes
+  def defaultLocFile = file("rules/loc/$defaultLang/${locFileName(rules)}")
+  def defaultLocFileByte = defaultLocFile.exists() ? defaultLocFile.bytes : null;
   file("rules/loc").listFiles().each { locDir ->
     def toFile = file("$schema/loc/${locDir.name}/${locFileName(rules)}")
     def fromFile = file("$locDir/${locFileName(rules)}")
@@ -80,7 +84,9 @@ def publish(rules, schema) {
       if(fromFile.exists()) {
         toFile << fromFile.bytes
       } else {
-        toFile << defaultLocFile
+        if(defaultLocFileByte!=null) {
+          toFile << defaultLocFileByte
+        }
       }
     }
   }

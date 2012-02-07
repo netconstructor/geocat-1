@@ -1,3 +1,5 @@
+web/src/main/webapp/xml/schemas/*/loc/*/schematron*
+web/src/main/webapp/xml/schemas/*/schematron*
 cachingxslt/cachingxslt.iml
 cachingxslt/target/
 cargo/
