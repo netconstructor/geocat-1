@@ -179,4 +179,66 @@
 
     </xsl:template>
     
+	<!--
+	adds toggle for Hidden Element editing in Advanced View
+	-->
+	<xsl:template name="toggle-visibility-edit">
+		<xsl:param name="edit" select="false()"/>
+
+		<xsl:if test="$edit=true()">
+			<tr align="left">
+                <td></td>
+				<td colspan="1">
+					<xsl:if test="$currTab!='simple'">
+					<input class="content" type="checkbox" onclick="toggleVisibilityEdit()" name="toggleVisibilityEditCB" id="toggleVisibilityEditCB" value="true"/><label for="toggleVisibilityEditCB" style="margin-left:0.5em"><xsl:value-of select="/root/gui/strings/toggleVisibilityEdit"/></label>
+					</xsl:if>
+					<xsl:call-template name="relatedResources">
+						<xsl:with-param name="edit" select="true()"/>
+					</xsl:call-template>
+				</td>
+			</tr>
+		</xsl:if>
+	</xsl:template>
+
+	<!--
+	adds per-element icon for Hidden Element editing
+	-->
+	<xsl:template name="visibility-icons">
+		<xsl:param name="ref" />
+
+		<!-- Must be a non-empty element ref and not in default view (simple) -->
+		<xsl:if test="$ref!='' and $currTab!='simple'">
+
+			<!-- Get current visibility level -->
+			<xsl:variable name="level">
+				<xsl:choose>
+					<xsl:when test="geonet:hide/@level='all'">all</xsl:when>
+					<!-- // Note (just@justobjects.nl 090517): allow only 'all' and 'no' visibility for Swiss Topo
+                    <xsl:when test="geonet:hide/@level='intranet'">intranet</xsl:when>   -->
+					<xsl:otherwise>no</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+
+			<!-- Determine icon on current visibility level -->
+			<xsl:variable name="image">
+				<xsl:choose>
+					<xsl:when test="$level='all'">red-ball.gif</xsl:when>
+					<xsl:otherwise>green-ball.gif</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+
+			<!-- Setup edit icon -->
+			<xsl:if test="name(.)!='gmd:LocalisedCharacterString'">
+				<a style="display:none;" href="javascript:void(0)" onClick="changeVisibility({$ref})" class="elementHiding">
+					<img id="{$ref}_visibility_icon" src="{/root/gui/url}/images/{$image}" />
+				</a>
+			</xsl:if>
+
+			<!-- Reference to parent. -->
+			<xsl:variable name="parentRef" select="../geonet:element/@ref"/>
+			<!-- Identifies and stores hiding info, parent ref number in class attribute -->
+			<input type="hidden" id="hide_{$ref}" name="hide_{$ref}" value="{$level}" class="parent_{$parentRef}"/>
+		</xsl:if>
+	</xsl:template>
+    
 </xsl:stylesheet>

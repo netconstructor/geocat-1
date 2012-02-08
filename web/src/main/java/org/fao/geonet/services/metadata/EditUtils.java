@@ -23,6 +23,7 @@
 
 package org.fao.geonet.services.metadata;
 
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -145,6 +146,7 @@ class EditUtils {
 		//--- each change is a couple (pos, value)
 
 		Hashtable htChanges = new Hashtable(100);
+        Hashtable htHide    = new Hashtable(100);
 		List list = params.getChildren();
 		for(int i=0; i<list.size(); i++) {
 			Element el = (Element) list.get(i);
@@ -154,6 +156,14 @@ class EditUtils {
 
 			if (sPos.startsWith("_") && !sPos.startsWith("_d_")) {
 				htChanges.put(sPos.substring(1), sVal);
+            } else if (sPos.startsWith("hide_")) {
+                
+                String ref = sPos.substring(5);
+                if(ref.startsWith("d_")) {
+                    ref = ref.substring(2);
+                }
+                htHide.put(ref, sVal);
+//              System.out.println(sPos.substring(5) + " - " + sVal); // DEBUG
             }
 		}
 
@@ -170,13 +180,13 @@ class EditUtils {
         boolean updateDateStamp = !minor.equals("true");
         String changeDate = null;
 		if (embedded) {
-            Element updatedMetada = new AjaxEditUtils(context).applyChangesEmbedded(dbms, id, htChanges, version, context.getLanguage());
+            Element updatedMetada = new AjaxEditUtils(context).applyChangesEmbedded(dbms, id, htChanges, htHide, version, context.getLanguage());
             if(updatedMetada != null) {
                 result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, false, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
             }
    		}
         else {
-            Element updatedMetada = applyChanges(dbms, id, htChanges, version, context.getLanguage());
+            Element updatedMetada = applyChanges(dbms, id, htChanges, htHide, version, context.getLanguage());
             if(updatedMetada != null) {
 			    result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
             }
@@ -192,11 +202,12 @@ class EditUtils {
      * @param dbms
      * @param id
      * @param changes
+     * @param htHide list of hidden elements
      * @param currVersion
      * @return
      * @throws Exception
      */
-    private Element applyChanges(Dbms dbms, String id, Hashtable changes, String currVersion, String lang) throws Exception {
+    private Element applyChanges(Dbms dbms, String id, Hashtable changes, Hashtable htHide, String currVersion, String lang) throws Exception {
         Element md = xmlSerializer.select(dbms, "Metadata", id, context);
 
 		//--- check if the metadata has been deleted
@@ -288,6 +299,8 @@ class EditUtils {
 				el.addContent(val);
 			}
 		}
+		
+		applyHiddenElements(context, dataManager, editLib, dbms, md, id, htHide);
 		//--- remove editing info added by previous call
 		editLib.removeEditingInfo(md);
 
@@ -296,6 +309,63 @@ class EditUtils {
         dataManager.updateXlinkObjects(dbms, id, lang, md, updatedXLinks.toArray(new Element[updatedXLinks.size()]));
 
         return md;
+    }
+
+    public static void applyHiddenElements( ServiceContext context, DataManager dataManager, EditLib editLib, Dbms dbms, Element md, String id, Hashtable htHide ) throws Exception {
+        // Add Hiding info to MD tree
+        dataManager.addHidingInfo(context, md, id);
+
+        // Generate and manage XPath/levels for Elements to be hidden
+        Integer idInteger = new Integer(id);
+        String insertSQL = "INSERT INTO HiddenMetadataElements (metadataId, xPathExpr, level) VALUES (?, ?, ?)";
+        for (Enumeration e = htHide.keys(); e.hasMoreElements();)
+        {
+            String ref = ((String) e.nextElement()).trim();
+            String level = ((String) htHide.get(ref)).trim();
+            String xPathExpr = null;
+
+            // System.out.println("HIDING ref = " + ref + " - level = " + level); // DEBUG
+            Element el = editLib.findElement(md, ref);
+            if (el == null)
+            {
+                //elements may have been replaced
+                continue;
+            }
+
+            // Find possible existing Element-hiding info
+            Element hideElm = el.getChild("hide", Edit.NAMESPACE);
+            if (hideElm != null) {
+                // Delete possible existing XPath expressions/level for this Element
+                xPathExpr = editLib.getXPathExpr(md, ref);
+                if (xPathExpr == null)
+                {
+                    throw new IllegalStateException("Cannot create XPath expression for (already hidden) ref = " + ref);
+                }
+
+                // Delete existing hiding info
+                // System.out.println("HIDING ref = " + ref + " DELETE = " + xPathExpr); // DEBUG
+                dbms.execute("DELETE FROM HiddenMetadataElements WHERE metadataId = " + id + " AND xPathExpr = '" + xPathExpr + "'");
+            }
+
+            if ("no".equals(level))
+            {
+                // No hiding specified for this element, nothing to do
+                continue;
+            }
+
+            // We have hiding: create XPath Expr to element if not yet generated
+            if (xPathExpr == null) {
+                xPathExpr = editLib.getXPathExpr(md, ref);
+                if (xPathExpr == null)
+                {
+                    throw new IllegalStateException("Cannot create XPath expression for ref = " + ref);
+                }
+            }
+
+            // Save hiding info
+            // System.out.println("HIDING ref = " + ref + " UPDATE = " + xPathExpr); // DEBUG
+            dbms.execute(insertSQL, idInteger, xPathExpr, level);
+        }
     }
 
     public static boolean updatedLocalizedURLElement( Element md, String ref, String val, EditLib editLib, HashSet<Element> updatedXLinks ) {

@@ -2880,17 +2880,17 @@ public class DataManager {
 		return untreatedChildSet;
 	}
 
-    private void addHidingInfo(ServiceContext context, Element md, String id) throws Exception
+    public void addHidingInfo(ServiceContext context, Element md, String id) throws Exception
     {
         md.detach(); // DEBUG
 
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
         Element xPathExpressions = dbms.select(
-                "SELECT xPathExpr, level FROM ,MetadataElements WHERE metadataId = ?", new Integer(id));
+                "SELECT xPathExpr, level FROM HiddenMetadataElements WHERE metadataId = ?", new Integer(id));
 
-        List elements = Xml.selectNodes(xPathExpressions, "//xpathexpr");
+        List elements = Xml.selectNodes(xPathExpressions, "*//xpathexpr");
         xPathExpressions.detach();
-        List levels = Xml.selectNodes(xPathExpressions, "//level");
+        List levels = Xml.selectNodes(xPathExpressions, "*//level");
 
         Iterator l = levels.iterator();
 
@@ -3319,12 +3319,12 @@ public class DataManager {
         if (context != null)
             groups = am.getUserGroups(dbms, context.getUserSession(), context.getIpAddress());
 
-        List<?> elements = Xml.selectNodes(xPathExpressions, "//xpathexpr");
+        List<?> elements = Xml.selectNodes(xPathExpressions, "*//xpathexpr");
         xPathExpressions.detach();
-        List<?> levels = Xml.selectNodes(xPathExpressions, "//level");
+        List<?> levels = Xml.selectNodes(xPathExpressions, "*//level");
 
         Iterator<?> l = levels.iterator();
-        Document docMd = new Document(elMd);
+
         List<Element> removeElms = new ArrayList<Element>(elements.size());
 
         for (Iterator<?> i = elements.iterator(); i.hasNext();)

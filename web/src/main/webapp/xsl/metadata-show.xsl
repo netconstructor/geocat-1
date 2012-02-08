@@ -14,7 +14,6 @@
 	
 	<xsl:include href="main.xsl"/>
 	<xsl:include href="metadata.xsl"/>
-	<xsl:include href="metadata-geocat-utils.xsl"/>
 
     <xsl:variable name="protocol" select="/root/gui/env/server/protocol" />
 	<xsl:variable name="host" select="/root/gui/env/server/host" />

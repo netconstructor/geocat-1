@@ -79,12 +79,13 @@ public class AjaxEditUtils extends EditUtils {
      * @param dbms
      * @param id        Metadata internal identifier.
      * @param changes   List of changes to apply.
+     * @param htHide    List of hidden elements
      * @param currVersion       Editing version which is checked against current editing version.
      * @return  The update metadata record
      * @throws Exception
      */
     protected Element applyChangesEmbedded(Dbms dbms, String id, 
-                                        Hashtable changes, String currVersion, String lang) throws Exception {
+                                        Hashtable changes, Hashtable htHide, String currVersion, String lang) throws Exception {
         String schema = dataManager.getMetadataSchema(dbms, id);
         EditLib editLib = dataManager.getEditLib();
 
@@ -217,6 +218,8 @@ public class AjaxEditUtils extends EditUtils {
                 }
             }
         }
+
+        applyHiddenElements(context, dataManager, editLib, dbms, md, id, htHide);
         
         dataManager.updateXlinkObjects(dbms, id, lang, md, updatedXLinks.toArray(new Element[updatedXLinks.size()]));
 

@@ -45,5 +45,7 @@
         <update linePattern="(INSERT INTO Settings VALUES \(815,813,'selected',')false(.*)">$1true$2</update>
         <!-- enable italian -->
         <update linePattern="(INSERT INTO Settings VALUES \(824,822,'selected',')false(.*)">$1true$2</update>
+        <!-- enable inspire -->
+        <update linePattern="(INSERT INTO Settings VALUES \(721,720,'enable',')false(.*)">$1true$2</update>
     </textFile>
 </overrides>

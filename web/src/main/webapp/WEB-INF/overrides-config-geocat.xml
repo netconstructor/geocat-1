@@ -187,6 +187,8 @@
         <replaceAtt xpath="client" attName="parameters"/>
         <removeXML xpath="editor-geopublisher"/>
         <removeXML xpath="compute-extent-from-keyword"/>
+        <removeXML xpath="editor-google-translate"/>
+        <removeXML xpath="metadata-tab/simple"/>
         <addXml xpath="">
             <geoserver.url>http://${wfs.host}:${wfs.port}/geoserver</geoserver.url>
         </addXml>

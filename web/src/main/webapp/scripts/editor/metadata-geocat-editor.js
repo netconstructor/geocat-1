@@ -842,3 +842,214 @@ function xlinkShowKeywordSelectionPanel(ref, name, id) {
 }
 
 /* -----------   End XLink functions  ------------- */
+
+/* -----------   Start Visibility functions  ------------- */
+var DEFAULT_VISIBILITY_ARR = ['no', 'all'];
+
+function toggleVisibilityEdit()
+{
+	// toggles visibility of element visibility edit icons
+	$$('a.elementHiding').invoke('toggle');
+}
+
+function changeVisibility(ref, val)
+{
+	if (!ref)
+	{
+		alert('No ref id for this element, (sorry, this needs to be fixed)');
+		return;
+	}
+
+	// Ref is a number: get input element
+	var elVisibility = $('hide_' + ref);
+	if (!elVisibility)
+	{
+		return;
+	}
+
+	// Determine new visibility
+	var visibility;
+	if (val)
+	{
+		// Value was passed (happens for recursive calls from parent)
+		visibility = val;
+	} else
+	{
+		// Visibility is determined by rotating visibility values
+
+		// Default rotation of visibility values
+		var visibilityArr = DEFAULT_VISIBILITY_ARR;
+
+		// Restrict rotation on parent visibility value
+		// i.e. the child can never be less restrictive
+		var parents = $w(elVisibility.className);
+		if (parents && parents.length > 0)
+		{
+			var parentRef = parents[0].sub('parent_', '', 1);
+			if (parentRef)
+			{
+				var parentElm = $('hide_' + parentRef);
+				if (parentElm)
+				{
+					var parentVal = parentElm.value;
+					switch (parentVal)
+					{
+						case 'all':
+							visibilityArr = ['all'];
+							break;
+						case 'no':
+							// Use default rotation
+							break;
+					}
+				}
+			}
+		}
+
+		// rotate visibility
+		var i=0;
+		for (; i < visibilityArr.length; i++) {
+			if (visibilityArr[i] == elVisibility.value) {
+				break;
+			}
+		}
+
+		// Determine new visibility by rotation
+		visibility = visibilityArr[(i+1) % visibilityArr.length];
+	}
+
+	// Set in input form element
+	elVisibility.value = visibility;
+
+	// Change icon
+	setVisibilityIcon(ref, visibility);
+
+	// Now also propagate visibility to all descendents recursively
+	var children = $$('input.parent_' + ref);
+	children.each(function(inputElm)
+	{
+		changeVisibility(inputElm.id.sub('hide_', '', 1), visibility);
+	});
+}
+
+function setVisibilityIcon(ref, visibility)
+{
+	var icon = $(ref + '_visibility_icon');
+	if (!icon)
+	{
+		return;
+	}
+	var baseURL = Env.url + '/images/';
+
+	switch (visibility)
+			{
+		case 'all':
+			icon.setAttribute("src", baseURL + 'red-ball.gif');
+			break;
+		case 'no':
+			icon.setAttribute("src", baseURL + 'green-ball.gif');
+			break;
+	}
+}
+
+/* -----------   End Visibility functions  ------------- */
+
+/*****************************
+***
+***		Metadata for Services
+***
+******************************/
+
+function enableCreateAsso(enable) {
+	if (enable) {
+		$('createAsso').disabled = false;
+		$('createAssoCoupledResource').disabled = false;
+	} else {
+		var inputs = $('catResults').getElementsByTagName('input');
+		var nbchecked = 0;
+		for (var i=0; i < inputs.length; i++) {
+		    if (inputs[i].checked) {
+		    	nbchecked++;
+		    }
+		}
+		if (nbchecked == 0) {
+			$('createAsso').disabled = true ;
+			$('createAssoCoupledResource').disabled = true ;
+		}
+	}
+}
+
+function updateCoupledResourceforServices() {
+	// Get ModalBox values
+	var ids = '';
+	var inputs = $('catResults').getElementsByTagName('input');
+	for (var i=0; i < inputs.length; i++) {
+	    var input = inputs[i];
+	    if (input.checked) {
+    		ids = input.value;
+	    }
+	}
+	var scopedName = $('scopedName').value;
+
+	// update values in edit form.
+	var input = document.getElementById('datasetIds');
+	input.value = ids;
+
+	var srvScopedName = document.getElementById('srvScopedName');
+	srvScopedName.value = scopedName;
+
+	doAction(Env.locService+'/metadata.services.attachDataset');
+}
+
+function updateMDforServices() {
+    var updateMddCheckbox = $('updateMDD').checked;
+    var scopedName = $('scopedName').value;
+
+    if (!updateMddCheckbox) {
+        // Check the services. If any it's not allowed to the user, shows an alert
+        var edits = $$('#catResults input[type=hidden]');
+        var servicesAllowed = true;
+        var services = '';
+
+        for (var i=0; i < edits.length; i++) {
+            var edit = edits[i];
+            var related_check = $(edit.id.replace("_edit", ""));
+
+            if ((edit.value == 'false') && (related_check.checked)) {
+                    Ext.MessageBox.alert(updateDatasetTitle, updateDatasetMsg);
+                    servicesAllowed = false;
+                    break;
+            }
+        }
+
+        if (!servicesAllowed) return;
+    }
+    
+	// Get ModalBox values
+	var ids = '';
+	var inputs = $('catResults').getElementsByTagName('input');
+	var first = true;
+	for (var i=0; i < inputs.length; i++) {
+	    var input = inputs[i];
+
+	    if (input.checked) {
+            var edit = $(input.id + "_edit");
+                if (first) {
+                    ids = input.value;
+                    first = false;
+                } else
+                    ids = ids + ','+input.value;
+	    }
+	}
+    
+	// update values in edit form.
+	var srvInput = document.getElementById('srvIds');
+	srvInput.value = ids;
+
+	var updateMDD = document.getElementById('upMdd');
+	updateMDD.value = updateMddCheckbox;
+
+	var srvScopedName = document.getElementById('srvScopedName');
+	srvScopedName.value = scopedName;
+
+	doAction(Env.locService+'/metadata.update.onlineSrc');
+}

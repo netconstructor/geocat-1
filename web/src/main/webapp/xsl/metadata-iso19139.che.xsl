@@ -65,9 +65,9 @@
         <xsl:param name="edit"/>
         <xsl:param name="embedded"/>
 
-        <xsl:call-template name="toggle-visibility-edit">
-            <xsl:with-param name="edit" select="$edit"/>
-        </xsl:call-template>
+		<xsl:call-template name="toggle-visibility-edit">
+			<xsl:with-param name="edit" select="$edit"/>
+		</xsl:call-template>
         
         <xsl:choose>
             
@@ -1925,7 +1925,6 @@
    </xsl:template>
  	<!--
  	adds toggle for Hidden Element editing in Advanced View
- 	-->
  	<xsl:template name="toggle-visibility-edit">
  		<xsl:param name="edit" select="false()"/>
 
@@ -1943,6 +1942,7 @@
  			</tr>
  		</xsl:if>
  	</xsl:template>
+ 	-->
  	
     <xsl:template mode="addXMLFragment"  priority="100"
     match="

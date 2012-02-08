@@ -16,6 +16,7 @@
   <xsl:include href="utils-fn.xsl"/>
   <xsl:include href="metadata-tab-utils.xsl"/>
 	<xsl:include href="metadata-utils.xsl"/>
+    <xsl:include href="metadata-geocat-utils.xsl"/>
 	<xsl:include href="metadata-controls.xsl"/>
   
   <xsl:variable name="flat" select="/root/gui/config/metadata-tab/*[name(.)=$currTab]/@flat"/>
@@ -797,7 +798,13 @@
 						<xsl:attribute name="class">md</xsl:attribute>
 					</xsl:otherwise>
 				</xsl:choose>
-
+				
+                <xsl:if test="$edit">
+                	<xsl:variable name="ref" select="geonet:element/@ref"></xsl:variable>
+                    <xsl:call-template name="visibility-icons">
+                        <xsl:with-param name="ref" select="$ref"/>
+                    </xsl:call-template>
+                </xsl:if>
 				<xsl:choose>
 					<xsl:when test="$helpLink!=''">
 						<span id="stip.{$helpLink}|{$id}" onclick="toolTip(this.id);" class="content" style="cursor:help;">
@@ -976,6 +983,12 @@
 						<span>
 						<xsl:if test="/root/gui/config/metadata-view-toggleTab">
 							<div class="downBt Bt" onclick="toggleFieldset(this, $('toggled{$id}'));"></div>
+						</xsl:if>
+						<xsl:if test="$edit">
+		                	<xsl:variable name="ref" select="geonet:element/@ref"></xsl:variable>
+							<xsl:call-template name="visibility-icons">
+								<xsl:with-param name="ref" select="$ref"/>
+							</xsl:call-template>
 						</xsl:if>
 						<xsl:choose>
 							<xsl:when test="$helpLink!=''">

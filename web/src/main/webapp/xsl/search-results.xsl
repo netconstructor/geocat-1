@@ -3,7 +3,6 @@
 
 	<xsl:include href="main.xsl"/>
 	<xsl:include href="metadata.xsl"/>
-    <xsl:include href="metadata-geocat-utils.xsl"/>
 
 	<xsl:variable name="pageRange"   select="5"/>
 	<xsl:variable name="hitsPerPage">

@@ -189,4 +189,5 @@
 
     <xsl.admin>Metadata Formatting Stylesheets</xsl.admin>
     <xsl.admin.des>Stylesheets for displaying metadata in custom layouts</xsl.admin.des>
+    <toggleVisibilityEdit>Enable element visibility editing</toggleVisibilityEdit>
 </strings>
