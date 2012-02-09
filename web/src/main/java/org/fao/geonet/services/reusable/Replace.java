@@ -101,7 +101,7 @@ public class Replace implements Service
         } else {
             for (String uuid : elements) {
             	String id = ReusableObjManager.uuidToId(dbms, gc.getDataManager(), uuid, processAllRecords);
-				gc.getDataManager().indexInThreadPoolIfPossible(dbms, id);
+				gc.getDataManager().indexInThreadPoolIfPossible(dbms, id, false);
             }
         	
         }

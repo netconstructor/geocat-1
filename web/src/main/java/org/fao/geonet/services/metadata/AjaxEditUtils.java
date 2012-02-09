@@ -710,7 +710,7 @@ public class AjaxEditUtils extends EditUtils {
         dataManager.notifyMetadataChange(dbms, md, id);
 
 		//--- update search criteria
-        dataManager.indexInThreadPoolIfPossible(dbms,id);
+        dataManager.indexInThreadPoolIfPossible(dbms,id, false);
 
 		return true;
 	}
@@ -767,7 +767,7 @@ public class AjaxEditUtils extends EditUtils {
         dataManager.notifyMetadataChange(dbms, md, id);
 
 		//--- update search criteria
-        dataManager.indexInThreadPoolIfPossible(dbms, id);
+        dataManager.indexInThreadPoolIfPossible(dbms, id, false);
 
 		return true;
 	}

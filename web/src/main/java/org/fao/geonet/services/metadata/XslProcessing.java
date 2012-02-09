@@ -211,10 +211,10 @@ public class XslProcessing implements Service {
                 boolean updateDateStamp = true;
                 dataMan.updateMetadata(session, dbms, id, processedMetadata, validate, ufo, index, language, new ISODate().toString(), updateDateStamp);
     			if (useIndexGroup) {
-    				dataMan.indexMetadataGroup(dbms, id, context);
+    				dataMan.indexMetadataGroup(dbms, id, false, context);
     			}
                 else {
-                    dataMan.indexInThreadPool(context, id, dbms);
+                    dataMan.indexInThreadPool(context, id, dbms, false);
     			}
             }
 

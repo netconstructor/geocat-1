@@ -212,7 +212,7 @@ class Harvester {
 		addCategories(id);
 
 		dbms.commit();
-		dataMan.indexMetadataGroup(dbms, id, context);
+		dataMan.indexMetadataGroup(dbms, id, false, context);
 		result.added++;
 	}
 
@@ -224,22 +224,27 @@ class Harvester {
 			Element md = rf.getMetadata(schemaMan);
 			log.debug("Record got:\n"+ Xml.getString(md));
 
-			String schema = dataMan.autodetectSchema(md);
-			if (!params.validate || validates(schema, md)) {
-				return (Element) md.detach();
-			} else {
+			String schema;
+			try {
+			    schema = dataMan.autodetectSchema(md);
+			} catch (NoSchemaMatchesException e) {
                 if (md.getName() == "TRANSFER") {
                     // we need to convert to CHE
                     try {
                         String styleSheetPath = context.getAppPath() + "xsl/conversion/import/GM03_2-to-ISO19139CHE.xsl";
                         Element tmp = Xml.transform(md, styleSheetPath);
                         md = tmp;
-                    } catch (Throwable e) {
+                    } catch (Throwable e2) {
                         String styleSheetPath = context.getAppPath() + "xsl/conversion/import/GM03-to-ISO19139CHE.xsl";
                         Element tmp = Xml.transform(md, styleSheetPath);
                         md = tmp;
                     }
                 }
+                schema = dataMan.autodetectSchema(md);
+			}
+			if (!params.validate || validates(schema, md)) {
+				return (Element) md.detach();
+			} else {
 
                 if (!params.validate || validates(schema, md)) {
                     return (Element) md.detach();
@@ -359,7 +364,7 @@ class Harvester {
 			dbms.execute("DELETE FROM MetadataCateg WHERE metadataId=?", Integer.parseInt(record.id));
 			addCategories(record.id);
 			dbms.commit();
-			dataMan.indexMetadataGroup(dbms, record.id, context);
+			dataMan.indexMetadataGroup(dbms, record.id, false, context);
 			result.updated++;
 		}
 	}

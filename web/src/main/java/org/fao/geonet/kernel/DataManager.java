@@ -276,7 +276,7 @@ public class DataManager {
             int start = index;
             int count = Math.min(perThread,ids.size()-start);
             // create threads to process this chunk of ids
-            Runnable worker = new IndexMetadataTask(context, ids, start, count);
+            Runnable worker = new IndexMetadataTask(context, false, ids, start, count);
             executor.execute(worker);
             index += count;
         }
@@ -284,11 +284,11 @@ public class DataManager {
         executor.shutdown();
     }
 
-    public void indexInThreadPoolIfPossible(Dbms dbms, String id) throws Exception {
+    public void indexInThreadPoolIfPossible(Dbms dbms, String id, boolean processSharedObjects) throws Exception {
         if(ServiceContext.get() == null ) {
-            indexInThreadPool(servContext, id, dbms);
+            indexInThreadPool(servContext, id, dbms, processSharedObjects);
         } else {
-            indexInThreadPool(ServiceContext.get(), id, dbms);
+            indexInThreadPool(ServiceContext.get(), id, dbms, processSharedObjects);
         }
     }
 
@@ -298,8 +298,8 @@ public class DataManager {
      * @param context
      * @param id
      */
-	public void indexInThreadPool(ServiceContext context, String id, Dbms dbms) throws SQLException {
-        indexInThreadPool(context, Collections.singletonList(id), dbms);
+	public void indexInThreadPool(ServiceContext context, String id, Dbms dbms, boolean processSharedObjects) throws SQLException {
+        indexInThreadPool(context, Collections.singletonList(id), dbms, processSharedObjects);
     }
     /**
      * Add metadata ids to the thread pool for indexing.
@@ -307,14 +307,14 @@ public class DataManager {
      * @param context
      * @param ids
      */
-    public void indexInThreadPool(ServiceContext context, List<String> ids, Dbms dbms) throws SQLException {
+    public void indexInThreadPool(ServiceContext context, List<String> ids, Dbms dbms, boolean processSharedObjects) throws SQLException {
 
         if(dbms != null) dbms.commit();
         try {
             GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 
             if (ids.size() > 0) {
-                Runnable worker = new IndexMetadataTask(context, ids);
+                Runnable worker = new IndexMetadataTask(context, processSharedObjects, ids);
                 gc.getThreadPool().runTask(worker);
             }
         } catch (Exception e) {
@@ -328,10 +328,11 @@ public class DataManager {
 
         private final ServiceContext context;
         private final List<String> ids;
-        private int beginIndex;
-        private int count;
+        private final int beginIndex;
+        private final int count;
+        private final boolean processSharedObjects;
 
-        IndexMetadataTask(ServiceContext context, List<String> ids) {
+        IndexMetadataTask(ServiceContext context, boolean processSharedObjects, List<String> ids) {
             synchronized (indexing) {
                 indexing.add(this);
             }
@@ -339,8 +340,9 @@ public class DataManager {
             this.ids = ids;
             this.beginIndex = 0;
             this.count = ids.size();
+            this.processSharedObjects = processSharedObjects;
         }
-        IndexMetadataTask(ServiceContext context, List<String> ids, int beginIndex, int count) {
+        IndexMetadataTask(ServiceContext context, boolean processSharedObjects, List<String> ids, int beginIndex, int count) {
             synchronized (indexing) {
                 indexing.add(this);
             }
@@ -348,6 +350,7 @@ public class DataManager {
             this.ids = ids;
             this.beginIndex = beginIndex;
             this.count = count;
+            this.processSharedObjects = processSharedObjects;
         }
 
         public void run() {
@@ -366,7 +369,7 @@ public class DataManager {
                         try {
                             for(int i=beginIndex; i<beginIndex+count; i++) {
                                 try {
-                                    indexMetadataGroup(dbms, ids.get(i).toString(), context);
+                                    indexMetadataGroup(dbms, ids.get(i).toString(), processSharedObjects, context);
                                 } catch (Exception e) {
                                     Log.error(Geonet.INDEX_ENGINE, "Error indexing metadata '"+ids.get(i)+"': "+e.getMessage()+"\n"+ Util.getStackTrace(e));
                                 }
@@ -375,7 +378,7 @@ public class DataManager {
                             endIndexGroup();
                         }
                     } else {
-                        indexMetadata(dbms, ids.get(0), false, true, context);
+                        indexMetadata(dbms, ids.get(0), false, processSharedObjects, context);
                     }
                 } finally {
                     //-- commit Dbms resource (which makes it available to pool again)
@@ -415,10 +418,6 @@ public class DataManager {
      * @param id
      * @throws Exception
      */
-	public void indexMetadataGroup(Dbms dbms, String id, ServiceContext srvContext) throws Exception {
-		Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
-		indexMetadata(dbms, id, true,true, servContext);
-	}
 	public void indexMetadataGroup(Dbms dbms, String id, boolean processSharedObjects, ServiceContext srvContext) throws Exception {
 		Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
 		indexMetadata(dbms, id, true,processSharedObjects, servContext);
@@ -1254,7 +1253,7 @@ public class DataManager {
      */
 	public void setTemplate(Dbms dbms, int id, String isTemplate, String title) throws Exception {
 		setTemplateExt(dbms, id, isTemplate, title);
-        indexInThreadPoolIfPossible(dbms,Integer.toString(id));
+        indexInThreadPoolIfPossible(dbms,Integer.toString(id), true);
 	}
 
     /**
@@ -1424,7 +1423,7 @@ public class DataManager {
 		query = "UPDATE Metadata SET rating=? WHERE id=?";
 		dbms.execute(query, rating, id);
 
-        indexInThreadPoolIfPossible(dbms,Integer.toString(id));
+        indexInThreadPoolIfPossible(dbms,Integer.toString(id), false);
 
 		return rating;
 	}
@@ -1509,7 +1508,7 @@ public class DataManager {
 
         
 		//--- index metadata
-        indexInThreadPoolIfPossible(dbms,id);
+        indexInThreadPoolIfPossible(dbms,id, true);
 		return id;
 	}
 
@@ -1576,7 +1575,7 @@ public class DataManager {
         }
 
         if(index) {
-            indexInThreadPoolIfPossible(dbms,id$);
+            indexInThreadPoolIfPossible(dbms,id$, true);
         }
 
         // Notifies the metadata change to metatada notifier service
@@ -1826,7 +1825,7 @@ public class DataManager {
         finally {
             if(index) {
                 //--- update search criteria
-                indexInThreadPoolIfPossible(dbms,id);
+                indexInThreadPoolIfPossible(dbms,id, false);
             }
 		}
 		return true;
@@ -2280,7 +2279,7 @@ public class DataManager {
         notifyMetadataChange(dbms, md, id);
 
 		//--- update search criteria
-        indexInThreadPoolIfPossible(dbms,id);
+        indexInThreadPoolIfPossible(dbms,id, false);
 	}
 
     /**

@@ -119,7 +119,7 @@ public class UpdateAdminOper implements Service
 		}
 
 		//--- index metadata
-        dm.indexInThreadPool(context,id, dbms);
+        dm.indexInThreadPool(context,id, dbms, false);
 
 		//--- return id for showing
 		return new Element(Jeeves.Elem.RESPONSE).addContent(new Element(Geonet.Elem.ID).setText(id));

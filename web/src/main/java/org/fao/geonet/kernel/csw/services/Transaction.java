@@ -163,7 +163,7 @@ public class Transaction extends AbstractOperation implements CatalogService
 		finally
 		{
             try {
-                dataMan.indexInThreadPool(context, new ArrayList<String>(toIndex), null);
+                dataMan.indexInThreadPool(context, new ArrayList<String>(toIndex), null, true);
             } catch (SQLException e) {
                 Log.error(Geonet.CSW, "cannot index");
                 Log.error(Geonet.CSW, " (C) StackTrace\n" + Util.getStackTrace(e));
@@ -262,7 +262,7 @@ public class Transaction extends AbstractOperation implements CatalogService
         }
 
 
-		dataMan.indexMetadataGroup(dbms, id, context);
+		dataMan.indexMetadataGroup(dbms, id, true, context);
 		
 		fileIds.add( uuid );
 		

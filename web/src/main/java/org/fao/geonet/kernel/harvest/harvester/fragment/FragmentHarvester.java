@@ -311,7 +311,7 @@ public class FragmentHarvester {
 	
 		dataMan.setTemplateExt(dbms, iId, "s", null);
 		dataMan.setHarvestedExt(dbms, iId, params.uuid, harvestUri);
-		dataMan.indexMetadataGroup(dbms, id, context);
+		dataMan.indexMetadataGroup(dbms, id, false, context);
 
 		dbms.commit();
 		harvestSummary.fragmentsAdded ++;
@@ -434,7 +434,7 @@ public class FragmentHarvester {
 		
 		dataMan.setTemplateExt(dbms, iId, "n", null); 
 		dataMan.setHarvestedExt(dbms, iId, params.uuid, harvestUri);
-		dataMan.indexMetadataGroup(dbms, id, context);
+		dataMan.indexMetadataGroup(dbms, id, false, context);
 		
 		log.debug("	- Commit "+id);
 		dbms.commit();

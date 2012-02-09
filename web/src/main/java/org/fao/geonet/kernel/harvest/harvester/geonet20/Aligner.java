@@ -130,7 +130,7 @@ public class Aligner
                     //--- maybe the metadata was unretrievable
 
                     if (id != null) {
-                        dataMan.indexMetadataGroup(dbms, id, context);
+                        dataMan.indexMetadataGroup(dbms, id, false, context);
                     }
                 }
             }
