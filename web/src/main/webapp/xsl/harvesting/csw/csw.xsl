@@ -47,7 +47,7 @@
                 </script>
                 <td class="padded"><xsl:value-of select="/root/gui/harvesting/outputSchema"/></td>
                 <td class="padded">
-                    <input type="text" size="70" name="outputSchema" id="csw.outputSchema" value="http://www.geocat.ch/2008/che" />
+                    <input type="text" class="content" size="70" name="outputSchema" id="csw.outputSchema" value="http://www.geocat.ch/2008/che" />
                     <p>Examples : </p>
                     <ul>
                       <li><a href="javascript:updateTextFieldOutputSchema('http://www.opengis.net/cat/csw/2.0.2')">http://www.opengis.net/cat/csw/2.0.2' for Dublin Core</a></li>
