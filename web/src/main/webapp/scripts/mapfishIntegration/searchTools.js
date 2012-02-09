@@ -241,7 +241,6 @@ var searchTools = {
             property: "_owner",
             value: geocat.session.userId
         }));
-		
 		for(i=0; geocat.session.groups.length > i; i++) {
 			toEditFilters.push(new OpenLayers.Filter.Comparison({
 	            type: OpenLayers.Filter.Comparison.EQUAL_TO,
@@ -254,6 +253,13 @@ var searchTools = {
             type: OpenLayers.Filter.Logical.OR,
             filters: toEditFilters
         }));
+
+		filters.push(new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "_isHarvested",
+            value: 'n'
+        }));
+		
 	},
     sortByMappings: {
         relevance: {name:'relevance', order: 'D'},

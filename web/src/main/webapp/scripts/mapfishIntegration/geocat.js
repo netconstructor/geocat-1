@@ -958,8 +958,9 @@ var geocat = {
                 name: 'E__valid',
                 store: [
                     ["",  translate('any')],
-                    ["y", translate("yes")],
-                    ["n", translate("no")]
+                    ["1", translate("yes")],
+                    ["0", translate("no")],
+                    ["-1", translate("unChecked")]
                 ],
                 mode: 'local',
                 displayField: 'name',
@@ -2182,7 +2183,7 @@ var geocat = {
             '          <xsl:for-each select="dc:URI">\n' +
             '            <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
             '          </xsl:for-each>\n' +
-            '          <xsl:if test="geonet:info/edit=\'true\'">\n' +
+            '          <xsl:if test="geonet:info/edit=\'true\' and not(geonet:info/isHarvested=\'y\')">\n' +
             '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
@@ -2230,7 +2231,7 @@ var geocat = {
             '          <xsl:for-each select="dc:URI">\n' +
             '              <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
             '          </xsl:for-each>\n' +
-            '          <xsl:if test="geonet:info/edit=\'true\'">\n' +
+            '          <xsl:if test="geonet:info/edit=\'true\' and not(geonet:info/isHarvested=\'y\')">\n' +
             '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '              <li proto="_delete_" title="' + translate("delete") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.delete?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
