@@ -298,7 +298,8 @@ var geocat = {
         }
 
         // Ensure layertree instance is created (c.f. print module)
-        this.createLayerTree();
+        //this.createLayerTree();
+        // disabled because createLayerTree use mapfish
     },
 
     createSearchForm: function() {
@@ -1428,55 +1429,9 @@ var geocat = {
     },
 
     fillSearchToolbar: function(toolbar) {
-//        fillStdToolbar(toolbar); // defined in resizableMap.js
 
-/*        toolbar.add(new Ext.Toolbar.Separator());
-
-        toolbar.add({
-            iconCls: 'layerTreeButton',
-            tooltip: translate('layerTree'),
-            handler: function() {
-                if (!geocat.layerTreePopup) {
-                    geocat.layerTreePopup = new Ext.Window({
-                        title: translate('layerTree'),
-                        id: "layertree",
-                        layout: 'fit',
-                        width: 200,
-                        closeAction: 'hide',
-                        constrain: true,
-                        height: 150,
-                        items: [geocat.createLayerTree()]
-                    });
-                }
-                geocat.layerTreePopup.show();
-            }
-        });
-
-        toolbar.add(new mapfish.widgets.print.DlgPrintAction({
-            map: geocat.map,
-            text: "",
-            configUrl: geocat.baseUrl + "pdf/info.json",
-            geocat: this
-        }));
-        toolbar.add(new mapfish.widgets.print.EMailPDFAction({
-            map: geocat.map,
-            text: "",
-            configUrl: geocat.baseUrl + "pdf/info.json",
-            geocat: this,
-            tooltip: OpenLayers.Lang.translate('mf.print.print-tooltip-email')
-        }));*/
     },
-
-    createLayerTree: function() {
-        return new mapfish.widgets.LayerTree({
-            map: geocat.map,
-            enableDD: true,
-            border: false,
-            ascending: false,
-            plugins: new mapfish.widgets.LayerTree.createContextualMenuPlugin(['zoomToExtent','opacitySlide','remove'])
-        });
-    },
-
+    
     showContours: function(cswResponse) {
         if (geocat.contours) geocat.vectorLayer.destroyFeatures(geocat.contours);
         geocat.contours = [];
@@ -1816,9 +1771,11 @@ var geocat = {
             maxExtent: bbox
         }));
         if (geocat.layerTreePopup) {
+            /* disabled because createLayerTree use mapfish
             geocat.layerTreePopup.remove(geocat.layerTreePopup.getComponent(0));
             geocat.layerTreePopup.add(geocat.createLayerTree());
             geocat.layerTreePopup.doLayout();
+            */
         }
     },
 

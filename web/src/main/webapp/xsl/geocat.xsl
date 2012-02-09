@@ -40,8 +40,8 @@
             <xsl:when test="/root/request/debug">
 		        <script type="text/javascript"
 		                src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/>
-		        <script type="text/javascript"
-		                src="{/root/gui/url}/scripts/mapfishIntegration/EMailPDFAction.js"/>
+		        <!--script type="text/javascript"
+		                src="{/root/gui/url}/scripts/mapfishIntegration/EMailPDFAction.js"/--> <!-- depends on mapfish -->
 		        <script type="text/javascript"
 		                src="{/root/gui/url}/scripts/mapfishIntegration/DomQueryNS.js"/>
 		        <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js"></script>

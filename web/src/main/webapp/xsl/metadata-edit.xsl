@@ -34,6 +34,8 @@
 		    </xsl:when>
             <xsl:otherwise>
 				<script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.editor.js"></script>
+        <!-- metadata-geocat-editor.js is not included in gn.editor.js as gn.editor.js is used in other pages where the dom elements used by metadata-geocat-editor.js dont exist -->
+        <script type="text/javascript" src="{/root/gui/url}/scripts/editor/metadata-geocat-editor.js"></script> 
             </xsl:otherwise>
         </xsl:choose>
 	

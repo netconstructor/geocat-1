@@ -49,51 +49,52 @@
     <xsl:template name="geoHeader">
         <script src="../../scripts/ext/adapter/ext/ext-base.js" type="text/javascript"/>
         <script src="../../scripts/geo/proj4js-compressed.js" type="text/javascript"/>
-		<xsl:if test="count(/root/gui/config/map/proj/crs) &gt; 1">
+        <xsl:if test="count(/root/gui/config/map/proj/crs) &gt; 1">
         </xsl:if>
-		
+
         <xsl:choose>
             <xsl:when test="/root/request/debug">
-            	<link rel="stylesheet" type="text/css" href="../../scripts/geoext/resources/css/geoext-all-debug.css"/>
-            	<script src="../../scripts/ext/ext-all-debug.js"  type="text/javascript"/>
+                <link rel="stylesheet" type="text/css" href="../../scripts/geoext/resources/css/geoext-all-debug.css"/>
+                <script src="../../scripts/ext/ext-all-debug.js"  type="text/javascript"/>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/ext/form/FileUploadField.js" />
                 <script src="../../scripts/openlayers/lib/OpenLayers.js" type="text/javascript"/>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/nl.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/de.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/en.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/fr.js"></script>
-                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/es.js"></script>
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/es.js"></script-->
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/no.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/fi.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/LoadingPanel.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/ScaleBar.js"></script>
                 
-                <script type="text/javascript" src="{/root/gui/url}/scripts/geoext/lib/GeoExt.js"></script>			
-                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/MapFish.js"></script>    
+                <script type="text/javascript" src="{/root/gui/url}/scripts/geoext/lib/GeoExt.js"></script>
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/MapFish.js"></script--> <!-- must not be loaded anymore -->
             </xsl:when>
-            <xsl:otherwise>     
-                <script type="text/javascript" src="{/root/gui/url}/scripts/ext/ext-all.js"></script>
+            <xsl:otherwise>
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/ext/ext-all.js"></script-->
+                <script type="text/javascript" src="{/root/gui/url}/scripts/ext/ext-all-debug.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/ext/form/FileUploadField.js"></script>
               
                 <!-- For now using standard OpenLayers.js and GeoExt.js compressed files.  TODO: Change to use gn.geo.libs.js -->  
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.geo.libs.js"></script--> 
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.geo.libs.js"></script> 
                 
-                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/OpenLayers.js"></script>
-                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Format/CSWGetRecords.js"></script>
-                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Format/CSWGetRecords/v2_0_2.js"></script>
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/OpenLayers.js"></script--> <!-- in gn.geo.libs.js -->
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Format/CSWGetRecords.js"></script--> <!-- in gn.geo.libs.js -->
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Format/CSWGetRecords/v2_0_2.js"></script--> <!-- in gn.geo.libs.js -->
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/nl.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/de.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/en.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/fr.js"></script>
-                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/es.js"></script>
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/es.js"></script-->
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/no.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers/Lang/fi.js"></script>
 
-                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/LoadingPanel.js"></script>
-                <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/ScaleBar.js"></script>
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/LoadingPanel.js"></script--> <!-- in gn.geo.libs.js -->
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/ScaleBar.js"></script--> <!-- in gn.geo.libs.js -->
                                 
-                <script type="text/javascript" src="{/root/gui/url}/scripts/geoext/GeoExt.js"></script>			
-                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/MapFish.js"></script>            
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/geoext/GeoExt.js"></script--> <!-- in gn.geo.libs.js -->
+                <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/MapFish.js"></script--> <!-- must not be loaded anymore -->
             </xsl:otherwise>
         </xsl:choose>
         
