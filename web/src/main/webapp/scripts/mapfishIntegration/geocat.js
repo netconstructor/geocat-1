@@ -69,7 +69,7 @@ var geocat = {
     mapInitWidth: 500,
     mapInitHeight: 250,
     mapMaxHeight: 405,
-    metadataPopupWidth: 600,
+    metadataPopupWidth: 800,
     metadataPopupHeight: 500,
     vectorLayer: null,
     selectionHighlightLayer: null,
