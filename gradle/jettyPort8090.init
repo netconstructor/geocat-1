@@ -1,0 +1,3 @@
+gradle.projectsEvaluated {
+	gradle.rootProject.project('web').jettyRun.httpPort = 8090
+}

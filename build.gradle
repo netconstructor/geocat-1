@@ -20,8 +20,6 @@ configure(subprojects.findAll {it.name != 'web-client' && it.name != 'schematron
   openrdfVersion = '1.2.7'
   jzkitVersion = '3.r260.geonetwork.patch.1'
 
-  configurations.compile.transitive = 1
-
   saxonDependency = 'net.sf.saxon:saxon:9.1.0.8b-patch'
   // End of dependency section
 
@@ -117,9 +115,11 @@ class YuiMinificationExtention {
   def css(name, to,from) {
     yuiTask(name, to, from, basicYuiArgs('css', to))
   }
+  def filesToClean = []
   def yuiTask(name,to,from,yuiArgs) {
     def toFile = project.file(to)
-
+    filesToClean << toFile
+    
     project.logger.info("creating task: "+name+" in project "+project.name)
     project.minifyAll.dependsOn name
     project.task (name, type:JavaExec) {
@@ -152,12 +152,28 @@ class YuiMinificationExtention {
       }
     }
   }
+  
+  def addCleanTask() {
+    project.task("cleanMinified") << {
+      filesToClean.each {
+        if(it.exists()) {
+          logger.debug("deleting minified file '$it'")
+          if(!it.delete()) {
+            logger.error "Could not delete minified file '$it'"
+          }
+        } else {
+          logger.debug("'$it' does not exist")
+        }    
+      }
+    }
+  }
 }
 class YuiMinification implements Plugin<Project> {
     def void apply(Project project) {
       def minification = new YuiMinificationExtention()
       minification.project = project
       project.task 'minifyAll'
+      minification.addCleanTask()
       
       project.extensions.minification = minification
       project.configurations {

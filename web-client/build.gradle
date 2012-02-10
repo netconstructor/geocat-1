@@ -1,9 +1,11 @@
-apply plugin: 'java'
-
-sourceSets.main.output.resourcesDir = new File("nowhere")
+repositories {
+  maven {url 'http://dev.mapfish.org/maven/repository'}
+  mavenCentral()
+}
 
 // ----  path related variables  ----
-def apps=file("src/main/resources/apps/").path
+webappFile=file("src/main/resources/")
+def apps = new File(webappFile, "apps").path
 def appsJs="$apps/js"
 def searchJs="$apps/search/js"
 
@@ -138,18 +140,3 @@ minification {
 
 appMini.dependsOn(miniNomapTaskName)
 appMini.dependsOn(minimap)
-
-task cleanMinified << {
-  [minifiedMiniNoMapFile, minifiedMinimapFile, minifiedAppFile, /*minifiedSearchCssFile*/].each {
-    if(it.exists()) {
-      logger.debug("deleting minified file '$it'")
-      if(!it.delete()) {
-        logger.error "Could not delete minified file '$it'"
-      }
-    } else {
-      logger.debug("'$it' does not exist")
-    }    
-  }
-}
-
-clean.dependsOn cleanMinified

@@ -1,0 +1,8 @@
+gradle.projectsEvaluated {
+	def web = gradle.rootProject.project('web')
+	def client = gradle.rootProject.project('web-client')
+	web.additionalWebAppDirs << client.webappFile
+	web.minifyAll.dependsOn client.minifyAll
+	web.cleanMinified.dependsOn client.cleanMinified
+	web.filterProperties.webXmlWidgetConfigOverrides = '/WEB-INF/config-overrides-widget.xml'
+}

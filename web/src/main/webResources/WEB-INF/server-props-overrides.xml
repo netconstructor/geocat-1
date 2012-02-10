@@ -3,11 +3,11 @@
 -->
 <overrides>
 	<textFile name=".*/WEB-INF/server.prop">
-		<update linePattern="buildProfile=geonetworkBuildProfile">buildProfile=${geonetworkBuildProfile}</update>
-		<update linePattern="subVersion=geonetworkSubversion">subVersion=${geonetworkSubversion}</update>
-		<update linePattern="version=geonetworkVersion">version=${geonetworkVersion}</update>
-		<update linePattern="release=geonetworkVersion">release=${geonetworkVersion}</update>
-		<update linePattern="javaVersion=java.version">javaVersion=${geonetworkVersion}</update>
+		<update linePattern="buildProfile=geonetwork_build_profile">buildProfile=${geonetwork_build_profile}</update>
+		<update linePattern="subVersion=geonetwork_subversion">subVersion=${geonetwork_subversion}</update>
+		<update linePattern="version=geonetwork_version">version=${geonetwork_version}</update>
+		<update linePattern="release=geonetwork_version">release=${geonetwork_version}</update>
+		<update linePattern="javaVersion=java.version">javaVersion=${geonetwork_version}</update>
 		<update linePattern="OS=os">OS=${os_name} ${os_version} ${os_arch}</update>
 	</textFile>
 </overrides>

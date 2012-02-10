@@ -1,9 +1,13 @@
 apply plugin: 'war'
 apply plugin: 'jetty'
 
+
+// Exclude trash dir for now
+sourceSets.main.java.exclude 'org/fao/geonet/apps/trash/**'
+// done end trash dir
+
 env=System.getProperty('env', 'dev')
 
-// the below is for 'normal' geonetwork build system
 processResources.dependsOn project(":schematrons").publishAll
 clean.dependsOn project(":schematrons").cleanSchematronFiles
 
@@ -97,7 +101,10 @@ def minifyGn = 'minifyGn'
 def minifySearchGn = 'minifySearchGn'
 def minifyEditorGn = 'minifyEditorGn'
 def minifyGeoGn = 'minifyGeoGn'
+
+// --  Geocat
 def minifyGeocat = 'minifyGeocat'
+// --  End Geocat
 
 // names of minified files
 def minifiedGeoGnFile = file("$scripts/lib/gn.geo.libs.js")
@@ -107,29 +114,19 @@ def minifiedGnFile = file("$scripts/lib/gn.js")
 def minifiedGnScriptaculousFile = file("$scripts/lib/gn.libs.scriptaculous.js")
 def minifiedGnMapsFile = file("$scripts/lib/gn.libs.map.js")
 def minifiedGnPrototypeFile = file("$scripts/lib/gn.libs.js")
+// --  Geocat
 def minifiedGeocatFile = file("$scripts/lib/geocat.js")
-
-task cleanMinified << {
-  [minifiedGeoGnFile, minifiedEditorGnFile, minifiedSearchGnFile, minifiedGnFile, 
-  minifiedGnScriptaculousFile, minifiedGnMapsFile, minifiedGnPrototypeFile].each{
-    if(it.exists()) {
-      logger.debug("deleting minified file '$it'")
-      if(!it.delete()) {
-        logger.error "Could not delete minified file '$it'"
-      }
-    } else {
-      logger.debug("'$it' does not exist")
-    }
-  }
-}
+// --  End Geocat
 
 clean.dependsOn cleanMinified
-    
+
+// --  Geocat
 minification {
   js(
     minifyGeocat,
     minifiedGeocatFile, 
     jsFiles(dir: "$scripts/mapfishIntegration", includes: ['searchTools.js','DomQueryNS.js', 'geocat.js']))
+// --  End Geocat
 
   js(
     minifyGnPrototypeLibs,
@@ -213,7 +210,6 @@ minification {
         'tooltip-manager.js',
         'simpletooltip.js',
         'metadata-editor.js',
-//        'metadata-geocat-editor.js', cant be added to the editor minified js file as it cause some error on missing dom element, which are only available in metadata-edit.xsl
         'metadata-show.js']))
 
   js(
@@ -348,34 +344,36 @@ minification {
 }
 
 // ----  replace variables in the webResources that need it  ----
-filteredWebResources = 'src/main/webResources'
+def filteredWebResources = file("$buildDir/filteredWebResources")
+additionalWebAppDirs = [filteredWebResources]
+project.filterProperties = [
+  web_xml_main_config_overrides:"/WEB-INF/config-overrides-${env}.xml",
+  geonetwork_version: version,
+  geonetwork_subversion: 'SNAPSHOT',
+  web_xml_widget_config_overrides: '',
+  system_specific_overrides: '']
+
 task copyWebResources(type: Copy) {
-  from filteredWebResources
-  into webAppDir
-  
-  def filters = new java.util.Properties()
-  def propFile = file("src/main/filters/${env}.properties")
-  logger.info("loading properties from "+propFile)
-  propFile.withReader{filters.load(it)}
-  filters.putAll ([
-    webXmlMainConfigOverrides:"/WEB-INF/config-overrides-${env}.xml",
-    geonetworkVersion: version,
-    geonetworkSubversion: 'SNAPSHOT',
-    webXmlWidgetConfigOverrides: '',
-    systemSpecificOverrides: ''])
-  System.properties.each{filters.put(it.key.replace('.','_'), it.value)}
-  expand(filters)
+  from 'src/main/webResources'
+  into filteredWebResources
+  doFirst {
+    def filters = new java.util.Properties()
+    def propFile = file("src/main/filters/${env}.properties")
+    logger.info("loading properties from "+propFile)
+    propFile.withReader{filters.load(it)}
+    filters.putAll (filterProperties)
+    System.properties.each{filters.put(it.key.replace('.','_'), it.value)}
+    expand(filters)
+  }
 }
 
 task cleanWebResources << {
-  def toDrop = file(filteredWebResources).path.length()
-  def outputFiles = fileTree(dir:filteredWebResources).each{file("$webAppDir/${it.path.substring toDrop}").delete()}
+  filteredWebResources.deleteDir()
 }
 
 clean.dependsOn cleanWebResources
 
-// ------------   Geocat specific tasks   ----------------
-
+// --  Geocat
 def codeMap = [en:'eng',fr:'fra',de:'deu',it:'ita']
 def toLocalise = file("$webAppDir/loc/").listFiles().findAll{codeMap.containsKey(it.name)}
 
@@ -469,9 +467,11 @@ task copyExtLoc() {
     }
   }
 }
+
 processResources.dependsOn copyExtLoc
 
 task cleanExtLoc() << {
     localeJsFiles.each { file(renameJs(it.path)).delete()}
 }
 clean.dependsOn cleanExtLoc
+// --  End Geocat

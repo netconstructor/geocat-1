@@ -13,4 +13,4 @@ DIRS="-Dgeonetwork.lucene.dir=/tmp/gc_lucene -Dgeonetwork.data.dir=/tmp/gc_data"
 #JVM_MONITORING="-Dcom.sun.management.jmxremote.port=36467 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 export GRADLE_OPTS="$JVM_MONITORING $JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS -Dfile.encoding=UTF8 -Dlog4j.debug -Dlog4j.configuration=file://`pwd`/src/main/webapp/WEB-INF/log4j-jeichar.cfg -Dproject.basedir=`pwd`"
 
-gradle jettyRun $@
+../gradle/gradlew :web:jettyRun $@
