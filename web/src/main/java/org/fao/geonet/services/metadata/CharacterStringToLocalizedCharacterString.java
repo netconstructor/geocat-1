@@ -43,7 +43,7 @@ public class CharacterStringToLocalizedCharacterString implements Service {
             boolean index = true;
             String changeDate = null;
             boolean updateDateStamp = false;
-            dataMan.updateMetadata(context.getUserSession(), dbms, id, md, validate , updatefixedInfo, index, context.getLanguage(), changeDate, updateDateStamp);
+            dataMan.updateMetadata(context.getUserSession(), dbms, id, md, validate , updatefixedInfo, index, context.getLanguage(), changeDate, updateDateStamp, true);
             return new Element("response").setAttribute("success", "1");            
         } else {
             return new Element("response").setAttribute("processed", "0");

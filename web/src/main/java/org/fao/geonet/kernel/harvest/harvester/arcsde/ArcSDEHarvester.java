@@ -250,7 +250,7 @@ public class ArcSDEHarvester extends AbstractHarvester {
         boolean index = false;
         String language = context.getLanguage();
         UserSession session = null;
-        dataMan.updateMetadata(session, dbms, id, xml, validate, ufo, index, language, new ISODate().toString(), false);
+        dataMan.updateMetadata(session, dbms, id, xml, validate, ufo, index, language, new ISODate().toString(), false, false);
 
 		dbms.execute("DELETE FROM OperationAllowed WHERE metadataId=?", Integer.parseInt(id));
 		addPrivileges(id, localGroups, dbms);

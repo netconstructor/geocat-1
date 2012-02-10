@@ -1772,25 +1772,6 @@ public class DataManager {
      * @return
      * @throws Exception
      */
-    public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate, boolean updateDateStamp) throws Exception {
-        return updateMetadata(session, dbms, id, md, validate, ufo, index,lang, changeDate, updateDateStamp, true);
-	}
-	
-    /**
-     * Updates a metadata record. Deletes validation report currently in session (if any). If user asks for validation the validation report will be (re-)created then.
-     *
-     * @param session
-     * @param dbms
-     * @param id
-     * @param md
-     * @param validate
-     * @param lang
-     * @param changeDate
-     * @param updateDateStamp
-     *
-     * @return
-     * @throws Exception
-     */
 	public synchronized boolean updateMetadata(UserSession session, Dbms dbms, String id, Element md, boolean validate, boolean ufo, boolean index, String lang, String changeDate, boolean updateDateStamp, boolean processSharedObject) throws Exception {
 		// when invoked from harvesters, session is null
         if(session != null) {

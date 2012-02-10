@@ -306,7 +306,7 @@ public class Aligner
                 
                 // issue #18944 force namespace prefix for iso19139 metadata
                 dataMan.setNamespacePrefixUsingSchemas(schema, md);
-				dataMan.updateMetadata(session, dbms, id, md, validate, ufo, index, language, ri.changeDate, false);
+				dataMan.updateMetadata(session, dbms, id, md, validate, ufo, index, language, ri.changeDate, false, false);
 
 				dbms.execute("DELETE FROM OperationAllowed WHERE metadataId=?", Integer.parseInt(id));
 				addPrivileges(id);
