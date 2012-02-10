@@ -42,7 +42,7 @@ web/src/main/webapp/loc/???
 .classpath
 .settings
 
-# files copied from webResources
-web/src/main/webapp/WEB-INF/classes/META-INF/
-web/src/main/webapp/WEB-INF/config-overrides.xml
-web/src/main/webapp/WEB-INF/server-props-overrides.xml
+web-client/src/main/resources/apps/js/GeoNetwork-mini-nomap.js
+web-client/src/main/resources/apps/js/GeoNetwork-mini.js
+web-client/src/main/resources/apps/search/js/App-mini.js
+
