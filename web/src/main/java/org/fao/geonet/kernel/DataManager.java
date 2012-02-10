@@ -1557,7 +1557,7 @@ public class DataManager {
             isTemplate = "n";
         }
 
-        if(schema.startsWith("iso19139")) {
+        if(schema.trim().equals("iso19139.che")) {
             /*
              * Geocat doesn't permit multilingual elements to have characterString elements only LocalizedString elements. 
              * This transformation ensures this property
