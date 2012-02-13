@@ -201,6 +201,7 @@ var MapComponent = OpenLayers.Class({
 
     getPanel: function() {
 
+/*
         var panelItems = [new GeoExt.MapPanel({
             region: 'center',
             layout: 'fit',
@@ -234,6 +235,16 @@ var MapComponent = OpenLayers.Class({
             height: this.panelHeight-5,
             border: true,
             items: panelItems
+        });
+*/
+        this.panel = new GeoExt.MapPanel({
+            renderTo: this.panelDivId,
+            layout: 'fit',
+            map: this.map,
+            tbar: this.getToolbar(),
+            width: this.panelWidth-5,
+            height: this.panelHeight-5,
+            border: true
         });
 
         if (this.resizablePanel) {

@@ -122,7 +122,7 @@
                                                 <script type="text/javascript">
                                                       document.simplesearch.pattern.focus();
 
-                                                      new Ajax.Autocompleter('pattern', 'extentList', 'extent.search.list?typename=gn:xlinks&amp;property=desc&amp;method=loose',{method:'get', paramName: 'pattern'});
+                                                      //new Ajax.Autocompleter('pattern', 'extentList', 'extent.search.list?typename=gn:xlinks&amp;property=desc&amp;method=loose',{method:'get', paramName: 'pattern'});
                                                 </script>
                                             </td>
                                         </tr>
