@@ -144,6 +144,7 @@ GeoNetwork.LogoManagerPanel = Ext.extend(Ext.Panel, {
                 xtype: 'form',
                 border: false,
                 fileUpload: true,
+                monitorValid: true,
                 items: [{
                     xtype: 'fileuploadfield',
                     id: 'form-file',
@@ -154,11 +155,12 @@ GeoNetwork.LogoManagerPanel = Ext.extend(Ext.Panel, {
                 }],
                 buttons: [{
                     text: translate('upload'),
+                    formBind: true,
                     handler: function() {
                         if (this.ownerCt.getForm().isValid()) {
                             this.ownerCt.getForm().submit({
                                 url: 'logo.add',
-                                scope: this,
+                                scope: lp,
                                 success: function(fp,action) {
                                     this.store.reload();
                                 },
