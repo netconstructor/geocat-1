@@ -16,9 +16,12 @@
 		<script type="text/javascript" src="../../scripts/ext/form/FileUploadField.js"></script>
 		<script type="text/javascript" src="../../scripts/LogoManagerPanel.js"></script>
 		<script type="text/javascript" language="JavaScript">
-			 Ext.onReady(function(){
-				new GeoNetwork.LogoManagerPanel('logoManager');
-			})
+            Ext.onReady(function(){
+                // setTimeout required for correct layout on FF
+                window.setTimeout(function(){
+                    new GeoNetwork.LogoManagerPanel('logoManager');
+                }, 100);
+            });
 		</script>
 	</xsl:template>
 

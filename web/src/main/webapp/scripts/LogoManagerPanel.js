@@ -32,7 +32,6 @@ Ext.namespace('GeoNetwork');
  * Logo manager panel to add/remove/set logos
  */
 GeoNetwork.LogoManagerPanel = Ext.extend(Ext.Panel, {
-    //id: 'test',
     store: undefined,
     dview: undefined,
     tb: undefined,
@@ -113,7 +112,7 @@ GeoNetwork.LogoManagerPanel = Ext.extend(Ext.Panel, {
             autoScroll: true,
             height: 445, // required for FF
             listeners: {
-                selectionchange: function() {
+                "selectionchange": function() {
                     var selection = this.dview.getSelectedIndexes();
                     if (selection.length > 0) {
                         this.tb.enable();
@@ -172,7 +171,6 @@ GeoNetwork.LogoManagerPanel = Ext.extend(Ext.Panel, {
                 }]
             }] 
         }];
-        
 
         this.store.load();
 
