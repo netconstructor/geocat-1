@@ -1126,3 +1126,7 @@ li.blue-content a {
 .div.user-xsl-wrap {
   
 }
+
+.logo-over {
+	cursor: pointer;
+}
