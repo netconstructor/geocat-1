@@ -26,7 +26,7 @@
 	  <xsl:call-template name="formLayout">
 			<xsl:with-param name="title" select="/root/gui/strings/logoDes"/>
 			<xsl:with-param name="content">
-				<div id="logoManager" style="width:100%;height:600px;"/>
+				<div id="logoManager" style="width:100%; height: 500px;"/>
 			</xsl:with-param>
 			<xsl:with-param name="buttons">
 				<button class="content" onclick="load('{/root/gui/locService}/admin')">
