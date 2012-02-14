@@ -243,7 +243,7 @@ function loadReferencingMetadata(record,body){
             {header: "id", width: 40, dataIndex: 'id', sortable: true},
             {header: "title", width: 400, dataIndex: 'title', sortable: true},
             {header: "name", width: 100, dataIndex: 'name', sortable: true},
-            {header: "email", width: 100, dataIndex: 'email', sortable: true},
+            {header: "email", width: 100, dataIndex: 'email', sortable: true}
         ],
         viewConfig: {
             forceFit:true

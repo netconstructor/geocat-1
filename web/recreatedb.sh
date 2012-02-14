@@ -4,7 +4,7 @@ DB=$1
 
 export PG_PASSWORD="www-data"
 dropdb $DB
-createdb -O www-data $DB -T template_postgis
+createdb -O www-data $DB -T template1
 
 rm -rf /tmp/gc_data
 rm -rf /tmp/gc_lucene
