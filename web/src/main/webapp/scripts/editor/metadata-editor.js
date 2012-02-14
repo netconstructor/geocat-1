@@ -962,16 +962,16 @@ var logoSelectionWindow;
 function showLogoSelectionPanel (ref){
     if (!logoSelectionWindow) {
         var logoSelectionPanel = new GeoNetwork.editor.LogoSelectionPanel({
-                    ref: ref, 
-                    serviceUrl: 'xml.harvesting.info?type=icons', 
-                    logoUrl: Env.host + Env.url + '/images/harvesting/',
-                    listeners: {
-                        logoselected : function(panel, idx){
-                            var record = panel.store.getAt(idx);
-                            Ext.getDom(panel.ref).value = panel.logoUrl + record.get('name');
-                        }
-                    }
-                });
+            ref: ref, 
+            serviceUrl: 'xml.harvesting.info?type=icons', 
+            logoUrl: Env.host + Env.url + '/images/harvesting/',
+            listeners: {
+                logoselected : function(panel, idx){
+                    var record = panel.store.getAt(idx);
+                    Ext.getDom(panel.ref).value = panel.logoUrl + record.get('name');
+                }
+            }
+        });
         
         logoSelectionWindow = new Ext.Window({
             title: translate('logoSelectionWindow'),
