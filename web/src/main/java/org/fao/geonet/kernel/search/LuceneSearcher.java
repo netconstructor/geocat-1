@@ -86,6 +86,10 @@ import org.fao.geonet.util.XslUtil;
 import org.jdom.Element;
 import org.springframework.util.StringUtils;
 
+import bak.pcj.map.ObjectKeyIntMap;
+import bak.pcj.map.ObjectKeyIntMapIterator;
+import bak.pcj.map.ObjectKeyIntOpenHashMap;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -898,18 +902,18 @@ public class LuceneSearcher extends MetaSearcher
 
 	//--------------------------------------------------------------------------------
 
-	private static HashMap<String,HashMap<String,Integer>> prepareSummaryMaps(Set<String> indexKeys) throws Exception
+	private static HashMap<String,ObjectKeyIntOpenHashMap> prepareSummaryMaps(Set<String> indexKeys) throws Exception
 	{
-		HashMap<String,HashMap<String,Integer>> summaryMaps = new HashMap<String,HashMap<String,Integer>>();
+		HashMap<String,ObjectKeyIntOpenHashMap> summaryMaps = new HashMap<String,ObjectKeyIntOpenHashMap>();
 		for (String key : indexKeys) {
-			summaryMaps.put(key, new HashMap<String, Integer>());
+			summaryMaps.put(key, new ObjectKeyIntOpenHashMap());
 		}
 		return summaryMaps;
 	}
 
 	//--------------------------------------------------------------------------------
 
-	private static HashMap<String,HashMap<String,Integer>> buildSummaryMaps(Element elSummary, IndexReader reader, ScoreDoc[] sdocs, final HashMap<String,HashMap<String,Integer>> summaryMaps) {
+	private static HashMap<String,ObjectKeyIntOpenHashMap> buildSummaryMaps(Element elSummary, IndexReader reader, ScoreDoc[] sdocs, final HashMap<String,ObjectKeyIntOpenHashMap> summaryMaps) {
 		elSummary.setAttribute("hitsusedforsummary", sdocs.length+"");
 
 		FieldSelector keySelector = new FieldSelector() {
@@ -919,40 +923,40 @@ public class LuceneSearcher extends MetaSearcher
 			}
 		};
 
-		BitSet read=new BitSet(sdocs.length);
+		bak.pcj.set.IntBitSet read=new bak.pcj.set.IntBitSet(sdocs.length);
         for (ScoreDoc sdoc : sdocs) {
             Document doc = null;
             try {
                 doc = reader.document(sdoc.doc, keySelector);
                 String _id = doc.get("_id");
                 int id = Integer.parseInt(_id);
-                if(read.get(id)) continue;
-                read.set(id);
-            }
-            catch (Exception e) {
+                if(read.contains(id)) continue;
+                read.add(id);
+
+                for (String key : summaryMaps.keySet()) {
+                    ObjectKeyIntMap summary = summaryMaps.get(key);
+                    String hits[] = doc.getValues(key);
+                    if (hits != null) {
+                        Set<String> visited = new HashSet<String>();
+                        for (String info : hits) {
+                            if(visited.contains(info)) continue;
+                            visited.add(info);
+                            Integer catCount = summary.get(info);
+                            if (catCount == null) {
+                                catCount = 1;
+                            }
+                            else {
+                                catCount = catCount + 1;
+                            }
+                            summary.put(info, catCount);
+                        }
+                    }
+                }
+            } catch (Exception e) {
                 Log.error(Geonet.SEARCH_ENGINE, e.getMessage() + " Caused Failure to get document " + sdoc.doc);
                 e.printStackTrace();
             }
 
-            for (String key : summaryMaps.keySet()) {
-                HashMap<String, Integer> summary = summaryMaps.get(key);
-                String hits[] = doc.getValues(key);
-                if (hits != null) {
-                    Set<String> visited = new HashSet<String>();
-                    for (String info : hits) {
-                        if(visited.contains(info)) continue;
-                        visited.add(info);
-                        Integer catCount = summary.get(info);
-                        if (catCount == null) {
-                            catCount = 1;
-                        }
-                        else {
-                            catCount = catCount + 1;
-                        }
-                        summary.put(info, catCount);
-                    }
-                }
-            }
         }
 
 		return summaryMaps;
@@ -960,33 +964,38 @@ public class LuceneSearcher extends MetaSearcher
 
 	//--------------------------------------------------------------------------------
 
-	private static Element addSortedSummaryKeys(Element elSummary, String langCode, HashMap<String,HashMap<String,Integer>> summaryMaps, HashMap<String,HashMap<String,Object>> summaryConfigValues) throws Exception {
+	private static Element addSortedSummaryKeys(Element elSummary, String langCode, HashMap<String,ObjectKeyIntOpenHashMap> summaryMaps, HashMap<String,HashMap<String,Object>> summaryConfigValues) throws Exception {
 	
 		for ( String indexKey : summaryMaps.keySet() ) {
 			HashMap <String,Object> summaryConfigValuesForKey = summaryConfigValues.get(indexKey);
        Element rootElem = new Element((String)summaryConfigValuesForKey.get("plural"));
       // sort according to frequency
 			SummaryComparator summaryComparator = getSummaryComparator(langCode, summaryConfigValuesForKey);
-			HashMap<String,Integer> summary = summaryMaps.get(indexKey);
+			ObjectKeyIntOpenHashMap summary = summaryMaps.get(indexKey);
+			
+			if(summary.isEmpty()) continue;
 		  Log.debug(Geonet.SEARCH_ENGINE, "Sorting "+summary.size()+" according to frequency of " + indexKey);
 
-			TreeSet<Map.Entry<String, Integer>> sortedSummary = new TreeSet<Map.Entry<String, Integer>>(summaryComparator);
-			sortedSummary.addAll(summary.entrySet());
+			TreeSet<SummaryComparator.SummaryElement> sortedSummary = new TreeSet<SummaryComparator.SummaryElement>(summaryComparator);
+			ObjectKeyIntMapIterator entries = summary.entries();
+			while(entries.hasNext()) {
+			    entries.next();
+                sortedSummary.add(new SummaryComparator.SummaryElement(entries));
+			}
 
 			Integer max = (Integer)summaryConfigValuesForKey.get("max");
 
 			int nKeys = 0;
-            for (Object aSortedSummary : sortedSummary) {
+            for (SummaryComparator.SummaryElement me : sortedSummary) {
                 if (++nKeys > max) {
                     break;
                 }
 
-                Map.Entry me = (Map.Entry) aSortedSummary;
-                String keyword = (String) me.getKey();
-                Integer keyCount = (Integer) me.getValue();
+                String keyword = me.name;
+                int keyCount = me.count;
 
                 Element childElem = new Element((String) summaryConfigValuesForKey.get("name"));
-                childElem.setAttribute("count", keyCount.toString());
+                childElem.setAttribute("count", Integer.toString(keyCount));
                 childElem.setAttribute("name", keyword);
                 rootElem.addContent(childElem);
             }
@@ -1055,7 +1064,7 @@ public class LuceneSearcher extends MetaSearcher
 			// -- prepare
 			HashMap<String,HashMap<String,Object>> summaryConfigValues = getSummaryConfig(summaryConfig, resultType, maxSummaryKeys);
 			Log.debug(Geonet.SEARCH_ENGINE, "ResultType is "+resultType+", SummaryKeys are "+summaryConfigValues);
-			HashMap<String,HashMap<String,Integer>> summaryMaps = prepareSummaryMaps(summaryConfigValues.keySet());
+			HashMap<String,ObjectKeyIntOpenHashMap> summaryMaps = prepareSummaryMaps(summaryConfigValues.keySet());
 
 			// -- get all hits from search to build the summary
 			tdocs = tfc.topDocs(0, numHits);
