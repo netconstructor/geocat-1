@@ -1095,7 +1095,6 @@ public class SearchManager
                 documents.addContent(otherLanguages);
             }
             documents.addContent(defaultLang);
-			return documents;
         } catch (Exception e) {
             Log.error(Geonet.INDEX_ENGINE, "Indexing stylesheet contains errors : " + e.getMessage() + "\n\t Marking the metadata as _nonIndexed=true in index");
             Element xmlDoc = new Element("Document");
@@ -1104,7 +1103,9 @@ public class SearchManager
             StringBuilder sb = new StringBuilder();
             allText(xml, sb);
             addField(xmlDoc, "any", sb.toString(), false, true);
-            return xmlDoc;        }
+            documents.addContent(xmlDoc);
+       }
+        return documents;
     }
 
     //-----------------------------------------------------------------------------

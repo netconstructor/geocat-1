@@ -459,7 +459,14 @@ public class DataManager {
             String  popularity = rec.getChildText("popularity");
             String  rating     = rec.getChildText("rating");
             
-            
+
+            if(schema.trim().equals("iso19139.che")) {
+                /*
+                 * Geocat doesn't permit multilingual elements to have characterString elements only LocalizedString elements. 
+                 * This transformation ensures this property
+                 */
+                md = Xml.transform(md, stylePath+"characterstring-to-localisedcharacterstring.xsl");
+            }
              if("n".equalsIgnoreCase(isHarvested) && processSharedObjects && schema.trim().equals("iso19139.che")) {
             	try {
 	                ProcessParams processParameters = new ProcessParams(dbms, ReusableObjectLogger.THREAD_SAFE_LOGGER, id, md, md, thesaurusMan, extentMan, baseURL, settingMan, false, null,servContext);
@@ -1555,14 +1562,6 @@ public class DataManager {
 
         if(StringUtils.isBlank(isTemplate)) {
             isTemplate = "n";
-        }
-
-        if(schema.trim().equals("iso19139.che")) {
-            /*
-             * Geocat doesn't permit multilingual elements to have characterString elements only LocalizedString elements. 
-             * This transformation ensures this property
-             */
-            metadata = Xml.transform(metadata, stylePath+"characterstring-to-localisedcharacterstring.xsl");
         }
         
         //--- store metadata
