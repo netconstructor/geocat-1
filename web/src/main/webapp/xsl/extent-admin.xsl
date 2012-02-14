@@ -134,7 +134,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div id="olMap" style="width:500px; height:300px"></div>
+                        <div id="olMap"></div>
                     </td>
                 </tr>
             </table>

@@ -196,7 +196,11 @@ var MapComponent = OpenLayers.Class({
             }));
         }
 
-        return new Ext.Toolbar({items: items});
+        return new Ext.Toolbar({
+            items: items,
+            autoHeight: false,
+            height: 26
+        });
     },
 
     getPanel: function() {
@@ -239,11 +243,10 @@ var MapComponent = OpenLayers.Class({
 */
         this.panel = new GeoExt.MapPanel({
             renderTo: this.panelDivId,
-            layout: 'fit',
             map: this.map,
             tbar: this.getToolbar(),
             width: this.panelWidth-5,
-            height: this.panelHeight-5,
+            height: this.panelHeight-5 - (Ext.isGecko ? 26 : 0), // FIXME: ugly hack
             border: true
         });
 
