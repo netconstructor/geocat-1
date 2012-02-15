@@ -63,7 +63,7 @@ var geocat = {
 		groups: []
 	},
     map: null,
-    mapMinWidth: 275,
+    mapMinWidth: 310,
     mapMinHeight: 220,
     mapMaxWidth: 500,
     mapInitWidth: 500,
@@ -92,6 +92,7 @@ var geocat = {
     layerTreePopup: null,
     advancedSearchMode: false,
     formDefaults: {
+        anchor: '100%',
         itemCls: 'simpleSearchFormItem'
         /*
         listeners: {
@@ -250,7 +251,7 @@ var geocat = {
 				id: 'searchResultsPanel',
                 autoScroll: true,
                 contentEl: 'searchResults',
-                bodyStyle: "padding:1em"
+                bodyStyle: "padding:10px"
             },{
                 region: 'east',
                 id: 'refineWidget',
@@ -264,7 +265,7 @@ var geocat = {
                 width: 250,
                 minWidth: 100,
                 maxWidth: 500,
-                bodyStyle: "padding:1em"
+                bodyStyle: "padding:10px"
             }],
             listeners: {
                 render: function() {
@@ -303,7 +304,7 @@ var geocat = {
     },
 
     createSearchForm: function() {
-        var labelWidth = 100;
+        var labelWidth = 70;
 
         return {
             region: 'center',
@@ -312,7 +313,7 @@ var geocat = {
             id: 'searchForm',
             defaultType: 'textfield',
             labelWidth: labelWidth,
-            bodyStyle:'padding:1em 5px 2px 5px',
+            bodyStyle:'padding:10px 5px 2px 5px',
             layoutConfig: {
                 labelSeparator: ''
             },
@@ -730,7 +731,7 @@ var geocat = {
             loadingText: 'Searching...',
             triggerAction: 'all',
             minChars: 1,
-            width: 95,
+            anchor: '100%',
             updateFilter: function(filter) {
                 if (this.kantonFilter) {
                     var kantons = new OpenLayers.Filter.Logical({
@@ -839,18 +840,18 @@ var geocat = {
         var what = [{
             fieldLabel: translate('searchText'),
             id: 'anyField',
-            name: 'T_AnyText',
-            width: '100%'
+            anchor: '100%',
+            name: 'T_AnyText'
         },{
             fieldLabel: translate('rtitle'),
             name: 'T_title',
-			id: 'TitleField',
-            width: '100%'
+            anchor: '100%',
+			id: 'TitleField'
         },{
             fieldLabel: translate('abstract'),
             name: 'T_abstract',
-			id: 'AbstractField',
-            width: '100%'
+            anchor: '100%',
+			id: 'AbstractField'
         },{
             xtype: 'boxselect',
             fieldLabel: translate('keyword'),
@@ -863,7 +864,7 @@ var geocat = {
             forceSelection: false,
             triggerAction: 'all',
             selectOnFocus: true,
-            width: 95
+            anchor: '100%'
         },{
             xtype: 'boxselect',
             fieldLabel: translate("theme"),
@@ -882,22 +883,22 @@ var geocat = {
             forceSelection: true,
             triggerAction: 'all',
             selectOnFocus: true,
-            width: 95
+            anchor: '100%'
         },{
             fieldLabel: translate('contact'),
-            name: 'T_creator',
-            width: '100%'
+            anchor: '100%',
+            name: 'T_creator'
         },{
             fieldLabel: translate('organizationName'),
-            name: 'T_orgName',
-            width: '100%'
+            anchor: '100%',
+            name: 'T_orgName'
         }];
 
         if (geocat.authentified) {
             what = what.concat([{
                 xtype: 'combo',
                 fieldLabel: translate('template'),
-                width: '100%',
+                anchor: '100%',
                 name: 'E__isTemplate',
                 value: 'n',
                 store: [
@@ -907,13 +908,15 @@ var geocat = {
                 mode: 'local',
                 displayField: 'name',
                 valueField: 'value',
+                hideTrigger: true,
                 forceSelection: true,
+                editable: false,
                 triggerAction: 'all',
                 selectOnFocus: true
             },{
                 fieldLabel: translate('identifier'),
-                name: 'S_basicgeodataid',
-                width: '100%'
+                anchor: '100%',
+                name: 'S_basicgeodataid'
             },{
                 xtype: 'boxselect',
                 id: 'formatCombo',
@@ -928,7 +931,7 @@ var geocat = {
                 forceSelection: true,
                 triggerAction: 'all',
                 selectOnFocus: true,
-                width: 95
+                anchor: '100%'
             }]);
         }
 
@@ -943,6 +946,8 @@ var geocat = {
             title: translate('what'),
             autoHeight: true,
             defaultType: 'textfield',
+            labelWidth: 70,
+            layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
             },
@@ -958,7 +963,7 @@ var geocat = {
             types = types.concat([{
                 xtype: 'combo',
                 fieldLabel: translate('valid'),
-                width: '100%',
+                anchor: '100%',
                 name: 'E__valid',
                 store: [
                     ["",  translate('any')],
@@ -970,7 +975,9 @@ var geocat = {
                 displayField: 'name',
                 valueField: 'value',
                 emptyText: translate('any'),
+                hideTrigger: true,
                 forceSelection: true,
+                editable: false,
                 triggerAction: 'all',
                 selectOnFocus: true
             },{
@@ -992,6 +999,7 @@ var geocat = {
             autoHeight: true,
             defaultType: 'textfield',
             cls: 'compressedFieldSet',
+            layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
             },
@@ -1010,7 +1018,7 @@ var geocat = {
             triggerAction: 'all',
             //hidden: true,
             selectOnFocus: true,
-            width: 95
+            anchor: '100%'
         });
 
         var kantoneCombo = geocat.getKantoneCombo(true);
@@ -1042,6 +1050,7 @@ var geocat = {
             autoHeight: true,
             defaultType: 'textfield',
             cls: 'compressedFieldSet',
+            layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
             },
@@ -1112,7 +1121,7 @@ var geocat = {
                         [OpenLayers.Filter.Spatial.INTERSECTS, translate('intersectGeo')],
                         [OpenLayers.Filter.Spatial.CONTAINS, translate('containsGeo')]
                     ],
-                    typeAhead: true,
+                    hideTrigger: true,
                     forceSelection: true,
                     editable: false,
                     triggerAction: 'all',
@@ -1138,6 +1147,8 @@ var geocat = {
             autoHeight: true,
             defaultType: 'textfield',
             cls: 'compressedFieldSet',
+            layout: 'form',
+            labelWidth: 70,
             layoutConfig: {
                 labelSeparator: ''
             },
@@ -1158,10 +1169,12 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
+            labelWidth: 70,
             title: translate('source'),
             autoHeight: true,
             defaultType: 'textfield',
             cls: 'compressedFieldSet',
+            layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
             },
@@ -1177,7 +1190,7 @@ var geocat = {
                 forceSelection: true,
                 triggerAction: 'all',
                 selectOnFocus: true,
-                width: 95
+                anchor: '100%'
             }]
         });
 
@@ -1395,8 +1408,8 @@ var geocat = {
             mode: local ? 'local' : 'remote',
             hideTrigger:false,
             typeAhead: true,
-            selectOnFocus: true,
-            width: '100%'
+            anchor: '100%',
+            selectOnFocus: true
         });
         var search = new Ext.ux.BoxSelect(opts);
 
