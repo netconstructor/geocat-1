@@ -651,11 +651,12 @@ var geocat = {
             //            valueField: 'name',
             value: '',
             emptyText: translate('any'),
-            typeAhead: true,
+            hideTrigger: true,
             forceSelection: true,
+            editable: false,
             triggerAction: 'all',
             selectOnFocus: true,
-            width: 95
+            anchor: '100%'
         };
     },
 
@@ -683,7 +684,7 @@ var geocat = {
             name: 'kantone',
             triggerAction: 'all',
             minChars: 1,
-            width: 95
+            anchor: '100%'
         });
 
         //handle the selection of one kanton: restrict the gemeinden combo
@@ -811,15 +812,17 @@ var geocat = {
             xtype: 'fieldset',
             autoHeight: true,
             defaultType: 'textfield',
+            labelWidth: 70,
+            layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
             },
             cls: 'simpleFormFieldset',
             items: [{
                 fieldLabel: translate('searchText'),
+                anchor: '100%',
                 id: 'anyField',
-                name: 'T_AnyText',
-                width: '100%'
+                name: 'T_AnyText'
             },
                 geocat.getTypeCombo(),
                 geocat.getKantoneCombo(true).combo,
