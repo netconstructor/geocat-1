@@ -1,5 +1,5 @@
 #!/bin/sh
-set +x
+set -x
 DB=$1
 
 export PG_PASSWORD="www-data"

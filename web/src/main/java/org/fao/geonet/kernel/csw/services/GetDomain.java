@@ -93,16 +93,16 @@ public class GetDomain extends AbstractOperation implements CatalogService
 	{
 		checkService(request);
 		checkVersion(request);
-		
+
 		Element response = new Element(getName() +"Response", Csw.NAMESPACE_CSW);
-		
+
 		String[] propertyNames = getParameters(request, "PropertyName");
 		String[] parameterNames = getParameters(request, "ParameterName");
 
 
         String cswServiceSpecificConstraint = request.getChildText(Geonet.Elem.FILTER);
 
-		// PropertyName handled first. 
+		// PropertyName handled first.
 		if (propertyNames != null) {
 			List<Element> domainValues;
 			try {
@@ -115,12 +115,12 @@ public class GetDomain extends AbstractOperation implements CatalogService
 			response.addContent(domainValues);
 			return response;
 		}
-		
+
 		if (parameterNames != null) {
 			List<Element> domainValues = handleParameterName(parameterNames);
 			response.addContent(domainValues);
 		}
-		
+
 		return response;
 	}
 
@@ -132,16 +132,16 @@ public class GetDomain extends AbstractOperation implements CatalogService
 		String version        = params.get("version");
 		String parameterName  = params.get("parametername");
 		String propertyName   = params.get("propertyname");
-		
+
 		Element request = new Element(getName(), Csw.NAMESPACE_CSW);
-		
+
 		setAttrib(request, "service",        service);
 		setAttrib(request, "version",        version);
-		
+
 		//--- these 2 are in mutual exclusion.
 		Element propName  = new Element("PropertyName", Csw.NAMESPACE_CSW).setText(propertyName);
 		Element paramName  = new Element("ParameterName", Csw.NAMESPACE_CSW).setText(parameterName);
-		
+
 		// Property is handled first.
 		if (propertyName != null && !propertyName.equals(""))
 			request.addContent(propName);
@@ -150,7 +150,7 @@ public class GetDomain extends AbstractOperation implements CatalogService
 
 		return request;
 	}
-	
+
 	//---------------------------------------------------------------------------
 
 	public Element retrieveValues(String parameterName) throws CatalogException {
@@ -158,37 +158,37 @@ public class GetDomain extends AbstractOperation implements CatalogService
 	}
 
 	//---------------------------------------------------------------------------
-	
+
 	public static List<Element> handlePropertyName(String[] propertyNames,
 			ServiceContext context, boolean freq, int maxRecords, String cswServiceSpecificConstraint) throws Exception {
-		 
+
 		List<Element> domainValuesList = null;
 
 		Log.debug(Geonet.CSW,"Handling property names '"+Arrays.toString(propertyNames)+"' with max records of "+maxRecords);
-		
+
 		for (int i=0; i < propertyNames.length; i++) {
-			
+
 			if (i==0) domainValuesList = new ArrayList<Element>();
-			
+
 			// Initialize list of values element.
 			Element listOfValues = null;
-			
+
 			// Generate DomainValues element
 			Element domainValues = new Element("DomainValues", Csw.NAMESPACE_CSW);
-			
+
 			// FIXME what should be the type ???
 			domainValues.setAttribute("type", "csw:Record");
-			
+
 			String property = propertyNames[i].trim();
-			
+
 			// Set propertyName in any case.
 			Element pn = new Element("PropertyName", Csw.NAMESPACE_CSW);
 			domainValues.addContent(pn.setText(property));
-			
+
 			GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 			SearchManager sm = gc.getSearchmanager();
-			
-			IndexReader reader = sm.getIndexReader();
+
+			IndexReader reader = sm.getIndexReader(context.getLanguage());
 			try {
 				BooleanQuery groupsQuery = (BooleanQuery) CatalogSearcher.getGroupsQuery(context);
                 BooleanQuery query = null;
@@ -212,34 +212,34 @@ public class GetDomain extends AbstractOperation implements CatalogService
 				Sort   sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)), null);
 				CachingWrapperFilter filter = null;
 
-				Pair<TopDocs,Element> searchResults = LuceneSearcher.doSearchAndMakeSummary( 
-						maxRecords, 0, maxRecords, Integer.MAX_VALUE, 
-						context.getLanguage(), "results", new Element("summary"), 
+				Pair<TopDocs,Element> searchResults = LuceneSearcher.doSearchAndMakeSummary(
+						maxRecords, 0, maxRecords, Integer.MAX_VALUE,
+						context.getLanguage(), "results", new Element("summary"),
 						reader, query, filter, sort, false,
 						false, false, false	// Scoring is useless for GetDomain operation
 				);
 				TopDocs hits = searchResults.one();
-			
+
 				try {
 					// Get mapped lucene field in CSW configuration
 					String indexField = CatalogConfiguration.getFieldMapping().get(
 							property.toLowerCase());
 					if (indexField != null)
 						property = indexField;
-	
+
 					// check if params asked is in the index using getFieldNames ?
 					if (!reader.getFieldNames(IndexReader.FieldOption.ALL)
 							.contains(property))
 						continue;
-					
+
 					boolean isRange = false;
 					if (CatalogConfiguration.getGetRecordsRangeFields().contains(
 							property))
 						isRange = true;
-					
+
 					if (isRange)
 						listOfValues = new Element("RangeOfValues", Csw.NAMESPACE_CSW);
-					else	
+					else
 						listOfValues = new Element("ListOfValues", Csw.NAMESPACE_CSW);
 
 					//List<String> fields = new ArrayList<String>();
@@ -247,27 +247,27 @@ public class GetDomain extends AbstractOperation implements CatalogService
 					//fields.add("_isTemplate");
 					String fields[] = new String[] { property, "_isTemplate" };
 					MapFieldSelector selector = new MapFieldSelector(fields);
-	
+
 					// parse each document in the index
 					String[] fieldValues;
 					SortedSet<String> sortedValues = new TreeSet<String>();
 					ObjectKeyIntOpenHashMap duplicateValues = new ObjectKeyIntOpenHashMap();
 					for (int j = 0; j < hits.scoreDocs.length; j++) {
 						Document doc = reader.document(hits.scoreDocs[j].doc, selector);
-						
+
 						// Skip templates and subTemplates
 						String[] isTemplate = doc.getValues("_isTemplate");
 						if (isTemplate[0] != null && !isTemplate[0].equals("n"))
 							continue;
-						
+
 						// Get doc values for specified property
 						fieldValues = doc.getValues(property);
 						if (fieldValues == null)
 							continue;
-						
+
 						addtoSortedSet(sortedValues, fieldValues, duplicateValues);
 					}
-					
+
 					SummaryComparator valuesComparator = new SummaryComparator(SortOption.FREQUENCY, Type.STRING, context.getLanguage(), null);
 					TreeSet<SummaryComparator.SummaryElement> sortedValuesFrequency = new TreeSet<SummaryComparator.SummaryElement>(valuesComparator);
 		            ObjectKeyIntMapIterator entries = duplicateValues.entries();
@@ -276,18 +276,18 @@ public class GetDomain extends AbstractOperation implements CatalogService
 		                entries.next();
 		            } while(entries.hasNext());
 
-					
+
 					if (freq)
 						return createValuesByFrequency(sortedValuesFrequency);
 					else
 						listOfValues.addContent(createValuesElement(sortedValues, isRange));
-					
+
 				} finally {
 					// any children means that the catalog was unable to determine
 					// anything about the specified parameter
 					if (listOfValues!= null && listOfValues.getChildren().size() != 0)
 						domainValues.addContent(listOfValues);
-	
+
 					// Add current DomainValues to the list
 					domainValuesList.add(domainValues);
 				}
@@ -296,55 +296,55 @@ public class GetDomain extends AbstractOperation implements CatalogService
 			}
 		}
 		return domainValuesList;
-		
+
 	}
-	
+
 	//---------------------------------------------------------------------------
 	//---
 	//--- Private methods
 	//---
 	//---------------------------------------------------------------------------
-	
+
 	private List<Element> handleParameterName(String[] parameterNames) throws CatalogException {
 		Element values;
-		List<Element> domainValuesList = null; 
-		
+		List<Element> domainValuesList = null;
+
 		for (int i=0; i < parameterNames.length; i++) {
-			
+
 			if (i==0) domainValuesList = new ArrayList<Element>();
-			
+
 			// Generate DomainValues element
 			Element domainValues = new Element("DomainValues", Csw.NAMESPACE_CSW);
-			
+
 			// FIXME what should be the type ???
 			domainValues.setAttribute("type", "csw:Record");
-			
+
 			String paramName = parameterNames[i];
-			
+
 			// Set parameterName in any case.
 			Element pn = new Element("ParameterName", Csw.NAMESPACE_CSW);
 			domainValues.addContent(pn.setText(paramName));
-			
+
 			String operationName = paramName.substring(0, paramName.indexOf('.'));
 			String parameterName = paramName.substring(paramName.indexOf('.')+1);
-			
+
 			CatalogService cs = checkOperation(operationName);
 			values = cs.retrieveValues(parameterName);
-			
+
 			// values null mean that the catalog was unable to determine
 			// anything about the specified parameter
 			if (values != null)
 				domainValues.addContent(values);
-			
+
 			// Add current DomainValues to the list
 			domainValuesList.add(domainValues);
-			
+
 		}
 		return domainValuesList;
 	}
 
 	//---------------------------------------------------------------------------
-	
+
 	private CatalogService checkOperation(String operationName)
 			throws CatalogException {
 
@@ -355,29 +355,29 @@ public class GetDomain extends AbstractOperation implements CatalogService
 
 		return cs;
 	}
-	
+
 	//---------------------------------------------------------------------------
 
 	private String[] getParameters(Element request, String parameter) {
 		if (request == null)
 		    return null;
-		
+
 		Element paramElt = request.getChild(parameter,Csw.NAMESPACE_CSW);
-		
+
 		if (paramElt == null)
 			return null;
-		
+
 		String parameterName = paramElt.getText();
-		
+
 		return parameterName.split(",");
 	}
 
 	//---------------------------------------------------------------------------
-	
+
 	/**
 	 * @param sortedValues
 	 * @param fieldValues
-	 * @param duplicateValues 
+	 * @param duplicateValues
 	 */
 	private static void addtoSortedSet(SortedSet<String> sortedValues,
 			String[] fieldValues, ObjectKeyIntOpenHashMap duplicateValues) {
@@ -387,11 +387,11 @@ public class GetDomain extends AbstractOperation implements CatalogService
 				int nb = duplicateValues.get(value);
 				duplicateValues.remove(value);
 				duplicateValues.put(value, nb+1);
-			} else 
+			} else
 				duplicateValues.put(value, 1);
 		}
 	}
-	
+
 	//---------------------------------------------------------------------------
 
 	/**
@@ -412,7 +412,7 @@ public class GetDomain extends AbstractOperation implements CatalogService
 		}
 		return valuesList;
 	}
-	
+
 	//---------------------------------------------------------------------------
 
 	/**
@@ -420,7 +420,7 @@ public class GetDomain extends AbstractOperation implements CatalogService
 	 * @return
 	 */
 	private static List<Element> createValuesByFrequency(TreeSet<SummaryComparator.SummaryElement> sortedValuesFrequency) {
-		
+
 		List<Element> values = new ArrayList<Element>();
 		Element value;
 
@@ -434,7 +434,7 @@ public class GetDomain extends AbstractOperation implements CatalogService
         }
 		return values;
 	}
-	
+
 }
 
 //=============================================================================

@@ -148,7 +148,7 @@ public class CatalogSearcher {
 	private CachingWrapperFilter _filter;
 	private Sort          _sort;
 	private String        _lang;
-	
+
 	public CatalogSearcher(DataStore datastore, File summaryConfig, LuceneConfig luceneConfig) {
         _datastore = datastore;
         _configuration = new GMLConfiguration();
@@ -165,7 +165,7 @@ public class CatalogSearcher {
 		_luceneConfig = luceneConfig;
 		_tokenizedFieldSet = luceneConfig.getTokenizedField();
 		_numericFieldSet = luceneConfig.getNumericFields();
-		
+
 		_selector = new FieldSelector() {
 			public final FieldSelectorResult accept(String name) {
 				if (name.equals("_id")) return FieldSelectorResult.LOAD;
@@ -178,7 +178,7 @@ public class CatalogSearcher {
 		_tokenizedFieldSet = lc.getTokenizedField();
 		_numericFieldSet = lc.getNumericFields();
 	}
-	
+
 	// ---------------------------------------------------------------------------
 	// ---
 	// --- Main search method
@@ -187,7 +187,7 @@ public class CatalogSearcher {
 
 	/**
 	 * Convert a filter to a lucene search and run the search.
-	 * 
+	 *
 	 * @return a list of id that match the given filter, ordered by sortFields
 	 */
 	public Pair<Element, List<ResultItem>> search(ServiceContext context,
@@ -231,9 +231,9 @@ public class CatalogSearcher {
 	 * <p>
 	 * Gets results in current searcher
 	 * </p>
-	 * 
+	 *
 	 * @return current searcher result in "fast" mode
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws CorruptIndexException
 	 */
@@ -247,9 +247,9 @@ public class CatalogSearcher {
 		};
 
         Pair<TopDocs, Element> searchResults =
-			LuceneSearcher.doSearchAndMakeSummary( 
-					maxHits, 0, maxHits, Integer.MAX_VALUE, 
-					_lang, ResultType.RESULTS.toString(), _summaryConfig, 
+			LuceneSearcher.doSearchAndMakeSummary(
+					maxHits, 0, maxHits, Integer.MAX_VALUE,
+					_lang, ResultType.RESULTS.toString(), _summaryConfig,
 					_reader, _query, _filter, _sort, false,
 					_luceneConfig.isTrackDocScores(), _luceneConfig.isTrackMaxScore(), _luceneConfig.isDocsScoredInOrder()
 			);
@@ -262,7 +262,7 @@ public class CatalogSearcher {
 
 		// --- retrieve results
 		List<String> response = new ArrayList<String>();
-		
+
 		for ( ScoreDoc sdoc : tdocs.scoreDocs ) {
 			Document doc = _reader.document(sdoc.doc, uuidselector);
 			String uuid = doc.get("_uuid");
@@ -280,7 +280,7 @@ public class CatalogSearcher {
 	/**
 	 * Use filter-to-lucene stylesheet to create a Lucene search query to be
 	 * used by LuceneSearcher.
-	 * 
+	 *
 	 * @return XML representation of Lucene query
 	 */
 	private Element filterToLucene(ServiceContext context, Element filterExpr)
@@ -313,7 +313,7 @@ public class CatalogSearcher {
 	    for(Element e: children) {
 	        removeEmptyBranches(e);
 	    }
-	    
+
 	    if(element.getChildren().isEmpty() && element.getTextTrim().isEmpty() && element.getAttribute("fld") == null) {
 	        element.detach();
 	    }
@@ -374,7 +374,7 @@ public class CatalogSearcher {
 	 * Map OGC CSW search field names to Lucene field names using
 	 * {@link FieldMapper}. If a field name is not defined then the any (ie.
 	 * full text) criteria is used.
-	 * 
+	 *
 	 */
 	private void remapFields(Element elem) {
 		String field = elem.getAttributeValue("fld");
@@ -422,7 +422,7 @@ public class CatalogSearcher {
      */
 	private Pair<Element, List<ResultItem>> performSearch(
 			ServiceContext context, Element luceneExpr, Element filterExpr,
-			String filterVersion, Sort sort, ResultType resultType, 
+			String filterVersion, Sort sort, ResultType resultType,
 			int startPosition, int maxRecords, int maxHitsInSummary, String cswServiceSpecificContraint) throws Exception {
 
         if (filterExpr != null) {
@@ -442,7 +442,7 @@ public class CatalogSearcher {
 			Log.debug(Geonet.CSW_SEARCH, "Query changed, reopening IndexReader");
 			synchronized(this) {
 				if (_reader != null) sm.releaseIndexReader(_reader);
-					_reader = sm.getIndexReader();
+					_reader = sm.getIndexReader(context.getLanguage());
 			}
 		}
 
@@ -513,21 +513,21 @@ public class CatalogSearcher {
 		_filter = new CachingWrapperFilter(cFilter);
 		_sort = sort;
 		_lang = context.getLanguage();
-	
+
 		Pair<TopDocs,Element> searchResults = LuceneSearcher.doSearchAndMakeSummary(
-				numHits, startPosition - 1, maxRecords, Integer.MAX_VALUE, 
-				_lang, resultType.toString(), _summaryConfig, 
+				numHits, startPosition - 1, maxRecords, Integer.MAX_VALUE,
+				_lang, resultType.toString(), _summaryConfig,
 				_reader, query, _filter, _sort, buildSummary,
-				
-				_luceneConfig.isTrackDocScores(), _luceneConfig.isTrackMaxScore(), _luceneConfig.isDocsScoredInOrder()		
+
+				_luceneConfig.isTrackDocScores(), _luceneConfig.isTrackMaxScore(), _luceneConfig.isDocsScoredInOrder()
 		);
 		TopDocs hits = searchResults.one();
 		Element summary = searchResults.two();
 
 		numHits = Integer.parseInt(summary.getAttributeValue("count"));
-	
+
 		Log.debug(Geonet.CSW_SEARCH, "Records matched : " + numHits);
-		
+
 		// --- retrieve results
 
 		List<ResultItem> results = new ArrayList<ResultItem>();
@@ -540,14 +540,14 @@ public class CatalogSearcher {
 			i = startPosition -1;
 			iMax = Math.min(hits.scoreDocs.length, i + maxRecords);
 		}
-		
+
 		for (;i < iMax; i++) {
 			Document doc = _reader.document(hits.scoreDocs[i].doc, _selector);
 			String id = doc.get("_id");
-	
+
 			ResultItem ri = new ResultItem(id);
 			results.add(ri);
-	
+
 			for (String field : FieldMapper.getMappedFields()) {
 				String value = doc.get(field);
 
