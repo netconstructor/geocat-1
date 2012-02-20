@@ -88,7 +88,7 @@
 		<delete	dir ="${propsdir}" />
 		<mkdir	dir ="${propsdir}" />
 
-		<exec executable="svn" output="svn.properties">
+		<exec executable="svn" dir=".." output="svn.properties">
 		    <arg value="info" />
 		</exec>
 		<property prefix="svn" file="svn.properties"/>
