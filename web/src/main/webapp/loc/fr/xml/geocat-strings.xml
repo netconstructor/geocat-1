@@ -178,7 +178,7 @@ Votre équipe geocat.ch</msg>
 	<gm03Valid>Valide GM03</gm03Valid>
 	<inspireValid>Valide INSPIRE</inspireValid>
 
-    <xsl.admin>Metadata Formatting Stylesheets</xsl.admin>
-    <xsl.admin.des>Stylesheets for displaying metadata in custom layouts</xsl.admin.des>
+    <xsl.admin>Feuilles de style pour le formatage des métadonnées</xsl.admin>
+    <xsl.admin.des>Gèrent l'affichage des métadonnées dans des layouts particuliers</xsl.admin.des>
     <toggleVisibilityEdit>Activer la gestion de la visibilité des informations</toggleVisibilityEdit>
 </strings>
