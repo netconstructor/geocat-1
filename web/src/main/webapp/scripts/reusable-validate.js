@@ -182,64 +182,62 @@ function createGrid() {
 
     var xg = Ext.grid;
 
-    var reader = new Ext.data.XmlReader({
-        record: 'record',
-        id: 'id'
-    }, ['id', 'url', 'desc', 'date']);
-
-
     dataStore = new Ext.data.Store({
-        reader: reader,
+        reader: new Ext.data.XmlReader({
+            record: 'record',
+            id: 'id'
+        }, ['id', 'url', 'desc', 'date']),
         url: locUrl + '/reusable.non_validated.list?type=contacts',
         sortInfo: {
             field: 'desc',
             direction: 'ASC'
         }
     });
-
+    
+    var cbxSm = new xg.CheckboxSelectionModel();
+    
     var expander = new xg.RowExpander({
         remoteDataMethod: loadReferencingMetadata
     });
 
-    var cm = new xg.CheckboxSelectionModel();
-
     var grid = new xg.GridPanel({
         ds: dataStore,
         cm: new xg.ColumnModel([
-        cm, expander,
-        {
-            id: 'id',
-            header: "Id",
-            width: 10,
-            sortable: true,
-            dataIndex: 'id'
-        }, {
-            id: 'desc',
-            header: "Data",
-            width: 40,
-            sortable: true,
-            dataIndex: 'desc'
-        }, {
-            id: 'date',
-            header: "Date",
-            width: 40,
-            sortable: true,
-            dataIndex: 'date'
-        }]),
+            cbxSm, 
+            expander,
+            {
+                id: 'id',
+                header: "Id",
+                width: 50,
+                fixed: true,
+                sortable: true,
+                dataIndex: 'id'
+            }, {
+                id: 'date',
+                header: "Date",
+                width: 150,
+                fixed: true,
+                sortable: true,
+                dataIndex: 'date'
+            }, {
+                id: 'desc',
+                header: "Data",
+                width: 600,
+                sortable: true,
+                dataIndex: 'desc'
+            }
+        ]),
         viewConfig: {
             forceFit: true
         },
-        buttonAlign: "left",
-        selModel: cm,
-        width: 1000,
-        height: 480,
-        plugins: expander,
+        selModel: cbxSm,
+        autoHeight: true,
+        plugins: [expander],
         hideHeaders: true,
         stripeRows: true,
         loadMask: true,
         frame: false,
-        border: true,
-        iconCls: 'icon-grid'
+        border: true
     });
 
     return grid;
@@ -261,22 +259,25 @@ function loadReferencingMetadata(record, body) {
         store: store,
         columns: [{
             header: "id",
-            width: 40,
+            width: 50,
             dataIndex: 'id',
             sortable: true
         }, {
             header: "title",
-            width: 400,
+            width: 500,
+            fixed: true,
             dataIndex: 'title',
             sortable: true
         }, {
             header: "name",
-            width: 100,
+            width: 120,
+            fixed: true,
             dataIndex: 'name',
             sortable: true
         }, {
             header: "email",
-            width: 100,
+            width: 120,
+            fixed: true,
             dataIndex: 'email',
             sortable: true
         }],
