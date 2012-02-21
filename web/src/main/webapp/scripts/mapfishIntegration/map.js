@@ -30,6 +30,7 @@ function createMap(divId, navigationTools) {
         controls: controls,
         projection: "EPSG:21781",
         units: "m",
+        style: null,
         maxExtent: extent,
         restrictedExtent: extent,
         scales: [20000000,10000000,6500000,5000000,2500000,1000000,500000,200000,100000,50000,25000]
