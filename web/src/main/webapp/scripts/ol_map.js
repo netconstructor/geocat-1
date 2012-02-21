@@ -53,6 +53,7 @@ GeoNetwork.app = function() {    // private vars:
         var options = mapOptions || {
             projection: "EPSG:4326",
             units: "degrees",
+            theme: null,
             maxExtent: new OpenLayers.Bounds(-180,-90,180,90),
             restrictedExtent: new OpenLayers.Bounds(-180,-90,180,90),
             controls: []

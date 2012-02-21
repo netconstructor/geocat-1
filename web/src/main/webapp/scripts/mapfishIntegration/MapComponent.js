@@ -128,6 +128,7 @@ var MapComponent = OpenLayers.Class({
             controls: this.mapControls,
             projection: "EPSG:21781",
             units: "m",
+            theme: null,
             maxExtent: tcBounds,
             restrictedExtent: tcBounds,
             resolutions: this.resolutions
