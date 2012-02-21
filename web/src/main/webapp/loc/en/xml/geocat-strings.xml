@@ -187,7 +187,7 @@
 	<gm03Valid>GM03 valid</gm03Valid>
 	<inspireValid>INSPIRE valid</inspireValid>
 
-    <xsl.admin>Metadata Formatting Stylesheets</xsl.admin>
-    <xsl.admin.des>Stylesheets for displaying metadata in custom layouts</xsl.admin.des>
+    <xsl.admin>Metadata displaying Stylesheets</xsl.admin>
+    <xsl.admin.des>Stylesheets (XSL) for displaying metadata in HTML in custom layouts</xsl.admin.des>
     <toggleVisibilityEdit>Enable element visibility editing</toggleVisibilityEdit>
 </strings>

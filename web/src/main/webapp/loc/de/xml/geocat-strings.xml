@@ -179,7 +179,7 @@ Ihr geocat.ch-Team</msg>
 	<gm03Valid>Gültig nach GM03</gm03Valid>
 	<inspireValid>Gültig nach INSPIRE</inspireValid>
     
-    <xsl.admin>Metadata Formatting Stylesheets</xsl.admin>
-    <xsl.admin.des>Stylesheets for displaying metadata in custom layouts</xsl.admin.des>
+    <xsl.admin>Metadaten-Darstellungsmodelle</xsl.admin>
+    <xsl.admin.des>Personalisierte Darstellungsmodelle (XSL) zur Darstellung der Metadaten in HTML</xsl.admin.des>
     <toggleVisibilityEdit>Option zum Verstecken einzelner Attribute</toggleVisibilityEdit>
 </strings>    
