@@ -1666,11 +1666,12 @@ function updateValidationReportVisibilityRules(errorOnly) {
         if (el.nodeName=="SPAN") {
             // These are the titles.
             // Look and see if the following div contains any list elements which are errors.
-            errors = $(el).next().descendants().filter(
+            var next = $(el).next();
+            errors = next ? next.descendants().filter(
                 function(possibleError) {
                    return (possibleError.nodeName=='LI' && possibleError.getAttribute('name')=='error');
                 }
-            );
+            ) : [];
             // If none are found and we are only showing errors, we should turn this one off.
             if (errors.length==0 && errorOnly) {
                 el.style.display = "none";
