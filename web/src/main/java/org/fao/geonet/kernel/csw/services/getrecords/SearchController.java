@@ -57,17 +57,17 @@ import org.jdom.Element;
 
 public class SearchController
 {
-    
+
 	private final CatalogSearcher _searcher;
     public SearchController(DataStore ds, File summaryConfig, LuceneConfig luceneConfig)
     {
         _searcher = new CatalogSearcher(ds, summaryConfig, luceneConfig);
     }
-	
+
     public CatalogSearcher getSearcher() {
     	return _searcher;
     }
-    
+
 	//---------------------------------------------------------------------------
     //---
     //--- Single public method to perform the general search tasks
@@ -86,24 +86,26 @@ public class SearchController
 
 	Pair<Element, List<ResultItem>> summaryAndSearchResults = _searcher.search(context, filterExpr, filterVersion, sort,
             resultType, startPos, maxRecords, maxHitsFromSummary, cswServiceSpecificContraint);
-	
+
 	UserSession session = context.getUserSession();
 	session.setProperty(Geonet.Session.SEARCH_RESULT, _searcher);
 
 	// clear selection from session when query filter change
-	String requestId = Util.scramble(Xml.getString(filterExpr));
-	String sessionRequestId = (String) session.getProperty(Geonet.Session.SEARCH_REQUEST_ID);
-	if (sessionRequestId != null && !sessionRequestId.equals(requestId)) {
+    QueryReprentationForSession sessionQueryReprentation = (QueryReprentationForSession) session.getProperty(Geonet.Session.SEARCH_REQUEST_ID);
+    QueryReprentationForSession requestQueryReprentation = new QueryReprentationForSession(context, filterExpr);
+
+    if (sessionQueryReprentation == null ||
+            !requestQueryReprentation.equals(sessionQueryReprentation)) {
 		// possibly close old selection
 		SelectionManager oldSelection = (SelectionManager)session.getProperty(Geonet.Session.SELECTED_RESULT);
-		
+
 		if (oldSelection != null){
 			oldSelection.close();
 			oldSelection = null;
-		}	
+		}
 	}
-	session.setProperty(Geonet.Session.SEARCH_REQUEST_ID, requestId);
-    
+	session.setProperty(Geonet.Session.SEARCH_REQUEST_ID, requestQueryReprentation);
+
 	List<ResultItem> resultsList = summaryAndSearchResults.two();
 	int counter = 0;
     for (int i=0; (i<maxRecords) && (i<resultsList.size()); i++) {
@@ -137,7 +139,7 @@ public class SearchController
 	} else {
 		results.setAttribute("nextRecord","0");
 	}
-	
+
 	return Pair.read(summary, results);
     }
 
@@ -185,7 +187,7 @@ public class SearchController
 					+ "conversion" + FS + "import" + FS + "ISO19115-to-ISO19139.xsl");
 			schema = "iso19139";
 		}
-		
+
 		//--- skip metadata with wrong schemas
 		if (schema.equals("fgdc-std") || schema.equals("dublin-core"))
 		    if(outSchema != OutputSchema.OGC_CORE)
