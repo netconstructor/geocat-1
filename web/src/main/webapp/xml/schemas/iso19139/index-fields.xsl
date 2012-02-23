@@ -41,9 +41,9 @@
         <!-- ========================================================================================= -->
 
 	<xsl:template match="/">
-	  <xsl:variable name="isoLangId">
-		  <xsl:call-template name="langId19139"/>
-    </xsl:variable>
+	    <xsl:variable name="isoLangId">
+	  	    <xsl:call-template name="langId19139"/>
+        </xsl:variable>
 
 		<Document locale="{$isoLangId}">
 			<Field name="_locale" string="{$isoLangId}" store="true" index="true" token="false"/>
@@ -55,7 +55,7 @@
 					<xsl:with-param name="isoDocLangId" select="$isoLangId"/>
 				</xsl:call-template>
 			</xsl:variable>
-			<!-- not tokenized title for sorting -->
+			<!-- not tokenized title for sorting, needed for multilingual sorting -->
 			<Field name="_defaultTitle" string="{string($_defaultTitle)}" store="true" index="true" token="false" />
 
 			<xsl:apply-templates select="*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']" mode="metadata"/>
@@ -331,7 +331,7 @@
 
 		<xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution">
 			<xsl:for-each select="gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString">
-				<Field name="format" string="{string(.)}" store="true" index="false"/>
+				<Field name="format" string="{string(.)}" store="false" index="true"/>
 			</xsl:for-each>
 
 			<!-- index online protocol -->
@@ -413,8 +413,8 @@
 				<Field name="specificationTitle" string="{string(.)}" store="false" index="true"/>
 			</xsl:for-each>
 			
-			<xsl:for-each select="//gmd:specification/*/gmd:date/*/gmd:date/gco:DateTime">
-				<Field name="specificationDate" string="{string(.)}" store="false" index="true"/>
+			<xsl:for-each select="//gmd:specification/*/gmd:date/*/gmd:date">
+				<Field name="specificationDate" string="{string(gco:Date|gco:DateTime)}" store="false" index="true"/>
 			</xsl:for-each>
 			
 			<xsl:for-each select="//gmd:specification/*/gmd:date/*/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue">
@@ -543,7 +543,7 @@
 	<xsl:template match="*" mode="codeList">
 		<xsl:apply-templates select="*" mode="codeList"/>
 		</xsl:template>
-
+	
 	<!-- ========================================================================================= -->
 	<!-- latlon coordinates indexed as numeric. -->
 	

@@ -2,6 +2,7 @@
 <xsl:stylesheet version="1.0"
 					 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 					 xmlns:dc = "http://purl.org/dc/elements/1.1/"
+					 xmlns:java="java:org.fao.geonet.util.XslUtil"
 					 xmlns:dct="http://purl.org/dc/terms/">
 
 	<!-- This file defines what parts of the metadata are indexed by Lucene
@@ -10,7 +11,7 @@
 		If a variable has to be maintained in the user session, it needs to be 
 		added to the GeoNetwork constants in the Java source code.
 		Please keep indexes consistent among metadata standards if they should
-		work across different metadata resources -->
+		work accross different metadata resources -->
 	<!-- ========================================================================================= -->
 	
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" />
@@ -18,7 +19,16 @@
 	<!-- ========================================================================================= -->
 	
 	<xsl:template match="/">
-		<Document>
+		<xsl:variable name="langCode" select="java:twoCharLangCode(string(dc:language))"/>
+		<Document locale="{$langCode}">
+
+			<!-- locale information -->	
+	        <Field name="_locale" string="{$langCode}" store="true" index="true"/>
+            <Field name="_docLocale" string="{$langCode}" store="true" index="true"/>
+      			
+        	<!-- For multilingual docs it is good to have a title in the default locale.  In this type of metadata we don't have one but in the general case we do so we need to add it to all -->
+            <Field name="_defaultTitle" string="{string(/simpledc/dc:title)}" store="true" index="true"/>
+	
 	
 			<!-- This index for "coverage" requires significant expansion to 
 				 work well for spatial searches. It now only works for very 
