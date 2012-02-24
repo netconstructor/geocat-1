@@ -113,7 +113,7 @@ public class LuceneIndexWriterFactory {
 
     static String normalize( String locale ) {
         if (locale == null) {
-            return null;
+            return "none";
         }
         String trimmed = locale.trim().toLowerCase();
         int max = Math.min(2, trimmed.length());
