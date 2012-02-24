@@ -127,6 +127,7 @@
         gmd:RS_Identifier/gmd:version|
         gmd:edition|
         gmd:ISBN|
+        gmd:protocol|
         gmd:ISSN|
         gmd:errorStatistic|
         gmd:schemaAscii|
