@@ -466,6 +466,8 @@ public class DataManager {
                  * This transformation ensures this property
                  */
                 md = Xml.transform(md, stylePath+"characterstring-to-localisedcharacterstring.xsl");
+                xmlSerializer.update(dbms, id, md, new ISODate().toString(), false, servContext.getUserSession(), servContext);
+
             }
              if("n".equalsIgnoreCase(isHarvested) && processSharedObjects && schema.trim().equals("iso19139.che")) {
             	try {
