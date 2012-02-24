@@ -37,7 +37,7 @@ public class LuceneIndexReaderFactory {
     // ===========================================================================
     // Constructor
 
-    public LuceneIndexReaderFactory( File dir ) throws IOException {
+    LuceneIndexReaderFactory( File dir ) throws IOException {
         this.luceneDir = dir;
     }
 
@@ -77,8 +77,20 @@ public class LuceneIndexReaderFactory {
         lock.tryLock(LOCK_WAIT_TIME, WAIT_UNIT);
         try {
             MultiReader multiReader = (MultiReader) reader;
+            reader.close();  // multireader increments reader so increment it
             for( IndexReader r : multiReader.getSequentialSubReaders() ) {
                 r.decRef();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+    public void close() throws InterruptedException, IOException {
+        lock.tryLock(LOCK_WAIT_TIME, WAIT_UNIT);
+        try {
+            for( IndexReader r : subReaders.values() ) {
+                while(r.getRefCount() > 1) r.decRef();
+                r.close();
             }
         } finally {
             lock.unlock();
@@ -88,7 +100,6 @@ public class LuceneIndexReaderFactory {
         lock.tryLock(LOCK_WAIT_TIME, WAIT_UNIT);
         try {
             maybeReopen();
-
             MultiReader multiReader = (MultiReader) reader;
             LinkedList<IndexReader> otherReaders = new LinkedList<IndexReader>(Arrays.asList(multiReader.getSequentialSubReaders()));
             boolean sameNumReaders = otherReaders.size() == subReaders.size();
@@ -143,4 +154,5 @@ public class LuceneIndexReaderFactory {
             }
         }
     }
+
 }

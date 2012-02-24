@@ -169,30 +169,35 @@ public final class XslUtil {
     /**
      * Get field value for metadata identified by uuid. "" if uuid not found.
      *
-     * @param appPath Application path to access Lucene index in static context
-     *                (could we make that better ?)
+     * @param appName Name of the webapplication to allow lookup of lucene index directory
      * @param uuid    Metadata uuid
      * @param field   Field name
      * @param lang    Language of the index to search in
      * @return metadata title
      */
-    public static String getIndexField(Object appPath, Object uuid, Object field, Object lang) {
-        String path = appPath.toString();
+    public static String getIndexField(Object appName, Object uuid, Object field, Object lang) {
+        String webappName = appName.toString();
         String id = uuid.toString();
         String fieldname = field.toString();
         String language = (lang.toString().equals("") ? null : lang.toString());
         try {
-            return LuceneSearcher.getMetadataFromIndex(path, id, fieldname);
+            String fieldValue = LuceneSearcher.getMetadataFromIndex(webappName, language, id, fieldname);
+            if(fieldValue == null) {
+                return getIndexFieldById(appName,uuid,field,lang);
+            }
+            return fieldValue == null ? "" : fieldValue;
         } catch (Exception e) {
             Log.error(Geonet.GEONETWORK, "Failed to get index field value caused by " + e.getMessage());
             return "";
         }
     }
-    public static String getIndexFieldById(Object appPath, Object id, Object field, Object lang) {
-        String path = appPath.toString();
+    public static String getIndexFieldById(Object appName, Object id, Object field, Object lang) {
+        String webappName = appName.toString();
         String fieldname = field.toString();
+        String language = (lang.toString().equals("") ? null : lang.toString());
         try {
-            return LuceneSearcher.getMetadataFromIndexById(path, id.toString(), fieldname);
+            String fieldValue = LuceneSearcher.getMetadataFromIndexById(webappName, language, id.toString(), fieldname);
+            return fieldValue == null ? "" : fieldValue;
         } catch (Exception e) {
             Log.error(Geonet.GEONETWORK, "Failed to get index field value caused by " + e.getMessage());
             return "";
@@ -416,7 +421,7 @@ public final class XslUtil {
             public Object write(ExtentTypeCode code, MultiPolygon geometry) throws Exception {
 
                 Envelope bbox = geometry.getEnvelopeInternal();
-                
+
                 String template = "<gmd:EX_GeographicBoundingBox xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\">"+
                 "<gmd:extentTypeCode>"+
                   "<gco:Boolean>%s</gco:Boolean>"+
@@ -434,18 +439,18 @@ public final class XslUtil {
                   "<gco:Decimal>%s</gco:Decimal>"+
                 "</gmd:northBoundLatitude>"+
               "</gmd:EX_GeographicBoundingBox>";
-                
+
                 String extentTypeCode = code == ExtentTypeCode.EXCLUDE ? "false" : "true";
                 String xml = String.format(template, extentTypeCode, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY());
-                
+
                 Source source = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
                 DocumentInfo doc = ni.getConfiguration().buildDocument(source);
                 return SingletonIterator.makeIterator(doc);
             }
         });
     }
-    
-    
+
+
     public static Object multipolygon(Object description, Object src) throws Exception {
 
         final NodeInfo ni = ((NodeInfo) src);
@@ -459,24 +464,24 @@ public final class XslUtil {
                 encoder.setEncoding(Charset.forName("UTF-8"));
                 ExtentHelper.addGmlId(geometry);
                 encoder.encode(geometry, org.geotools.gml3.GML.geometryMember, outputStream);
-                
+
                 StringBuilder builder = new StringBuilder("<gmd:EX_BoundingPolygon xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"><gmd:extentTypeCode><gco:Boolean>").
                     append(code == ExtentTypeCode.EXCLUDE ? "false" : "true").
                     append("</gco:Boolean></gmd:extentTypeCode><gmd:polygon>");
-                
+
                 Source xml1 = new StreamSource(new ByteArrayInputStream(outputStream.toByteArray()));
                 DocumentInfo doc1 = ni.getConfiguration().buildDocument(xml1);
                 AxisIterator iter = doc1.iterateAxis(Axis.CHILD);
                 NodeInfo next = (NodeInfo) iter.next();
-                
+
                 while(next !=null) {
                     AxisIterator iter2 = next.iterateAxis(Axis.CHILD);
                     Item next2 = iter2.next();
-                    
+
                     while(next2 !=null) {
                         if (next2 instanceof NodeInfo & ((NodeInfo)next2).getNodeKind() == Type.ELEMENT) {
                             NodeInfo info = (NodeInfo) next2;
-                            
+
                             String nodeXml = writeXml(info);
                             builder.append(nodeXml);
                         }
@@ -484,12 +489,12 @@ public final class XslUtil {
                     }
                     next = (NodeInfo) iter.next();
                 }
-                
+
                 builder.append("</gmd:polygon></gmd:EX_BoundingPolygon>");
-                
+
                 Source xmlSource = new StreamSource(new ByteArrayInputStream(builder.toString().getBytes("UTF-8")));
                 DocumentInfo doc = ni.getConfiguration().buildDocument(xmlSource);
-                
+
                 return SingletonIterator.makeIterator(doc);
             }
         });
@@ -505,9 +510,9 @@ public final class XslUtil {
 
         try {
             Multimap<Boolean, Polygon> geoms = ArrayListMultimap.create();
-            
+
             NodeInfo next = (NodeInfo) src.next();
-            
+
             while (next != null) {
             	if (!next.getLocalPart().equalsIgnoreCase("geographicElement"))
             	{
@@ -517,9 +522,9 @@ public final class XslUtil {
             		while (nextChild != null)
             		{
             			geoms.putAll(geometries(nextChild));
-                    	nextChild = (NodeInfo) childNodes.next();  	
+                    	nextChild = (NodeInfo) childNodes.next();
             		}
-            		
+
             	}
             	next = (NodeInfo) src.next();
             }
@@ -566,7 +571,7 @@ public final class XslUtil {
             return root;
         }
     }
-    
+
     private static Multimap<Boolean, Polygon> geometries(NodeInfo next) throws Exception {
         Boolean inclusion = inclusion(next);
         inclusion = inclusion == null ? true : inclusion;
@@ -576,8 +581,8 @@ public final class XslUtil {
         return geoms;
     }
 
-    
-    
+
+
     private static Node findElem(Node next, String name) {
         if (name.equals(next.getLocalName())) {
             return next;
@@ -600,7 +605,7 @@ public final class XslUtil {
         }
         AxisIterator childNodes = next.iterateAxis(Axis.CHILD);
         NodeInfo curChildNode =  (NodeInfo) childNodes.next();
-        
+
         while (curChildNode != null) {
         	Polygon geom = geom(curChildNode);
         	if (geom != null)
@@ -611,7 +616,7 @@ public final class XslUtil {
         }
         return null;
     }
-    
+
     @SuppressWarnings("rawtypes")
     private static Polygon parsePolygon(NodeInfo next) throws Exception {
         String writeXml = writeXml(next);
@@ -637,31 +642,31 @@ public final class XslUtil {
             return (Polygon) value;
         }
     }
-    
+
     private static Boolean inclusion(NodeInfo next) {
         if ("extentTypeCode".equals(next.getLocalPart())) {
             return booleanText(next);
         }
         AxisIterator childNodes = next.iterateAxis(Axis.CHILD);
         NodeInfo nextChild = (NodeInfo) childNodes.next();
-        
+
         while (nextChild != null)
         {
             Boolean inclusion = inclusion(nextChild);
             if (inclusion != null) {
                 return inclusion;
-            }    	
+            }
         	nextChild = (NodeInfo) childNodes.next();
-        	
+
         }
         return null;
     }
-    
+
     private static Boolean booleanText(NodeInfo next) {
         AxisIterator childNodes = next.iterateAxis(Axis.CHILD);
-        
+
         NodeInfo nextChild = (NodeInfo) childNodes.next();
-        
+
         while (nextChild != null)
         {
         	 if ("Boolean".equals(nextChild.getLocalPart())) {
@@ -672,7 +677,7 @@ public final class XslUtil {
                  }
              }
         	 nextChild = (NodeInfo) childNodes.next();
-        }    
+        }
         return true;
     }
     public static String writeXml(Node doc) throws Exception {
@@ -688,7 +693,7 @@ public final class XslUtil {
         xformer.transform(source, result);
         return out.toString("utf-8");
     }
-    
+
     public static String writeXml(NodeInfo doc) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         // Prepare the output file
@@ -696,12 +701,12 @@ public final class XslUtil {
 
         // Write the DOM document to the file
         Transformer xformer = TransformerFactory.newInstance().newTransformer();
-        
+
         xformer.transform(doc, result);
         return out.toString("utf-8").replaceFirst("<\\?xml.+?>", "");
     }
 
-    
+
     static Pattern LINK_PATTERN = Pattern.compile("(mailto:|https://|http://|ftp://|ftps://)[^\\s<>]*\\w");
     static Pattern NODE_PATTERN = Pattern.compile("<.+?>");
 
@@ -730,7 +735,7 @@ public final class XslUtil {
      * Sometimes nodes can have urls in their attributes (namespace declarations)
      * So nodes themselves should not be processed.  Also if a node is a
      * anchor node then the text within should not be processed.
-     * @param configuration 
+     * @param configuration
      */
     public static String toHyperlinksSplitNodes(String textString, Configuration configuration) throws Exception {
         Matcher nodes = NODE_PATTERN.matcher(textString);
@@ -774,7 +779,7 @@ public final class XslUtil {
 
     /**
      * Add hyperlinks and split long lines
-     * @param configuration 
+     * @param configuration
      */
     private static String toHyperlinksFromText(Configuration configuration, String textString) throws Exception {
         StringBuilder builder = new StringBuilder();
@@ -838,9 +843,9 @@ public final class XslUtil {
             Log.warning(Log.SERVICE, e.getMessage() + XML.toString(error));
             return null;
         }
-        
+
     }
-    
+
     public static String getUrlStatus(String url){
         URL u;
         URLConnection conn;
@@ -849,15 +854,15 @@ public final class XslUtil {
             u = new URL(url);
             conn = u.openConnection();
             conn.setConnectTimeout(connectionTimeout);
-            
+
             // TODO : set proxy
-            
+
             if (conn instanceof HttpURLConnection) {
                HttpURLConnection httpConnection = (HttpURLConnection) conn;
                httpConnection.setInstanceFollowRedirects(true);
                httpConnection.connect();
                httpConnection.disconnect();
-               // FIXME : some URL return HTTP200 with an empty reply from server 
+               // FIXME : some URL return HTTP200 with an empty reply from server
                // which trigger SocketException unexpected end of file from server
                int code = httpConnection.getResponseCode();
 
@@ -865,13 +870,13 @@ public final class XslUtil {
                    return "";
                } else {
                    return "Status: " + code;
-               } 
+               }
             } // TODO : Other type of URLConnection
         } catch (Exception e) {
             e.printStackTrace();
             return e.toString();
         }
-        
+
         return "";
     }
     /**
