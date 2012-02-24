@@ -57,11 +57,11 @@ var geocatConf = {
 };
 
 var geocat = {
-	session: {
-		userId: "",
-		profile: "",
-		groups: []
-	},
+    session: {
+        userId: "",
+        profile: "",
+        groups: []
+    },
     map: null,
     mapMinWidth: 310,
     mapMinHeight: 220,
@@ -113,7 +113,7 @@ var geocat = {
 
     drawFeature: null,
 
-	defaultStyleColor: "#FFFFFF",
+    defaultStyleColor: "#FFFFFF",
     defaultStyle: {
         fillColor: "#0000FF",
         fillOpacity: 0.0,
@@ -123,7 +123,7 @@ var geocat = {
         pointRadius: 4,
         pointerEvents: "visiblePainted"
     },
-	highlightStyleColor: "#dfe8f6",
+    highlightStyleColor: "#dfe8f6",
     highlightStyle: {
         fillColor: this.highlightStyleColor,
         fillOpacity: 0.4,
@@ -248,7 +248,7 @@ var geocat = {
                 ]
             },{
                 region: 'center',
-				id: 'searchResultsPanel',
+                id: 'searchResultsPanel',
                 autoScroll: true,
                 contentEl: 'searchResults',
                 bodyStyle: "padding:10px"
@@ -287,7 +287,7 @@ var geocat = {
         Ext.getCmp('anyField').focus();
 
         if (geocat.expandRefineOnStartup) {
-        	geocat.refinementWithNoResultsDisplay();
+            geocat.refinementWithNoResultsDisplay();
         }
 
         mapCmp.zoomToFullExtent(); // Has to be done after layout setup
@@ -340,7 +340,7 @@ var geocat = {
         var target = Ext.get("searchResults");
 
         target.dom.innerHTML = translate("searching");
-		target.addClass("searching");
+        target.addClass("searching");
         OpenLayers.Util.getElement("refineRemove").innerHTML="";
         OpenLayers.Util.getElement("refineAdd").innerHTML="";
         // Resizes map
@@ -354,13 +354,13 @@ var geocat = {
     failedSearch: function(result) {
         var target = Ext.get("searchResults");
         target.dom.innerHTML = "Search failed: <br />" + result.responseText;
-		target.removeClass("searching");
+        target.removeClass("searching");
     },
 
     processSearchResults: function(result, getQuery) {
         var target = Ext.get("searchResults");
-		target.removeClass("searching");
-		
+        target.removeClass("searching");
+        
         geocat.showContours(result.responseXML);
         searchTools.transformXML(result.responseXML, geocat.getResultsTemplate(getQuery), target.dom);
         geocat.transformSortBy();
@@ -369,7 +369,7 @@ var geocat = {
         geocat.processRefinement(result);
 
         if (geocat.expandRefineOnSearch)
-        	Ext.getCmp('refineWidget').expand(true);
+            Ext.getCmp('refineWidget').expand(true);
     },
 
     processRefinement: function(result, getQuery) {
@@ -423,15 +423,15 @@ var geocat = {
     },
 
     refinementWithNoResultsDisplay: function() {
-    	// Search
+        // Search
         searchTools.doCSWQueryFromForm('searchForm',
                 geocat.baseUrl + "srv/" + geocat.language + "/csw", 1,
                 geocat.processRefinement,   //success
                 function() {                //failure
-            	    alert ("Search failed.");
+                    alert ("Search failed.");
                 },
                 geocat.addGeographicFilter);
-    	Ext.getCmp('refineWidget').expand(true);
+        Ext.getCmp('refineWidget').expand(true);
     },
 
     removeRefinement: function(category, index, key) {
@@ -459,7 +459,7 @@ var geocat = {
             renderTo: target,
             store: translate('sortByTypes'),
             mode: 'local',
-			id:'sortByCombo',
+            id:'sortByCombo',
             forceSelection: true,
             triggerAction: 'all',
             editable: false,
@@ -494,15 +494,15 @@ var geocat = {
     createLinkButton: function(curProto, byProto, id) {
         var cur;
 
-		if (byProto.length == 0) {
-			return ;
-		}
+        if (byProto.length == 0) {
+            return ;
+        }
         // Button with drop down list
         if (byProto[0].url != null && ((byProto[0].url.indexOf('metadata.edit')==-1
-        		&& byProto[0].url.indexOf('metadata.delete')==-1
-        		&& byProto[0].url.indexOf('metadata.duplicate.form')==-1
-        		&& byProto[0].url.indexOf('metadata.show')==-1)
-        		|| geocat.resultMode=='condensed')	) { // TODO : Adding an option for button and icon could be better.
+                && byProto[0].url.indexOf('metadata.delete')==-1
+                && byProto[0].url.indexOf('metadata.duplicate.form')==-1
+                && byProto[0].url.indexOf('metadata.show')==-1)
+                || geocat.resultMode=='condensed')    ) { // TODO : Adding an option for button and icon could be better.
             var items = [];
             var first = byProto[0];
 
@@ -519,31 +519,31 @@ var geocat = {
             }
             var name = '';
             var tooltip = (geocat.resultMode=='condensed' ?
-            				'':items.length + " " + translate("links"));
+                            '':items.length + " " + translate("links"));
             if (curProto == "WMS") {
                 tooltip += " (" + translate("OGC-WMS") + ")";
             } else if (curProto == "KML") {
-            	tooltip += " (" + translate("Google KML") + ")";
+                tooltip += " (" + translate("Google KML") + ")";
             }
 
-			if(items.length > 0) {
-	            new Ext.Button({
-	                renderTo: id,
-	                text: name,
-	                tooltip: tooltip,
-	                icon: first.icon,
-	                cls: first.buttonClass,
-	                menu: {
-						shadow:'drop',
-						items: items,
-						listeners: {
-							beforeshow: function(menu) {
-								menu.el.addClass("uriButtonMenu")
-							}
-						}
-					}
-	            });
-			}
+            if(items.length > 0) {
+                new Ext.Button({
+                    renderTo: id,
+                    text: name,
+                    tooltip: tooltip,
+                    icon: first.icon,
+                    cls: first.buttonClass,
+                    menu: {
+                        shadow:'drop',
+                        items: items,
+                        listeners: {
+                            beforeshow: function(menu) {
+                                menu.el.addClass("uriButtonMenu")
+                            }
+                        }
+                    }
+                });
+            }
         } else {
             cur = byProto[0];
 
@@ -576,17 +576,17 @@ var geocat = {
                 var proto = uri.attributes.getNamedItem("proto").value;
                 if (proto.toLowerCase().contains('wms')) proto = "WMS";
                 var array = byProtos[proto] || [];
-				var url = uri.firstChild ? uri.firstChild.nodeValue : null;
-				var title = uri.attributes.getNamedItem("title") ? uri.attributes.getNamedItem("title").value : url;
+                var url = uri.firstChild ? uri.firstChild.nodeValue : null;
+                var title = uri.attributes.getNamedItem("title") ? uri.attributes.getNamedItem("title").value : url;
                 var cur = {
                     title: title,
                     name: uri.attributes.getNamedItem("name") ? uri.attributes.getNamedItem("name").value : title,
                     url: url,
                     uuid: uuid
                 };
-				if(cur.url != null && cur.url.trim().length > 0) {
-                	array.push(cur);
-				}
+                if(cur.url != null && cur.url.trim().length > 0) {
+                    array.push(cur);
+                }
                 byProtos[proto] = array;
             }
             uriList.innerHTML = "";
@@ -757,38 +757,38 @@ var geocat = {
                 }
             }
         }, {
-        	// conversion function to extract out the correct translated name 
-        	// from the GEMNAME
-        	GEMNAME: function (value,record) {
-        		if (!value) return ""
-        		
-        		var firstQuote = value.indexOf('"')
-        		var lastQuote = value.lastIndexOf('"')
-        		var firstXBrace = value.indexOf("<")
-        		var lastXBrace = value.lastIndexOf(">")
-        		
-	        	if(firstXBrace > -1) 
-	        	{
-	        		var xmlString = "<data>"+value.substring(firstXBrace, lastXBrace+1)+"</data>";
-	        		var xml = searchTools.loadXMLString(xmlString);
+            // conversion function to extract out the correct translated name 
+            // from the GEMNAME
+            GEMNAME: function (value,record) {
+                if (!value) return ""
+                
+                var firstQuote = value.indexOf('"')
+                var lastQuote = value.lastIndexOf('"')
+                var firstXBrace = value.indexOf("<")
+                var lastXBrace = value.lastIndexOf(">")
+                
+                if(firstXBrace > -1) 
+                {
+                    var xmlString = "<data>"+value.substring(firstXBrace, lastXBrace+1)+"</data>";
+                    var xml = searchTools.loadXMLString(xmlString);
 
-	        		var xpath = geocat.language.substring(0,2).toUpperCase();
-	        		var de = Ext.DomQuery.selectValue("//DE",xml,value)
-	        		var en = Ext.DomQuery.selectValue("//EN",xml,de)
-	        		var fr = Ext.DomQuery.selectValue("//FR",xml,en)
-	        		var it = Ext.DomQuery.selectValue("//IT",xml,fr)
-	        		var parsedValue = Ext.DomQuery.selectValue("//"+xpath,xml, it);
-	        		
-	        		return parsedValue;
-	        	} 
-	        	else if(firstQuote > -1) 
-	        	{
-	        		return value.substring(firstQuote, lastQuote+1);
-	        	} else
-	        	{
-	        		return value; 
-	        	}
-        	}
+                    var xpath = geocat.language.substring(0,2).toUpperCase();
+                    var de = Ext.DomQuery.selectValue("//DE",xml,value)
+                    var en = Ext.DomQuery.selectValue("//EN",xml,de)
+                    var fr = Ext.DomQuery.selectValue("//FR",xml,en)
+                    var it = Ext.DomQuery.selectValue("//IT",xml,fr)
+                    var parsedValue = Ext.DomQuery.selectValue("//"+xpath,xml, it);
+                    
+                    return parsedValue;
+                } 
+                else if(firstQuote > -1) 
+                {
+                    return value.substring(firstQuote, lastQuote+1);
+                } else
+                {
+                    return value; 
+                }
+            }
         });
 
         //handle the clearing of the gemeinden combobox: show the Kanton if any is selected
@@ -846,12 +846,12 @@ var geocat = {
             fieldLabel: translate('rtitle'),
             name: 'T_title',
             anchor: '100%',
-			id: 'TitleField'
+            id: 'TitleField'
         },{
             fieldLabel: translate('abstract'),
             name: 'T_abstract',
             anchor: '100%',
-			id: 'AbstractField'
+            id: 'AbstractField'
         },{
             xtype: 'boxselect',
             fieldLabel: translate('keyword'),
@@ -983,12 +983,12 @@ var geocat = {
             },{
                 xtype: 'checkbox',
                 fieldLabel: translate('toEdit'),
-				id: 'toEdit',
+                id: 'toEdit',
                 name: 'B_toEdit'
             },{
                 xtype: 'checkbox',
                 fieldLabel: translate('toPublish'),
-				id: 'toPublish',
+                id: 'toPublish',
                 name: 'B_toPublish'
             }]);
         }
@@ -1295,7 +1295,7 @@ var geocat = {
             proxy: new Ext.data.HttpProxy({
                 url: geocat.baseUrl + "srv/" + geocat.language + "/portal.search",
                 method:'GET',
-				disableCaching: false
+                disableCaching: false
             })
         });
         keywordStore.add(new Keyword({name: translate('any'), value: ''}));
@@ -1346,9 +1346,9 @@ var geocat = {
         for (var i = 0; i < fields.length; ++i) {
             var name = fields[i];
             if(conversions != undefined && conversions[name] != undefined) {
-            	recordFields.push({name: name, mapping: name, convert: conversions[name]});            	
+                recordFields.push({name: name, mapping: name, convert: conversions[name]});                
             } else {
-            	recordFields.push({name: name, mapping: name});
+                recordFields.push({name: name, mapping: name});
             }
             properties += '    <ogc:PropertyName>' + ns + ':' + name + '</ogc:PropertyName>';
         }
@@ -1503,7 +1503,7 @@ var geocat = {
             geocat.prevHighlighted = id;
         }
         if (id == null)
-        	div.style.background = geocat.defaultStyleColor;
+            div.style.background = geocat.defaultStyleColor;
     },
 
     addGeographicFilter: function(values, filters) {
@@ -1660,7 +1660,7 @@ var geocat = {
         for (var i = 0; i < features.length; ++i) {
             var feature = features[i];
             if (feature.attributes.id == id) {
-            	geocat.map.zoomToExtent(feature.geometry.getBounds());
+                geocat.map.zoomToExtent(feature.geometry.getBounds());
             }
         }
 
@@ -1715,18 +1715,18 @@ var geocat = {
                             width: geocat.metadataPopupWidth,
                             height: geocat.metadataPopupHeight,
                             onEsc       : function(){
-                            	geocat.metadataWindow.hide();
-                        	},
+                                geocat.metadataWindow.hide();
+                            },
                             listeners: {
                                 close: function() {
                                     geocat.metadataWindow = null;
                                 },
                                 show: function(){
                                     if(extentMap) {
-										extentMap.initMapDiv();
-									} else {
-										searchTools.initMapDiv();
-									}
+                                        extentMap.initMapDiv();
+                                    } else {
+                                        searchTools.initMapDiv();
+                                    }
                                 }
                             }
                         });
@@ -1800,62 +1800,62 @@ var geocat = {
      *Check and uncheck metadata in current result page.
      */
     selectAllMetadata: function(on) {
-    	var checks = document.getElementsByName('metadataSelector');
-    	var checksLength = checks.length;
-    	for (var i = 0; i < checksLength; i++) {
-    		checks[i].checked = on;
-    	}
+        var checks = document.getElementsByName('metadataSelector');
+        var checksLength = checks.length;
+        for (var i = 0; i < checksLength; i++) {
+            checks[i].checked = on;
+        }
     },
 
     metadataSelectInfo: function(param) {
-    	OpenLayers.Request.GET({
-			 url: 'metadata.select?' + param,
-			 success: function(response) {
-				// Get the number of selected items in current session
-				var xmlString = response.responseText;
-				var xmlobject = searchTools.loadXMLString(xmlString);
-				var root = xmlobject.getElementsByTagName('response')[0];
-				var nbSelected = root.getElementsByTagName('Selected')[0].firstChild.nodeValue;
-				var item = document.getElementById('nbselected');
-				if (item != null) {
-					item.innerHTML = nbSelected;
-					if (nbSelected == 0)
-						document.getElementById('actionOnSelection').disabled = true;
-					else
-						document.getElementById('actionOnSelection').disabled = false;
-				}
-			},
-			onFailure: function(response) {
-				alert('Error metadata.select ');
-			}
-		});
+        OpenLayers.Request.GET({
+             url: 'metadata.select?' + param,
+             success: function(response) {
+                // Get the number of selected items in current session
+                var xmlString = response.responseText;
+                var xmlobject = searchTools.loadXMLString(xmlString);
+                var root = xmlobject.getElementsByTagName('response')[0];
+                var nbSelected = root.getElementsByTagName('Selected')[0].firstChild.nodeValue;
+                var item = document.getElementById('nbselected');
+                if (item != null) {
+                    item.innerHTML = nbSelected;
+                    if (nbSelected == 0)
+                        document.getElementById('actionOnSelection').disabled = true;
+                    else
+                        document.getElementById('actionOnSelection').disabled = false;
+                }
+            },
+            onFailure: function(response) {
+                alert('Error metadata.select ');
+            }
+        });
     },
 
     /**
      * Select a metadata record in current user session.
      */
     metadataSelect: function(id, selected) {
-    		if (selected===true)
-    			selected='add';
-    		else if (selected===false)
-    			selected='remove';
+            if (selected===true)
+                selected='add';
+            else if (selected===false)
+                selected='remove';
 
-    		var param = 'id=' + id + '&selected='+selected;
-    		geocat.metadataSelectInfo(param);
-    		if (selected=='remove-all') {
-    			geocat.selectAllMetadata(false);
-    		};
-    		if (selected=='add-all') {
-    			geocat.selectAllMetadata(true);
-    		};
+            var param = 'id=' + id + '&selected='+selected;
+            geocat.metadataSelectInfo(param);
+            if (selected=='remove-all') {
+                geocat.selectAllMetadata(false);
+            };
+            if (selected=='add-all') {
+                geocat.selectAllMetadata(true);
+            };
     },
 
     metadataGroupAction: function(select) {
-    	var action = select.options[select.selectedIndex].value;
-    	switch (action) {
+        var action = select.options[select.selectedIndex].value;
+        switch (action) {
         case 'EXP':
-        	document.location.href = 'mef.export?format=full&version=2';
-        	select.selectedIndex=0;
+            document.location.href = 'mef.export?format=full&version=2';
+            select.selectedIndex=0;
             break;
         case 'DEL':
             if(!confirm(translate('confirmMassiveDelete')))
@@ -1868,7 +1868,7 @@ var geocat = {
         case 'PRIVILEGES':
             geocat.openMassiveOp(translate('updatePrivileges'),"metadata.batch.admin.form");
             break;
-		}
+        }
     },
     openMassiveOp: function(title, request) {
         OpenLayers.Request.GET({
@@ -1901,15 +1901,15 @@ var geocat = {
         
     },
     metadataSelectionAction: function() {
-    	// TODO : switch to ext.js ?
-    	var list = '<select id="actionOnSelection" onchange="geocat.metadataGroupAction (this);">' +
-    			'<option value=""></option><option value="EXP">'+translate('export')+'</option>';
-    	if (geocat.authentified){
-    		list += '<option value="DEL">'+translate('delete')+'</option>';
-    		list += '<option value="PRIVILEGES">'+translate('updatePrivileges')+'</option>';
-    	}
-    	list += '</select>';
-    	return list;
+        // TODO : switch to ext.js ?
+        var list = '<select id="actionOnSelection" onchange="geocat.metadataGroupAction (this);">' +
+                '<option value=""></option><option value="EXP">'+translate('export')+'</option>';
+        if (geocat.authentified){
+            list += '<option value="DEL">'+translate('delete')+'</option>';
+            list += '<option value="PRIVILEGES">'+translate('updatePrivileges')+'</option>';
+        }
+        list += '</select>';
+        return list;
     },
 
     /**
@@ -1917,61 +1917,61 @@ var geocat = {
      * Button id MUST be equal to result templates.
      */
     switchResultsMode: function(mode){
-    	if (geocat.resultMode == mode)
-    		return;
+        if (geocat.resultMode == mode)
+            return;
 
         geocat.resultMode = mode;
         Ext.getCmp('searchBt').handler();
     },
 
-	/**
-	 * Display results mode option if more than one mode.
-	 */
+    /**
+     * Display results mode option if more than one mode.
+     */
     resultsModeToolBar: function(){
-    	if (geocat.resultModes.length==1)
-    		return '';
+        if (geocat.resultModes.length==1)
+            return '';
 
-    	var tb = '<span>'+translate('view')+':';
-    	for (var i=0; i<geocat.resultModes.length; i++) {
-    		tb += '<img onclick="geocat.switchResultsMode(\'' +
-    						geocat.resultModes[i] +
-    					'\');" src="../../images/mv-' +
-    						geocat.resultModes[i] +
-    					'.gif"/>&#160;';
-    	}
-    	tb += '</span>';
+        var tb = '<span>'+translate('view')+':';
+        for (var i=0; i<geocat.resultModes.length; i++) {
+            tb += '<img onclick="geocat.switchResultsMode(\'' +
+                            geocat.resultModes[i] +
+                        '\');" src="../../images/mv-' +
+                            geocat.resultModes[i] +
+                        '.gif"/>&#160;';
+        }
+        tb += '</span>';
 
-    	return tb;
+        return tb;
     },
     /**
      * Return combobox to define the number of max records per page.
      */
     maxRecordsCombo: function(){
-    	if (geocat.maxRecords.length==1)
-    		return '';
+        if (geocat.maxRecords.length==1)
+            return '';
 
-    	var tb = '<span>' + translate('hitsPerPage') + ': <select onchange="geocat.maxRecordsChange(this);">';
-    	for (var i=0; i<geocat.maxRecords.length; i++) {
-    		tb += '<option value="' + geocat.maxRecords[i] + '"';
+        var tb = '<span>' + translate('hitsPerPage') + ': <select onchange="geocat.maxRecordsChange(this);">';
+        for (var i=0; i<geocat.maxRecords.length; i++) {
+            tb += '<option value="' + geocat.maxRecords[i] + '"';
 
-    		if (geocat.maxRecords[i] == geocat.nbResultPerPage)
-    			tb += ' selected="selected"';
+            if (geocat.maxRecords[i] == geocat.nbResultPerPage)
+                tb += ' selected="selected"';
 
-    		tb += '>' + geocat.maxRecords[i] + '</option>';
-    	}
-    	tb += '</select></span>';
+            tb += '>' + geocat.maxRecords[i] + '</option>';
+        }
+        tb += '</select></span>';
 
-    	return tb;
+        return tb;
     },
     /**
      * Update max records variable and launch a new search.
      */
     maxRecordsChange: function(select){
-    	var nb = select.options[select.selectedIndex].value;
-    	if (nb != geocat.nbResultPerPage) {
-    		geocat.nbResultPerPage = nb;
-    		Ext.getCmp('searchBt').handler();
-		}
+        var nb = select.options[select.selectedIndex].value;
+        if (nb != geocat.nbResultPerPage) {
+            geocat.nbResultPerPage = nb;
+            Ext.getCmp('searchBt').handler();
+        }
     },
     getResultsTemplate: function(getQuery) {
         var newQuery = OpenLayers.Util.applyDefaults({
@@ -1983,16 +1983,16 @@ var geocat = {
         var exportLinks = '';
 
         for (var i=0; i<geocat.exportResultModes.length; i++) {
-        	   var link = '';
-        	   if (geocat.exportResultModes[i]=='txt')
-        		   link = 'csw.csv';
-        	   else
-        		   link = 'csw.' + geocat.exportResultModes[i];
+               var link = '';
+               if (geocat.exportResultModes[i]=='txt')
+                   link = 'csw.csv';
+               else
+                   link = 'csw.' + geocat.exportResultModes[i];
 
-        	   exportLinks += '<a href="' + link + '?' +
-        	   					(geocat.exportResultModes[i]!='pdf'?'outputSchema=own&amp;':'') +	// Only pdf is based on a common format, others are schemas based.
-        	   					q + '" target="export"><img height="16px" src="../../images/' +
-        	   					geocat.exportResultModes[i] + '.gif"/></a>';
+               exportLinks += '<a href="' + link + '?' +
+                                   (geocat.exportResultModes[i]!='pdf'?'outputSchema=own&amp;':'') +    // Only pdf is based on a common format, others are schemas based.
+                                   q + '" target="export"><img height="16px" src="../../images/' +
+                                   geocat.exportResultModes[i] + '.gif"/></a>';
         }
 
 
@@ -2009,7 +2009,7 @@ var geocat = {
                '      <xsl:if test="@numberOfRecordsMatched &gt; 0">\n' +
                '        <div style="float: right;">\n' +
                exportLinks +
-               '	    </div>\n' +
+               '        </div>\n' +
                '      </xsl:if>' +
                '      <xsl:if test="@numberOfRecordsMatched &gt; 1">\n' +
                '        <div id="sortBy" style="float: right;"></div><div style="float: right">' + translate('sortBy') + ': <br/></div>\n' +
@@ -2037,12 +2037,12 @@ var geocat = {
                '        <br /><br />' +
                translate('selectedElementsAction') + ': ' +
                '        ' + geocat.metadataSelectionAction() + '&#160;' +
-               '		<div class="hitsPerPage">' +
+               '        <div class="hitsPerPage">' +
                geocat.resultsModeToolBar() +
                geocat.maxRecordsCombo() +
                '        </div>' +
                '      </xsl:if>\n' +
-               '	</div>\n' +
+               '    </div>\n' +
 
                '    <div style="clear: both" id="records">\n' +
                '      <xsl:apply-templates select="*"/>\n' +
@@ -2056,7 +2056,7 @@ var geocat = {
                '  </xsl:template>\n';
 
 
-       	var xslfooter =
+           var xslfooter =
            '  <xsl:template match="dc:subject">\n' +
            '      <xsl:if test="position()&gt;1">, </xsl:if>\n' +
            '      <xsl:value-of select="."/>\n' +
@@ -2065,54 +2065,54 @@ var geocat = {
            '  <xsl:template match="text()"/>\n' +
            '</xsl:stylesheet>\n';
 
-	    // Logo XSL: either group logo (with/without group website link) or harvester (source) logo
-	    // Be sure to keep in sync with logo XSL in metadata-utils.xsl.
-	    var xsllogo =
-			'<xsl:variable name="source" select="string(geonet:info/source)"/>' +
-			'<xsl:variable name="groupLogoUuid" select="string(geonet:info/groupLogoUuid)"/>' +
-			'<xsl:variable name="groupWebsite" select="string(geonet:info/groupWebsite)"/>' +
+        // Logo XSL: either group logo (with/without group website link) or harvester (source) logo
+        // Be sure to keep in sync with logo XSL in metadata-utils.xsl.
+        var xsllogo =
+            '<xsl:variable name="source" select="string(geonet:info/source)"/>' +
+            '<xsl:variable name="groupLogoUuid" select="string(geonet:info/groupLogoUuid)"/>' +
+            '<xsl:variable name="groupWebsite" select="string(geonet:info/groupWebsite)"/>' +
             '<xsl:variable name="groupLabel">' +
             '  <xsl:choose> ' +
             '    <xsl:when test="string(geonet:info/groupLabel)!=\'\'"><xsl:value-of select="string(geonet:info/groupLabel)"/></xsl:when>' +
             '    <xsl:otherwise><xsl:value-of select="string(geonet:info/groupName)"/></xsl:otherwise>' +
             '  </xsl:choose>' +
             '</xsl:variable>' +
-			' <xsl:choose>' +
-			'	<xsl:when test="$groupWebsite != \'\' and $groupLogoUuid != \'\'">' +
-			'		<a href="{$groupWebsite}" target="_blank">' +
-			'			<img src="' + geocat.baseUrl + 'images/logos/{$groupLogoUuid}.png" width="40" title="{$groupLabel}"/>' +
-			'       </a>' +
-			'   </xsl:when>' +
-			'   <xsl:when test="$groupLogoUuid != \'\'">' +
-			'   	<img src="' + geocat.baseUrl + 'images/logos/{$groupLogoUuid}.png" width="40" title="{$groupLabel}"/>' +
-			'   </xsl:when>' +
-			'   <xsl:otherwise>' +
-            '       <a style="cursor:pointer;cursor:hand" onclick="geocat.openSource(\'{$source}\')" target="_blank">' +
-			'   	    <img src="' + geocat.baseUrl + 'images/logos/{$source}.gif" width="40" title="{$groupLabel}"/>' +
+            ' <xsl:choose>' +
+            '    <xsl:when test="$groupWebsite != \'\' and $groupLogoUuid != \'\'">' +
+            '        <a href="{$groupWebsite}" target="_blank">' +
+            '            <img src="' + geocat.baseUrl + 'images/logos/{$groupLogoUuid}.png" width="40" title="{$groupLabel}"/>' +
             '       </a>' +
-			'   </xsl:otherwise>' +
-			'</xsl:choose>';
+            '   </xsl:when>' +
+            '   <xsl:when test="$groupLogoUuid != \'\'">' +
+            '       <img src="' + geocat.baseUrl + 'images/logos/{$groupLogoUuid}.png" width="40" title="{$groupLabel}"/>' +
+            '   </xsl:when>' +
+            '   <xsl:otherwise>' +
+            '       <a style="cursor:pointer;cursor:hand" onclick="geocat.openSource(\'{$source}\')" target="_blank">' +
+            '           <img src="' + geocat.baseUrl + 'images/logos/{$source}.gif" width="40" title="{$groupLabel}"/>' +
+            '       </a>' +
+            '   </xsl:otherwise>' +
+            '</xsl:choose>';
 
-    	if (geocat.resultMode=='condensed') {
-    		return xslhead +
-	            '  <xsl:template match="csw:Record">\n' +
-	            '      <div class="condensed" style="" ondblclick="geocat.zoomTo(\'{dc:identifier}\')" onmouseover="geocat.highlightMapAndDiv(\'{dc:identifier}\', this)" onmouseout="geocat.highlightMapAndDiv(null, this)">\n' +
-	            '        <xsl:variable name="isSelected" select="geonet:info/selected" />\n' +
-	            '          <h2><input class="content" type="checkbox" id="chk{geonet:info/id}" name="metadataSelector" onclick="geocat.metadataSelect(\'{geonet:info/uuid}\', this.checked)">' +
-	            '            <xsl:if test="$isSelected=\'true\'">\n' +
-	            '              <xsl:attribute name="checked">true</xsl:attribute>\n' +
-	            '            </xsl:if>\n' +
-	            '          </input>\n' +
-	            '		   <a href="javascript:geocat.openLink(0, \'showFromUrl\', \'metadata.show.embedded?id={geonet:info/id}&amp;currTab=simple\');"><xsl:value-of select="dc:title"/></a></h2>' +
-	            xsllogo +
-	            '        <xsl:if test="dc:URI">\n' +
-	            ' 		   <xsl:for-each select="dc:URI[contains(@protocol,\'image/\')]">\n' +
-	            '            <img class="thumbnail" src="{.}"/>\n' +
-	            '          </xsl:for-each>\n' +
-	            '		 </xsl:if>\n' +
-	            '        <p>\n' +
-	            '          <xsl:if test="dc:URI">\n' +
-	            '           <div class="bt">' +
+        if (geocat.resultMode=='condensed') {
+            return xslhead +
+                '  <xsl:template match="csw:Record">\n' +
+                '      <div class="condensed" style="" ondblclick="geocat.zoomTo(\'{dc:identifier}\')" onmouseover="geocat.highlightMapAndDiv(\'{dc:identifier}\', this)" onmouseout="geocat.highlightMapAndDiv(null, this)">\n' +
+                '        <xsl:variable name="isSelected" select="geonet:info/selected" />\n' +
+                '          <h2><input class="content" type="checkbox" id="chk{geonet:info/id}" name="metadataSelector" onclick="geocat.metadataSelect(\'{geonet:info/uuid}\', this.checked)">' +
+                '            <xsl:if test="$isSelected=\'true\'">\n' +
+                '              <xsl:attribute name="checked">true</xsl:attribute>\n' +
+                '            </xsl:if>\n' +
+                '          </input>\n' +
+                '           <a href="javascript:geocat.openLink(0, \'showFromUrl\', \'metadata.show.embedded?id={geonet:info/id}&amp;currTab=simple\');"><xsl:value-of select="dc:title"/></a></h2>' +
+                xsllogo +
+                '        <xsl:if test="dc:URI">\n' +
+                '            <xsl:for-each select="dc:URI[contains(@protocol,\'image/\')]">\n' +
+                '            <img class="thumbnail" src="{.}"/>\n' +
+                '          </xsl:for-each>\n' +
+                '         </xsl:if>\n' +
+                '        <p>\n' +
+                '          <xsl:if test="dc:URI">\n' +
+                '           <div class="bt">' +
                 '            <ul class="URIButtons" uuid="{dc:identifier}">\n' +
                 '              <xsl:for-each select="dc:URI[not(contains(@protocol,\'image/\'))]">\n' +
                 '                <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
@@ -2125,14 +2125,14 @@ var geocat = {
                 '          </xsl:if>\n' +
                 '        </p>\n' +
                 '      </div>\n' +
-	            '  </xsl:template>\n' +
-	            xslfooter;
-    	} else if (geocat.resultMode=='medium') {
-    		return xslhead +
+                '  </xsl:template>\n' +
+                xslfooter;
+        } else if (geocat.resultMode=='medium') {
+            return xslhead +
             '  <xsl:template match="csw:Record">\n' +
             '      <table width="100%" ondblclick="geocat.zoomTo(\'{dc:identifier}\')" onmouseover="geocat.highlightMapAndDiv(\'{dc:identifier}\', this)" onmouseout="geocat.highlightMapAndDiv(null, this)">\n' +
             '        <tr><td style="width:50px;padding:4px;text-align:center;vertical-align:top;">\n' +
-		           xsllogo +
+                   xsllogo +
             '        </td><td>\n' +
             '          <xsl:variable name="isSelected" select="geonet:info/selected" />\n' +
             '          <h2><input class="content" type="checkbox" id="chk{geonet:info/id}" name="metadataSelector" onclick="geocat.metadataSelect(\'{geonet:info/uuid}\', this.checked)">' +
@@ -2140,13 +2140,13 @@ var geocat = {
             '              <xsl:attribute name="checked">true</xsl:attribute>\n' +
             '            </xsl:if>\n' +
             '          </input>\n' +
-            '		   <a href="javascript:geocat.openLink(0, \'showFromUrl\', \'metadata.show.embedded?id={geonet:info/id}&amp;currTab=simple\');"><xsl:value-of select="dc:title"/></a></h2>' +
+            '           <a href="javascript:geocat.openLink(0, \'showFromUrl\', \'metadata.show.embedded?id={geonet:info/id}&amp;currTab=simple\');"><xsl:value-of select="dc:title"/></a></h2>' +
             '          <br/><i>' + translate('abstract') + ': </i>' +
-            '		   <xsl:choose>' +
-            ' 		     <xsl:when test="string-length(dct:abstract) &gt; ' + geocat.maxAbstract + '"><xsl:value-of select="substring(dct:abstract, 0, ' + geocat.maxAbstract + ')"/> ...</xsl:when>' +
-            ' 			 <xsl:otherwise><xsl:value-of select="dct:abstract"/></xsl:otherwise>' +
-            '		   </xsl:choose>' +
-            //'		   <br/><i>' + translate('keywords') + ': </i><xsl:apply-templates select="dc:subject"/>\n' +
+            '           <xsl:choose>' +
+            '              <xsl:when test="string-length(dct:abstract) &gt; ' + geocat.maxAbstract + '"><xsl:value-of select="substring(dct:abstract, 0, ' + geocat.maxAbstract + ')"/> ...</xsl:when>' +
+            '              <xsl:otherwise><xsl:value-of select="dct:abstract"/></xsl:otherwise>' +
+            '           </xsl:choose>' +
+            //'           <br/><i>' + translate('keywords') + ': </i><xsl:apply-templates select="dc:subject"/>\n' +
             '          <xsl:if test="dct:modified">\n' +
             '            <br/><i>(' + translate('modified') + ': <xsl:value-of select="dct:modified"/>)</i>\n' +
             '          </xsl:if>\n' +
@@ -2162,22 +2162,22 @@ var geocat = {
             '              <li proto="_duplify" title="' + translate("create") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.duplicate.form?id=<xsl:value-of select="geonet:info/id"/></li>\n' +
             '          </xsl:if>\n' +
             '          </ul><br/><br/>\n' +
-            '		 </td><td>' +
+            '         </td><td>' +
             '        <xsl:if test="dc:URI">\n' +
-            ' 		   <xsl:for-each select="dc:URI[contains(@protocol,\'image/\')]">\n' +
+            '            <xsl:for-each select="dc:URI[contains(@protocol,\'image/\')]">\n' +
             '            <img class="thumbnail" src="{.}"/>\n' +
             '          </xsl:for-each>\n' +
-            '		 </xsl:if>\n' +
+            '         </xsl:if>\n' +
             '        </td></tr>\n' +
             '      </table>\n' +
             '  </xsl:template>\n' +
             xslfooter;
         } else {
-    		return xslhead +
+            return xslhead +
             '  <xsl:template match="csw:Record">\n' +
             '      <table width="100%" ondblclick="geocat.zoomTo(\'{dc:identifier}\')" onmouseover="geocat.highlightMapAndDiv(\'{dc:identifier}\', this)" onmouseout="geocat.highlightMapAndDiv(null, this)">\n' +
             '        <tr><td style="width:50px;padding:4px;text-align:left;vertical-align:top;">\n' +
-		           xsllogo +
+                   xsllogo +
             '        </td><td stlye="padding:4px">\n' +
             '          <xsl:variable name="isSelected" select="geonet:info/selected" />\n' +
             '          <h2 style="padding-bottom: 4px"><input style="border:none" class="content" type="checkbox" id="chk{geonet:info/id}" name="metadataSelector" onclick="geocat.metadataSelect(\'{geonet:info/uuid}\', this.checked)">' +
@@ -2185,16 +2185,16 @@ var geocat = {
             '              <xsl:attribute name="checked">true</xsl:attribute>\n' +
             '            </xsl:if>\n' +
             '          </input>&#160;\n' +
-            '		   <a href="javascript:geocat.openLink(0, \'showFromUrl\', \'metadata.show.embedded?id={geonet:info/id}&amp;currTab=simple\');"><xsl:value-of select="dc:title"/></a>\n' +
-            //	Add icon for dataset and service metadata only.
+            '           <a href="javascript:geocat.openLink(0, \'showFromUrl\', \'metadata.show.embedded?id={geonet:info/id}&amp;currTab=simple\');"><xsl:value-of select="dc:title"/></a>\n' +
+            //    Add icon for dataset and service metadata only.
             '          <xsl:if test="dc:type and (dc:type=\'dataset\' or dc:type=\'service\')">&#160;<img src="../../images/{dc:type}.gif" alt="{dc:type}" title="{dc:type}"/></xsl:if>' +
             '          </h2>' +
             '          <br/><i>' + translate('abstract') + ': </i>' +
-            '		   <xsl:choose>' +
-            ' 		     <xsl:when test="string-length(dct:abstract) &gt; ' + geocat.maxAbstract + '"><xsl:value-of select="substring(dct:abstract, 0, ' + geocat.maxAbstract + ')"/> (...)</xsl:when>' +
-            ' 			 <xsl:otherwise><xsl:value-of select="dct:abstract"/></xsl:otherwise>' +
-            '		   </xsl:choose>' +
-            //'		   <br/><i>' + translate('keywords') + ': </i><xsl:apply-templates select="dc:subject"/>\n' +
+            '           <xsl:choose>' +
+            '              <xsl:when test="string-length(dct:abstract) &gt; ' + geocat.maxAbstract + '"><xsl:value-of select="substring(dct:abstract, 0, ' + geocat.maxAbstract + ')"/> (...)</xsl:when>' +
+            '              <xsl:otherwise><xsl:value-of select="dct:abstract"/></xsl:otherwise>' +
+            '           </xsl:choose>' +
+            //'           <br/><i>' + translate('keywords') + ': </i><xsl:apply-templates select="dc:subject"/>\n' +
             '          <xsl:if test="dct:modified">\n' +
             '            <br/><i>(' + translate('modified') + ': <xsl:value-of select="dct:modified"/>)</i>\n' +
             '          </xsl:if>\n' +
@@ -2216,7 +2216,7 @@ var geocat = {
             '      <div style="padding:4px">&#160;</div>' +
             '  </xsl:template>\n' +
             xslfooter;
-    	}
+        }
     },
 
     getRefinementTemplate: function() {

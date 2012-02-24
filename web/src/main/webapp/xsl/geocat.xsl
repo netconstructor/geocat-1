@@ -38,13 +38,13 @@
         
         <xsl:choose>
             <xsl:when test="/root/request/debug">
-		        <script type="text/javascript"
-		                src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/>
-		        <!--script type="text/javascript"
-		                src="{/root/gui/url}/scripts/mapfishIntegration/EMailPDFAction.js"/--> <!-- depends on mapfish -->
-		        <script type="text/javascript"
-		                src="{/root/gui/url}/scripts/mapfishIntegration/DomQueryNS.js"/>
-		        <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js"></script>
+                <script type="text/javascript"
+                        src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/>
+                <!--script type="text/javascript"
+                        src="{/root/gui/url}/scripts/mapfishIntegration/EMailPDFAction.js"/--> <!-- depends on mapfish -->
+                <script type="text/javascript"
+                        src="{/root/gui/url}/scripts/mapfishIntegration/DomQueryNS.js"/>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js"></script>
             </xsl:when>
             <xsl:otherwise>
               <script type="text/javascript" src="{/root/gui/url}/scripts/lib/geocat.js"></script>      
@@ -64,16 +64,16 @@
                     });
             
             Ext.onReady(function() {
-			
+            
             geocat.language = '<xsl:value-of select="/root/gui/language"/>';
-			<xsl:variable name="userid" select="normalize-space(root/gui/session/userId)"/>
-			<xsl:variable name="profile" select="normalize-space(root/gui/session/profile)"/>
-			geocat.session.userId = '<xsl:value-of select="$userid"/>';
-			geocat.session.profile = '<xsl:value-of select="$profile"/>';
-			<xsl:for-each select="/root/gui/usergroups/record[normalize-space(userid) = $userid or $profile = 'Administrator' ]">
-				geocat.session.groups.push('<xsl:value-of select="normalize-space(groupid)"/>');
-			</xsl:for-each>
-			
+            <xsl:variable name="userid" select="normalize-space(root/gui/session/userId)"/>
+            <xsl:variable name="profile" select="normalize-space(root/gui/session/profile)"/>
+            geocat.session.userId = '<xsl:value-of select="$userid"/>';
+            geocat.session.profile = '<xsl:value-of select="$profile"/>';
+            <xsl:for-each select="/root/gui/usergroups/record[normalize-space(userid) = $userid or $profile = 'Administrator' ]">
+                geocat.session.groups.push('<xsl:value-of select="normalize-space(groupid)"/>');
+            </xsl:for-each>
+            
             translations.languageIso3 = geocat.language;
 
                 geocat.initialize(
@@ -127,8 +127,8 @@
                 <legend><xsl:value-of select="/root/gui/strings/featuredMap"/></legend>
                 <table>
                     <xsl:for-each select="/root/gui/featured/*">
-	
-	
+    
+    
                         <xsl:variable name="md">
                             <xsl:apply-templates mode="brief" select="."/>
                         </xsl:variable>

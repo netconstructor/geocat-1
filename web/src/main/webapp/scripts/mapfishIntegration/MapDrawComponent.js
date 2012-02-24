@@ -180,7 +180,8 @@ var MapDrawComponent = OpenLayers.Class({
             reader.internalProjection = to;
         }
 
-        var feature = reader.read(string);
+        // linereturn in wkt break the reader so we remove them
+        var feature = reader.read(string.replace(/(\r\n|\n|\r)/gm,""));
         // reader is subject to returning an object or an array depending on the format
         if (!feature) return false;
         if (feature.length) feature = feature[0];

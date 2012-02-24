@@ -4,37 +4,37 @@
       exclude-result-prefixes="xs"
       version="2.0">
 
-	<xsl:template name="jsHeader">
-		<xsl:param name="small" select="true()"/>
-		
-		<script language="JavaScript" type="text/javascript">
+    <xsl:template name="jsHeader">
+        <xsl:param name="small" select="true()"/>
+        
+        <script language="JavaScript" type="text/javascript">
             var translations = {
-				<xsl:apply-templates select="/root/gui/strings/*[@js='true' and not(*) and not(@id)]" mode="js-translations"/>
-			};
-		</script>
+                <xsl:apply-templates select="/root/gui/strings/*[@js='true' and not(*) and not(@id)]" mode="js-translations"/>
+            };
+        </script>
 
         <xsl:choose>
             <xsl:when test="/root/request/debug">
-	            <script type="text/javascript" src="{/root/gui/url}/scripts/prototype.js"></script>
-				<script type="text/javascript" src="{/root/gui/url}/scripts/geonetwork.js"></script>
-				<script type="text/javascript" src="{/root/gui/url}/scripts/scriptaculous/scriptaculous.js?load=slider,effects,controls"></script>
-				<script type="text/javascript" src="{/root/gui/url}/scripts/modalbox.js"></script>
-				<script type="text/javascript" src="{/root/gui/url}/scripts/form_check.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/prototype.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/geonetwork.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/scriptaculous/scriptaculous.js?load=slider,effects,controls"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/modalbox.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/form_check.js"></script>
             </xsl:when>
             <xsl:otherwise>
-		        <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.js"></script>
-		    	<script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.scriptaculous.js"></script>
-				<script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.js"></script>    
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.libs.scriptaculous.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.js"></script>    
             </xsl:otherwise>
         </xsl:choose>
-	</xsl:template>
+    </xsl:template>
 
-	<xsl:template name="geoCssHeader">
-	    <link rel="stylesheet" type="text/css" href="../../scripts/ext/resources/css/ext-all.css"/>
+    <xsl:template name="geoCssHeader">
+        <link rel="stylesheet" type="text/css" href="../../scripts/ext/resources/css/ext-all.css"/>
         <link rel="stylesheet" type="text/css" href="{/root/gui/url}/scripts/ext/resources/css/file-upload.css" />
         <link rel="stylesheet" type="text/css" href="../../scripts/openlayers/theme/geonetwork/style.css"/>
         <link rel="stylesheet" type="text/css" href="{/root/gui/url}/scripts/openlayers/theme/default/style.css" />
-	</xsl:template>
+    </xsl:template>
 
     <!-- Insert all required JS and CSS files:
     * Ext
@@ -138,30 +138,30 @@
         <script type="text/javascript" src="../../scripts/map/Ext.ux/form/DateTime.js"></script>
     </xsl:template>
     
-	<!-- Insert required JS and CSS for Ext selection panel (ie KeywordSelectionPanel) -->
+    <!-- Insert required JS and CSS for Ext selection panel (ie KeywordSelectionPanel) -->
     <xsl:template name="edit-header">
-    	<xsl:call-template name="ext-ux"/>
-    	
+        <xsl:call-template name="ext-ux"/>
+        
         <!-- Load javascript needed for editor in debug mode.
         If not, they are part of gn.editor.js -->
         <xsl:choose>
             <xsl:when test="/root/request/debug">
-		        <!-- <script type="text/javascript" src="../../scripts/editor/metadata-editor.js"></script> -->
-				<script type="text/javascript" src="../../scripts/editor/csw.SearchTools.js"></script>
-		        <script type="text/javascript" src="../../scripts/editor/app.SearchField.js"></script>
-		        <script type="text/javascript" src="../../scripts/editor/app.KeywordSelectionPanel.js"></script>
-				<script type="text/javascript" src="../../scripts/editor/app.CRSSelectionPanel.js"></script>
+                <!-- <script type="text/javascript" src="../../scripts/editor/metadata-editor.js"></script> -->
+                <script type="text/javascript" src="../../scripts/editor/csw.SearchTools.js"></script>
+                <script type="text/javascript" src="../../scripts/editor/app.SearchField.js"></script>
+                <script type="text/javascript" src="../../scripts/editor/app.KeywordSelectionPanel.js"></script>
+                <script type="text/javascript" src="../../scripts/editor/app.CRSSelectionPanel.js"></script>
             <script type="text/javascript" src="../../scripts/editor/LogoSelectionPanel.js"></script>
-				<script type="text/javascript" src="../../scripts/editor/app.LinkedMetadataSelectionPanel.js"></script>
-				<script type="text/javascript" src="../../scripts/editor/app.GeoPublisherPanel.js"></script>
-			</xsl:when>
-			<xsl:otherwise>
-				<!-- 
-        			editor libs is already loaded in all page due to lots of dependencies
-        		<script type="text/javascript" src="../../scripts/lib/gn.editor.js"></script>
-        		 -->
-			</xsl:otherwise>
-        </xsl:choose>		        
+                <script type="text/javascript" src="../../scripts/editor/app.LinkedMetadataSelectionPanel.js"></script>
+                <script type="text/javascript" src="../../scripts/editor/app.GeoPublisherPanel.js"></script>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- 
+                    editor libs is already loaded in all page due to lots of dependencies
+                <script type="text/javascript" src="../../scripts/lib/gn.editor.js"></script>
+                 -->
+            </xsl:otherwise>
+        </xsl:choose>                
         
     </xsl:template>
     
