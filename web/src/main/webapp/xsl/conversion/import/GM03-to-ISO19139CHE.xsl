@@ -5,6 +5,6 @@
                 xmlns:xalan="http://xml.apache.org/xslt"/>
 
     <xsl:include href="../GM03to19139CHE/CHE03-to-19139.xsl"/>
-
+	<xsl:param name="uuid"/>
     <xsl:strip-space elements="*"/>
 </xsl:stylesheet>

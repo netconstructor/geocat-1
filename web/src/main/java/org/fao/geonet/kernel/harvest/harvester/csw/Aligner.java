@@ -109,8 +109,8 @@ public class Aligner
 
 		if (params.useAccount) {
 			request.setCredentials(params.username, params.password);
-		}	
-		
+		}
+
 	}
 
 	//--------------------------------------------------------------------------
@@ -130,7 +130,7 @@ public class Aligner
 		localCateg = new CategoryMapper(dbms);
 		localGroups= new GroupMapper(dbms);
 		localUuids = new UUIDMapper(dbms, params.uuid) {
-		    
+
 		};
 		dbms.commit();
 
@@ -303,7 +303,8 @@ public class Aligner
                 String language = context.getLanguage();
                 UserSession session = null;
                 String schema = dataMan.autodetectSchema(md);
-                
+
+                dbms.execute("UPDATE metadata SET schemaid = ? WHERE id=?", schema, Integer.parseInt(id));
                 // issue #18944 force namespace prefix for iso19139 metadata
                 dataMan.setNamespacePrefixUsingSchemas(schema, md);
 				dataMan.updateMetadata(session, dbms, id, md, validate, ufo, index, language, ri.changeDate, false, false);
@@ -329,7 +330,7 @@ public class Aligner
 
     /**
      *  Returns true if the uuid is present in the remote node.
-     * 
+     *
      * @param records
      * @param uuid
      * @return

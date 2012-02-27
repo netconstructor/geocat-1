@@ -6,7 +6,18 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
     <xsl:template mode="MetaData" match="GM03Core.Core.MD_Metadata">
-        <xsl:apply-templates mode="MetaData" select="fileIdentifier"/>
+    	<xsl:choose>
+    		<xsl:when test="string-length($uuid) > 0">
+    		<gmd:fileIdentifier>
+	            <gco:CharacterString>
+	                <xsl:value-of select="$uuid"/>
+	            </gco:CharacterString>
+	        </gmd:fileIdentifier>
+    		</xsl:when>
+    		<xsl:otherwise>
+    			<xsl:apply-templates mode="MetaData" select="fileIdentifier"/>
+    		</xsl:otherwise>
+    	</xsl:choose>
         <xsl:choose>
             <xsl:when test="not(language) or normalize-space(language)=''">
                 <gmd:language>
