@@ -128,6 +128,7 @@
         gmd:edition|
         gmd:ISBN|
         gmd:protocol|
+        gmd:parentIdentifier |
         gmd:ISSN|
         gmd:errorStatistic|
         gmd:schemaAscii|
