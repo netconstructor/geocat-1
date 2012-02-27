@@ -79,14 +79,14 @@ class Executor extends Thread
 				await(1);
 			else
 			{
-				await(timeout);
-
 				if (!terminate && harvester != null)
 				{
 					status = RUNNING;
 					harvester.harvest();
 					status = WAITING;
 				}
+
+				await(timeout);
 			}
 		}
 	}
