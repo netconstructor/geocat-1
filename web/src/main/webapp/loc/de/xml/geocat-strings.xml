@@ -139,19 +139,19 @@ Ihr geocat.ch-Team</msg>
     </extents>
     <page>Seite</page>
     
-    <streetname>Street name</streetname>
-    <streetnumber>N°</streetnumber>
-    <postbox>Postbox</postbox>
-    <userdetails>User details</userdetails>
-    <facsimile>Facsimile</facsimile>
-    <phone>Phone</phone>
-    <orgacronym>Organisation acronym</orgacronym>
-    <positionname>Position name</positionname>
-    <directnumber>Direct number</directnumber>
-    <mobile>Mobile</mobile>
-    <onlineresource>Online resource</onlineresource>
-    <desc>Description</desc>
-    <hoursofservice>Hours of service</hoursofservice>
+    <streetname>Strassenname</streetname>
+    <streetnumber>Nr.</streetnumber>
+    <postbox>Postfach</postbox>
+    <userdetails>Benutzerangaben</userdetails>
+    <facsimile>Fax</facsimile>
+    <phone>Telefon</phone>
+    <orgacronym>Abkürzung der Organisation</orgacronym>
+    <positionname>Funktion</positionname>
+    <directnumber>Direkte Nummer</directnumber>
+    <mobile>Natel</mobile>
+    <onlineresource>Homepage</onlineresource>
+    <desc>Beschreibung</desc>
+    <hoursofservice>Öffnungszeiten</hoursofservice>
     <contactinstructions>Ergänzende Hinweise</contactinstructions>
     <mostPopular>Meistbesuchte Metadaten</mostPopular>
 
@@ -179,7 +179,7 @@ Ihr geocat.ch-Team</msg>
 	<gm03Valid>Gültig nach GM03</gm03Valid>
 	<inspireValid>Gültig nach INSPIRE</inspireValid>
     
-    <xsl.admin>Metadaten-Darstellungsmodelle</xsl.admin>
-    <xsl.admin.des>Personalisierte Darstellungsmodelle (XSL) zur Darstellung der Metadaten in HTML</xsl.admin.des>
+    <xsl.admin>Metadaten-Stylesheets</xsl.admin>
+    <xsl.admin.des>Personalisierte Stylesheets (XSL) zur Darstellung der Metadaten in HTML</xsl.admin.des>
     <toggleVisibilityEdit>Option zum Verstecken einzelner Attribute</toggleVisibilityEdit>
 </strings>    
