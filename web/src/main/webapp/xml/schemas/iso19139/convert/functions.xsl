@@ -6,9 +6,9 @@
                     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 										xmlns:date="http://exslt.org/dates-and-times"
                     xmlns:che="http://www.geocat.ch/2008/che"
-                    xmlns:java="java:org.fao.geonet.util.XslUtil"
                     xmlns:joda="java:org.fao.geonet.util.JODAISODate"
                     xmlns:mime="java:org.fao.geonet.util.MimeTypeFinder"
+                    xmlns:java="java:org.fao.geonet.util.XslUtil"
                     exclude-result-prefixes="java">
 
 	<!-- ================================================================== -->

@@ -53,7 +53,7 @@
     </xsl:template>
     <xsl:template match="gmd:linkage">
 		<gmd:linkage>
-	      <xsl:apply-templates mode="url" />
+	      <xsl:apply-templates mode="url" select="."/>
 		</gmd:linkage>
     </xsl:template>
 

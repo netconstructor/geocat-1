@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import jeeves.constants.Jeeves;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Util;
@@ -37,6 +38,7 @@ import org.apache.lucene.search.Sort;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.constants.Params;
 import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.csw.common.ElementSetName;
 import org.fao.geonet.csw.common.OutputSchema;
@@ -44,6 +46,7 @@ import org.fao.geonet.csw.common.ResultType;
 import org.fao.geonet.csw.common.exceptions.CatalogException;
 import org.fao.geonet.csw.common.exceptions.InvalidParameterValueEx;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
+import org.fao.geonet.guiservices.metadata.GetRelated;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.SelectionManager;
 import org.fao.geonet.kernel.schema.MetadataSchema;
@@ -220,7 +223,6 @@ public class SearchController
 					res = Xml.transform(res, context.getAppPath() + "xsl" + FS
 							+ "conversion" + FS + "export" + FS + "xml_iso19139.xsl", params);
 			  }
-
 				// --- skip metadata with wrong schemas
 				if (schema.equals("fgdc-std") || schema.equals("dublin-core")
 						|| schema.equals("iso19110"))
@@ -229,9 +231,23 @@ public class SearchController
 
 				// --- apply stylesheet according to setName and schema
 				String prefix;
-				if (outSchema == OutputSchema.OGC_CORE)
+				if (outSchema == OutputSchema.OGC_CORE){
 					prefix = "ogc";
-				else if (outSchema == OutputSchema.ISO_PROFILE)
+
+                    // --- Search for related services to add dc:URI elements to ogc output.
+                    // Append list of service to the current metadata record.
+                    // Process related service to retrieve coupledResources.
+                    GetRelated serviceSearcher = new GetRelated();
+                    serviceSearcher.init(context.getAppPath(), gc.getHandlerConfig());
+                    Element idElem = new Element(Params.ID).setText(id);
+                    Element uuidElem = new Element(Params.UUID).setText(res.getChild(Edit.RootChild.INFO, Edit.NAMESPACE).getChildText(Params.UUID));
+                    Element typeElem = new Element("type").setText("service");
+                    Element relatedServices = serviceSearcher.exec(  new Element (Jeeves.Elem.REQUEST)
+                            .addContent(new Element (Edit.RootChild.INFO, Edit.NAMESPACE).addContent(idElem).addContent(uuidElem))
+                            .addContent(typeElem), context);
+
+                    res.addContent(relatedServices);
+				}else if (outSchema == OutputSchema.ISO_PROFILE)
 					prefix = "iso";
 				else {
 					// PMT c2c previous geocat backport, was:
@@ -258,9 +274,6 @@ public class SearchController
 								: "false");
 
 				try {
-					// PMT c2c GeoCat 2 : porting forward from previous version
-					// Was (currently in trunk):
-					// res = Xml.transform(res, styleSheet, params);
 
 					// issue #133730 : MDs harvested as Dublin-Core
 					// format are not well detected here.

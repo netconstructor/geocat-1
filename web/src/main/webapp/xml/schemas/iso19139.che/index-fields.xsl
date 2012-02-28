@@ -335,8 +335,29 @@
 			gmd:identificationInfo/*[@gco:isoType='srv:SV_ServiceIdentification']/srv:serviceTypeVersion/gco:CharacterString">
 			<Field name="serviceTypeVersion" string="{string(.)}" store="true" index="true" token="false"/>
 		</xsl:for-each>
-		
-	
+
+		<xsl:for-each
+			select="gmd:identificationInfo/(*[@gco:isoType='srv:SV_ServiceIdentification']|srv:SV_ServiceIdentification)/srv:coupledResource/srv:SV_CoupledResource/gco:ScopedName">
+			<xsl:variable name="layerName" select="string(.)" />
+			<xsl:variable name="uuid" select="string(../srv:identifier/gco:CharacterString)" />
+			<xsl:variable name="allConnectPoint" 
+				select="../../../srv:containsOperations/srv:SV_OperationMetadata/srv:connectPoint/gmd:CI_OnlineResource/gmd:linkage/(gmd:URL|che:LocalisedURL|.//che:LocalisedURL)" />
+		    <xsl:variable name="connectPoint" select="$allConnectPoint[1]"/>
+			<xsl:variable name="serviceUrl">
+				<xsl:choose>
+					<xsl:when test="$connectPoint=''">
+						<xsl:value-of
+							select="//gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$connectPoint" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			<xsl:if test="string-length($layerName) > 0 and string-length($serviceUrl) > 0">
+		    	<Field name="wms_uri" string="{$uuid}###{$layerName}###{$serviceUrl}" store="true" index="true" token="false"/>
+		    </xsl:if>
+		</xsl:for-each>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 		<!-- === General stuff === -->		
@@ -467,7 +488,6 @@
 	</xsl:template>
 
 	<!-- ========================================================================================= -->
-
 	<!-- xlinks -->
 
 	<xsl:template match="*[contains(string(@xlink:href),'xml.reusable.deleted')]" mode="xlinks" priority="100">

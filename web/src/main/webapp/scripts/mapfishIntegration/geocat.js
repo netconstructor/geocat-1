@@ -575,6 +575,7 @@ var geocat = {
                 var uri = uris[j];
                 var proto = uri.attributes.getNamedItem("proto").value;
                 if (proto.toLowerCase().contains('wms')) proto = "WMS";
+                else proto = "";
                 var array = byProtos[proto] || [];
                 var url = uri.firstChild ? uri.firstChild.nodeValue : null;
                 var title = uri.attributes.getNamedItem("title") ? uri.attributes.getNamedItem("title").value : url;
