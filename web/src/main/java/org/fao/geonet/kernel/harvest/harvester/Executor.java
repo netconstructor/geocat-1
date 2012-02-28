@@ -79,6 +79,7 @@ class Executor extends Thread
 				await(1);
 			else
 			{
+			    await(timeout);
 				if (!terminate && harvester != null)
 				{
 					status = RUNNING;
@@ -86,7 +87,6 @@ class Executor extends Thread
 					status = WAITING;
 				}
 
-				await(timeout);
 			}
 		}
 	}
