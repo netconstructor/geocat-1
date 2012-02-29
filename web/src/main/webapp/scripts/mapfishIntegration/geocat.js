@@ -91,6 +91,7 @@ var geocat = {
     maxAbstract: 350,
     layerTreePopup: null,
     advancedSearchMode: false,
+    layersAdded: [],
     formDefaults: {
         anchor: '100%',
         itemCls: 'simpleSearchFormItem'
@@ -1690,8 +1691,28 @@ var geocat = {
 
     openLink: function(id, protocol, link) {
         if (protocol == "WMS") {
-            //add to the map
-            geocat.addLayer(protocol, link.url, link.name, link.title, link.uuid);
+            // two solutions at this step : 
+            // either the user wants to add the layer to the map, 
+            // or he wants a clean map
+            if (geocat.layersAdded.length == 0) {
+                geocat.layersAdded.push(
+                    geocat.addLayer(protocol, link.url, link.name, link.title, link.uuid)
+                );
+            } else {
+                // TODO: translations
+                Ext.Msg.confirm(translate("addLayerConfirmTitle"), translate("addLayerConfirmText"), function(resp){
+                    if (resp == 'yes') {
+                        Ext.each(geocat.layersAdded, function(layer) {
+                            geocat.map.removeLayer(layer);
+                        });
+                        geocat.layersAdded = [];
+                    } 
+                    geocat.layersAdded.push(
+                        geocat.addLayer(protocol, link.url, link.name, link.title, link.uuid)
+                    );
+                });
+            }
+            
         } else if (protocol == "KML") {
             window.open(geocat.baseUrl + "srv/" + geocat.language + "/google.kml?uuid=" + link.uuid + "&layers=" + link.name, "_blank");
         } else if (protocol.contains("show")) {
@@ -1760,7 +1781,7 @@ var geocat = {
     },
 
     addLayer: function(protocol, url, name, title, uuid) {
-        var bbox = null;
+        var bbox = null, layer;
         for (var i = 0; i < geocat.contours.length; ++i) {
             var contour = geocat.contours[i];
             if (contour.attributes.id == uuid) {
@@ -1776,7 +1797,7 @@ var geocat = {
         while (geocat.map.getLayersByName(title).length > 0) {
             title += "'";
         }
-        geocat.map.addLayer(new OpenLayers.Layer.WMS(title, url, {
+        layer = new OpenLayers.Layer.WMS(title, url, {
             layers: [name],
             transparent: true
         }, {
@@ -1786,7 +1807,8 @@ var geocat = {
             buffer: 0,
             ratio: 1.0,
             maxExtent: bbox
-        }));
+        });
+        geocat.map.addLayer(layer);
         if (geocat.layerTreePopup) {
             /* disabled because createLayerTree use mapfish
             geocat.layerTreePopup.remove(geocat.layerTreePopup.getComponent(0));
@@ -1794,6 +1816,7 @@ var geocat = {
             geocat.layerTreePopup.doLayout();
             */
         }
+        return layer;
     },
 
 

@@ -182,4 +182,6 @@ Ihr geocat.ch-Team</msg>
     <xsl.admin>Metadaten-Stylesheets</xsl.admin>
     <xsl.admin.des>Personalisierte Stylesheets (XSL) zur Darstellung der Metadaten in HTML</xsl.admin.des>
     <toggleVisibilityEdit>Option zum Verstecken einzelner Attribute</toggleVisibilityEdit>
+    <addLayerConfirmTitle js="true">Das Hinzufügen eines neuen WMS-Layer</addLayerConfirmTitle>
+    <addLayerConfirmText js="true">Wollen Sie die WMS-Layer auf der Karte hinzugefügt entfernen ?</addLayerConfirmText>
 </strings>    

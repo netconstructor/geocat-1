@@ -190,4 +190,6 @@
     <xsl.admin>Metadata displaying Stylesheets</xsl.admin>
     <xsl.admin.des>Stylesheets (XSL) for displaying metadata in HTML in custom layouts</xsl.admin.des>
     <toggleVisibilityEdit>Enable element visibility editing</toggleVisibilityEdit>
+    <addLayerConfirmTitle js="true">Adding new WMS layer</addLayerConfirmTitle>
+    <addLayerConfirmText js="true">Would you like to remove previously added layers ?</addLayerConfirmText>
 </strings>
