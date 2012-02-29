@@ -104,22 +104,6 @@ a.no-help:hover {
 	margin: 5px;
 }
 
-.ext-gecko .hitsPerPage {
-    float: right;
-    position: relative;
-    top: -23px;
-}
-.ext-ie .hitsPerPage {
-    float: right;
-    position: relative;
-    top: -34px;
-}
-.hitsPerPage {
-    float: right;
-    position: relative;
-    top: 0px;
-}
-
 #searchResults fieldset {
     padding: 1em;
     padding-top: 0px;

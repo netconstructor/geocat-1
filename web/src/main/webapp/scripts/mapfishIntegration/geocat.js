@@ -460,6 +460,7 @@ var geocat = {
             store: translate('sortByTypes'),
             mode: 'local',
             id:'sortByCombo',
+            width: 140, // does not work for some reason
             forceSelection: true,
             triggerAction: 'all',
             editable: false,
@@ -2013,7 +2014,7 @@ var geocat = {
                '        </div>\n' +
                '      </xsl:if>' +
                '      <xsl:if test="@numberOfRecordsMatched &gt; 1">\n' +
-               '        <div id="sortBy" style="float: right;"></div><div style="float: right">' + translate('sortBy') + ': <br/></div>\n' +
+               '        <div id="sortBy" style="float: right;"></div><div style="float: right">' + translate('sortBy') + ':&#160;</div>\n' +
                '      </xsl:if>\n' +
                '      <xsl:choose>\n' +
                '        <xsl:when test="@numberOfRecordsMatched=0">\n' +
@@ -2036,12 +2037,13 @@ var geocat = {
                '&#160;|&#160;' + translate("select") + ' ' + '<a href="javascript:geocat.metadataSelect(0, \'add-all\')" title="' + translate('selectAll') + '" alt="' + translate('selectAll') + '">' + translate('all') + '</a>,' +
                '        <a href="javascript:geocat.metadataSelect(0, \'remove-all\')" title="' + translate('selectNone') + '" alt="' + translate('selectNone') + '">' + translate('none') + '</a> ' +
                '        <br /><br />' +
-               translate('selectedElementsAction') + ': ' +
+               '<table style="width:100%"><tr><td align="left">'+
+               translate('selectedElementsAction') + ':&#160;' +
                '        ' + geocat.metadataSelectionAction() + '&#160;' +
-               '        <div class="hitsPerPage">' +
+               '</td><td align="right">'+
                geocat.resultsModeToolBar() +
-               geocat.maxRecordsCombo() +
-               '        </div>' +
+               geocat.maxRecordsCombo() +               
+               '</td></tr></table>'+
                '      </xsl:if>\n' +
                '    </div>\n' +
 
