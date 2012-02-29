@@ -1118,3 +1118,7 @@ li.blue-content a {
 .logo-over {
 	cursor: pointer;
 }
+
+.ext-gecko .x-form-text {
+	padding: 2px 0px 0px 0px !important;
+}

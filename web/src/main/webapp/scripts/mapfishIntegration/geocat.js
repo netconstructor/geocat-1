@@ -997,6 +997,7 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
+            labelWidth: 70,
             title: translate('type')+'?',
             autoHeight: true,
             defaultType: 'textfield',
@@ -1047,6 +1048,7 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
+            labelWidth: 70,
             id: 'searchWhere',
             title: translate('where'),
             autoHeight: true,
