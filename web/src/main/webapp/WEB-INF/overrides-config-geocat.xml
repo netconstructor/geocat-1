@@ -182,6 +182,11 @@
 			<preSheet sheet="metadata-order-complex-elements.xsl"/>
     	</addXml>
     </file>
+    <file name=".*WEB-INF/config-lucene.xml">
+    	<addXml xpath="search/dumpFields">
+	      <field name="wms_uri" tagName="wmsuri"/>
+    	</addXml>
+    </file>
     <file name=".*/WEB-INF/config-gui.xml">
         <replaceAtt xpath="client" attName="url" value="geocat"/>
         <replaceAtt xpath="client" attName="parameters"/>

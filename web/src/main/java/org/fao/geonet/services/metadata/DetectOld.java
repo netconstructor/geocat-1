@@ -34,6 +34,7 @@ import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.Email;
 import org.fao.geonet.kernel.reusable.Utils;
+import org.fao.geonet.kernel.search.LuceneIndexReaderFactory;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.util.ISODate;
 import org.jdom.Element;
@@ -148,9 +149,7 @@ public class DetectOld implements Service
 
         DuplicateFilter filter = new DuplicateFilter(query.getField());
 
-		File luceneDir = sm.getLuceneDir();
-
-		IndexReader reader = IndexReader.open(FSDirectory.open(luceneDir), true);
+        IndexReader reader = sm.getIndexReader(null);
 	    Searcher searcher = new IndexSearcher(reader);
 
         try {
@@ -169,7 +168,7 @@ public class DetectOld implements Service
 
             return results;
         } finally {
-            searcher.close();
+            try{searcher.close();}finally{sm.releaseIndexReader(reader);}
         }
     }
 

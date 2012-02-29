@@ -15,7 +15,6 @@
         <xsl:call-template name="geoCssHeader"/>
         <xsl:call-template name="mapfish_css_includes"/>
 
-        <link href="{/root/gui/url}/geocat.css" type="text/css" rel="stylesheet"/>
     </xsl:template>
     
     <!--
@@ -23,7 +22,7 @@
     -->
     <xsl:template mode="script" match="/">
     
-        <!-- To avoid an interaction with prototype and ExtJs.Tooltip, should be loadded before ExtJs -->
+        <!-- To avoid an interaction with prototype and ExtJs.Tooltip, should be loaded before ExtJs -->
         <xsl:choose>
             <xsl:when test="/root/request/debug">
                 <script type="text/javascript" src="{/root/gui/url}/scripts/prototype.js"></script>

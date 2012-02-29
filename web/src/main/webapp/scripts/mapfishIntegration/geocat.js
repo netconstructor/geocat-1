@@ -460,6 +460,7 @@ var geocat = {
             store: translate('sortByTypes'),
             mode: 'local',
             id:'sortByCombo',
+            width: 140, // does not work for some reason
             forceSelection: true,
             triggerAction: 'all',
             editable: false,
@@ -575,6 +576,7 @@ var geocat = {
                 var uri = uris[j];
                 var proto = uri.attributes.getNamedItem("proto").value;
                 if (proto.toLowerCase().contains('wms')) proto = "WMS";
+                else proto = "";
                 var array = byProtos[proto] || [];
                 var url = uri.firstChild ? uri.firstChild.nodeValue : null;
                 var title = uri.attributes.getNamedItem("title") ? uri.attributes.getNamedItem("title").value : url;
@@ -1988,13 +1990,13 @@ var geocat = {
 
                exportLinks += '<a href="' + link + '?' +
                                    (geocat.exportResultModes[i]!='pdf'?'outputSchema=own&amp;':'') +    // Only pdf is based on a common format, others are schemas based.
-                                   q + '" target="export"><img height="16px" src="../../images/' +
-                                   geocat.exportResultModes[i] + '.gif"/></a>';
+                                   q + '" target="export" class="export-link"><img height="16px" src="../../images/' +
+                                   geocat.exportResultModes[i] + '.gif" ext:qtip="Export '+geocat.exportResultModes[i].toUpperCase()+'"/></a>';
         }
 
 
         var xslhead = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-               '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/" xmlns:geonet="http://www.fao.org/geonetwork" exclude-result-prefixes="dc dct csw">\n' +
+               '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/" xmlns:ext="http://www.sencha.com/products/extjs/" xmlns:geonet="http://www.fao.org/geonetwork" exclude-result-prefixes="dc dct csw ext">\n' +
                '  <xsl:output method="html"/>\n'+
                '  <xsl:template match="/">\n' +
                '    <div>\n'+
@@ -2009,7 +2011,7 @@ var geocat = {
                '        </div>\n' +
                '      </xsl:if>' +
                '      <xsl:if test="@numberOfRecordsMatched &gt; 1">\n' +
-               '        <div id="sortBy" style="float: right;"></div><div style="float: right">' + translate('sortBy') + ': <br/></div>\n' +
+               '        <div id="sortBy" style="float: right;"></div><div style="float: right">' + translate('sortBy') + ':&#160;</div>\n' +
                '      </xsl:if>\n' +
                '      <xsl:choose>\n' +
                '        <xsl:when test="@numberOfRecordsMatched=0">\n' +
@@ -2032,12 +2034,13 @@ var geocat = {
                '&#160;|&#160;' + translate("select") + ' ' + '<a href="javascript:geocat.metadataSelect(0, \'add-all\')" title="' + translate('selectAll') + '" alt="' + translate('selectAll') + '">' + translate('all') + '</a>,' +
                '        <a href="javascript:geocat.metadataSelect(0, \'remove-all\')" title="' + translate('selectNone') + '" alt="' + translate('selectNone') + '">' + translate('none') + '</a> ' +
                '        <br /><br />' +
-               translate('selectedElementsAction') + ': ' +
+               '<table style="width:100%"><tr><td align="left">'+
+               translate('selectedElementsAction') + ':&#160;' +
                '        ' + geocat.metadataSelectionAction() + '&#160;' +
-               '        <div class="hitsPerPage">' +
+               '</td><td align="right">'+
                geocat.resultsModeToolBar() +
-               geocat.maxRecordsCombo() +
-               '        </div>' +
+               geocat.maxRecordsCombo() +               
+               '</td></tr></table>'+
                '      </xsl:if>\n' +
                '    </div>\n' +
 

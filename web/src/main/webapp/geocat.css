@@ -100,20 +100,8 @@ a.no-help:hover {
     border-bottom: 1px solid gray;
 }
 
-.ext-gecko .hitsPerPage {
-    float: right;
-    position: relative;
-    top: -23px;
-}
-.ext-ie .hitsPerPage {
-    float: right;
-    position: relative;
-    top: -34px;
-}
-.hitsPerPage {
-    float: right;
-    position: relative;
-    top: 0px;
+.resultsHeader a.export-link {
+	margin: 5px;
 }
 
 #searchResults fieldset {

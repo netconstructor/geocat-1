@@ -30,8 +30,6 @@ import java.lang.reflect.Constructor;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,7 +48,6 @@ import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
@@ -64,9 +61,26 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.misc.ChainedFilter;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.CachingWrapperFilter;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.FuzzyQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.search.PhraseQuery;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldCollector;
+import org.apache.lucene.search.WildcardQuery;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geocat;
@@ -289,7 +303,9 @@ public class LuceneSearcher extends MetaSearcher
         if(!closed) {
             try {
                 closed = true;
-                _sm.releaseIndexReader(_reader);
+                if(_reader!=null) {
+                    _sm.releaseIndexReader(_reader);
+                }
             } catch (IOException e) {
                 Log.error(Geonet.SEARCH_ENGINE,"Failed to close Index Reader: "+e.getMessage());
                 e.printStackTrace();
@@ -1256,36 +1272,50 @@ public class LuceneSearcher extends MetaSearcher
      * @param fieldname lucene field value
      * @return
      */
-    public static String getMetadataFromIndex(String indexPath, String id, String fieldname) throws Exception
+    public static String getMetadataFromIndex(String webappName, String priorityLang, String id, String fieldname) throws Exception
     {
 			List<String> fieldnames = new ArrayList<String>();
 			fieldnames.add(fieldname);
-			return getMetadataFromIndex(indexPath, id, fieldnames).get(fieldname);
+			return getMetadataFromIndex(webappName, priorityLang, id, fieldnames).get(fieldname);
 	}
-    public static String getMetadataFromIndexById(String indexPath, String id, String fieldname) throws Exception
+    public static String getMetadataFromIndexById(String webappName, String priorityLang, String id, String fieldname) throws Exception
     {
             List<String> fieldnames = new ArrayList<String>();
             fieldnames.add(fieldname);
-            return getMetadataFromIndex(indexPath, "_id", id, fieldnames).get(fieldname);
+            return getMetadataFromIndex(webappName, priorityLang, "_id", id, fieldnames).get(fieldname);
     }
 
-    public static Map<String,String> getMetadataFromIndex(String indexPath, String uuid, List<String> fieldnames) throws Exception {
-        return getMetadataFromIndex(indexPath, "_uuid", uuid, fieldnames);
+    public static Map<String,String> getMetadataFromIndex(String webappName, String priorityLang, String uuid, List<String> fieldnames) throws Exception {
+        return getMetadataFromIndex(webappName, priorityLang, "_uuid", uuid, fieldnames);
     }
 
-    public static Map<String,String> getMetadataFromIndex(String indexPath, String idField, String id, List<String> fieldnames) throws Exception
+    public static Map<String,String> getMetadataFromIndex(String webappName, String priorityLang, String idField, String id, List<String> fieldnames) throws Exception
     {
 			MapFieldSelector selector = new MapFieldSelector(fieldnames);
 
-			File luceneDir = new File(indexPath);
-			IndexReader reader = IndexReader.open(FSDirectory.open(luceneDir), true);
-		      Searcher searcher = new IndexSearcher(reader);
+			IndexReader reader;
+			LuceneIndexReaderFactory factory = null;
+			SearchManager searchmanager = null;
+			ServiceContext context = ServiceContext.get();
+			if (context!=null) {
+    			GeonetContext gc = (GeonetContext) context
+    	                .getHandlerContext(Geonet.CONTEXT_NAME);
+                searchmanager = gc.getSearchmanager();
+                reader = searchmanager.getIndexReader(priorityLang);
+			} else {
+			    File luceneDir = new File(System.getProperty(webappName + ".lucene.dir", webappName), "nonspatial");
+			    factory = new LuceneIndexReaderFactory(luceneDir);
+			    reader = factory.getReader(priorityLang);
+			}
+		    Searcher searcher = new IndexSearcher(reader);
 
 			Map<String,String> values = new HashMap<String,String>();
 
     	try {
-				TermQuery query = new TermQuery(new Term(idField, id));
-		    TopDocs tdocs = searcher.search(query,1);
+    	    TermQuery query = new TermQuery(new Term(idField, id));
+    	    Sort sort = makeSort(Collections.<Pair<String, Boolean>>emptyList(), priorityLang);
+		    Filter filter = NoFilterFilter.instance();
+            TopDocs tdocs = searcher.search(query, filter, 1, sort);
 
 	       for ( ScoreDoc sdoc : tdocs.scoreDocs ) {
         		Document doc = reader.document(sdoc.doc, selector);
@@ -1301,9 +1331,17 @@ public class LuceneSearcher extends MetaSearcher
 		} catch (IOException e) {
 			// TODO: handle exception
 			System.out.println (e.getMessage());
-		} finally {
-		    try { searcher.close(); }finally{reader.close();}
-		}
+        } finally {
+            try {
+                searcher.close();
+            } finally {
+                if (factory != null) {
+                    factory.close();
+                } else if (searchmanager != null) {
+                    searchmanager.releaseIndexReader(reader);
+                }
+            }
+        }
 
     return values;
   }

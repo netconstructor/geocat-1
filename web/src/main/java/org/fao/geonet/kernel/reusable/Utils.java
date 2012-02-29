@@ -25,7 +25,6 @@ package org.fao.geonet.kernel.reusable;
 
 import static java.lang.Double.parseDouble;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -62,7 +61,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
@@ -81,7 +79,7 @@ import com.google.common.base.Function;
 
 /**
  * Utility methods for this package
- * 
+ *
  * @author jeichar
  */
 public final class Utils {
@@ -141,7 +139,7 @@ public final class Utils {
 
     /**
      * Finds xlinks with the href that contains the fragment provided in the constructor
-     * 
+     *
      * @author jeichar
      */
     public static class FindXLinks implements Filter {
@@ -212,7 +210,7 @@ public final class Utils {
     /**
      * Get all the metadata that use the xlink. This does a sql like query so only a unique portion
      * of the sql is required
-     * 
+     *
      * @param context
      */
     public static Set<MetadataRecord> getReferencingMetadata( ServiceContext context, String[] luceneFields, String id,
@@ -224,9 +222,7 @@ public final class Utils {
 
         SearchManager searchManager = gc.getSearchmanager();
 
-        File luceneDir = searchManager.getLuceneDir();
-
-        IndexReader reader = IndexReader.open(FSDirectory.open(luceneDir), true);
+        IndexReader reader = searchManager.getIndexReader(null);
         Searcher searcher = new IndexSearcher(reader);
 
         try {
@@ -261,7 +257,7 @@ public final class Utils {
             }
             return results;
         } finally {
-            searcher.close();
+            try{searcher.close();}finally{searchManager.releaseIndexReader(reader);}
         }
     }
 
