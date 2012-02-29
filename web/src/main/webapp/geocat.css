@@ -100,6 +100,10 @@ a.no-help:hover {
     border-bottom: 1px solid gray;
 }
 
+.resultsHeader a.export-link {
+	margin: 5px;
+}
+
 .ext-gecko .hitsPerPage {
     float: right;
     position: relative;

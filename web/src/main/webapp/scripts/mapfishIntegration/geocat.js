@@ -1992,8 +1992,8 @@ var geocat = {
 
                exportLinks += '<a href="' + link + '?' +
                                    (geocat.exportResultModes[i]!='pdf'?'outputSchema=own&amp;':'') +    // Only pdf is based on a common format, others are schemas based.
-                                   q + '" target="export"><img height="16px" src="../../images/' +
-                                   geocat.exportResultModes[i] + '.gif"/></a>';
+                                   q + '" target="export" class="export-link"><img height="16px" src="../../images/' +
+                                   geocat.exportResultModes[i] + '.gif"/></a>'; 
         }
 
 
