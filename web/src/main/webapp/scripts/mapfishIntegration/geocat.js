@@ -1714,7 +1714,7 @@ var geocat = {
                             constrain: true,
                             width: geocat.metadataPopupWidth,
                             height: geocat.metadataPopupHeight,
-                            onEsc       : function(){
+                            onEsc : function(){
                                 geocat.metadataWindow.hide();
                             },
                             listeners: {
@@ -1722,11 +1722,8 @@ var geocat = {
                                     geocat.metadataWindow = null;
                                 },
                                 show: function(){
-                                    if(extentMap) {
-                                        extentMap.initMapDiv();
-                                    } else {
-                                        searchTools.initMapDiv();
-                                    }
+                                    // user geocat map handler
+                                    searchTools.initMapDiv();
                                 }
                             }
                         });

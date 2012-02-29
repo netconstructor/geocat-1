@@ -647,6 +647,36 @@ var searchTools = {
                     from: searchTools.mainProj,
                     to: searchTools.alternateProj
                 });
+                /* Sometimes the dom element used as container for the map has a height/width 
+                of 0 (zero). So the map has a wrong size because the js is executed before 
+                the page content has finished rendering DESPITE the onload/ready event which is 
+                *supposed* taking care of such situtation (and clearly fail with the complex 
+                hierarchy of element in GN pages).
+                One solution is to trigger the map init later, but how much time is needed may vary
+                from one case to another so it is not reliable.
+                Another solution would be to attach a onresize event on the container to update the map 
+                when the container get its final size, but strangly the onresize event isnt 
+                fired when the container get its final size.
+                So the solution implemented here is simply a recuring timed call to check the container 
+                size and trigger an update of the map when it is finally ready */
+                if (viewer.offsetWidth == 0 || viewer.offsetHeight == 0) {
+                    if (Ext) {
+                        var task = new Ext.util.DelayedTask(function(){
+                            var el = Ext.get(id);
+                            if (el.getWidth() == 0 || el.getHeight() == 0 ) {
+                                task.delay(100);
+                            } else {
+                                // container is ready, update map
+                                mapCmp.map.updateSize();
+                            }
+                        });
+                        // Wait 100ms 
+                        task.delay(100);
+                    } else {
+                        // in which cases dont we have Ext ??
+                        // TODO implement a non ext timout system
+                    }
+                }
             }
 
             if (watchedBbox != '') {

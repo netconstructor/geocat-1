@@ -49,6 +49,7 @@
     <xsl:template name="geoHeader">
         <script src="../../scripts/ext/adapter/ext/ext-base.js" type="text/javascript"/>
         <script src="../../scripts/geo/proj4js-compressed.js" type="text/javascript"/>
+        <script src="../../scripts/geo/EPSG21781.js" type="text/javascript"/>
         <xsl:if test="count(/root/gui/config/map/proj/crs) &gt; 1">
         </xsl:if>
 
@@ -69,6 +70,7 @@
                 <script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/ScaleBar.js"></script>
                 
                 <script type="text/javascript" src="{/root/gui/url}/scripts/geoext/lib/GeoExt.js"></script>
+                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/> <!-- to avoid using gn map component but user geocat one -->
                 <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/MapFish.js"></script--> <!-- must not be loaded anymore -->
             </xsl:when>
             <xsl:otherwise>
@@ -95,6 +97,7 @@
                                 
                 <!--script type="text/javascript" src="{/root/gui/url}/scripts/geoext/GeoExt.js"></script--> <!-- in gn.geo.libs.js -->
                 <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/MapFish.js"></script--> <!-- must not be loaded anymore -->
+                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/> <!-- to avoid using gn map component but user geocat one -->
             </xsl:otherwise>
         </xsl:choose>
         
@@ -122,7 +125,7 @@
         
         <xsl:apply-templates mode="proj4init" select="/root/gui/config/map/proj"/>
         
-        <xsl:call-template name="extentViewerJavascriptInit"/>
+        <!-- xsl:call-template name="extentViewerJavascriptInit"/ -->
         
         <xsl:call-template name="css"/>
     </xsl:template>
@@ -201,10 +204,24 @@
     <!-- Init all maps. -->
     <xsl:template name="extentViewerJavascriptInit">
         <script language="JavaScript1.2" type="text/javascript">
-            if (Ext) {
-              Ext.onReady(extentMap.initMapDiv);
-            } else {
-              Event.observe(window,'load',extentMap.initMapDiv);
+            // initmap only if geocat is not defined (in case of MD or MD edition display)
+            // TODO maybe possible to manage this in a centralised way
+
+            var delayedInit = function() {
+                // delaying the map initialisation as the map container doest gets its final size immediatly and the map is just displayed broken.
+                // TODO find the exact cause of this borken behavior
+                setTimeout(searchTools.initMapDiv,500);
+            }
+
+            if (typeof(geocat) == "undefined") {
+                if (typeof(Ext) != "undefined") {
+                    //Ext.onReady(delayedInit);
+                    Ext.onReady(searchTools.initMapDiv);
+                } else {
+                    // user geocat map handler
+                    //Event.observe(window,'load',delayedInit);
+                    Event.observe(window,'load',searchTools.initMapDiv);
+                }
             }
         </script>
     </xsl:template>

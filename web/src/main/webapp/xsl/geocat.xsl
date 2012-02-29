@@ -38,8 +38,8 @@
         
         <xsl:choose>
             <xsl:when test="/root/request/debug">
-                <script type="text/javascript"
-                        src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/>
+                <!--<script type="text/javascript"
+                        src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/>--> <!-- loaded from geo/utils.xsl -->
                 <!--script type="text/javascript"
                         src="{/root/gui/url}/scripts/mapfishIntegration/EMailPDFAction.js"/--> <!-- depends on mapfish -->
                 <script type="text/javascript"

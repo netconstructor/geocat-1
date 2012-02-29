@@ -7,9 +7,6 @@
     
          <xsl:choose>
             <xsl:when test="/root/request/debug">           
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/geonetwork.js"></script--> <!--loaded in utils.xsl-->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/scriptaculous/scriptaculous.js?load=slider,effects,controls"></script--> <!--loaded in utils.xsl-->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/modalbox.js"></script--> <!--loaded in utils.xsl-->
 
                 <script type="text/javascript" src="{/root/gui/url}/scripts/gn_search.js"></script>
                 
@@ -19,21 +16,6 @@
                 <link rel="stylesheet" type="text/css" href="{/root/gui/url}/scripts/openlayers/theme/default/style.css" />
                 <link rel="stylesheet" type="text/css" href="{/root/gui/url}/geonetwork_map.css" /-->
          
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/ext/adapter/ext/ext-base.js"></script--> <!--loaded in utils.xsl-->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/ext/ext-all-debug.js"></script--> <!--loaded in utils.xsl-->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/ext/form/FileUploadField.js"></script--> <!--loaded in utils.xsl-->
-
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/lib/OpenLayers.js"></script--> <!--loaded in utils.xsl-->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/LoadingPanel.js"></script--> <!--loaded in utils.xsl-->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/openlayers/addins/ScaleBar.js"></script--> <!--loaded in utils.xsl-->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/geo/proj4js-compressed.js"></script--> <!--loaded in utils.xsl-->
-
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/geoext/lib/GeoExt.js"></script--> <!--loaded in utils.xsl-->
-
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/mapfish/core/PrintProtocol.js"></script--> <!-- needed by mapfish/widgets/print/Base.js -->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/mapfish/core/Util.js"></script--> <!-- needed by mapfish/widgets/print/Base.js -->
-                <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/mapfish/widgets/print/Base.js"></script-->  <!-- needed by map/widgets/PrintAction.js -->
-
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/OGCUtil.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/MapStateManager.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/core/CatalogueInterface.js"></script>
@@ -62,7 +44,7 @@
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/FeatureInfoPanel.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/LegendPanel.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/OpacitySlider.js"></script>
-                <!-- script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/PrintAction.js"></script --> <!-- mapfish depedency -->
+
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/ProjectionSelector.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/map/widgets/TimeSelector.js"></script>
                 
