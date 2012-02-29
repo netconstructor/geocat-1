@@ -1993,12 +1993,12 @@ var geocat = {
                exportLinks += '<a href="' + link + '?' +
                                    (geocat.exportResultModes[i]!='pdf'?'outputSchema=own&amp;':'') +    // Only pdf is based on a common format, others are schemas based.
                                    q + '" target="export" class="export-link"><img height="16px" src="../../images/' +
-                                   geocat.exportResultModes[i] + '.gif"/></a>'; 
+                                   geocat.exportResultModes[i] + '.gif" ext:qtip="Export '+geocat.exportResultModes[i].toUpperCase()+'"/></a>';
         }
 
 
         var xslhead = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-               '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/" xmlns:geonet="http://www.fao.org/geonetwork" exclude-result-prefixes="dc dct csw">\n' +
+               '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/" xmlns:ext="http://www.sencha.com/products/extjs/" xmlns:geonet="http://www.fao.org/geonetwork" exclude-result-prefixes="dc dct csw ext">\n' +
                '  <xsl:output method="html"/>\n'+
                '  <xsl:template match="/">\n' +
                '    <div>\n'+
