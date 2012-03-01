@@ -48,7 +48,7 @@ timeBetweenEvictionRunsMillis         time between eviction runs (-1 means next 
 testWhileIdle                         test connections when idle                                              false                 
 minEvictableIdleTimeMillis            idle time before connection can be evicted                              30 x 60 x 1000 msecs  
 numTestsPerEvictionRun                number of connections tested per eviction run                           3                     
-defaultTransactionIsolation           see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29       SERIALIZABLE (for Oracle READ_COMMITTED)
+defaultTransactionIsolation           see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29       READ_COMMITTED
 ===================================   =====================================================================   =========================================
 
 
@@ -74,8 +74,8 @@ Note: Some firewalls kill idle connections to databases after say 1 hour (= 3600
 
 **Note:**
 
-- When GeoNetwork manages the database connection pool, PostGIS database is the only database that can hold the spatial index in the database. All other database choices hold the spatial index as a shapefile. If using PostGIS, two pools of database connections are created. The first is managed and configured using parameters in this section, the second is created by GeoTools and cannot be configured. If you want to use the database to hold the spatial index you should use the JNDI configuration described in the next section because it uses a single, configurable database pool through GeoTools.
-- advanced: if you are using the subversion metadata history/versioning feature, you should set the default transaction isolation to SERIALIZED ie. you should have `<defaultTransactionIsolation>SERIALIZABLE</defaultTransactionIsolation>` in your database config. The reason for this is that prior to a commit the current state of a versioned metadata record and its properties (privileges, status, owner, categories) is read and stored in the subversion repository. If transactions are not serialized then there is a small chance that another transaction may commit other/more changes before the changes to the metadata state in the current transaction are recorded. The exception to this rule is ORACLE which appears to fail to serialize transactions that other systems serialize without issues. Do not use SERIALIZABLE with Oracle, instead use READ_COMMITTED. For more on transaction isolation see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29.
+- When GeoNetwork manages the database connection pool, PostGIS database is the only database that can hold the spatial index in the database. All other database choices hold the spatial index as a shapefile. If using PostGIS, two pools of database connections are created. The first is managed and configured using parameters in this section, the second is created by GeoTools and cannot be configured. This approach is now *deprecated*: if you want to use the database to hold the spatial index you *should* use the JNDI configuration described in the next section because it uses a single, configurable database pool through GeoTools as well as the more modern NG (Next Generation) GeoTools datastore factories. 
+- For more on transaction isolation see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29.
 
 
 Database connection pool managed by the container
@@ -128,6 +128,8 @@ The remainder of the configuration is done in the container context. eg. for tom
 		defaultAutoCommit="false" 
 		validationQuery="SELECT 1 FROM DUAL"
 		accessToUnderlyingConnectionAllowed="true"
+		poolPreparedStatements="true"
+		maxOpenPreparedStatements="400"
 	/> 	
 
 The parameters that can be specified to control the Apache Database Connection Pool used by the container are described at http://commons.apache.org/dbcp/configuration.html.
@@ -137,13 +139,18 @@ The following parameters should be set to ensure GeoNetwork operates correctly:
 - defaultAutoCommit="false"
 - accessToUnderlyingConnectionAllowed="true"
 
+For performance reasons you should set the following parameters:
+
+- poolPreparedStatements="true"
+- maxOpenPreparedStatements="300" (at least)
+
 Notes:
 
 - both PostGIS and Oracle will build and use a table in the database for the spatialindex if provideDataStore is set to true. Other databases could be made to do the same if a spatialindex table is created - see the definition for the spatialIndex table in `INSTALL_DIR/web/geonetwork/WEB-INF/classes/setup/sql/create/create-db-postgis.sql` for example.
 - you should install commons-dbcp-1.3.jar and commons-pool-1.5.5.jar in the container class path (eg. `common/lib` for tomcat5) as the only supported DataSourceFactory in geotools is apache commons dbcp. Naturally you should always use the `factory="org.apache.commons.dbcp.BasicDataSourceFactory"` in the JNDI context as well.
 - the default tomcat-dbcp.jar version of apache commons dbcp appears to work correctly for geotools and PostGIS but does not work for those databases that need to unwrap the connection in order to do spatial operations (eg. Oracle).
 - Oracle ojdbc-14.jar or ojdbc5.jar or ojdbc6.jar (depending on the version of Java being used) should also be installed in the container `common/lib` area (you may need to remove ojdbc-14.jar that appears in `INSTALL_DIR/web/geonetwork/WEB-INF/lib`.) 
-- advanced: if you are using the subversion metadata history/versioning feature, you should set the default transaction isolation to SERIALIZED ie. you should have `defaultTransactionIsolation="SERIALIZABLE"` in your database config. The reason for this is that prior to a commit the current state of a versioned metadata record and its properties (privileges, status, owner, categories) is read and stored in the subversion repository. If transactions are not serialized then there is a small chance that another transaction may commit other/more changes before the changes to the metadata state in the current transaction are recorded. The exception to this rule is ORACLE which appears to fail to serialize transactions that other systems serialize without issues. Do not use SERIALIZABLE with Oracle, instead use READ_COMMITTED. For more on transaction isolation see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29.
+- advanced: you should check the default transaction isolation level for your database driver. READ_COMMITTED appears to be a safe level of isolation to use with GeoNetwork for commonly used databases. Also note that McKoi can only support SERIALIZABLE (does anyone still use McKoi?). For more on transaction isolation see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29.
 
 .. _adv_configuration_larger_catalogs:
 
@@ -159,12 +166,12 @@ or more metadata records:
    fast disk (solid state disk is best by far), lots of memory/RAM (16Gb+) and multiple processors as part of a 64bit 
    environment. Linux is probably the best operating system to take advantage of such an environment.
 
-#. **Use PostGIS (Postgres+PostGIS) as your database** GeoNetwork has to build a spatial index containing all 
+#. **Build the spatial index into your database ie. Use PostGIS (Postgres+PostGIS) or Oracle as your database** GeoNetwork has to build a spatial index containing all 
    metadata bounding boxes and polygons, in order to support spatial queries for the Catalog Services Web (CSW) 
    interface eg. select all metadata records that intersect a search polygon. By default GeoNetwork uses a 
    shapefile but the shapefile quickly becomes costly to maintain during reindexing usually after the number 
-   of records in the catalog exceeds 20,000. If you select PostGIS as your database, GeoNetwork will build the 
-   spatial index in a PostGIS table (called spatialindex). The spatialindex table in PostGIS is much faster to 
+   of records in the catalog exceeds 20,000. If you select PostGIS or Oracle as your database via JNDI (see previous section), GeoNetwork will build the 
+   spatial index in a table (called spatialindex). The spatialindex table in the database is much faster to 
    reindex. But more importantly, if appropriate database hardware and configuration steps are taken, it should 
    also be faster to query than the shapefile when the number of records in the catalog becomes very large.
 
@@ -182,7 +189,7 @@ or more metadata records:
    Machine (JVM) or just the number of processors on the machine that you have dedicated to GeoNetwork.
 
 #. **Consider the number of database connections to be allocated to GeoNetwork** GeoNetwork uses 
-   and reuses a pool of database connections. This is configured in `INSTALL_DIR/web/geonetwork/WEB-INF/config.xml`. 
+   and reuses a pool of database connections. This is configured in `INSTALL_DIR/web/geonetwork/WEB-INF/config.xml` or in the container via JNDI. 
    To arrive at a reasonable number for the pool size is not straight forward. You need to consider 
    the number of concurrent harvesters you will run, the number of concurrent batch import and batch 
    operations you expect to run and the number of concurrent users you are expecting to arrive. 
