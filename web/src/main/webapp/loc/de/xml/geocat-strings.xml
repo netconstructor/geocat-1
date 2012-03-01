@@ -157,8 +157,8 @@ Ihr geocat.ch-Team</msg>
 
     <popXlink.about> Suche nach einem existierenden Objekt oder Klick auf "Neu", wenn nichts passendes gefunden wurde.</popXlink.about>
     <popXlink.contact.search>Suchen nach einem Kontakt in der Liste</popXlink.contact.search>
-    <popXlink.contact.role>Füllen Sie die Rolle des Kontakts</popXlink.contact.role>
-    <popXlink.contact.action>Diesen Eintrag hinzuzufügen Sie die Metadaten, oder einen neuen Eintrag (unter Moderation), wenn Sie das gewünschte Element nicht finden</popXlink.contact.action>
+    <popXlink.contact.role>Wählen Sie die Rolle des Kontakts</popXlink.contact.role>
+    <popXlink.contact.action>Diesen Eintrag hinzufügen, oder einen neuen Eintrag (unter Moderation) erstellen, wenn Sie das gewünschte Element nicht finden</popXlink.contact.action>
     <extentBbox>Nur Begrenzungsrechteck</extentBbox>
     <extentPolygon>Nur Polygon</extentPolygon>
     <extentBboxAndPolygon>Begrenzungsrechteck und Polygon</extentBboxAndPolygon>
@@ -182,6 +182,6 @@ Ihr geocat.ch-Team</msg>
     <xsl.admin>Metadaten-Stylesheets</xsl.admin>
     <xsl.admin.des>Personalisierte Stylesheets (XSL) zur Darstellung der Metadaten in HTML</xsl.admin.des>
     <toggleVisibilityEdit>Option zum Verstecken einzelner Attribute</toggleVisibilityEdit>
-    <addLayerConfirmTitle js="true">Das Hinzufügen eines neuen WMS-Layer</addLayerConfirmTitle>
-    <addLayerConfirmText js="true">Wollen Sie die WMS-Layer auf der Karte hinzugefügt entfernen ?</addLayerConfirmText>
+    <addLayerConfirmTitle js="true">Hinzufügen eines neuen WMS-Layers</addLayerConfirmTitle>
+    <addLayerConfirmText js="true">Wollen Sie die bereits hinzugefügten WMS-Layer von der Karte entfernen?</addLayerConfirmText>
 </strings>    
