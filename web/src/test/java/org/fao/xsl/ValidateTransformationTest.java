@@ -76,6 +76,14 @@ public class ValidateTransformationTest
         Multimap<String, Requirement> rules = ArrayListMultimap.create();
         file = testFile(file, Control.GM03_2_ISO, rules, false);
     }
+    @Test
+    public void exportTopicCategoryToGM03() throws Throwable
+    {
+        File file = new File(data, "non_validating/iso19139che/topicCategory.xml");
+        Multimap<String, Requirement> rules = ArrayListMultimap.create();
+        rules.put("GM03_2Comprehensive.Comprehensive.MD_DataIdentification", new Count(1, new Finder("topicCategory")));
+        file = testFile(file, Control.ISO_GM03, rules, false);
+    }
 
     @Test
     public void contactLinkageNotImported() throws Throwable
@@ -87,7 +95,7 @@ public class ValidateTransformationTest
         file = testFile(file, Control.ISO_GM03, rules, false);
 
         rules = ArrayListMultimap.create();
-        rules.put("CHE_MD_Metadata/contact/CHE_CI_ResponsibleParty/contactInfo/CI_Contact/onlineResource/CI_OnlineResource/linkage", 
+        rules.put("CHE_MD_Metadata/contact/CHE_CI_ResponsibleParty/contactInfo/CI_Contact/onlineResource/CI_OnlineResource/linkage",
                 new Exists(new Finder("LocalisedURL", new EqualText("http://etat.geneve.ch/dt/geomatique/accueil.html"))));
         testFile(file, Control.GM03_2_ISO, rules, false);
     }
@@ -102,13 +110,13 @@ public class ValidateTransformationTest
         rules.put("che:CHE_MD_DataIdentification/purpose",new Exists(
                 new Finder("LocalisedCharacterString",new And(new Exists(new Attribute("LocalisedCharacterString","locale","#FR")), new EqualText("fr geocat.ch II testen")))));
         file = testFile(file, Control.GM03_1_ISO, rules, true);
-        
+
         rules.clear();
-        rules.put("GM03_2Comprehensive.Comprehensive.MD_DataIdentification/purpose",new Exists(new Finder("GM03_2Core.Core.PT_Group", 
+        rules.put("GM03_2Comprehensive.Comprehensive.MD_DataIdentification/purpose",new Exists(new Finder("GM03_2Core.Core.PT_Group",
                 new And(new Exists(new Finder("language",new EqualText("de"))),
                         new Exists(new Finder("plainText",new EqualText("de geocat.ch II testen")))
         ))));
-        rules.put("GM03_2Comprehensive.Comprehensive.MD_DataIdentification/purpose",new Exists(new Finder("GM03_2Core.Core.PT_Group", 
+        rules.put("GM03_2Comprehensive.Comprehensive.MD_DataIdentification/purpose",new Exists(new Finder("GM03_2Core.Core.PT_Group",
                 new And(new Exists(new Finder("language",new EqualText("fr"))),
                         new Exists(new Finder("plainText",new EqualText("fr geocat.ch II testen")))
                         ))));
@@ -120,10 +128,10 @@ public class ValidateTransformationTest
         rules.put("che:CHE_MD_DataIdentification/purpose",new Exists(
                 new Finder("LocalisedCharacterString",new And(new Exists(new Attribute("LocalisedCharacterString","locale","#FR")), new EqualText("fr geocat.ch II testen")))));
         file = testFile(file, Control.GM03_2_ISO, rules, true);
-        
+
 
     }
-    
+
     @Test
     public void doNotCreateEmptyBasicGeoId() throws Throwable
     {
@@ -141,7 +149,7 @@ public class ValidateTransformationTest
 	    file = testFile(file, Control.ISO_GM03, rules, true);
         rules.put("identificationInfo",new Not(new Exists(new Finder("basicGeodataID"))));
         rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("extent", new Prefix("srv"))));
-        // Doesn't seem to be in GM03 model 
+        // Doesn't seem to be in GM03 model
         //rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("restrictions", new Prefix("srv"))));
         rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("serviceTypeVersion", new Prefix("srv"))));
         rules.put("CHE_SV_ServiceIdentification",new Exists(new Finder("serviceType", new Prefix("srv"))));
@@ -405,23 +413,23 @@ public class ValidateTransformationTest
         rules.put("initiativeType", new Exists(new Finder("DS_InitiativeTypeCode")));
         file = testFile(file, Control.GM03_1_ISO, rules, true);
     }
-    
+
     @Test @Ignore("I don't have time right now to get this to pass")
     public void importExportAggregateInfoFull() throws Throwable
     {
         File file = new File(data, "gm03/AllComprehensiveAttributes.xml");
         Multimap<String, Requirement> rules = ArrayListMultimap.create();
         file = testFile(file, Control.GM03_1_ISO, rules, true);
-        
+
         rules = ArrayListMultimap.create();
         rules.put("GM03_2Comprehensive.Comprehensive.aggregationInfo_MD_Identification", new Exists(new Finder("aggregationInfo")));
         rules.put("GM03_2Comprehensive.Comprehensive.MD_AggregateInformation", new Exists(new Finder("associationType")));
         rules.put("GM03_2Comprehensive.Comprehensive.MD_AggregateInformation", new Exists(new Finder("initiativeType")));
         rules.put("GM03_2Comprehensive.Comprehensive.MD_AggregateInformation", new Exists(new Finder("aggregateDataSetIdentifier")));
         rules.put("GM03_2Comprehensive.Comprehensive.CI_Citation", new Exists(new Finder("MD_AggregateInformation")));
-        
+
         file = testFile(file, Control.ISO_GM03, rules, true);
-        
+
         rules = ArrayListMultimap.create();
         rules.put("aggregationInfo", Requirement.ACCEPT);
         rules.put("MD_AggregateInformation", Requirement.ACCEPT);
@@ -429,7 +437,7 @@ public class ValidateTransformationTest
         rules.put("aggregateDataSetIdentifier", new Exists(new Finder("MD_Identifier")));
         rules.put("associationType", new Exists(new Finder("DS_AssociationTypeCode")));
         rules.put("initiativeType", new Exists(new Finder("DS_InitiativeTypeCode")));
-        
+
         testFile(file, Control.GM03_2_ISO, rules, true);
     }
 
@@ -750,7 +758,7 @@ public class ValidateTransformationTest
 
         testFile(iso, Control.ISO_GM03, rules, true);
     }
-    
+
     @Test
     public void temporalExtent() throws Throwable
     {
@@ -844,11 +852,11 @@ public class ValidateTransformationTest
                 }
                 return false;
             }
-            
+
         });
-        
+
         assertFalse("Error tag found in xml", errorTags.hasNext());
-        
+
         Collection<Entry<String, Requirement>> rules = validationRules.entries();
         StringBuilder failures = new StringBuilder();
         for (Entry<String, Requirement> entry : rules) {

@@ -27,6 +27,9 @@ public class Count implements Requirement
             descendants.next();
         }
 
+        if(_expected != count) {
+            System.err.println("Expected "+_expected+" but got "+count);
+        }
         return _expected == count;
     }
 

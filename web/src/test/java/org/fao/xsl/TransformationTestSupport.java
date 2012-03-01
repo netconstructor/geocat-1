@@ -58,7 +58,7 @@ import org.xml.sax.SAXException;
 
 /**
  * Methods that support transformation and validation tests
- * 
+ *
  * @author jeichar
  */
 public final class TransformationTestSupport {
@@ -93,6 +93,8 @@ public final class TransformationTestSupport {
                     TransformationTestSupport.toGm03StyleSheet.getAbsolutePath());
             otherway.convert(src.getAbsolutePath(), "TransformationTestSupport");
         } catch (AssertionError e) {
+            if (testValidity) throw e;
+        } catch (RuntimeException e) {
             if (testValidity) throw e;
         }
 
