@@ -133,7 +133,7 @@
 				<!-- privileges button -->
 				<xsl:if test="/root/gui/services/service/@name='metadata.admin.form'">
 					<xsl:variable name="privileges" select="concat(/root/gui/strings/privileges,': ',$ltitle)"/>
-					<button onclick="doOtherButton('{/root/gui/locService}/metadata.admin.form?id={$metadata/geonet:info/id}','{$privileges}',600)"><xsl:value-of select="/root/gui/strings/privileges"/></button>
+					<button onclick="doOtherButton('{/root/gui/locService}/metadata.admin.form?id={$metadata/geonet:info/id}','{$privileges}',800)"><xsl:value-of select="/root/gui/strings/privileges"/></button>
 				</xsl:if>
 				
 				<!-- categories button -->

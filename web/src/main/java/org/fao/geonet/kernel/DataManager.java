@@ -47,6 +47,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import jeeves.constants.Jeeves;
 import jeeves.exceptions.JeevesException;
@@ -315,7 +316,7 @@ public class DataManager {
 
             if (ids.size() > 0) {
                 Runnable worker = new IndexMetadataTask(context, processSharedObjects, ids);
-                gc.getThreadPool().runTask(worker);
+                gc.getThreadPool().runTask(worker, 5, TimeUnit.SECONDS);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1806,8 +1807,11 @@ public class DataManager {
 		}
         finally {
             if(index) {
+                doValidate(session, dbms, schema, id, md, lang, false).two();
+                boolean indexGroup = false;
+                boolean processSharedObjects = false;
                 //--- update search criteria
-                indexInThreadPoolIfPossible(dbms,id, false);
+                indexMetadata(dbms, id, indexGroup, processSharedObjects, servContext);
             }
 		}
 		return true;

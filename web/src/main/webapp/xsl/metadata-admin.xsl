@@ -62,13 +62,15 @@
 						<!-- only apply restriction to iso19139 metadata records -->
 						<xsl:when test="contains(/root/gui/reqService,'metadata.batch')">y</xsl:when>
 						<xsl:when test="not(starts-with($schema, 'iso19139')) and $valid-xsd='1'">y</xsl:when>
-						<xsl:when test="starts-with($schema, 'iso19139') and $valid-xsd='1' and $validSch-iso='1' and $validSch-iso-che='1' and $validSch-geonetwork='1' and $validSch-inspire='1'"><xsl:text>y</xsl:text></xsl:when>
+						<xsl:when test="starts-with($schema, 'iso19139') and $valid-xsd='1' and $validSch-iso='1' and $validSch-iso-che='1'"><xsl:text>y</xsl:text></xsl:when>
 						<xsl:otherwise><xsl:text>n</xsl:text></xsl:otherwise>
 					</xsl:choose>                                   
 				</xsl:variable>
 				
 				<div id="privileges">
 					<input name="metadataid" id="metadataid" type="hidden" value="{$id}"/>
+					<table>
+					<tr><td width="80%" class="padded">
 					<table>
 						<tr>
 							<th class="padded"><xsl:value-of select="/root/gui/strings/groups"/></th>
@@ -199,7 +201,9 @@
 							</tr>
 						</xsl:if>
 					</table>
+					</td>
 					<xsl:if test="not(contains(/root/gui/reqService,'metadata.batch'))">
+					<td class="padded-center">
 					<h1><xsl:value-of select="/root/gui/strings/displayValidationReport"/></h1>
 					<table>
 						<tr>
@@ -214,15 +218,6 @@
 						<xsl:if test="starts-with($schema, 'iso19139')">
 						<tr>
 							<td style="width:60px">
-									<xsl:choose>
-										<xsl:when test="$validIso='y'"><img src="../../images/button_ok.png" alt="valid" title="valid"/></xsl:when>
-										<xsl:otherwise><img src="../../images/schematron.gif" alt="{/root/gui/strings/publishOnlyIfAdminOrValid}" title="{/root/gui/strings/publishOnlyIfAdminOrValid}"/></xsl:otherwise>
-									</xsl:choose>
-							</td>
-							<td class="padded"><xsl:value-of select="/root/gui/strings/isoValid"/><br/></td>
-						</tr>
-						<tr>
-							<td style="width:60px">
 								<xsl:choose>
 									<xsl:when test="$validGM03='y'"><img src="../../images/button_ok.png" alt="valid" title="valid"/></xsl:when>
 									<xsl:otherwise><img src="../../images/schematron.gif" alt="{/root/gui/strings/publishOnlyIfAdminOrValid}" title="{/root/gui/strings/publishOnlyIfAdminOrValid}"/></xsl:otherwise>
@@ -232,16 +227,27 @@
 						</tr>
 						<tr>
 							<td style="width:60px">
+									<xsl:choose>
+										<xsl:when test="$validIso='y'"><img src="../../images/button_ok.png" alt="valid" title="valid"/></xsl:when>
+										<xsl:otherwise><img src="../../images/validationError.gif" alt="{/root/gui/strings/publishOnlyIfAdminOrValid}" title="{/root/gui/strings/publishOnlyIfAdminOrValid}"/></xsl:otherwise>
+									</xsl:choose>
+							</td>
+							<td class="padded"><xsl:value-of select="/root/gui/strings/isoValid"/><br/></td>
+						</tr>
+						<tr>
+							<td style="width:60px">
 								<xsl:choose>
 									<xsl:when test="$validInspire='y'"><img src="../../images/button_ok.png" alt="valid" title="valid"/></xsl:when>
-									<xsl:otherwise><img src="../../images/schematron.gif" alt="{/root/gui/strings/publishOnlyIfAdminOrValid}" title="{/root/gui/strings/publishOnlyIfAdminOrValid}"/></xsl:otherwise>
+									<xsl:otherwise><img src="../../images/validationError.gif" alt="{/root/gui/strings/publishOnlyIfAdminOrValid}" title="{/root/gui/strings/publishOnlyIfAdminOrValid}"/></xsl:otherwise>
 								</xsl:choose>
 							</td>
 							<td class="padded"><xsl:value-of select="/root/gui/strings/inspireValid"/><br/></td>
 						</tr>
 						</xsl:if>
 					</table>
-					</xsl:if>		
+					</td>
+					</xsl:if>
+					</tr></table>
 				</div>
 			</xsl:with-param>
 		</xsl:call-template>
