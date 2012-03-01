@@ -109,7 +109,7 @@ class EditUtils {
 		//-----------------------------------------------------------------------
 		//--- check access
 		int iLocalId = Integer.parseInt(id);
-		
+
 		if (!dataManager.existsMetadata(dbms, iLocalId))
 			throw new BadParameterEx("id", id);
 
@@ -157,7 +157,7 @@ class EditUtils {
 			if (sPos.startsWith("_") && !sPos.startsWith("_d_")) {
 				htChanges.put(sPos.substring(1), sVal);
             } else if (sPos.startsWith("hide_")) {
-                
+
                 String ref = sPos.substring(5);
                 if(ref.startsWith("d_")) {
                     ref = ref.substring(2);
@@ -176,13 +176,13 @@ class EditUtils {
         boolean ufo = true;
         // whether to index on update
         boolean index = true;
-        
+
         boolean updateDateStamp = !minor.equals("true");
         String changeDate = null;
 		if (embedded) {
             Element updatedMetada = new AjaxEditUtils(context).applyChangesEmbedded(dbms, id, htChanges, htHide, version, context.getLanguage());
             if(updatedMetada != null) {
-                result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, false, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
+                result = dataManager.updateMetadata(context.getUserSession(), dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
             }
    		}
         else {
@@ -299,7 +299,7 @@ class EditUtils {
 				el.addContent(val);
 			}
 		}
-		
+
 		applyHiddenElements(context, dataManager, editLib, dbms, md, id, htHide);
 		//--- remove editing info added by previous call
 		editLib.removeEditingInfo(md);

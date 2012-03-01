@@ -1807,10 +1807,9 @@ public class DataManager {
 		}
         finally {
             if(index) {
-                doValidate(session, dbms, schema, id, md, lang, false).two();
+                //--- update search criteria
                 boolean indexGroup = false;
                 boolean processSharedObjects = false;
-                //--- update search criteria
                 indexMetadata(dbms, id, indexGroup, processSharedObjects, servContext);
             }
 		}

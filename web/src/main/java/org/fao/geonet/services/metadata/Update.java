@@ -110,7 +110,7 @@ public class Update implements Service
 					throw new ConcurrentUpdateEx(id);
 				}
 			} else {
-				ajaxEditUtils.updateContent(params, false, true);
+				ajaxEditUtils.updateContent(params, true, true);
 			}
 		}
 
@@ -125,7 +125,7 @@ public class Update implements Service
             elResp.addContent(new Element(Geonet.Elem.JUSTCREATED).setText("true"));
         }
         elResp.addContent(new Element(Params.MINOREDIT).setText(minor));
-        
+
         //--- if finished then remove the XML from the session
 		if (finished) {
 			ajaxEditUtils.removeMetadataEmbedded(session, id);

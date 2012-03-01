@@ -62,11 +62,10 @@
 						<!-- only apply restriction to iso19139 metadata records -->
 						<xsl:when test="contains(/root/gui/reqService,'metadata.batch')">y</xsl:when>
 						<xsl:when test="not(starts-with($schema, 'iso19139')) and $valid-xsd='1'">y</xsl:when>
-						<xsl:when test="starts-with($schema, 'iso19139') and $valid-xsd='1' and $validSch-iso='1' and $validSch-iso-che='1'"><xsl:text>y</xsl:text></xsl:when>
+						<xsl:when test="starts-with($schema, 'iso19139') and $valid-xsd='1' and $validSch-iso-che='1'"><xsl:text>y</xsl:text></xsl:when>
 						<xsl:otherwise><xsl:text>n</xsl:text></xsl:otherwise>
 					</xsl:choose>                                   
 				</xsl:variable>
-				
 				<div id="privileges">
 					<input name="metadataid" id="metadataid" type="hidden" value="{$id}"/>
 					<table>
