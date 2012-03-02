@@ -76,12 +76,22 @@ public class ValidateTransformationTest
         Multimap<String, Requirement> rules = ArrayListMultimap.create();
         file = testFile(file, Control.GM03_2_ISO, rules, false);
     }
+
     @Test
     public void exportTopicCategoryToGM03() throws Throwable
     {
         File file = new File(data, "non_validating/iso19139che/topicCategory.xml");
         Multimap<String, Requirement> rules = ArrayListMultimap.create();
         rules.put("GM03_2Comprehensive.Comprehensive.MD_DataIdentification", new Count(1, new Finder("topicCategory")));
+        file = testFile(file, Control.ISO_GM03, rules, false);
+    }
+
+    @Test
+    public void exportPresentationFormToGM03() throws Throwable
+    {
+        File file = new File(data, "non_validating/iso19139che/presentationForm.xml");
+        Multimap<String, Requirement> rules = ArrayListMultimap.create();
+        rules.put("GM03_2Comprehensive.Comprehensive.CI_Citation", new Count(1, new Finder("presentationForm")));
         file = testFile(file, Control.ISO_GM03, rules, false);
     }
 

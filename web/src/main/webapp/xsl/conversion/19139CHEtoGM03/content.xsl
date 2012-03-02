@@ -241,7 +241,9 @@
         <xsl:apply-templates mode="textGroup" select="gmd:title"/>
         <xsl:apply-templates mode="text" select="gmd:edition"/>
         <xsl:apply-templates mode="text" select="gmd:editionDate"/>
-        <xsl:apply-templates mode="enumC" select="gmd:presentationForm"/>
+        <xsl:apply-templates mode="groupEnum" select=".">
+        	<xsl:with-param name="element">presentationForm</xsl:with-param>
+        </xsl:apply-templates>
         <xsl:apply-templates mode="text" select="gmd:ISBN"/>
         <xsl:apply-templates mode="text" select="gmd:ISSN"/>
         <xsl:apply-templates mode="groupText" select=".">
