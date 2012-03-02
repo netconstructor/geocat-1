@@ -1638,9 +1638,9 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes) throws Exception {
-		return getGeocatMetadata(srvContext,id,forEditing,withEditorValidationErrors,keepXlinkAttributes, true);
+		return getGeocatMetadata(srvContext,id,forEditing,withEditorValidationErrors,keepXlinkAttributes, true, true);
 	}
-	public Element getGeocatMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes, boolean elementsHide) throws Exception {
+	public Element getGeocatMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes, boolean elementsHide, boolean allowDbmsClosing) throws Exception {
 		Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
 		boolean doXLinks = xmlSerializer.resolveXLinks();
 		Element md = xmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id, srvContext);
@@ -1671,7 +1671,7 @@ public class DataManager {
 		}
 
         if (elementsHide) {
-            hideElements(srvContext, md, id, forEditing);
+            hideElements(srvContext, md, id, forEditing, allowDbmsClosing);
         }
 
 		md.addNamespaceDeclaration(Edit.NAMESPACE);
@@ -2799,7 +2799,7 @@ public class DataManager {
 
 		// --- get parent metadata in read/only mode
         boolean forEditing = false, withValidationErrors = false, keepXlinkAttributes = false;
-        Element parent = getGeocatMetadata(srvContext, parentId, forEditing, withValidationErrors, keepXlinkAttributes,false);
+        Element parent = getGeocatMetadata(srvContext, parentId, forEditing, withValidationErrors, keepXlinkAttributes,false, false);
 
 		Element env = new Element("update");
 		env.addContent(new Element("parentUuid").setText(parentUuid));
@@ -2820,7 +2820,7 @@ public class DataManager {
 				continue;
 			}
 
-            Element child = getGeocatMetadata(srvContext, childId, forEditing, withValidationErrors, keepXlinkAttributes, false);
+            Element child = getGeocatMetadata(srvContext, childId, forEditing, withValidationErrors, keepXlinkAttributes, false, false);
 
 			String childSchema = child.getChild(Edit.RootChild.INFO,
 					Edit.NAMESPACE).getChildText(Edit.Info.Elem.SCHEMA);
@@ -3262,7 +3262,7 @@ public class DataManager {
         dbms.execute("UPDATE CswServerCapabilitiesInfo SET label = ? WHERE langId = ? AND field = ?",  cswCapabilitiesInfo.getAccessConstraints(), langId, "accessConstraints");
     }
 
-    private void hideElements(ServiceContext context, Element elMd, String id, boolean forEditing) throws Exception {
+    private void hideElements(ServiceContext context, Element elMd, String id, boolean forEditing, boolean allowDbmsClosing) throws Exception {
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
         try {
             hideElements(context, dbms, elMd, id, forEditing);
@@ -3270,7 +3270,9 @@ public class DataManager {
             try {
                 dbms.commit();
             }finally {
-                context.getResourceManager().close(Geonet.Res.MAIN_DB, dbms);
+                if(allowDbmsClosing) {
+                    context.getResourceManager().close(Geonet.Res.MAIN_DB, dbms);
+                }
             }
         }
     }
