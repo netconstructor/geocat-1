@@ -531,8 +531,12 @@ public class DataManager {
                 		 user.getChildText("name") + "|" + user.getChildText("profile")
                 		 , true, false));
             }
-            if (groupOwner != null)
+            if (groupOwner != null) {
                 moreFields.add(SearchManager.makeField("_groupOwner", groupOwner, true, true));
+                Element groupInfo = dbms.select("SELECT logouuid, website FROM groups where id=?", Integer.valueOf(groupOwner)).getChild("record");
+                moreFields.add(SearchManager.makeField("groupLogoUuid", groupInfo.getChildText("logouuid"), true, false));
+                moreFields.add(SearchManager.makeField("groupWebsite", groupInfo.getChildText("website"), true, false));
+            }
 
             // get privileges
             List operations = dbms
@@ -2916,7 +2920,7 @@ public class DataManager {
 		Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
 
 		String query ="SELECT schemaId, createDate, changeDate, source, isTemplate, title, "+
-									"uuid, isHarvested, harvestUuid, popularity, rating, owner, displayOrder FROM Metadata WHERE id = " + id;
+									"uuid, isHarvested, harvestUuid, popularity, rating, owner, groupOwner, displayOrder FROM Metadata WHERE id = " + id;
 
 		// add Metadata table infos: schemaId, createDate, changeDate, source,
 		Element rec = dbms.select(query).getChild("record");
@@ -2933,6 +2937,7 @@ public class DataManager {
 		String  popularity = rec.getChildText("popularity");
 		String  rating     = rec.getChildText("rating");
 		String  owner      = rec.getChildText("owner");
+		String  groupOwner      = rec.getChildText("groupowner");
                 String  displayOrder = rec.getChildText("displayorder");
 
 		Element info = new Element(Edit.RootChild.INFO, Edit.NAMESPACE);
@@ -2980,7 +2985,12 @@ public class DataManager {
         else {
             addElement(info, Edit.Info.Elem.IS_PUBLISHED_TO_ALL, "false");
         }
-
+        if (groupOwner != null) {
+        	addElement(info, "groupOwner", groupOwner);
+            Element groupInfo = dbms.select("SELECT logouuid, website FROM groups where id=?", Integer.valueOf(groupOwner)).getChild("record");
+            addElement(info, "groupLogoUuid", groupInfo.getChildText("logouuid"));
+            addElement(info, "groupWebsite", groupInfo.getChildText("website"));
+        }
 		// add owner name
 		query = "SELECT username FROM Users WHERE id = " + owner;
 		Element record = dbms.select(query).getChild("record");
