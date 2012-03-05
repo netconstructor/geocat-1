@@ -54,6 +54,7 @@
         <xsl:apply-templates mode="text" select="gmd:editionDate"/>
         <xsl:apply-templates mode="groupEnum" select=".">
         	<xsl:with-param name="element">presentationForm</xsl:with-param>
+        	<xsl:with-param name="newName">GM03_2Comprehensive.Comprehensive.CI_PresentationFormCode_</xsl:with-param>
         </xsl:apply-templates>
         <xsl:apply-templates mode="text" select="gmd:ISBN"/>
         <xsl:apply-templates mode="text" select="gmd:ISSN"/>

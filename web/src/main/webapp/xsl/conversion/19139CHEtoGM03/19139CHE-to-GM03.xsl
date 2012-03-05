@@ -314,14 +314,16 @@
 
     <xsl:template mode="groupEnum" match="*">
     	<xsl:param name="element"/>
-    	
+    	<xsl:param name="newName"/>
+    	<xsl:if test="*[local-name(.) = $element]">
         <xsl:element name="{$element}">
             <xsl:for-each select="*[local-name(.) = $element]">
-                <xsl:element name="GM03_2Core.Core.{$element}_">
-                    <value><xsl:value-of select="@codeListValue"/></value>
+                <xsl:element name="{$newName}">
+                    <value><xsl:value-of select="*/@codeListValue"/></value>
                 </xsl:element>
             </xsl:for-each>
         </xsl:element>
+      </xsl:if>
     </xsl:template>
 
     <xsl:template mode="enumISO" match="*">
