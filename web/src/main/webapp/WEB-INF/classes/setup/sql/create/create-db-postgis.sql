@@ -238,6 +238,8 @@ CREATE TABLE Groups
     name         varchar(32)    not null,
     description  varchar(255),
     email        varchar(32),
+    logouuid     varchar(250),
+    website      varchar(255),
     referrer     int,
 
     primary key(id),

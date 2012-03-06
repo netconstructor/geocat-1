@@ -438,6 +438,7 @@ public class DataManager {
             int id$ = new Integer(id);
 
             // get metadata, extracting and indexing any xlinks
+
             Element md   = xmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id, servContext);
 
             // get metadata table fields
@@ -531,11 +532,14 @@ public class DataManager {
                 		 user.getChildText("name") + "|" + user.getChildText("profile")
                 		 , true, false));
             }
-            if (groupOwner != null) {
+            try {
+            	int groupOwnerId = Integer.valueOf(groupOwner);
                 moreFields.add(SearchManager.makeField("_groupOwner", groupOwner, true, true));
-                Element groupInfo = dbms.select("SELECT logouuid, website FROM groups where id=?", Integer.valueOf(groupOwner)).getChild("record");
+				Element groupInfo = dbms.select("SELECT logouuid, website FROM groups where id=?", groupOwnerId ).getChild("record");
                 moreFields.add(SearchManager.makeField("groupLogoUuid", groupInfo.getChildText("logouuid"), true, false));
                 moreFields.add(SearchManager.makeField("groupWebsite", groupInfo.getChildText("website"), true, false));
+            } catch (NumberFormatException nfe) {
+            	// that's ok, sometime groupOwner is blank
             }
 
             // get privileges
@@ -2985,11 +2989,14 @@ public class DataManager {
         else {
             addElement(info, Edit.Info.Elem.IS_PUBLISHED_TO_ALL, "false");
         }
-        if (groupOwner != null) {
+        try {
+        	Integer groupOwnerId = Integer.valueOf(groupOwner);
         	addElement(info, "groupOwner", groupOwner);
-            Element groupInfo = dbms.select("SELECT logouuid, website FROM groups where id=?", Integer.valueOf(groupOwner)).getChild("record");
+			Element groupInfo = dbms.select("SELECT logouuid, website FROM groups where id=?", groupOwnerId).getChild("record");
             addElement(info, "groupLogoUuid", groupInfo.getChildText("logouuid"));
             addElement(info, "groupWebsite", groupInfo.getChildText("website"));
+        } catch (NumberFormatException nfe) {
+        	// that's ok, sometime groupOwner is blank
         }
 		// add owner name
 		query = "SELECT username FROM Users WHERE id = " + owner;
