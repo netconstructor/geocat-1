@@ -50,20 +50,21 @@
 
 	<!-- ================================================================= -->
 	
+	<!--  swisstopo says they want to be able to put custom names in
+	 See 154971 and 140141
 	<xsl:template match="gmd:metadataStandardName" priority="10">
 		<xsl:copy>
 			<gco:CharacterString>GM03 2+</gco:CharacterString>
 		</xsl:copy>
 	</xsl:template>
 
-	<!-- ================================================================= -->
 	
 	<xsl:template match="gmd:metadataStandardVersion" priority="10">
 		<xsl:copy>
 			<gco:CharacterString>1.0</gco:CharacterString>
 		</xsl:copy>
 	</xsl:template>
-	
+ -->	
 	<!-- ================================================================= -->
 	<!-- Set local identifier to the first 2 letters of iso code. Locale ids
 	are used for multilingual charcterString -->
