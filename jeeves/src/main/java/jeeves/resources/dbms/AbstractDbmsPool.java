@@ -243,6 +243,12 @@ public abstract class AbstractDbmsPool implements ResourceProvider {
 
 	//---------------------------------------------------------------------------
 
+	protected void warning(String message) {
+		Log.warning(Log.DBMSPOOL, message);
+	}
+
+	//---------------------------------------------------------------------------
+
 }
 
 // =============================================================================

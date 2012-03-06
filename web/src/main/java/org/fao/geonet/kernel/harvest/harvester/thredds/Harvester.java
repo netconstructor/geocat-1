@@ -255,7 +255,7 @@ class Harvester
 			if (!harvestUris.contains(localUri)) {
 				for (RecordInfo record: localUris.getRecords(localUri)) {
 					log.debug ("  - Removing deleted metadata with id: " + record.id);
-					dataMan.deleteMetadata (context.getUserSession(), dbms, record.id);
+					dataMan.deleteMetadata (context, dbms, record.id);
 		
 					if (record.isTemplate.equals("s")) {
 						//--- Uncache xlinks if a subtemplate
@@ -444,7 +444,7 @@ class Harvester
         int userid = 1;
         String group = null, isTemplate = null, docType = null, title = null, category = null;
         boolean ufo = false, indexImmediate = false;
-        String id = dataMan.insertMetadata(context.getUserSession(), dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, params.uuid,
+        String id = dataMan.insertMetadata(context, dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, params.uuid,
                      isTemplate, docType, title, category, df.format(date), df.format(date), ufo, indexImmediate);
 
 		int iId = Integer.parseInt(id);
@@ -553,7 +553,7 @@ class Harvester
 		if (localRecords == null) return;
 
 		for (RecordInfo record: localRecords) {
-			dataMan.deleteMetadata (context.getUserSession(), dbms, record.id);
+			dataMan.deleteMetadata (context, dbms, record.id);
 
 			if (record.isTemplate.equals("s")) {
 				//--- Uncache xlinks if a subtemplate
@@ -782,11 +782,11 @@ class Harvester
 			//--- supplied to the user for choice)
 			Element md = null;
 			if (isCollection) {
-				String difToIsoStyleSheet = schemaMan.getSchemaDir(params.outputSchemaOnCollectionsDIF) + Geonet.Path.DIF_STYLESHEET;
+				String difToIsoStyleSheet = schemaMan.getSchemaDir(params.outputSchemaOnCollectionsDIF) + Geonet.Path.DIF_STYLESHEETS + "/DIFToISO.xsl";
 				log.info("Transforming collection dataset to "+params.outputSchemaOnCollectionsDIF);
 				md = Xml.transform(dif, difToIsoStyleSheet);
 			} else {
-				String difToIsoStyleSheet = schemaMan.getSchemaDir(params.outputSchemaOnAtomicsDIF) + Geonet.Path.DIF_STYLESHEET;
+				String difToIsoStyleSheet = schemaMan.getSchemaDir(params.outputSchemaOnAtomicsDIF) + Geonet.Path.DIF_STYLESHEETS + "/DIFToISO.xsl";
 				log.info("Transforming atomic dataset to "+params.outputSchemaOnAtomicsDIF);
 				md = Xml.transform(dif, difToIsoStyleSheet);
 			}
@@ -913,13 +913,13 @@ class Harvester
 			schemaDir = schemaMan.getSchemaDir(params.outputSchemaOnCollectionsDIF);
 		}
 
-		cdmCoordsToIsoKeywordsStyleSheet = schemaDir + Geonet.Path.CONVERT_STYLESHEETS + "CDMCoords-to-ISO19139Keywords.xsl";
+		cdmCoordsToIsoKeywordsStyleSheet = schemaDir + Geonet.Path.DIF_STYLESHEETS + "/CDMCoords-to-ISO19139Keywords.xsl";
 
 		// -- FIXME: This is still schema dependent and needs to be improved
 		// -- What we wait upon is finalization of the new coverage data parameters
 		// -- metadata elements (inside MD_ContentInformation) in ISO19115/19139
 		if (schemaDir.contains("iso19139.mcp")) {
-			cdmCoordsToIsoMcpDataParametersStyleSheet = schemaDir + Geonet.Path.CONVERT_STYLESHEETS + "CDMCoords-to-ISO19139MCPDataParameters.xsl";
+			cdmCoordsToIsoMcpDataParametersStyleSheet = schemaDir + Geonet.Path.DIF_STYLESHEETS + "/CDMCoords-to-ISO19139MCPDataParameters.xsl";
 		} else {
 			cdmCoordsToIsoMcpDataParametersStyleSheet = null;
 		}
@@ -1284,7 +1284,7 @@ class Harvester
 			if (name == null) {
 				log.debug ("    - Skipping removed category with id:"+ catId);
 			} else {
-				dataMan.setCategory (context.getUserSession(), dbms, id, catId);
+				dataMan.setCategory (context, dbms, id, catId);
 			}
 		}
 	}
@@ -1309,7 +1309,7 @@ class Harvester
 
 					//--- allow only: view, dynamic, featured
 					if (opId == 0 || opId == 5 || opId == 6) {
-						dataMan.setOperation(context.getUserSession(), dbms, id, priv.getGroupId(), opId +"");
+						dataMan.setOperation(context, dbms, id, priv.getGroupId(), opId +"");
 					} else {
 						log.debug("       --> "+ name +" (skipped)");
 					}
@@ -1376,6 +1376,7 @@ class Harvester
 		collectionParams.templateId = params.collectionMetadataTemplate;
 		collectionParams.url = params.url;
 		collectionParams.uuid = params.uuid;
+		collectionParams.outputSchema = params.outputSchemaOnCollectionsFragments;
 		return collectionParams;
 	}
 
@@ -1396,6 +1397,7 @@ class Harvester
 		atomicParams.templateId = params.atomicMetadataTemplate;
 		atomicParams.url = params.url;
 		atomicParams.uuid = params.uuid;
+		atomicParams.outputSchema = params.outputSchemaOnAtomicsFragments;
 		return atomicParams;
 	}
 

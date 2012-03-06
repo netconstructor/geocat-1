@@ -187,7 +187,7 @@ public class GetDomain extends AbstractOperation implements CatalogService
 
 			GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 			SearchManager sm = gc.getSearchmanager();
-
+			
 			IndexReader reader = sm.getIndexReader(context.getLanguage());
 			try {
 				BooleanQuery groupsQuery = (BooleanQuery) CatalogSearcher.getGroupsQuery(context);
@@ -209,7 +209,8 @@ public class GetDomain extends AbstractOperation implements CatalogService
                     query = groupsQuery;
                 }
 
-				Sort   sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)), null);
+				List<Pair<String, Boolean>> sortFields = Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true));
+                Sort   sort = LuceneSearcher.makeSort(sortFields, context.getLanguage(), false);
 				CachingWrapperFilter filter = null;
 
 				Pair<TopDocs,Element> searchResults = LuceneSearcher.doSearchAndMakeSummary(

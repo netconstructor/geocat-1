@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.sql.Connection;
 
 import javax.sql.DataSource;
 
@@ -37,6 +38,7 @@ import jeeves.server.resources.ResourceListener;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.geotools.data.DataStore;
+
 import org.geotools.data.postgis.PostgisDataStoreFactory;
 import org.jdom.Element;
 
@@ -69,16 +71,6 @@ public class ApacheDBCPool extends AbstractDbmsPool {
 
 		parseJeevesDBConfig(config);
 
-		if (!basicDataSource.getUrl().toUpperCase().contains("ORACLE")) {
-			// Use TRANSACTION_SERIALIZABLE for everything as we don't want 
-			// commits coming in whilst doing reads esp during audit trail changes
-			// collected for subversion
-			basicDataSource.setDefaultTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-		} else {
-			// except for ORACLE because it returns unable to serialize a lot
-			basicDataSource.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);		 
-		}
-
 		setDataSource((DataSource)basicDataSource);
 		setDataStore(createDataStore());
 		debug(toString());
@@ -103,6 +95,23 @@ public class ApacheDBCPool extends AbstractDbmsPool {
 		String minEvictableIdleTimeMillisStr = config.getChildText(Jeeves.Res.Pool.MIN_EVICTABLE_IDLE_TIME_MILLIS);
 		String numTestsPerEvictionRunStr = config.getChildText(Jeeves.Res.Pool.NUM_TESTS_PER_EVICTION_RUN);
 		String validationQuery = config.getChildText(Jeeves.Res.Pool.VALIDATION_QUERY);
+		String transactionIsolation = config.getChildText(Jeeves.Res.Pool.TRANSACTION_ISOLATION);
+		if (transactionIsolation == null) {
+			// use READ_COMMITTED for everything by default except McKoi which 
+			// only supports SERIALIZABLE 
+			transactionIsolation = Jeeves.Res.Pool.TRANSACTION_ISOLATION_READ_COMMITTED;
+			if (url.toUpperCase().contains("MCKOI")) transactionIsolation = Jeeves.Res.Pool.TRANSACTION_ISOLATION_SERIALIZABLE;
+		} else {
+			Set<String> isolations = new HashSet<String>();
+			isolations.add(Jeeves.Res.Pool.TRANSACTION_ISOLATION_SERIALIZABLE);
+			isolations.add(Jeeves.Res.Pool.TRANSACTION_ISOLATION_READ_COMMITTED);
+			isolations.add(Jeeves.Res.Pool.TRANSACTION_ISOLATION_REPEATABLE_READ);
+
+			if (!isolations.contains(transactionIsolation.toUpperCase())) {
+				throw new IllegalArgumentException("Invalid "+Jeeves.Res.Pool.TRANSACTION_ISOLATION+" parameter value: "+transactionIsolation+". Should be one of "+isolations.toString());
+			}
+		}
+		warning("Using transaction isolation setting "+transactionIsolation);
 		
 		this.name = url;
 

@@ -228,8 +228,8 @@ public class FragmentHarvester {
 
 	//---------------------------------------------------------------------------
 	/** 
-     * Add a random uuid to the xml fragment if one hasn't been provided and the 
-     * detected schema of the xml frgament  
+     * Add a random uuid to the xml fragment if one hasn't been provided and 
+		 * the schema of the xml fragment  
      *   
      * @param fragment		fragment to which metadata should be added 
      * 
@@ -244,16 +244,17 @@ public class FragmentHarvester {
 			log.warning("  - Metadata fragment did not have uuid! Fragment XML is "+ Xml.getString(fragment));
 		}
 
-		// Add schema
-		Element md = (Element) fragment.getChildren().get(0);
-
-		try {
-			String schema = dataMan.autodetectSchema (md); // e.g. iso19139; 
-			fragment.setAttribute("schema", schema);
-		} catch (Exception e) {
-			log.warning("Skipping metadata with problem schema: "+e.getMessage());
-			harvestSummary.fragmentsUnknownSchema ++;
+		// Add schema as an attribute (if not already present)
+		String setSchema = fragment.getAttributeValue("schema");
+		if (setSchema == null || setSchema.trim().length() == 0) {
+			fragment.setAttribute("schema", params.outputSchema);
+		} else {
+			if (!dataMan.existsSchema(setSchema)) {
+				log.warning("Skipping fragment with schema set to unknown schema: "+setSchema);
+				harvestSummary.fragmentsUnknownSchema ++;
+			}
 		}
+
 	}
 	
 	//---------------------------------------------------------------------------
@@ -301,7 +302,7 @@ public class FragmentHarvester {
         int userid = 1;
         String group = null, isTemplate = null, docType = null, title = null, category = null;
         boolean ufo = false, indexImmediate = false;
-        String id = dataMan.insertMetadata(context.getUserSession(), dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, params.uuid,
+        String id = dataMan.insertMetadata(context, dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, params.uuid,
                          isTemplate, docType, title, category, df.format(date), df.format(date), ufo, indexImmediate);
 
 		int iId = Integer.parseInt(id);
@@ -414,8 +415,7 @@ public class FragmentHarvester {
 		log.debug("	- Attempting to insert metadata record with link");
 		DateFormat df = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss");
 		Date date = new Date();
-		String templateSchema = dataMan.autodetectSchema(template);
-		template = dataMan.setUUID(templateSchema, recUuid, template); 
+		template = dataMan.setUUID(params.outputSchema, recUuid, template); 
 
         //
         // insert metadata
@@ -423,14 +423,14 @@ public class FragmentHarvester {
         int userid = 1;
         String group = null, isTemplate = null, docType = null, title = null, category = null;
         boolean ufo = false, indexImmediate = false;
-        String id = dataMan.insertMetadata(context.getUserSession(), dbms, templateSchema, template, context.getSerialFactory().getSerial(dbms, "Metadata"), recUuid, userid, group, params.uuid,
+        String id = dataMan.insertMetadata(context, dbms, params.outputSchema, template, context.getSerialFactory().getSerial(dbms, "Metadata"), recUuid, userid, group, params.uuid,
                          isTemplate, docType, title, category, df.format(date), df.format(date), ufo, indexImmediate);
 
 		int iId = Integer.parseInt(id);
 		
 		log.debug("	- Set privileges, category, template and harvested");
 		addPrivileges(id);
-		dataMan.setCategory (context.getUserSession(), dbms, id, params.isoCategory);
+		dataMan.setCategory (context, dbms, id, params.isoCategory);
 		
 		dataMan.setTemplateExt(dbms, iId, "n", null); 
 		dataMan.setHarvestedExt(dbms, iId, params.uuid, harvestUri);
@@ -455,7 +455,7 @@ public class FragmentHarvester {
 			if (name == null) {
 				log.debug ("    - Skipping removed category with id:"+ catId);
 			} else {
-				dataMan.setCategory (context.getUserSession(), dbms, id, catId);
+				dataMan.setCategory (context, dbms, id, catId);
 			}
 		}
 	}
@@ -479,7 +479,7 @@ public class FragmentHarvester {
 
 					//--- allow only: view, dynamic, featured
 					if (opId == 0 || opId == 5 || opId == 6) {
-						dataMan.setOperation(context.getUserSession(), dbms, id, priv.getGroupId(), opId +"");
+						dataMan.setOperation(context, dbms, id, priv.getGroupId(), opId +"");
 					} else {
 						log.debug("       --> "+ name +" (skipped)");
 					}
@@ -505,6 +505,7 @@ public class FragmentHarvester {
 		public String url;
 		public String uuid;
 		public String templateId;
+		public String outputSchema;
 		public String isoCategory;
 		public Boolean createSubtemplates;
 		public Iterable<Privileges> privileges;

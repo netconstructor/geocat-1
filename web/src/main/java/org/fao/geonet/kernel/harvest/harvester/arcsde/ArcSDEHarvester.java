@@ -234,7 +234,7 @@ public class ArcSDEHarvester extends AbstractHarvester {
 		for(Element existingId : existingMetadata) {
 			String ex$ = existingId.getChildText("id");
 			if(!idsForHarvestingResult.contains(ex$)) {
-				dataMan.deleteMetadataGroup(context.getUserSession(), dbms, ex$);
+				dataMan.deleteMetadataGroup(context, dbms, ex$);
 				result.removed++;
 			}
 		}			
@@ -249,8 +249,7 @@ public class ArcSDEHarvester extends AbstractHarvester {
         boolean ufo = false;
         boolean index = false;
         String language = context.getLanguage();
-        UserSession session = null;
-        dataMan.updateMetadata(session, dbms, id, xml, validate, ufo, index, language, new ISODate().toString(), false, false);
+        dataMan.updateMetadata(context, dbms, id, xml, validate, ufo, index, language, new ISODate().toString(), false, false);
 
 		dbms.execute("DELETE FROM OperationAllowed WHERE metadataId=?", Integer.parseInt(id));
 		addPrivileges(id, localGroups, dbms);
@@ -282,7 +281,7 @@ public class ArcSDEHarvester extends AbstractHarvester {
         int userId = 1;
         String docType = null, title = null, isTemplate = null, group = null, category = null;
         boolean ufo = false, indexImmediate = false;
-        String id = dataMan.insertMetadata(context.getUserSession(), dbms, schema, xml, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userId, group, source,
+        String id = dataMan.insertMetadata(context, dbms, schema, xml, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userId, group, source,
                          isTemplate, docType, title, category, createDate, createDate, ufo, indexImmediate);
 
 
@@ -312,7 +311,7 @@ public class ArcSDEHarvester extends AbstractHarvester {
 			}
 			else {
 				System.out.println("    - Setting category : "+ name);
-				dataMan.setCategory(context.getUserSession(), dbms, id, catId);
+				dataMan.setCategory(context, dbms, id, catId);
 			}
 		}
 	}	
@@ -333,7 +332,7 @@ public class ArcSDEHarvester extends AbstractHarvester {
 					//--- allow only: view, dynamic, featured
 					if (opId == 0 || opId == 5 || opId == 6) {
 						System.out.println("       --> "+ name);
-						dataMan.setOperation(context.getUserSession(), dbms, id, priv.getGroupId(), opId +"");
+						dataMan.setOperation(context, dbms, id, priv.getGroupId(), opId +"");
 					}
 					else {
 						System.out.println("       --> "+ name +" (skipped)");

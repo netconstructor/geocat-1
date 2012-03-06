@@ -89,8 +89,7 @@ public class Thesaurus {
 	 * @param type
 	 * @param dname
 	 */
-	public Thesaurus(String fname, String type, String dname,
-			File thesaurusFile) {
+	public Thesaurus(String fname, String type, String dname, File thesaurusFile) {
 		super();
 		this.fname = fname;
 		this.type = type;
@@ -141,10 +140,8 @@ public class Thesaurus {
 	 * @param dname
 	 * @return
 	 */
-	public static String buildThesaurusKey(String fname, String type,
-			String dname) {
-		return type + "." + dname + "."
-				+ fname.substring(0, fname.indexOf(".rdf"));
+	public static String buildThesaurusKey(String fname, String type, String dname) {
+		return type + "." + dname + "." + fname.substring(0, fname.indexOf(".rdf"));
 	}
 
 	public LocalRepository getRepository() {
@@ -155,13 +152,22 @@ public class Thesaurus {
 		this.repository = repository;
 	}
 
-	public QueryResultsTable performRequest(String query) throws IOException,
-			MalformedQueryException, QueryEvaluationException,
-			AccessDeniedException {
-		System.out.println("Query : " + query);
+    /**
+     * TODO javadoc.
+     *
+     * @param query
+     * @return
+     * @throws IOException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     * @throws AccessDeniedException
+     */
+	public QueryResultsTable performRequest(String query) throws IOException, MalformedQueryException,
+            QueryEvaluationException, AccessDeniedException {
+        Log.debug(Geonet.THESAURUS, "Query : " + query);
+
         //printResultsTable(resultsTable);
-		return repository.performTableQuery(
-				QueryLanguage.SERQL, query);
+		return repository.performTableQuery(QueryLanguage.SERQL, query);
 	}
 
 	/**
@@ -184,7 +190,6 @@ public class Thesaurus {
 				}
 				System.out.print("\t");
 			}
-			System.out.println();
 		}
 	}
 
@@ -220,11 +225,23 @@ public class Thesaurus {
 		return mySubject;
 	}
 
-	public void addElement(String code, String prefLab, String note, 
-			String east, String west, String south, String north, 
-			String lang)
-		throws IOException,
-			AccessDeniedException, GraphException {
+    /**
+     * TODO javadoc.
+     *
+     * @param code
+     * @param prefLab
+     * @param note
+     * @param east
+     * @param west
+     * @param south
+     * @param north
+     * @param lang
+     * @throws IOException
+     * @throws AccessDeniedException
+     * @throws GraphException
+     */
+	public void addElement(String code, String prefLab, String note, String east, String west, String south,
+                           String north, String lang) throws IOException, AccessDeniedException, GraphException {
 		Graph myGraph = new org.openrdf.model.impl.GraphImpl();
 
 		ValueFactory myFactory = myGraph.getValueFactory();
@@ -314,9 +331,23 @@ public class Thesaurus {
         myGraph.remove(subject, null, null);
     }
 
-	public URI updateElement(String namespace, String id, String prefLab, String note, String lang)
-			throws IOException, MalformedQueryException,
-			QueryEvaluationException, AccessDeniedException, GraphException {
+    /**
+     * TODO javadoc.
+     *
+     * @param namespace
+     * @param id
+     * @param prefLab
+     * @param note
+     * @param lang
+     * @return
+     * @throws IOException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     * @throws AccessDeniedException
+     * @throws GraphException
+     */
+	public URI updateElement(String namespace, String id, String prefLab, String note, String lang) throws IOException,
+            MalformedQueryException, QueryEvaluationException, AccessDeniedException, GraphException {
 		// Get thesaurus graph
 		Graph myGraph = repository.getGraph();		
 		
@@ -370,10 +401,27 @@ public class Thesaurus {
 		return subject;
 	}
 
-	public void updateElement(String namespace, String id, String prefLab, String note,
-			String east, String west, String south, String north, String lang)
-			throws AccessDeniedException, IOException, MalformedQueryException,
-			QueryEvaluationException, GraphException {
+    /**
+     * TODO javadoc.
+     *
+     * @param namespace
+     * @param id
+     * @param prefLab
+     * @param note
+     * @param east
+     * @param west
+     * @param south
+     * @param north
+     * @param lang
+     * @throws AccessDeniedException
+     * @throws IOException
+     * @throws MalformedQueryException
+     * @throws QueryEvaluationException
+     * @throws GraphException
+     */
+	public void updateElement(String namespace, String id, String prefLab, String note, String east, String west,
+                              String south, String north, String lang) throws AccessDeniedException, IOException,
+            MalformedQueryException, QueryEvaluationException, GraphException {
 
 		// update label and definition
 		URI subject = updateElement(namespace, id, prefLab, note, lang);
@@ -430,6 +478,14 @@ public class Thesaurus {
 		}
 	}
 
+    /**
+     * TODO javadoc.
+     *
+     * @param namespace
+     * @param code
+     * @return
+     * @throws AccessDeniedException
+     */
 	public boolean isFreeCode(String namespace, String code) throws AccessDeniedException {
 		boolean res = true;				
 		Graph myGraph = repository.getGraph();
@@ -446,6 +502,15 @@ public class Thesaurus {
 		return res;
 	}
 
+    /**
+     * TODO javadoc.
+     *
+     * @param namespace
+     * @param oldcode
+     * @param newcode
+     * @throws AccessDeniedException
+     * @throws IOException
+     */
 	public void updateCode(String namespace, String oldcode, String newcode) throws AccessDeniedException, IOException {
 		Graph myGraph = repository.getGraph();
 		//Graph myTmpGraph = new org.openrdf.model.impl.GraphImpl();
@@ -509,7 +574,7 @@ public class Thesaurus {
             }
 
         } catch (Exception ex) {
-            Log.info(Geonet.THESAURUS_MAN, "Error getting thesaurus info: " + ex.getMessage());
+            Log.error(Geonet.THESAURUS_MAN, "Error getting thesaurus info: " + ex.getMessage());
         }
     }
 

@@ -25,7 +25,10 @@ package org.fao.geonet.kernel;
 
 import jeeves.constants.Jeeves;
 import jeeves.resources.dbms.Dbms;
+<<<<<<< HEAD
 import jeeves.server.UserSession;
+=======
+>>>>>>> mirror/master
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
@@ -126,14 +129,14 @@ public class XmlSerializerSvn extends XmlSerializer {
      * @param owner
      * @param groupOwner
      * @param docType
-     * @param session 
+     * @param context 
      * @return
      * @throws SQLException
      */
 	public String insert(Dbms dbms, String schema, Element xml, int id,
 					 String source, String uuid, String createDate,
 					 String changeDate, String isTemplate, String title,
-			 int owner, String groupOwner, String docType, UserSession session) 
+			 int owner, String groupOwner, String docType, ServiceContext context) 
 			 throws Exception {
 
 		return insertDb(dbms, schema, xml, id, source, uuid, createDate, changeDate, isTemplate, xml.getQualifiedName(), title, owner, groupOwner, docType);
@@ -151,11 +154,15 @@ public class XmlSerializerSvn extends XmlSerializer {
      * @param xml
      * @param changeDate
      * @param updateDateStamp
-     * @param userId 
+     * @param context 
      *
      * @throws SQLException, SVNException
      */
+<<<<<<< HEAD
 	public void update(Dbms dbms, String id, Element xml, String changeDate, boolean updateDateStamp, UserSession session, ServiceContext srvContext) throws Exception {
+=======
+	public void update(Dbms dbms, String id, Element xml, String changeDate, boolean updateDateStamp, ServiceContext context) throws Exception {
+>>>>>>> mirror/master
 
 		// old XML comes from the database
 	  Element oldXml = super.internalSelect(dbms, "metadata", id, srvContext);		
@@ -167,7 +174,7 @@ public class XmlSerializerSvn extends XmlSerializer {
 		} else {
 			// set subversion manager to record history on this metadata when commit
 			// takes place
-			svnMan.setHistory(dbms, id, session);
+			svnMan.setHistory(dbms, id, context);
 		}
 
 	}
@@ -179,16 +186,16 @@ public class XmlSerializerSvn extends XmlSerializer {
      * @param dbms
      * @param table
      * @param id
-     * @param session
+     * @param context
      * @throws SQLException, SVNException
      */
-	public void delete(Dbms dbms, String table, String id, UserSession session) throws Exception {
+	public void delete(Dbms dbms, String table, String id, ServiceContext context) throws Exception {
 
 		deleteDb(dbms, table, id);
 		if (svnMan == null) { // do nothing
 			Log.error(Geonet.DATA_MANAGER, "SVN repository for metadata enabled but no repository available");
 		} else {
-			svnMan.deleteDir(id, session);
+			svnMan.deleteDir(id, context);
 		}
 
 	}

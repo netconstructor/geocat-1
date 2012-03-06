@@ -134,6 +134,12 @@
         <allow service="csw.config.get"/>
         <allow service="csw.config.set"/>
 
+        <!-- csw publication -->
+        <allow service="csw-publication"/>
+
+        <allow service="csw.customelementset.get"/>
+        <allow service="csw.customelementset.set"/>
+
 		<!-- Test i18n - under administrator for performance reasons -->
 		<allow service="test.i18n"/>
 		<allow service="test.i18n.xml"/>
@@ -413,12 +419,20 @@
 		<!-- Metadata export services -->
 		<allow service="pdf.search"/>
 		<allow service="xml_dublin-core"/>
+		<allow service="xml_dublin-coreTooai_dc"/>
 		<allow service="xml_fgdc-std"/>
+		<allow service="xml_fgdc-stdTooai_dc"/>
 		<allow service="xml_iso19115to19139"/>
 		<allow service="xml_iso19115toarccatalog8"/>
+		<allow service="xml_iso19115Tooai_dc"/>
 		<allow service="xml_iso19139"/>
+		<allow service="xml_iso19139Tooai_dc"/>
+	  <allow service="xml_iso19110"/>
+	  <allow service="xml_iso19110Tooai_dc"/>
+	  <allow service="xml_csw-record"/>
+	  <allow service="xml_csw-recordTooai_dc"/>
 
-		<!-- RSS services -->
+	  <!-- RSS services -->
 		<allow service="rss.latest"/>
 		<allow service="rss.search"/>
 		<allow service="rss.present"/>
@@ -436,7 +450,7 @@
 		<!-- Allow GeoNetwork Mapping services -->
 		<allow service="xml.group.list"/>
 
-		<!-- Catalogue Services for the Web -->
+		<!-- Catalogue Services for the Web - Discovery -->
 		<allow service="csw"/>
 
 		<!-- Open Archive Initiative, Protocol for Metadata Harvesting -->

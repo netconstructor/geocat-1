@@ -12,7 +12,7 @@ The protocol operations are described in the document **OpenGIS® Catalogue Serv
 
 **http://portal.opengeospatial.org/files/?artifact_id=20555**
 
-GeoNetwork it's compliant with 2.0.2 version of specification supporting the next CSW operations:
+GeoNetwork is compliant with the 2.0.2 version of the specification, supporting the following CSW operations:
 
 - :ref:`GetCapabilities`
 
@@ -22,24 +22,30 @@ GeoNetwork it's compliant with 2.0.2 version of specification supporting the nex
 
 - :ref:`GetRecords`
 
+- :ref:`Harvest`
+
 - :ref:`Transaction`
 
-In this chapter a brief description of the different operations
-supported in GeoNetwork and some usage examples. To get a complete
+This chapter briefly describes the different operations
+supported in GeoNetwork and gives some usage examples. To get a complete
 reference of the operations and parameters of each CSW operation refer
 to the document **OpenGIS® Catalogue Services Specification**.
 
 The invocation of the operations from a Java client is analogous
-as described in before chapter for XML services.
+as described in the chapter for XML services.
 
 CSW operations
 --------------
 
-The GeoNetwork opensource catalog CSW service operations are accesible thought the url:
-
-**http://localhost:8080/geonetwork/srv/en/csw**
+The CSW operations are divided in 2 types: Discovery and Publication. The Discovery
+operations are used to query the server about its capacities and to search and retrieve metadata from it. The Publication
+opertions (Harvest and Transaction) are used to insert metadata into the catalog.
 
 The CSW operations can be accesed using POST, GET methods and SOAP encoding.
+
+The GeoNetwork opensource catalog CSW Discovery service operations are accessible through the url:
+
+**http://localhost:8080/geonetwork/srv/en/csw**
 
 .. _GetCapabilities:
 
@@ -260,6 +266,98 @@ SOAP request::
     </env:Body>
   </env:Envelope>
 
+
+The GeoNetwork opensource catalog CSW Publication service operations are accessible through the url:
+
+**http://localhost:8080/geonetwork/srv/en/csw-publication**
+
+.. _Harvest:
+
+Harvest
+```````````
+
+The **Harvest** operation defines an interface for indirectly creating, modifying and deleting catalogue records by invoking
+a CSW client harvesting run from the server to a specified target. It can be run in either synchronous or asynchronous mode
+and the harvesting run can be executed just once or periodically. This operation requires user authentification to be invoked.
+
+Synchronous one-run Harvest example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+POST request::
+
+  Url:
+  http://localhost:8080/geonetwork/srv/en/csw-publication
+
+  Content-type:
+  application/xml
+
+  Post data:
+    <?xml version="1.0" encoding="UTF-8"?>
+    <csw:Harvest xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gmd="http://www.isotc211.org/2005/gmd" service="CSW" version="2.0.2">
+        <csw:Source>http://[ URL to the target CSW server ]?request=GetCapabilities&amp;service=CSW&amp;version=2.0.2</csw:Source>
+        <csw:ResourceType>http://www.isotc211.org/schemas/2005/gmd/</csw:ResourceType>
+    </csw:Harvest>
+
+GET request::
+
+  Url:
+    http://localhost:8080/geonetwork/srv/en/csw-publication?request=Harvest&service=CSW&version=2.0.2&Source=http://[ URL to the target CSW server ]&ResourceType=http://www.isotc211.org/schemas/2005/gmd/
+
+Response::
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <csw:HarvestResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
+        <csw:TransactionResponse>
+            <csw:TransactionSummary>
+                <csw:totalInserted>22</csw:totalInserted>
+                <csw:totalUpdated>0</csw:totalUpdated>
+                <csw:totalDeleted>0</csw:totalDeleted>
+            </csw:TransactionSummary>
+        </csw:TransactionResponse>
+    </csw:HarvestResponse>
+
+
+Aynchronous one-run Harvest example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+POST request::
+
+  Url:
+  http://localhost:8080/geonetwork/srv/en/csw-publication
+
+  Content-type:
+  application/xml
+
+  Post data:
+    <?xml version="1.0" encoding="UTF-8"?>
+    <csw:Harvest xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gmd="http://www.isotc211.org/2005/gmd" service="CSW" version="2.0.2">
+        <csw:Source>http://[ URL to the target CSW server ]?request=GetCapabilities&amp;service=CSW&amp;version=2.0.2</csw:Source>
+        <csw:ResourceType>http://www.isotc211.org/schemas/2005/gmd/</csw:ResourceType>
+        <csw:ResponseHandler>[ URI or email address of response handler ]</csw:ResponseHandler>
+    </csw:Harvest>
+
+GET request::
+
+  Url:
+    http://localhost:8080/geonetwork/srv/en/csw-publication?request=Harvest&service=CSW&version=2.0.2&Source=http://[ URL to the target CSW server ]&ResourceType=http://www.isotc211.org/schemas/2005/gmd/&ResponseHandler=[ URI or email address of response handler ]
+
+Response::
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <csw:HarvestResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
+      <csw:Acknowledgement timeStamp="2011-12-05T15:13:59">
+        <csw:EchoedRequest>
+            <csw:Harvest xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gmd="http://www.isotc211.org/2005/gmd" service="CSW" version="2.0.2">
+                <csw:Source>http://[ URL to the target CSW server ]?request=GetCapabilities&amp;service=CSW&amp;version=2.0.2</csw:Source>
+                <csw:ResourceType>http://www.isotc211.org/schemas/2005/gmd/</csw:ResourceType>
+                <csw:ResponseHandler>[ URI or email address of response handler ]</csw:ResponseHandler>
+            </csw:Harvest>
+        </csw:EchoedRequest>
+        <csw:RequestId>e7684bec-1fa9-4053-814f-7ae970d7a4a1</csw:RequestId>
+      </csw:Acknowledgement>
+    </csw:HarvestResponse>
+
+
 .. _Transaction:
 
 Transaction
@@ -275,7 +373,7 @@ Insert operation example
 POST request::
 
   Url:
-  http://localhost:8080/geonetwork/srv/en/csw
+  http://localhost:8080/geonetwork/srv/en/csw-publication
 
   Content-type:
   application/xml
@@ -292,7 +390,6 @@ POST request::
 
 Response::
 
-  Url:
   <?xml version="1.0" encoding="UTF-8"?>
   <csw:TransactionResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
     <csw:TransactionSummary>

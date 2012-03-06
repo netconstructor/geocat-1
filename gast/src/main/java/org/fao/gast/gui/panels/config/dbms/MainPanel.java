@@ -65,15 +65,15 @@ public class MainPanel extends FormPanel
 		//--- show proper panel
 
 		String url = Lib.config.getDbmsURL();
+		boolean jndi = Lib.config.getDbmsJNDI();
 
 		for (DbmsPanel p : panels)
-			if (p.matches(url))
-			{
+			if (p.matches(url, jndi)) {
 				p.retrieve();
 				multiPanel.show(p.getLabel());
 				cmbDbms.setSelectedItem(p.getLabel());
 				break;
-			}
+			} 
 
 		//--- setup combobox
 
@@ -88,11 +88,22 @@ public class MainPanel extends FormPanel
 
 	public void actionPerformed(ActionEvent e)
 	{
+	
+		String cmd = e.getActionCommand();
 		DbmsPanel p = panels[cmbDbms.getSelectedIndex()];
 
 		try
 		{
-			p.save();
+			boolean createNew;
+			if (cmd.equals("overwrite")) {
+				createNew = false;
+				p.save(createNew);
+			} else if (cmd.equals("saveasnew")) {
+				createNew = true;
+				p.save(createNew);
+			} else {
+				throw new Exception("Received unknown action command : "+cmd);
+			}
 			Lib.gui.showInfo(this, Messages.getString("configSaved"));
 		}
 
@@ -106,6 +117,7 @@ public class MainPanel extends FormPanel
 
 		catch (Exception ex)
 		{
+			ex.printStackTrace();
 			Lib.gui.showError(this, ex.getMessage());
 		}
 	}
@@ -147,12 +159,15 @@ public class MainPanel extends FormPanel
 
 	private static final DbmsPanel panels[] =
 	{
-		new EmbeddedPanel(),
+		new MckoiPanel(),
 		new OraclePanel(),
 		new MySQLPanel(),
 		new PostgresPanel(),
 		new PostgisPanel(),
 		new DB2Panel(),
+		new JNDIPanel(),
+		new H2Panel(),
+		new SQLServerPanel(),
 		new GenericPanel()  //--- this must be the last one
 	};
 
@@ -173,9 +188,9 @@ public class MainPanel extends FormPanel
 abstract class DbmsPanel extends JPanel
 {
 	public abstract String  getLabel();
-	public abstract boolean matches(String url);
+	public abstract boolean matches(String url, boolean isJNDI);
 	public abstract void    retrieve();
-	public abstract void    save() throws Exception;
+	public abstract void    save(boolean createNew) throws Exception;
 }
 
 //==============================================================================

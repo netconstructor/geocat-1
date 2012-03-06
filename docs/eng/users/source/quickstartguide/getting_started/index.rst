@@ -144,6 +144,24 @@ At last, you can customise the number of output results per page in the *Hits Pe
 
   *Other options in the Advanced search*
 
+Inspire
+```````
+If INSPIRE Search panel is enable in Administration > System configuration page, an additional section is displayed to allow searching INSPIRE metadata in the catalog.
+
+ .. figure:: advanced_search_inspire.png
+
+  *"Inspire" section in the Advanced search*
+
+- *Annex*: Allows to search for metadata related to a specific Inspire annex. The Inspire annexes for a metadata are based on the Inspire theme keywords assigned to it.
+
+- *Source type*: Allows to search for dataset or service metadata.
+
+- *Service type*: Allows to search for service metadata using the service type values defined in INSPIRE metadata regulation (section 1.3.1).
+
+- *Classification of data services*: Allows to search for metadata that have selected keyword from the *Inspire service taxonomy* thesaurus.
+
+- *Inspire themes*: Allows to search for metadata that have selected keywords from the *Inspire themes* thesaurus.
+
 Search Results
 --------------
 

@@ -81,7 +81,7 @@ public class Update implements Service
 		String      myProfile = usrSess.getProfile();
 		String      myUserId  = usrSess.getUserId();
 
-		java.util.List listGroups = params.getChildren(Params.GROUPS);
+		java.util.List<Element> userGroups = params.getChildren(Params.GROUPS);
 
 		if(Geocat.Profile.SHARED.equals(profile)) {
 		    throw new IllegalArgumentException("this service cannot edit shared users");
@@ -91,7 +91,7 @@ public class Update implements Service
 				throw new Exception("Unknown profile : "+ profile);
 
 			if (profile.equals(Geonet.Profile.ADMINISTRATOR))
-				listGroups = new ArrayList();
+				userGroups = new ArrayList<Element>();
 		}
 
 		if (myProfile.equals(Geonet.Profile.ADMINISTRATOR) ||
@@ -106,17 +106,15 @@ public class Update implements Service
 			// raise an exception - this shouldn't happen unless someone has
 			// constructed their own malicious URL!
 			//
-			if (operation.equals("newuser") || operation.equals("editinfo")) {
+			if (operation.equals(Params.Operation.NEWUSER) || operation.equals(Params.Operation.EDITINFO)) {
 				if (!(myUserId.equals(id)) && myProfile.equals("UserAdmin")) {
-					Element bull = dbms.select("SELECT groupId from UserGroups WHERE userId="+myUserId);
-					java.util.List adminlist = bull.getChildren();
-					for(int i=0; i<listGroups.size(); i++) {
-						String group = ((Element) listGroups.get(i)).getText();
-						Boolean found = false;
-						for (int j=0;j<adminlist.size();j++) {
-							String testGroup = ((Element) adminlist.get(j)).getChild("groupid").getText();
-							System.out.println("Testing group "+group+" against "+testGroup);
-							if (group.equals(testGroup)) {
+					Element grps = dbms.select("SELECT groupId from UserGroups WHERE userId=?", new Integer(myUserId));
+					java.util.List<Element> myGroups = grps.getChildren();
+					for(Element userGroup : userGroups) {
+						String group = userGroup.getText();
+						boolean found = false;
+						for (Element myGroup : myGroups) {
+							if (group.equals(myGroup.getChild("groupid").getText())) {
 								found = true;
 							}
 						}
@@ -127,11 +125,17 @@ public class Update implements Service
 				}
 			}
 
-		// -- For Adding new user
+		// -- For adding new user
 			if (operation.equals(Params.Operation.NEWUSER)) {
+
+				// check if the new username already exists - if so then don't do this
+				String query= "SELECT * FROM Users WHERE username=?";
+				Element usersTest = dbms.select(query, username);
+				if (usersTest.getChildren().size() != 0) throw new IllegalArgumentException("User with username "+username+" already exists");
+
 				id = context.getSerialFactory().getSerial(dbms, "Users") +"";
 
-				String query = "INSERT INTO Users (id, username, password, surname, name, profile, "+
+				query = "INSERT INTO Users (id, username, password, surname, name, profile, "+
 							"address, city, state, zip, country, email, organisation, kind) "+
 							"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -139,8 +143,8 @@ public class Update implements Service
 
 			//--- add groups
 
-				for(int i=0; i<listGroups.size(); i++) {
-					String group = ((Element) listGroups.get(i)).getText();
+				for(Element userGroup : userGroups) {
+					String group = userGroup.getText();
 					addGroup(dbms, id, group);
 				}
 			}
@@ -157,8 +161,8 @@ public class Update implements Service
 
 					dbms.execute("DELETE FROM UserGroups WHERE userId=?", new Integer(id));
 
-					for(int i=0; i<listGroups.size(); i++) {
-						String group = ((Element) listGroups.get(i)).getText();
+					for(Element userGroup : userGroups) {
+						String group = userGroup.getText();
 						addGroup(dbms, id, group);
 					}
 
@@ -168,9 +172,9 @@ public class Update implements Service
 					dbms.execute (query, username, surname, name, profile, address, city, state, zip, country, email, organ, kind, new Integer(id));
 					//--- add groups
 				
-					dbms.execute ("DELETE FROM UserGroups WHERE userId=" + id);
-					for(int i=0; i<listGroups.size(); i++) {
-						String group = ((Element) listGroups.get(i)).getText();
+					dbms.execute ("DELETE FROM UserGroups WHERE userId=?", new Integer(id));
+					for(Element userGroup : userGroups) {
+						String group = userGroup.getText();
 						addGroup(dbms, id, group);
 					}
 

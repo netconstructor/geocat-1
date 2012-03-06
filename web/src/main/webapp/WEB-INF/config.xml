@@ -189,6 +189,11 @@
 						 otherwise specify false or leave the parameter out and a 
 						 shapefile will be used for the spatial index -->
 				<provideDataStore>true</provideDataStore>
+				<!-- set this value to -1 if you don't want prepared statements to
+				     be cached when querying/maintaining the spatial index 
+						 (note this is only applicable when
+						 provideDataStore is set to true) -->
+				<maxOpenPreparedStatements>300</maxOpenPreparedStatements>
 				<!-- NOTE any other parameter specified here is ignored as this 
              should be handled in the container -->
       </config>
@@ -371,7 +376,9 @@
 		<param name="maxWritesInTransaction" value="1000" />
 
 		<param name="useSubversion" value="true"/>
-		<param name="subversionPath" value="WEB-INF/metadata_subversion"/>
+		<!-- if not specified then created as metadata_subversion dir in data dir 
+		<param name="subversionPath" value="/home/secretplace/metadata_subversion"/>
+		-->
 
 		<param name="statusActionsClass" value="org.fao.geonet.services.metadata.DefaultStatusActions"/>
 	</appHandler>
@@ -1253,7 +1260,15 @@
 		</service>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-		<!-- Catalogue Services for the Web configuration -->
+		<!-- Catalogue Services for the Web -->
+
+		<service name="csw">
+			<class name=".services.main.CswDiscoveryDispatcher" />
+		</service>
+
+		<service name="csw-publication">
+			<class name=".services.main.CswPublicationDispatcher" />
+		</service>
 
         <service name="csw.config.get">
             <class name=".guiservices.csw.Get" />
@@ -1272,6 +1287,19 @@
         <service name="csw.config.set">
             <class name=".guiservices.csw.Set" />
 
+            <output sheet="admin.xsl">
+                    <call name="services" class="jeeves.guiservices.services.Get" />
+            </output>
+        </service>
+
+        <service name="csw.customelementset.get">
+			<output sheet="csw/customize-elementset.xsl">
+                <call name="customelementsets" class=".guiservices.csw.customelementset.Get"/>
+			</output>
+        </service>
+
+        <service name="csw.customelementset.set">
+            <class name=".guiservices.csw.customelementset.Set" />
             <output sheet="admin.xsl">
                     <call name="services" class="jeeves.guiservices.services.Get" />
             </output>

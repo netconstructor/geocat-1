@@ -25,7 +25,6 @@ package org.fao.geonet.kernel;
 
 import jeeves.constants.Jeeves;
 import jeeves.resources.dbms.Dbms;
-import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
@@ -105,7 +104,7 @@ public class XmlSerializerDb extends XmlSerializer {
 	public String insert(Dbms dbms, String schema, Element xml, int serial,
 					 String source, String uuid, String createDate,
 					 String changeDate, String isTemplate, String title,
-					 int owner, String groupOwner, String docType, UserSession session) 
+					 int owner, String groupOwner, String docType, ServiceContext context) 
 					 throws SQLException {
 
 		return insertDb(dbms, schema, xml, serial, source, uuid, createDate, changeDate, isTemplate, xml.getQualifiedName(), title, owner, groupOwner, docType);
@@ -121,11 +120,11 @@ public class XmlSerializerDb extends XmlSerializer {
      * @param changeDate
      * @param updateDateStamp
      * @param userId
-		 * @param session
+		 * @param context
      *
      * @throws SQLException
      */
-	public void update(Dbms dbms, String id, Element xml, String changeDate, boolean updateDateStamp, UserSession session, ServiceContext srvContext) throws SQLException {
+	public void update(Dbms dbms, String id, Element xml, String changeDate, boolean updateDateStamp, ServiceContext context) throws SQLException {
 
 		updateDb(dbms, id, xml, changeDate, xml.getQualifiedName(), updateDateStamp);
 	}
@@ -136,10 +135,10 @@ public class XmlSerializerDb extends XmlSerializer {
      * @param dbms
      * @param table
      * @param id
-		 * @param session
-     * @throws SQLException
+		 * @param context
+     * @throws Exception
      */
-	public void delete(Dbms dbms, String table, String id, UserSession session) throws SQLException {
+	public void delete(Dbms dbms, String table, String id, ServiceContext context) throws Exception {
 		deleteDb(dbms, table, id);
 	}
 

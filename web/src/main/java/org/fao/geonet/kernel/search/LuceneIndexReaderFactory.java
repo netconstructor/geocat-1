@@ -18,6 +18,18 @@ import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.store.FSDirectory;
 import org.fao.geonet.constants.Geonet;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Utility class to get/refresh readers for SearchManager class Works by opening an IndexReader at
  * startup and keeping that reader open. It is never closed. Users of this class call getReader
@@ -31,13 +43,13 @@ public class LuceneIndexReaderFactory {
 
     private static final long LOCK_WAIT_TIME = 15;
     private static final TimeUnit WAIT_UNIT = TimeUnit.SECONDS;
-    private HashMap<String/* locale */, IndexReader> subReaders = new HashMap<String, IndexReader>();
+    private Map<String/* locale */, IndexReader> subReaders = new HashMap<String, IndexReader>();
     private File luceneDir;
     private final Lock lock = new ReentrantLock();
     // ===========================================================================
     // Constructor
 
-    LuceneIndexReaderFactory( File dir ) throws IOException {
+    public LuceneIndexReaderFactory( File dir ) throws IOException {
         this.luceneDir = dir;
     }
 
@@ -77,7 +89,7 @@ public class LuceneIndexReaderFactory {
         lock.tryLock(LOCK_WAIT_TIME, WAIT_UNIT);
         try {
             MultiReader multiReader = (MultiReader) reader;
-            reader.close();  // multireader increments reader so increment it
+            reader.close();  // multireader increments reader so close it so the readers will be correctly decremented
             for( IndexReader r : multiReader.getSequentialSubReaders() ) {
                 r.decRef();
             }
@@ -89,7 +101,8 @@ public class LuceneIndexReaderFactory {
         lock.tryLock(LOCK_WAIT_TIME, WAIT_UNIT);
         try {
             for( IndexReader r : subReaders.values() ) {
-                while(r.getRefCount() > 1) r.decRef();
+                while( r.getRefCount() > 1 )
+                    r.decRef();
                 r.close();
             }
         } finally {
@@ -100,6 +113,7 @@ public class LuceneIndexReaderFactory {
         lock.tryLock(LOCK_WAIT_TIME, WAIT_UNIT);
         try {
             maybeReopen();
+
             MultiReader multiReader = (MultiReader) reader;
             LinkedList<IndexReader> otherReaders = new LinkedList<IndexReader>(Arrays.asList(multiReader.getSequentialSubReaders()));
             boolean sameNumReaders = otherReaders.size() == subReaders.size();
@@ -116,8 +130,8 @@ public class LuceneIndexReaderFactory {
     // ===========================================================================
     // Private Methods
 
-    private HashSet<String> listIndices() {
-        HashSet<String> indices = new HashSet<String>();
+    private Set<String> listIndices() {
+        Set<String> indices = new HashSet<String>();
         final File[] files = luceneDir.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -130,7 +144,7 @@ public class LuceneIndexReaderFactory {
     }
 
     private void maybeReopen() throws InterruptedException, IOException {
-        HashSet<String> indices = listIndices();
+        Set<String> indices = listIndices();
 
         if(indices.isEmpty()) throw new AssertionError("No lucene indices exist.  Need to regenerate");
 
@@ -154,5 +168,4 @@ public class LuceneIndexReaderFactory {
             }
         }
     }
-
 }

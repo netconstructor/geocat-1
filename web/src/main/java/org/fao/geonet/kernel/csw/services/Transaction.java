@@ -247,7 +247,7 @@ public class Transaction extends AbstractOperation implements CatalogService
         //
         String docType = null, title = null, isTemplate = null;
         boolean ufo = false, indexImmediate = false;
-        String id = dataMan.insertMetadata(us, dbms, schema, xml, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userId, group, source,
+        String id = dataMan.insertMetadata(context, dbms, schema, xml, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userId, group, source,
                          isTemplate, docType, title, category, createDate, changeDate, ufo, indexImmediate);
 
 		if( id == null )
@@ -258,7 +258,7 @@ public class Transaction extends AbstractOperation implements CatalogService
         boolean metadataPublic = sm.getValueAsBool("system/csw/metadataPublic", false);
 
         if (metadataPublic) {
-            dataMan.setOperation(us, dbms, id, "1", AccessManager.OPER_VIEW);
+            dataMan.setOperation(context, dbms, id, "1", AccessManager.OPER_VIEW);
         }
 
 
@@ -325,8 +325,7 @@ public class Transaction extends AbstractOperation implements CatalogService
             boolean ufo = false;
             boolean index = false;
             String language = context.getLanguage();
-            UserSession session = context.getUserSession();
-            dataMan.updateMetadata(session, dbms, id, xml, validate, ufo, index, language, changeDate, false, true);
+            dataMan.updateMetadata(context, dbms, id, xml, validate, ufo, index, language, changeDate, false);
 
             dbms.commit();
             toIndex.add(id);
@@ -424,8 +423,7 @@ public class Transaction extends AbstractOperation implements CatalogService
                     boolean ufo = false;
                     boolean index = false;
                     String language = context.getLanguage();
-                    UserSession session = context.getUserSession();
-                    dataMan.updateMetadata(session, dbms, id, metadata, validate, ufo, index, language, changeDate, false, true);
+                    dataMan.updateMetadata(context, dbms, id, metadata, validate, ufo, index, language, changeDate, false);
 
                     updatedMd.add(id);
 
@@ -482,7 +480,7 @@ public class Transaction extends AbstractOperation implements CatalogService
 			if (!dataMan.getAccessManager().canEdit(context, id))
 				throw new NoApplicableCodeEx("User not allowed to delete metadata : "+id);
 	
-			dataMan.deleteMetadata(context.getUserSession(), dbms, id);
+			dataMan.deleteMetadata(context, dbms, id);
 			deleted++;
 		}
 		
@@ -503,7 +501,7 @@ public class Transaction extends AbstractOperation implements CatalogService
 		ElementSetName  setName = ElementSetName.BRIEF;
 		
 		Pair<Element, Element> results= _searchController.search(context, 1, 100, ResultType.RESULTS,
-				OutputSchema.OGC_CORE, setName, filterExpr, filterVersion, null, null, 0, null);
+				OutputSchema.OGC_CORE, setName, filterExpr, filterVersion, null, null, null, 0, null, null);
 		
 		return results.two().getChildren();
 	}

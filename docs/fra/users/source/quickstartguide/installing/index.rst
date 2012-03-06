@@ -511,7 +511,7 @@ La procédure de mise à jour des XLinks est la suivante :
  
  - le paramètre **search** étant l'ancienne URL du serveur, le paramètre **replace** étant le nouvelle.
  
- - http://localhost:8080/|project_url|/srv/en/metadata.massive.processing?process=xlinks-href-update&search=http://localhost:8080/old_url&replace=http://localhost:8080/new_url
+ - http://localhost:8080/|project_url|/srv/en/metadata.batch.processing?process=xlinks-href-update&search=http://localhost:8080/old_url&replace=http://localhost:8080/new_url
 
 
 

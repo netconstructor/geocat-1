@@ -50,7 +50,8 @@ Pour créer de nouveaux groupes, il faut être identifié à l'aide d'un compte 
 #. Cliquer sur *Sauver*
 
 .. warning:: 
-    Le nom ne doit pas contenir d'espace ! Les descriptions des groupes peuvent être internationalisés (cf. lien Internationalisation de la page Administration).
+    Le nom ne doit pas contenir d'espace ! Les descriptions des groupes peuvent être internationalisés 
+    (cf. :ref:`localization`).
 
 Les privilèges d'accès peuvent être définis pour chaque fiche de métadonnées. Ils peuvent être définis sur la base des groupes d'utilisateurs.
 Les privilèges concernent la publication des métadonnées (Publier), le téléchargement des données (Télécharger), la consultation cartographique des données (Carte interactive), la capacité à ajouter la ressource dans le panneau "la sélection" de la page d'accueil (Epingler), la possibilité de modifier les métadonnées (Editer), la réception d'une notification lorsque un fichier géré par le catalogue est téléchargé (Notifier).

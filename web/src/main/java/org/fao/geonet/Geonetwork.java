@@ -59,8 +59,9 @@ import org.fao.geonet.kernel.Email;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.SvnManager;
 import org.fao.geonet.kernel.ThesaurusManager;
-import org.fao.geonet.kernel.csw.CatalogConfiguration;
+import org.fao.geonet.kernel.csw.CatalogConfiguration;	
 import org.fao.geonet.kernel.csw.CatalogDispatcher;
+import org.fao.geonet.kernel.csw.CswHarvesterResponseExecutionService;
 import org.fao.geonet.kernel.harvest.HarvestManager;
 import org.fao.geonet.kernel.oaipmh.OaiPmhDispatcher;
 import org.fao.geonet.kernel.search.LuceneConfig;
@@ -362,7 +363,16 @@ public class Geonetwork implements ApplicationHandler
 		SvnManager svnManager = null;
 		XmlSerializer xmlSerializer = null;
 		if (useSubversion.equals("true")) {
-			String subversionPath = new File(path, handlerConfig.getMandatoryValue(Geonet.Config.SUBVERSION_PATH)).getAbsolutePath();
+			String subPath = handlerConfig.getValue(Geonet.Config.SUBVERSION_PATH);
+			if (subPath == null) { // make a subdir of dataDir by default
+				subPath = dataDir + File.separator + "metadata_subversion";
+			}
+			String subversionPath;
+			if (!new File(subPath).isAbsolute()) {
+				subversionPath = new File(path, subPath).getAbsolutePath();
+			} else {
+				subversionPath = subPath;
+			}
 			svnManager = new SvnManager(context, settingMan, subversionPath, dbms, created);
 			xmlSerializer = new XmlSerializerSvn(settingMan, svnManager);
 		} else {
@@ -817,6 +827,9 @@ public class Geonetwork implements ApplicationHandler
 	public void stop()
 	{
 		logger.info("Stopping geonetwork...");
+		
+        logger.info("shutting down CSW HarvestResponse executionService");
+        CswHarvesterResponseExecutionService.getExecutionService().shutdownNow();		
 
 		//------------------------------------------------------------------------
 		//--- end search

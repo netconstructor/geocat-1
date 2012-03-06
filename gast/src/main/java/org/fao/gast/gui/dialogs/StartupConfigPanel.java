@@ -71,7 +71,7 @@ public class StartupConfigPanel extends JFrame {
 
 
         JPanel p = new JPanel(); 
-        FlexLayout fl = new FlexLayout(3, methods.length + 1);
+        FlexLayout fl = new FlexLayout(3, setters.size() + 3);
         fl.setColProp(2, FlexLayout.EXPAND);
         p.setLayout(fl);
         getContentPane().add(p, BorderLayout.CENTER);
@@ -82,8 +82,8 @@ public class StartupConfigPanel extends JFrame {
             pos++;
         }
 
-        p.add("0," + (pos + 1), btnOk());
-        p.add("1," + (pos + 1) + "", btnCancel());
+        p.add("1," + (pos + 1), btnOk());
+        p.add("2," + (pos + 1) + "", btnCancel());
 
     }
 

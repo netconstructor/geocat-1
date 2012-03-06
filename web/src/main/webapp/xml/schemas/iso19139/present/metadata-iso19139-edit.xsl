@@ -16,7 +16,7 @@
   <xsl:include href="metadata-iso19139-geo.xsl"/>
   <xsl:include href="metadata-iso19139-inspire.xsl"/>
   <xsl:include href="metadata-iso19139-view.xsl"/>
-
+  
   <!-- Use this mode on the root element to add hidden fields to the editor -->
   <xsl:template mode="schema-hidden-fields" match="gmd:MD_Metadata|*[@gco:isoType='gmd:MD_Metadata']" priority="2">
     <!-- The GetCapabilities URL -->
@@ -3354,6 +3354,7 @@
           or name(.)='gmd:evaluationMethodDescription'
           or name(.)='gmd:measureDescription'
           or name(.)='gmd:maintenanceNote'
+          or name(.)='gmd:useLimitation'
           or name(.)='gmd:otherConstraints'
           or name(.)='gmd:handlingDescription'
           or name(.)='gmd:userNote'
@@ -3547,9 +3548,19 @@
               <xsl:when test="$ptFreeTextTree//gmd:LocalisedCharacterString">                
                 <!-- Create combo to select language.
                 On change, the input with selected language is displayed. Others hidden. -->
-                
-                <xsl:variable name="mainLanguageRef" select="concat('_', gco:CharacterString/geonet:element/@ref|
-                  gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale=$mainLangId]/geonet:element/@ref)"/>
+
+                <xsl:variable name="mainLanguageRef">
+                  <xsl:choose>
+                      <xsl:when test="gco:CharacterString/geonet:element/@ref" >
+                          <xsl:value-of select="concat('_', gco:CharacterString/geonet:element/@ref)"/>
+                      </xsl:when>
+                      <xsl:otherwise>
+                          <xsl:value-of select="concat('_',
+                                  gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale=$mainLangId]/geonet:element/@ref)"/>
+                      </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:variable>
+
                 <xsl:variable name="suggestionDiv" select="concat('suggestion', $mainLanguageRef)"/>
                 
                 <!-- Language selector is only displayed when more than one language

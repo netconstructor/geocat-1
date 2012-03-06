@@ -292,6 +292,8 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
             mdSetThumbnail: serviceUrl + 'metadata.thumbnail.set.new',
             mdUnsetThumbnail: serviceUrl + 'metadata.thumbnail.unset.new',
             mdImport: serviceUrl + 'metadata.xmlinsert.form',
+            mdStatus: serviceUrl + 'metadata.status.form',
+            mdVersioning: serviceUrl + 'metadata.version',
             subTemplateType: serviceUrl + 'subtemplate.types',
             subTemplate: serviceUrl + 'subtemplate',
             upload: serviceUrl + 'resources.upload.new',
@@ -324,15 +326,19 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
                 NewOwner: serviceUrl + 'metadata.batch.newowner.form',
                 Categories: serviceUrl + 'metadata.batch.category.form',
                 Delete: serviceUrl + 'metadata.batch.delete',
-                Privileges: serviceUrl + 'metadata.batch.admin.form'
+                Privileges: serviceUrl + 'metadata.batch.admin.form',
+                Versioning: serviceUrl + 'metadata.batch.version',
+                Status: serviceUrl + 'metadata.batch.status.form'
             },
             metadataMassiveUpdatePrivilege: serviceUrl + 'metadata.batch.update.privileges',
             metadataMassiveUpdateCategories: serviceUrl + 'metadata.batch.update.categories',
+            metadataMassiveNewOwner: serviceUrl + 'metadata.batch.newowner',
             getGroups: serviceUrl + 'xml.info?type=groups',
             getRegions: serviceUrl + 'xml.info?type=regions',
             getSources: serviceUrl + 'xml.info?type=sources',
             getUsers: serviceUrl + 'xml.info?type=users',
             getSiteInfo: serviceUrl + 'xml.info?type=site',
+            getInspireInfo: serviceUrl + 'xml.info?type=inspire',
             schemaInfo: serviceUrl + 'xml.schema.info',
             getZ3950repositories: serviceUrl + 'xml.info?type=z3950repositories',
             getCategories: serviceUrl + 'xml.info?type=categories',
@@ -343,6 +349,7 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
             xmlError: serviceUrl + 'xml.main.error',
             searchKeyword: serviceUrl + 'xml.search.keywords',
             getThesaurus: serviceUrl + 'xml.thesaurus.getList',
+            getStatus: serviceUrl + 'xml.metadata.status.values.list',
             getKeyword: serviceUrl + 'xml.keyword.get',
             searchCRS: serviceUrl + 'crs.search',
             getCRSTypes: serviceUrl + 'crs.types',
@@ -480,6 +487,26 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
         var properties = ['name', 'organization', 'siteId'];
         var request = OpenLayers.Request.GET({
             url: this.services.getSiteInfo,
+            async: false
+        });
+
+        if (request.responseXML) {
+            var xml = request.responseXML.documentElement;
+            Ext.each(properties, function(item, idx){
+                info[item] = xml.getElementsByTagName(item)[0].childNodes[0].nodeValue;
+            });
+        }
+        return info;
+    },
+    /** api: method[getInspireInfo]
+     *
+     *  Return catalogue inspire information (enable, enableSearchPanel).
+     */
+    getInspireInfo: function(){
+        var info = {};
+        var properties = ['enable', 'enableSearchPanel'];
+        var request = OpenLayers.Request.GET({
+            url: this.services.getInspireInfo,
             async: false
         });
 
@@ -817,6 +844,7 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
             if (!record) {
                 // Retrieve information in synchrone mode
                 var store = GeoNetwork.data.MetadataResultsFastStore();
+                // TODO : This failed to load template information
                 this.kvpSearch("fast=index&_id=" + id, null, null, null, true, store, null, false);
                 record = store.getAt(store.find('id', id));
             }
@@ -827,7 +855,7 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
                 catalogue: this,
                 maximized: maximized || false,
                 record: record,
-                metadataUuid: record.get('uuid'),
+                metadataUuid: record ? record.get('uuid') : undefined,
                 resultsView: this.resultsView
                 });
             win.show(this.resultsView);
@@ -1207,6 +1235,20 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
     metadataAdmin: function(id){
         var url = this.services.mdAdmin + "?id=" + id;
         this.modalAction(OpenLayers.i18n('setPrivileges'), url);
+    },
+    /** api: method[metadataStatus]
+     *  Change status for this metadata
+     */
+    metadataStatus: function(id){
+        var url = this.services.mdStatus + "?id=" + id;
+        this.modalAction(OpenLayers.i18n('setStatus'), url);
+    },
+    /** api: method[metadataVersioning]
+     *  Active versioning for this metadata
+     */
+    metadataVersioning: function(id){
+        var url = this.services.mdVersioning + "?id=" + id;
+        this.modalAction(OpenLayers.i18n('setVersioning'), url);
     },
     /** api: method[metadataCategory]
      *  Metadata admin form for categories

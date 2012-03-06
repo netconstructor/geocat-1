@@ -520,12 +520,12 @@ INSERT INTO OperationsDes VALUES (3,'fra','Notifier');
 INSERT INTO OperationsDes VALUES (5,'fra','Carte interactive');
 INSERT INTO OperationsDes VALUES (6,'fra','Epingler');
 
-INSERT INTO StatusValuesDes VALUES (0,'fra','Unknown');
-INSERT INTO StatusValuesDes VALUES (1,'fra','Draft');
-INSERT INTO StatusValuesDes VALUES (2,'fra','Approved');
-INSERT INTO StatusValuesDes VALUES (3,'fra','Retired');
-INSERT INTO StatusValuesDes VALUES (4,'fra','Submitted');
-INSERT INTO StatusValuesDes VALUES (5,'fra','Rejected');
+INSERT INTO StatusValuesDes VALUES (0,'fra','Inconnu');
+INSERT INTO StatusValuesDes VALUES (1,'fra','Brouillon');
+INSERT INTO StatusValuesDes VALUES (2,'fra','Validé');
+INSERT INTO StatusValuesDes VALUES (3,'fra','Retiré');
+INSERT INTO StatusValuesDes VALUES (4,'fra','A valider');
+INSERT INTO StatusValuesDes VALUES (5,'fra','Rejeté');
 
 INSERT INTO RegionsDes VALUES (1,'fra','Arménie');
 INSERT INTO RegionsDes VALUES (2,'fra','Afghanistan');

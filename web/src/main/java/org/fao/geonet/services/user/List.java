@@ -71,6 +71,7 @@ public class List implements Service
 
 		Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
 
+<<<<<<< HEAD
 		String userProfile = session.getProfile();
 		HashSet hsMyGroups = getGroups(dbms, session.getUserId(), userProfile);
 
@@ -129,10 +130,19 @@ public class List implements Service
 					+ "or name ilike '%" + name + "%') and publicaccess = 'y' "
 					+ "ORDER BY "+sortBy);
 		}
+=======
+		Set<String> hsMyGroups = getGroups(dbms, session.getUserId(), session.getProfile());
+
+		Set profileSet = context.getProfileManager().getProfilesSet(session.getProfile());
+
+		//--- retrieve all users
+
+		Element elUsers = dbms.select ("SELECT * FROM Users ORDER BY username");
+>>>>>>> mirror/master
 
 		//--- now filter them
 
-		ArrayList alToRemove = new ArrayList();
+		java.util.List<Element> alToRemove = new ArrayList<Element>();
 
 		for(Iterator i=elUsers.getChildren().iterator(); i.hasNext(); )
 		{
@@ -150,8 +160,7 @@ public class List implements Service
 
 		//--- remove unwanted users
 
-		for(int i=0; i<alToRemove.size(); i++)
-			((Element) alToRemove.get(i)).detach();
+		for (Element elem : alToRemove) elem.detach();
 
 		ArrayList<Element> toResolve = new ArrayList(elUsers.getChildren());
 
@@ -173,8 +182,9 @@ public class List implements Service
 	//---
 	//--------------------------------------------------------------------------
 
-	private HashSet getGroups(Dbms dbms, String id, String profile) throws Exception
+	private Set<String> getGroups(Dbms dbms, String id, String profile) throws Exception
 	{
+<<<<<<< HEAD
 		HashSet hs = new HashSet();
 
 		if (profile == null) {
@@ -185,12 +195,26 @@ public class List implements Service
 		String query = (profile.equals(ProfileManager.ADMIN))
 							? "SELECT id FROM Groups"
 							: "SELECT groupId AS id FROM UserGroups WHERE userId=" + id;
+=======
+		Element groups;
+		if (profile.equals(ProfileManager.ADMIN)) {
+			groups = dbms.select("SELECT id FROM Groups");
+		} else {
+			groups = dbms.select("SELECT groupId AS id FROM UserGroups WHERE userId=?", new Integer(id));
+		}
+>>>>>>> mirror/master
 
-		java.util.List list = dbms.select(query).getChildren();
+		java.util.List<Element> list = groups.getChildren();
 
+<<<<<<< HEAD
 		for(int i=0; i<list.size(); i++)
 		{
 			Element el = (Element) list.get(i);
+=======
+		Set<String> hs = new HashSet<String>();
+
+		for(Element el : list) {
+>>>>>>> mirror/master
 			hs.add(el.getChildText("id"));
 		}
         return hs;

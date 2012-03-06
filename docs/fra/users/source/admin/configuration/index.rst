@@ -197,8 +197,23 @@ alors nécessaire pour lui de passer par le proxy de l'organisation.
 
 - *Mot de passe* (optionel)
 
-Alert et notification
-`````````````````````
+
+
+Configuration du proxy pour le proxy du catalogue
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+L'interface cliente javascript du catalogue à parfois besoin de réaliser des appels vers d'autre
+site (eg. récupération d'un GetCapabilities par le module cartographique). Pour cela, 
+elle a besoin d'un proxy au niveau du serveur. Si vous utilisez le proxy par défaut
+du catalogue et que ce proxy doit passer par un proxy côté serveur pour accèder à Internet, il est alors nécessaire de
+définir les variables d'environnement http.proxyHost et http.proxyPort [#fproxy]_ au lancement de l'application.
+Il est possible d'ajouter ces paramètres au lancement du container Java avec les paramètres suivants ::
+
+  -Dhttp.proxyHost=my.proxy.org -Dhttp.proxyPort=8080
+
+
+Alerte et notification
+``````````````````````
 
 Le catalogue peut notifier par email lorsqu'une métadonnée est téléchargée ou lorsqu'un utilisateur
 rempli le formulaire de contact. Dans ce cas, il est nécessaire de configurer le serveur de mail
@@ -400,5 +415,6 @@ de recherche à enregistrer, activé ou pas le log des critéres géographiques 
 
 
 
+.. rubric:: Footnotes
 
-
+.. [#fproxy] http://docs.oracle.com/javase/6/docs/technotes/guides/net/proxies.html

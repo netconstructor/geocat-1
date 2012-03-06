@@ -28,10 +28,11 @@ import java.io.IOException;
 import jeeves.constants.ConfigFile;
 import org.fao.gast.boot.Config;
 import org.fao.gast.boot.Util;
-import org.fao.geonet.constants.Geonet;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Parent;
 
 //=============================================================================
 
@@ -47,13 +48,40 @@ public class ConfigLib
 	{
 		config      = Lib.xml.load(Config.getConfig().getConfigXml());
 		dbmsElem    = retrieveDbms(config);
-		appHandElem = config.getRootElement().getChild(ConfigFile.Child.APP_HANDLER);
 	}
 
 	//---------------------------------------------------------------------------
 	//---
 	//--- API methods
 	//---
+	//---------------------------------------------------------------------------
+
+	public boolean getDbmsJNDI()
+	{
+		return dbmsElem.getChildText("provider").contains("JNDI");
+	}
+
+	//---------------------------------------------------------------------------
+
+	public String getDbmsSpatialIndexInDatabase()
+	{
+		return dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChildText("provideDataStore");
+	}
+
+	//---------------------------------------------------------------------------
+
+	public String getDbmsResourceName()
+	{
+		return dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChildText("resourceName");
+	}
+
+	//---------------------------------------------------------------------------
+
+	public String getDbmsContext()
+	{
+		return dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChildText("context");
+	}
+
 	//---------------------------------------------------------------------------
 
 	public String getDbmsURL()
@@ -74,6 +102,7 @@ public class ConfigLib
 	{
 		return dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChildText("user");
 	}
+
 	//---------------------------------------------------------------------------
 
 	public String getDbmsPassword()
@@ -83,46 +112,119 @@ public class ConfigLib
 
 	//---------------------------------------------------------------------------
 
-	public String getLuceneDir()
+	public String getPoolSize()
 	{
-		return findInHandler(Geonet.Config.LUCENE_DIR);
+		return dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChildText("poolSize");
 	}
 
 	//---------------------------------------------------------------------------
 
-	public String getHandlerProp(String name)
+	public String getValidQuery()
 	{
-		return findInHandler(name);
+		return dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChildText("validationQuery");
 	}
 
 	//---------------------------------------------------------------------------
 	//--- Dbms setters
 	//---------------------------------------------------------------------------
 
+	public void setupDbmsConfig(boolean createNew, boolean isJNDI)
+	{
+		Element resources = (Element)dbmsElem.getParent();
+		if (createNew) {
+			// leave existing config in place but set enabled to false
+			dbmsElem.setAttribute("enabled","false");
+		} else {
+			// remove existing config ready for new config
+			resources.removeContent(dbmsElem);
+		}
+
+		// new resource element, enabled with name="main-db"
+		Element resource = new Element(ConfigFile.Resources.Child.RESOURCE)
+				.setAttribute("enabled","true")
+				.addContent(new Element(ConfigFile.Resource.Child.NAME).setText("main-db"));
+	
+		//                       provider according to type 
+		Element provider = new Element(ConfigFile.Resource.Child.PROVIDER);
+		if (isJNDI) {
+			provider.setText("jeeves.resources.dbms.JNDIPool");
+		} else {
+			provider.setText("jeeves.resources.dbms.ApacheDBCPool");
+		}
+		resource.addContent(provider);
+
+		//                       empty config element 
+		Element config = new Element(ConfigFile.Resource.Child.CONFIG); 
+		resource.addContent(config);
+	
+		// add this new resource element as the first child
+		resources.addContent(0, resource);
+	
+		dbmsElem = resource;
+
+	}
+
+	//---------------------------------------------------------------------------
+
 	public void setDbmsURL(String url)
 	{
-		dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChild("url").setText(url);
+		createOrSetElement("url", url);
 	}
 
 	//---------------------------------------------------------------------------
 
 	public void setDbmsDriver(String driver)
 	{
-		dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChild("driver").setText(driver);
+		createOrSetElement("driver",driver);
 	}
 
 	//---------------------------------------------------------------------------
 
 	public void setDbmsUser(String user)
 	{
-		dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChild("user").setText(user);
+		createOrSetElement("user",user);
 	}
 
 	//---------------------------------------------------------------------------
 
 	public void setDbmsPassword(String password)
 	{
-		dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG).getChild("password").setText(password);
+		createOrSetElement("password",password);
+	}
+
+	//---------------------------------------------------------------------------
+
+	public void setDbmsPoolSize(String poolSize)
+	{
+		createOrSetElement("poolSize",poolSize);
+	}
+
+	//---------------------------------------------------------------------------
+
+	public void setDbmsValidQuery(String validQuery)
+	{
+		createOrSetElement("validationQuery",validQuery);
+	}
+
+	//---------------------------------------------------------------------------
+
+	public void setDbmsContext(String context)
+	{
+		createOrSetElement("context",context);
+	}
+
+	//---------------------------------------------------------------------------
+
+	public void setDbmsResourceName(String resourceName)
+	{
+		createOrSetElement("resourceName",resourceName);
+	}
+
+	//---------------------------------------------------------------------------
+
+	public void setDbmsSpatialIndexInDatabase(String spatialIndexInDatabase)
+	{
+		createOrSetElement("provideDataStore",spatialIndexInDatabase);
 	}
 
 	//---------------------------------------------------------------------------
@@ -160,13 +262,6 @@ public class ConfigLib
 	}
 
 	//---------------------------------------------------------------------------
-
-	public Resource createResource() throws Exception
-	{
-		return new Resource(dbmsElem);
-	}
-
-	//---------------------------------------------------------------------------
 	//---
 	//--- Private methods
 	//---
@@ -192,20 +287,14 @@ public class ConfigLib
 
 	//---------------------------------------------------------------------------
 
-	private String findInHandler(String paramName)
-	{
-		for (Object o : appHandElem.getChildren("param"))
-		{
-			Element param = (Element) o;
-
-			String name = param.getAttributeValue("name");
-			String value= param.getAttributeValue("value");
-
-			if (paramName.equals(name))
-				return value;
+	private void createOrSetElement(String elementName, String value) {
+		Element config = dbmsElem.getChild(ConfigFile.Resource.Child.CONFIG);
+		Element elem = config.getChild(elementName);
+		if (elem == null) {
+			config.addContent(new Element(elementName).setText(value));
+		} else {
+			elem.setText(value);
 		}
-
-		return null;
 	}
 
 	//---------------------------------------------------------------------------
@@ -216,7 +305,6 @@ public class ConfigLib
 
 	private Document config;
 	private Element  dbmsElem;
-	private Element  appHandElem;
 }
 
 //=============================================================================

@@ -1,14 +1,11 @@
 package org.fao.geonet.kernel.search;
 
-import java.io.IOException;
-
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.FieldCache.Parser;
-import org.apache.lucene.search.FieldComparator;
-import org.apache.lucene.search.FieldComparator.StringOrdValComparator;
 import org.apache.lucene.search.FieldCache;
+import org.apache.lucene.search.FieldComparator;
 import org.apache.lucene.search.FieldComparatorSource;
-import org.apache.lucene.search.Scorer;
+
+import java.io.IOException;
 
 public class CaseInsensitiveFieldComparatorSource extends FieldComparatorSource {
 

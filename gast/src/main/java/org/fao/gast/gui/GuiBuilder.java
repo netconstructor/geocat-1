@@ -45,6 +45,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import jeeves.utils.Xml;
+import org.apache.commons.lang.StringUtils;
 import org.fao.gast.gui.panels.FormPanel;
 import org.jdom.Attribute;
 import org.jdom.Content;
@@ -82,11 +83,22 @@ public class GuiBuilder
 
 		packag = root.getChild("class").getAttributeValue("package");
 
+		Element preselected = root.getChild("preselected");
+		if (preselected != null) {
+			selectedId = preselected.getText();
+		}
+
+
 		for (Object precon : root.getChildren("precon"))
 			addPrecon((Element) precon);
 
 		for (Object cont : root.getChildren("container"))
 			addContainer((Element) cont);
+
+		// if we have a preselected id then show the form that has that id
+		if (selectedId != null) {
+			workPanel.show(selectedId);
+		}
 	}
 
 	//---------------------------------------------------------------------------
@@ -219,7 +231,9 @@ public class GuiBuilder
 
 		formPanel.init(title, descr, buttons, precon.image, precon.tip);
 		workPanel.add(id, formPanel);
-		viewPanel.addForm(cont, id, label, retrieveImage(image));
+		boolean select = false;
+		if (selectedId.equals(id)) select = true;
+		viewPanel.addForm(cont, id, label, retrieveImage(image), select);
 	}
 
 	//---------------------------------------------------------------------------
@@ -287,6 +301,7 @@ public class GuiBuilder
 		
 		ClassLoader classLoader = GuiBuilder.class.getClassLoader();
 		try {
+			System.out.println("Reading image (needs jai_imageio): images/"+imagePath);
 			Image image = ImageIO.read(classLoader.getResource("images/"+imagePath));
 			ImageIcon icon = new ImageIcon(image);
 			hmImages.put(imagePath, icon);
@@ -303,6 +318,7 @@ public class GuiBuilder
 	//---------------------------------------------------------------------------
 
 	private String packag;
+	private String selectedId;
 
 	private ViewPanel viewPanel;
 	private WorkPanel workPanel;

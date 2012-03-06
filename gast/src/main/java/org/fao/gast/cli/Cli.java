@@ -26,9 +26,7 @@ package org.fao.gast.cli;
 import java.util.ArrayList;
 import java.util.List;
 import org.fao.gast.boot.Starter;
-import org.fao.gast.cli.createdb.CreateDB;
-import org.fao.gast.cli.setup.Setup;
-import org.fao.gast.cli.sampledata.SampleData;
+//import org.fao.gast.cli.setup.Setup;
 import org.fao.gast.lib.Lib;
 
 //==============================================================================
@@ -49,19 +47,13 @@ public class Cli implements Starter
 		String command = al.get(0);
 		al.remove(0);
 
-		if (command.equals("-setup"))
-			new Setup().exec(al);
+		if (command.equals("-setup")) {
+			// FIXME: new database setup from command line util needs to be added
+			//new Setup().exec(al);
 
-		else if (command.equals("-sampleData"))
-            new SampleData().exec(al);
-
-        else if (command.equals("-setupdb"))
-			new CreateDB().exec(al);
-
-        else
-		{
+    } else {
 			Lib.log.warning("Unknown command : "+ command);
-			Lib.log.warning("Can be one of : -setup, -setupdb, -sampleData");
+			Lib.log.warning("Can be one of : -setup");
 		}
 	}
 }

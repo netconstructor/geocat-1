@@ -20,13 +20,21 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.fao.geonet.constants.Geonet;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /* Lucene only allows one IndexWriter to be open at a time.
  However, multiple threads can use this single IndexWriter.
  This class manages a global IndexWriter and uses reference counting to
  determine when it can be closed.  */
 public class LuceneIndexWriterFactory {
 
-    protected final HashMap<String, IndexWriter> _writers = new HashMap<String, IndexWriter>();
+    protected final Map<String, IndexWriter> _writers = new HashMap<String, IndexWriter>();
     protected volatile int _count;
     private final File _luceneDir;
     private final PerFieldAnalyzerWrapper _analyzer;
@@ -104,7 +112,7 @@ public class LuceneIndexWriterFactory {
             }
         }
     }
-    public synchronized void createDefaultLocale() throws CorruptIndexException, LockObtainFailedException, IOException {
+    public synchronized void createDefaultLocale() throws IOException {
         File enLocale = new File(_luceneDir, "en");
         enLocale.mkdirs();
         IndexWriter writer = new IndexWriter(FSDirectory.open(enLocale), _analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
@@ -135,14 +143,17 @@ public class LuceneIndexWriterFactory {
         return _writers.values();
     }
     private IndexWriter getWriter( String locale ) throws Exception {
+        Log.debug(Geonet.LUCENE, "getting writer for locale " + locale);
         locale = normalize(locale);
+        Log.debug(Geonet.LUCENE, "normalized locale " + locale);
         IndexWriter writer = _writers.get(locale);
         if (writer == null) {
             File indexDir = new File(_luceneDir, locale);
             if (!indexDir.exists() && !indexDir.mkdirs()) {
                 throw new Error("Unable to create index directory: " + indexDir);
             }
-            writer = new IndexWriter(FSDirectory.open(indexDir), _analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
+            
+            writer = new IndexWriter(FSDirectory.open(indexDir), SearchManager.getAnalyzer(locale), IndexWriter.MaxFieldLength.UNLIMITED);
             writer.setRAMBufferSizeMB(_luceneConfig.getRAMBufferSize());
             writer.setMergeFactor(_luceneConfig.getMergeFactor());
             _writers.put(locale, writer);

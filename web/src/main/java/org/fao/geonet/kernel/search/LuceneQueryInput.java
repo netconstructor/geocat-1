@@ -23,6 +23,7 @@
 
 package org.fao.geonet.kernel.search;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 
 import java.util.HashSet;
@@ -43,7 +44,17 @@ public class LuceneQueryInput extends UserQueryInput {
     private boolean isReviewer;
     private boolean isUserAdmin;
     private boolean isAdmin;
-    
+
+    private boolean requestedLanguageOnly;
+
+    public boolean isRequestedLanguageOnly() {
+        return requestedLanguageOnly;
+    }
+
+    public void setRequestedLanguageOnly(boolean requestedLanguageOnly) {
+        this.requestedLanguageOnly = requestedLanguageOnly;
+    }
+
     /**
      * Creates this from a JDOM element.
      * 
@@ -81,6 +92,14 @@ public class LuceneQueryInput extends UserQueryInput {
         Element isAdminE = jdom.getChild(SearchParameter.ISADMIN);
         setAdmin(isAdminE != null);
 
+        Element isEditable = jdom.getChild(SearchParameter.EDITABLE);
+        if(isEditable != null && StringUtils.isNotEmpty(isEditable.getText())) {
+            setEditable(isEditable.getText());
+        }
+        else {
+            setEditable("false");
+        }
+
     }
 
     /**
@@ -97,13 +116,13 @@ public class LuceneQueryInput extends UserQueryInput {
         for(String groupOwner : groupOwners) {
             groupOwnersToString.append(" groupOwner: " + groupOwner);
         }
-        return new StringBuffer().append("owner: ").append(owner)
+        return new StringBuilder().append("owner:").append(owner)
                 .append(groupsToString)
                 .append(groupOwnersToString)
-                .append(" isReviewer: ").append(isReviewer)
-                .append(" isUserAdmin: ").append(isUserAdmin)
-                .append(" isAdmin: ").append(isAdmin)
-                .append(super.toString()).toString();
+                .append(" isReviewer:").append(isReviewer)
+                .append(" isUserAdmin:").append(isUserAdmin)
+                .append(" isAdmin:").append(isAdmin)
+                .append(" ").append(super.toString()).toString();
     }
 
     public Set<String> getGroups() {

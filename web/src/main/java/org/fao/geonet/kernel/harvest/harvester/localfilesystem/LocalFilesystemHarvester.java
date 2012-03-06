@@ -276,7 +276,7 @@ public class LocalFilesystemHarvester extends AbstractHarvester {
 			for(Element existingId : existingMetadata) {
 				String ex$ = existingId.getChildText("id");
 				if(!idsForHarvestingResult.contains(ex$)) {
-					dataMan.deleteMetadata(context.getUserSession(), dbms, ex$);
+					dataMan.deleteMetadata(context, dbms, ex$);
 					result.removed++;
 				}
 			}			
@@ -294,8 +294,7 @@ public class LocalFilesystemHarvester extends AbstractHarvester {
         boolean ufo = false;
         boolean index = false;
         String language = context.getLanguage();
-        UserSession session = null;
-        dataMan.updateMetadata(session, dbms, id, xml, validate, ufo, index, language, new ISODate().toString(), false, false);
+        dataMan.updateMetadata(context, dbms, id, xml, validate, ufo, index, language, new ISODate().toString(), false, false);
 
 		dbms.execute("DELETE FROM OperationAllowed WHERE metadataId=?", Integer.parseInt(id));
 		addPrivileges(id, localGroups, dbms);
@@ -330,7 +329,7 @@ public class LocalFilesystemHarvester extends AbstractHarvester {
         int userid = 1;
         String group = null, isTemplate = null, docType = null, title = null, category = null;
         boolean ufo = false, indexImmediate = false;
-        String id = dataMan.insertMetadata(context.getUserSession(), dbms, schema, xml, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, source,
+        String id = dataMan.insertMetadata(context, dbms, schema, xml, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, source,
                          isTemplate, docType, title, category, createDate, createDate, ufo, indexImmediate);
 
 		int iId = Integer.parseInt(id);
@@ -358,7 +357,7 @@ public class LocalFilesystemHarvester extends AbstractHarvester {
 			}
 			else {
 				System.out.println("    - Setting category : "+ name);
-				dataMan.setCategory(context.getUserSession(), dbms, id, catId);
+				dataMan.setCategory(context, dbms, id, catId);
 			}
 		}
 	}	
@@ -379,7 +378,7 @@ public class LocalFilesystemHarvester extends AbstractHarvester {
 					//--- allow only: view, dynamic, featured
 					if (opId == 0 || opId == 5 || opId == 6) {
 						System.out.println("       --> "+ name);
-						dataMan.setOperation(context.getUserSession(), dbms, id, priv.getGroupId(), opId +"");
+						dataMan.setOperation(context, dbms, id, priv.getGroupId(), opId +"");
 					}
 					else {
 						System.out.println("       --> "+ name +" (skipped)");

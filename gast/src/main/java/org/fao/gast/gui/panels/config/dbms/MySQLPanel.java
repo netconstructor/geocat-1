@@ -26,6 +26,7 @@ package org.fao.gast.gui.panels.config.dbms;
 import java.util.StringTokenizer;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import org.apache.commons.lang.StringUtils;
 import org.dlib.gui.FlexLayout;
 import org.fao.gast.lib.Lib;
 import org.fao.gast.localization.Messages;
@@ -79,9 +80,13 @@ public class MySQLPanel extends DbmsPanel
 
 	//---------------------------------------------------------------------------
 
-	public boolean matches(String url)
+	public boolean matches(String url, boolean isJNDI)
 	{
-		return url.startsWith(PREFIX);
+		if (!isJNDI) {
+			return url.startsWith(PREFIX);
+		} else {
+			return false;
+		}
 	}
 
 	//---------------------------------------------------------------------------
@@ -123,29 +128,37 @@ public class MySQLPanel extends DbmsPanel
 
 	//---------------------------------------------------------------------------
 
-	public void save() throws Exception
+	public void save(boolean createNew) throws Exception
 	{
+
+		// checks on input
 		String server  = txtServer  .getText();
 		String port    = txtPort    .getText();
 		String database= txtDatabase.getText();
 
-		if (server.equals(""))
+		if (StringUtils.isBlank(server)) {
 			throw new Exception(Messages.getString("serverNotEmpty"));
+		}
 
-		if (!port.equals("") &&!Lib.type.isInteger(port))
+		if (!StringUtils.isBlank(port) &&!Lib.type.isInteger(port)) {
 			throw new Exception(Messages.getString("portInt"));
+		}
 
-		if (database.equals(""))
+		if (StringUtils.isBlank(database))
 			throw new Exception(Messages.getString("dbNotEmpty"));
 
-		String url = port.equals("")
+		String url = StringUtils.isBlank(port) 
 							? PREFIX +"//"+ server            +"/"+ database
 							: PREFIX +"//"+ server +":"+ port +"/"+ database;
 
+		// save input
+		Lib.config.setupDbmsConfig(createNew, false);
 		Lib.config.setDbmsDriver  ("com.mysql.jdbc.Driver");
 		Lib.config.setDbmsURL     (url);
 		Lib.config.setDbmsUser    (txtUser.getText());
 		Lib.config.setDbmsPassword(txtPass.getText());
+		Lib.config.setDbmsPoolSize("10");
+		Lib.config.setDbmsValidQuery("SELECT 1");
 		Lib.config.removeActivator();
 		Lib.config.save();
 	}
@@ -165,6 +178,7 @@ public class MySQLPanel extends DbmsPanel
 	//---------------------------------------------------------------------------
 
 	private static final String PREFIX = "jdbc:mysql:";
+
 }
 
 //==============================================================================

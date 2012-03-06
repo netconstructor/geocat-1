@@ -23,6 +23,7 @@
 
 package org.fao.geonet.guiservices.schemas;
 
+import java.util.List;
 import jeeves.interfaces.Service;
 import jeeves.server.ServiceConfig;
 import jeeves.server.context.ServiceContext;
@@ -64,6 +65,13 @@ public class Get implements Service
 				elem.setAttribute("edit","true");
 			} else {
 				elem.setAttribute("edit","false");
+			}
+			// get the conversion information and add it too
+			List<Element> convElems = schemaMan.getConversionElements(schema);
+			if (convElems.size() > 0) {
+				Element conv = new Element("conversions");
+				conv.addContent(convElems);
+				elem.addContent(conv);
 			}
 			schemas.addContent(elem);
 		}

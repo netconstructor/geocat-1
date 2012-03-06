@@ -155,13 +155,13 @@ class WAFRemoteFile implements RemoteFile {
 	
 	private String path;
 	private static String outputSchema = "iso19139";
+	
 	public String getPath() {
-		// TODO Auto-generated method stub
 		return path;
 	}
 
+	
 	public String getChangeDate() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

@@ -143,7 +143,7 @@ public class Aligner
 				String id = localUuids.getID(uuid);
 
 				log.debug("  - Removing old metadata with local id:"+ id);
-				dataMan.deleteMetadata(context.getUserSession(), dbms, id);
+				dataMan.deleteMetadata(context, dbms, id);
 				dbms.commit();
 				result.locallyRemoved++;
 			}
@@ -197,7 +197,7 @@ public class Aligner
         int userid = 1;
         String group = null, isTemplate = null, docType = null, title = null, category = null;
         boolean ufo = false, indexImmediate = false;
-        String id = dataMan.insertMetadata(context.getUserSession(), dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), ri.uuid, userid, group, params.uuid,
+        String id = dataMan.insertMetadata(context, dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), ri.uuid, userid, group, params.uuid,
                          isTemplate, docType, title, category, ri.changeDate, ri.changeDate, ufo, indexImmediate);
 
 		int iId = Integer.parseInt(id);
@@ -228,7 +228,7 @@ public class Aligner
 			else
 			{
 				log.debug("    - Setting category : "+ name);
-				dataMan.setCategory(context.getUserSession(), dbms, id, catId);
+				dataMan.setCategory(context, dbms, id, catId);
 			}
 		}
 	}
@@ -257,7 +257,7 @@ public class Aligner
 					if (opId == 0 || opId == 5 || opId == 6)
 					{
 						log.debug("       --> "+ name);
-						dataMan.setOperation(context.getUserSession(), dbms, id, priv.getGroupId(), opId +"");
+						dataMan.setOperation(context, dbms, id, priv.getGroupId(), opId +"");
 					}
 					else
 						log.debug("       --> "+ name +" (skipped)");
@@ -301,8 +301,7 @@ public class Aligner
                 boolean ufo = false;
                 boolean index = false;
                 String language = context.getLanguage();
-                UserSession session = null;
-                String schema = dataMan.autodetectSchema(md);
+				dataMan.updateMetadata(context, dbms, id, md, validate, ufo, index, language, ri.changeDate, false, false);
 
                 dbms.execute("UPDATE metadata SET schemaid = ? WHERE id=?", schema, Integer.parseInt(id));
                 // issue #18944 force namespace prefix for iso19139 metadata

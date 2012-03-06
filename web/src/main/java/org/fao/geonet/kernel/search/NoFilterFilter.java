@@ -1,11 +1,11 @@
 package org.fao.geonet.kernel.search;
 
-import java.io.IOException;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.OpenBitSet;
+
+import java.io.IOException;
 
 @SuppressWarnings("serial")
 public class NoFilterFilter extends Filter {

@@ -58,7 +58,7 @@ public class Show implements Service
 	public void init(String appPath, ServiceConfig params) throws Exception
 	{
 		String skip;
-
+		
 		skip = params.getValue("skipPopularity", "n");
 		skipPopularity = skip.equals("y");
 
@@ -67,7 +67,7 @@ public class Show implements Service
 
 		skip = params.getValue("addRefs", "n");
 		addRefs = skip.equals("y");
-
+		
 		cache = "y".equalsIgnoreCase(params.getValue("cache", "n"));
 	}
 
@@ -152,7 +152,7 @@ public class Show implements Service
 		if(cache) {
 		    cache(context.getUserSession(), elMd, id);
 		}
-
+		
 		return elMd;
 	}
 
@@ -160,7 +160,7 @@ public class Show implements Service
     private static void cache( UserSession userSession, Element elMd, String id ) {
         userSession.setProperty(KEY+id, elMd);
     }
-
+    
     public static Element getCached(UserSession userSession, String id) {
         return (Element) userSession.getProperty(KEY+id);
     }
@@ -179,7 +179,7 @@ public class Show implements Service
 	private boolean skipInfo;
 	private boolean addRefs;
     private boolean cache;
-
+    
 }
 //=============================================================================
 

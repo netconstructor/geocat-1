@@ -26,7 +26,6 @@ package org.fao.geonet.kernel;
 import jeeves.constants.Jeeves;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.context.ServiceContext;
-import jeeves.server.UserSession;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
 import jeeves.utils.Xml;
@@ -222,12 +221,12 @@ public abstract class XmlSerializer {
      * @param id
      * @throws SQLException
      */
-	protected void deleteDb(Dbms dbms, String table, String id) throws SQLException {
+	protected void deleteDb(Dbms dbms, String table, String id) throws Exception {
 		// TODO: Ultimately we want to remove any xlinks in this document
 		// that aren't already in use from the xlink cache. For now we
 		// rely on the admin clearing cache and reindexing regularly
-		String query = "DELETE FROM " + table + " WHERE id="+id;
-		dbms.execute(query);
+		String query = "DELETE FROM " + table + " WHERE id=?";
+		dbms.execute(query, new Integer(id));
 	}
 
     /**
@@ -249,17 +248,17 @@ public abstract class XmlSerializer {
 
 	/* API to be overridden by extensions */
 
-	public abstract void delete(Dbms dbms, String table, String id, UserSession session) 
+	public abstract void delete(Dbms dbms, String table, String id, ServiceContext context) 
 	   throws Exception;
 
 	public abstract void update(Dbms dbms, String id, Element xml, 
-		 String changeDate, boolean updateDateStamp, UserSession session, ServiceContext srvContext) 
+		 String changeDate, boolean updateDateStamp, ServiceContext context) 
 		 throws Exception;
 
 	public abstract String insert(Dbms dbms, String schema, Element xml, 
 					 int serial, String source, String uuid, String createDate,
 					 String changeDate, String isTemplate, String title,
-			 int owner, String groupOwner, String docType, UserSession session) 
+			 int owner, String groupOwner, String docType, ServiceContext context) 
 			 throws Exception;
 
 	public abstract Element select(Dbms dbms, String table, String id, ServiceContext srvContext) 

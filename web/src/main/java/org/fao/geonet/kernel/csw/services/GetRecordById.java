@@ -58,6 +58,14 @@ import org.jdom.Document;
 //=============================================================================
 import org.jdom.output.DOMOutputter;
 
+/**
+ * TODO
+ * OGC 07045:
+ * - TYPENAME
+ * - Zero or one (Optional) Default action is to describe all types known to server
+ * - Optional. Must support “gmd:MD_Metadata”.
+ *
+ */
 public class GetRecordById extends AbstractOperation implements CatalogService
 {
 	//---------------------------------------------------------------------------
@@ -130,7 +138,7 @@ public class GetRecordById extends AbstractOperation implements CatalogService
                     Element filterExpr = new Element("Filter", Csw.NAMESPACE_OGC);
 
                     Pair<Element, Element> results= _searchController.search(context, 0, 1, ResultType.HITS, OutputSchema.OGC_CORE,
-                            ElementSetName.BRIEF,  filterExpr, Csw.FILTER_VERSION_1_1, null, null, 0, cswServiceSpecificContraint);
+                            ElementSetName.BRIEF,  filterExpr, Csw.FILTER_VERSION_1_1, null, null, null, 0, cswServiceSpecificContraint, null);
 
 
                    Log.debug(Geonet.CSW_SEARCH, "GetRecordById cswServiceSpecificContraint result: " + Xml.getString(results.two()));
@@ -145,12 +153,9 @@ public class GetRecordById extends AbstractOperation implements CatalogService
 			    // to the requested MD 
 			    Lib.resource.checkPrivilege(context, id, AccessManager.OPER_VIEW); 
 				
-				Element md = SearchController.retrieveMetadata(context, id, setName, outSchema, null, ResultType.RESULTS);
-	
-				if (md != null) {
-					
+				Element md = SearchController.retrieveMetadata(context, id, setName, outSchema, null, null, ResultType.RESULTS, null);
 
-					
+				if (md != null){
 					 if (outSchema.equals(OutputSchema.GM03_PROFILE)) {
 						 DataManager dm = gc.getDataManager();
 				    	 String schema = dm.autodetectSchema(md);

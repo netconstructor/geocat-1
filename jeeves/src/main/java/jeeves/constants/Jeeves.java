@@ -258,6 +258,11 @@ public final class Jeeves
 			public static final String CONTEXT = "context";
 			public static final String RESOURCE_NAME = "resourceName";
 			public static final String PROVIDE_DATA_STORE = "provideDataStore";
+			public static final String MAX_OPEN_PREPARED_STATEMENTS = "maxOpenPreparedStatements";
+			public static final String TRANSACTION_ISOLATION = "defaultTransactionIsolation";
+			public static final String TRANSACTION_ISOLATION_READ_COMMITTED = "READ_COMMITTED";
+			public static final String TRANSACTION_ISOLATION_SERIALIZABLE = "SERIALIZABLE";
+			public static final String TRANSACTION_ISOLATION_REPEATABLE_READ = "REPEATABLE_READ";
 		}
 	}
 

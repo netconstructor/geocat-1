@@ -84,9 +84,13 @@ public class DB2Panel extends DbmsPanel
 
 	//---------------------------------------------------------------------------
 
-	public boolean matches(String url)
+	public boolean matches(String url, boolean isJNDI)
 	{
-		return url.startsWith(PREFIX);
+		if (!isJNDI) {
+			return url.startsWith(PREFIX);
+		} else {
+			return false;
+		}
 	}
 
 	//---------------------------------------------------------------------------
@@ -140,8 +144,10 @@ public class DB2Panel extends DbmsPanel
 
 	//---------------------------------------------------------------------------
 
-	public void save() throws Exception
+	public void save(boolean createNew) throws Exception
 	{
+
+		// checks on input
 		String server  = txtServer  .getText();
 		String port    = txtPort    .getText();
 		String database= txtDatabase.getText();
@@ -160,15 +166,19 @@ public class DB2Panel extends DbmsPanel
 			url+="//"+ server +":"+ port+"/";
 		}
 		
-
 		url += database;
 		if (!dbSchema.equals("")) {
 			url+=":currentSchema="+dbSchema+";";
 		}
+
+		// save input
+		Lib.config.setupDbmsConfig(createNew, false);
 		Lib.config.setDbmsDriver  ("com.ibm.db2.jcc.DB2Driver");
 		Lib.config.setDbmsURL     (url);
 		Lib.config.setDbmsUser    (txtUser.getText());
 		Lib.config.setDbmsPassword(txtPass.getText());
+		Lib.config.setDbmsPoolSize("10");
+		Lib.config.setDbmsValidQuery("SELECT 1 FROM SYSIBM.SYSDUMMY1");
 		Lib.config.removeActivator();
 		Lib.config.save();
 	}

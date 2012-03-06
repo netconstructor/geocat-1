@@ -304,7 +304,7 @@
 
 					<!-- Datasets linked to a service
 					. -->
-					<xsl:if test="$isService and ($edit or $metadata/gmd:identificationInfo/(srv:SV_ServiceIdentification | *[@gco:isoType='srv:SV_ServiceIdentification'])/srv:operatesOn)">
+          <xsl:if test="$isService and ($edit or $metadata/gmd:identificationInfo/(srv:SV_ServiceIdentification | *[@gco:isoType='srv:SV_ServiceIdentification'])/srv:operatesOn)">
 						<h3><img src="{/root/gui/url}/images/dataset.gif"
 							align="absmiddle"/>
 							<xsl:value-of select="/root/gui/strings/linkedDatasetMetadata"/></h3>

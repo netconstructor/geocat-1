@@ -40,7 +40,8 @@ public class Geonet
 	public static final Namespace OASIS_CATALOG_NAMESPACE = Namespace.getNamespace("urn:oasis:names:tc:entity:xmlns:xml:catalog");
 
 	public static final String CC_API_REST_URL = "http://api.creativecommons.org/rest/1.5/simple/chooser";
-	
+    public static final String LUCENE_LOCALE_KEY = "_locale";
+
 	//--------------------------------------------------------------------------
 	//--- container for file names
 
@@ -65,6 +66,7 @@ public class Geonet
 		public static final String UNSET_THUMBNAIL     = "unset-thumbnail.xsl";
 		public static final String SCHEMA_SUGGESTIONS  = "schema-suggestions.xml";
 		public static final String SCHEMA_SUBSTITUTES  = "schema-substitutes.xml";
+		public static final String SCHEMA_CONVERSIONS  = "schema-conversions.xml";
 		public static final String SCHEMA_ID           = "schema-ident.xml";
 		public static final String SCHEMA_OASIS        = "oasis-catalog.xml";
 		public static final String SCHEMA_PLUGINS_CATALOG = "schemaplugin-uri-catalog.xml";
@@ -140,10 +142,12 @@ public class Geonet
 		public static final String CONV_STYLESHEETS   = STYLESHEETS + "/conversion";
 		public static final String IMPORT_STYLESHEETS = CONV_STYLESHEETS + "/import";
 		public static final String WFS_STYLESHEETS    = "/convert/WFSToFragments";
+		public static final String DIF_STYLESHEETS    = "/convert/ThreddsDIFToISO";
 		public static final String TDS_STYLESHEETS    = "/convert/ThreddsToFragments";
 		public static final String ISO19119TOJZKIT_STYLESHEET = "/convert/19119ToJZKitRepository.xsl";
 		public static final String OGC_STYLESHEETS    = "/convert/OGCWxSGetCapabilitiesto19119";
 		public static final String CONVERT_STYLESHEETS       = "/convert/";
+		public static final String LOGOS              = "/images/logos/";
 		public static final String DIF_STYLESHEET     = "/convert/DIFToISO.xsl";
 		public static final String XML                = Jeeves.Path.XML;
 	}
@@ -389,6 +393,7 @@ public class Geonet
 		public static final String BUILD_SUMMARY = "buildSummary";
 		public static final String SUMMARY_ONLY = "summaryOnly";
 
+
 		//-----------------------------------------------------------------------
 
         public class ResultType 
@@ -519,26 +524,30 @@ public class Geonet
 	public static final String SVN_MANAGER = GEONETWORK + ".svnmanager";
 	public static final String SCHEMA_MANAGER = GEONETWORK + ".schemamanager";
 	public static final String DB			= GEONETWORK + ".database";
-	public static final String THESAURUS_MAN= GEONETWORK + ".thesaurus-man";
-	public static final String SEARCH_ENGINE= GEONETWORK + ".search";
+	public static final String THESAURUS_MAN = GEONETWORK + ".thesaurus-man";
+    public static final String THESAURUS    = GEONETWORK + ".thesaurus";
+	public static final String SEARCH_ENGINE = GEONETWORK + ".search";
+    public static final String CUSTOM_ELEMENTSET = GEONETWORK + ".customelementset";
 	public static final String Z3950_SERVER = GEONETWORK + ".z3950server";
 	public static final String Z3950        = GEONETWORK + ".z3950";
-	public static final String INDEX_ENGINE = GEONETWORK + ".index";
+    public static final String INDEX_ENGINE = GEONETWORK + ".index";
+    public static final String LUCENE = GEONETWORK + ".lucene";
 	public static final String MEF          = GEONETWORK + ".mef";
 	public static final String CSW          = GEONETWORK + ".csw";
 	public static final String LDAP         = GEONETWORK + ".ldap";
+	public static final String EDITOR       = GEONETWORK + ".editor";
     public static final String LOGOS        =  GEONETWORK + ".logos";
-	public static final String EDITOR				= GEONETWORK + ".editor";
 	public static final String EDITORADDELEMENT = GEONETWORK + ".editoraddelement";
 	public static final String EDITOREXPANDELEMENT = GEONETWORK + ".editorexpandelement";
 	public static final String SPATIAL      = GEONETWORK + ".spatial";
-	public static final String CSW_SEARCH   = CSW + ".search";
+    public static final String CSW_SEARCH   = CSW + ".search";
+    public static final String CSW_HARVEST   = CSW + ".harvest";
 	public static final String SRU          = GEONETWORK + ".sru";
 	public static final String SRU_SEARCH   = SRU + ".search";
 	public static final String OAI          = GEONETWORK + ".oai";
 	public static final String OAI_HARVESTER = OAI + ".provider";
   // keys for logging search log
-	public static final String SEARCH_LOGGER= GEONETWORK + ".search-logger";
+	public static final String SEARCH_LOGGER = GEONETWORK + ".search-logger";
 	public static final String THREADPOOL = GEONETWORK + ".threadpool";
 	
 	

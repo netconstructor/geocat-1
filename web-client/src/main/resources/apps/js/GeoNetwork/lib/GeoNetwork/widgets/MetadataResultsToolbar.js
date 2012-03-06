@@ -48,9 +48,14 @@ GeoNetwork.MetadataResultsToolbar = Ext.extend(Ext.Toolbar, {
     metadataResultsView: undefined,
     
     /** property: config[mdSelectionInfoCmp] 
-     *  Component to use to display selection information
+     *  Component to use to display selection information (number of selected records)
      */
     mdSelectionInfoCmp: undefined,
+    
+    /** api: config[mdSelectionAsMenu] 
+     * ``boolean`` Display metadata selection with a menu or a set of button.
+     */
+    mdSelectionAsMenu: true,
     
     /** api: config[searchBtCmp] 
      *  Search button component use to trigger search
@@ -82,6 +87,10 @@ GeoNetwork.MetadataResultsToolbar = Ext.extend(Ext.Toolbar, {
     updateCategoriesAction: undefined,
     
     updatePrivilegesAction: undefined,
+    
+    updateStatusAction: undefined,
+    
+    updateVersionAction: undefined,
     
     createMetadataAction: undefined,
     
@@ -203,13 +212,35 @@ GeoNetwork.MetadataResultsToolbar = Ext.extend(Ext.Toolbar, {
             scope: this,
             hidden: hide
         });
-       
-        this.selectionActions.push(this.deleteAction, this.ownerAction, this.updateCategoriesAction, this.updatePrivilegesAction);
+        this.updateStatusAction = new Ext.menu.Item({
+            text: OpenLayers.i18n('updateStatus'),
+            id: 'updateStatusAction',
+            iconCls : 'statusIcon',
+            handler: function(){
+                this.catalogue.massiveOp('Status');
+            },
+            scope: this,
+            hidden: hide
+        });
+        this.updateVersionAction = new Ext.menu.Item({
+            text: OpenLayers.i18n('updateVersion'),
+            id: 'updateVersionAction',
+            iconCls : 'versioningIcon',
+            handler: function(){
+                this.catalogue.massiveOp('Versioning');
+            },
+            scope: this,
+            hidden: hide
+        });
+        this.selectionActions.push(this.deleteAction, this.ownerAction, this.updateCategoriesAction, 
+                this.updatePrivilegesAction, this.updateStatusAction, this.updateVersionAction);
         
         this.actionMenu.addItem(this.deleteAction);
         this.actionMenu.addItem(this.ownerAction);
         this.actionMenu.addItem(this.updateCategoriesAction);
         this.actionMenu.addItem(this.updatePrivilegesAction);
+        this.actionMenu.addItem(this.updateStatusAction);
+        this.actionMenu.addItem(this.updateVersionAction);
     },
     /** private: method[createAdminMenu] 
      *  Create quick admin action menu to not require to go to
@@ -393,24 +424,39 @@ GeoNetwork.MetadataResultsToolbar = Ext.extend(Ext.Toolbar, {
             scope: this
         });
         
-        /* Selection information status */
-        var mdSelectionInfoCmp = {
-            id: 'md-selection-info',
-            xtype: 'tbtext',
-            text: OpenLayers.i18n('noneSelected')
-        };
         this.catalogue.on('selectionchange', this.updateSelectionInfo, this);
         
-        return [mdSelectionInfoCmp, '|', {
-            xtype: 'tbtext',
-            text: OpenLayers.i18n('select')
-        }, selectAllInPageAction, {
-            xtype: 'tbtext',
-            text: ', '
-        }, selectAllAction, {
-            xtype: 'tbtext',
-            text: ', '
-        }, selectNoneAction];
+        /* Selection information status as a combo or a set of button */
+        if (this.mdSelectionAsMenu) {
+            return [{
+                id: 'md-selection-info',
+                text: OpenLayers.i18n('noneSelected'),
+                menu : {
+                    xtype: 'menu',
+                    items: [
+                        '<b class="menu-title">' + OpenLayers.i18n('select') + '</b>',
+                        selectAllAction, 
+                        selectAllInPageAction, 
+                        selectNoneAction]
+                }
+            }];
+        } else {
+            return [{
+                id: 'md-selection-info',
+                xtype: 'tbtext',
+                text: OpenLayers.i18n('noneSelected')
+            }, '|', {
+                xtype: 'tbtext',
+                text: OpenLayers.i18n('select')
+            }, selectAllInPageAction, {
+                xtype: 'tbtext',
+                text: ', '
+            }, selectAllAction, {
+                xtype: 'tbtext',
+                text: ', '
+            }, selectNoneAction
+            ];
+        }
     },
     /** api: method[updateSelectionInfo] 
      *  Update selection and selection information
@@ -434,6 +480,7 @@ GeoNetwork.MetadataResultsToolbar = Ext.extend(Ext.Toolbar, {
      *  Update privileges after user login
      */
     updatePrivileges: function(catalogue, user){
+        // TODO : this.ownerAction visible to userAdmin only #781
         var actions = [this.deleteAction, this.ownerAction, this.updateCategoriesAction, 
                         this.updatePrivilegesAction, this.createMetadataAction, this.mdImportAction,
                         this.mdImportAction, this.adminAction, this.otherItem];
