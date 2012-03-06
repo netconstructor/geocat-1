@@ -1,10 +1,17 @@
 #!/bin/sh
 set -x
-DB=$1
+
+if [ "jeichar" = $1 ]; then
+  DB=geocat2_trunk
+  SQL_DIR=/usr/local/share/postgis/
+fi
 
 export PG_PASSWORD="www-data"
 dropdb $DB
-createdb -O www-data $DB -T template1
+createdb -O www-data $DB
+
+psql -d $DB -f $SQL_DIR/postgis.sql
+psql -d $DB -f $SQL_DIR/spatial_ref_sys.sql
 
 rm -rf /tmp/gc_data
 rm -rf /tmp/gc_lucene
