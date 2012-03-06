@@ -18,8 +18,4 @@ class LocalizedStringComparable implements Comparable<LocalizedStringComparable>
     {
         return _comparator.compare(_wrapped, anotherString._wrapped);
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> mirror/master

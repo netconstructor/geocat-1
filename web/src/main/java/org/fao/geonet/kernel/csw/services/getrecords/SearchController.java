@@ -57,6 +57,7 @@ import org.fao.geonet.kernel.search.spatial.Pair;
 import org.geotools.data.DataStore;
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 
 import java.io.File;
 import java.util.ArrayList;

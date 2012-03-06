@@ -103,6 +103,8 @@ import java.util.Vector;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.servlet.ServletContext;
+
 /**
  * Indexes metadata using Lucene.
  */
@@ -175,9 +177,8 @@ public class SearchManager {
      *
      * @return GeoNetworkAnalyzer
      */
-    private static Analyzer createGeoNetworkAnalyzer(Set<String> stopwords) {
+    private static Analyzer createGeoNetworkAnalyzer(Set<String> stopwords, char[] ignoreChars) {
         Log.debug(Geonet.SEARCH_ENGINE, "Creating GeoNetworkAnalyzer");
-        char[] ignoreChars = settingInfo.getAnalyzerIgnoreChars();
 
         return new GeoNetworkAnalyzer(stopwords,ignoreChars);
     }
@@ -187,9 +188,9 @@ public class SearchManager {
      *
      * @return PerFieldAnalyzerWrapper
      */
-	private static PerFieldAnalyzerWrapper createHardCodedPerFieldAnalyzerWrapper(Set<String> stopwords) {
+	private static PerFieldAnalyzerWrapper createHardCodedPerFieldAnalyzerWrapper(Set<String> stopwords, char[] ignoreChars) {
         PerFieldAnalyzerWrapper pfaw;
-        Analyzer geoNetworkAnalyzer = createGeoNetworkAnalyzer(stopwords);
+        Analyzer geoNetworkAnalyzer = createGeoNetworkAnalyzer(stopwords, ignoreChars);
 		pfaw = new PerFieldAnalyzerWrapper(geoNetworkAnalyzer);
 		pfaw.addAnalyzer(LuceneIndexField.UUID, new GeoNetworkAnalyzer());
 		pfaw.addAnalyzer(LuceneIndexField.PARENTUUID, new GeoNetworkAnalyzer());
@@ -227,7 +228,7 @@ public class SearchManager {
         // no default analyzer instantiated: create one
         if(_defaultAnalyzer == null) {
             // create hardcoded default PerFieldAnalyzerWrapper w/o stopwords
-            _defaultAnalyzer = createHardCodedPerFieldAnalyzerWrapper(null);
+            _defaultAnalyzer = createHardCodedPerFieldAnalyzerWrapper(null, null);
         }
         if(!_stopwordsDir.exists() || !_stopwordsDir.isDirectory()) {
             Log.warning(Geonet.SEARCH_ENGINE, "Invalid stopwords directory " + _stopwordsDir.getAbsolutePath() + ", not using any stopwords.");
@@ -243,7 +244,7 @@ public class SearchManager {
                 Set<String> stopwordsForLanguage = StopwordFileParser.parse(stopwordsFile.getAbsolutePath());
                 if(stopwordsForLanguage != null) {
                     Log.debug(Geonet.LUCENE, "loaded # " + stopwordsForLanguage.size() + " stopwords for language " + language);
-                    Analyzer languageAnalyzer = createHardCodedPerFieldAnalyzerWrapper(stopwordsForLanguage);
+                    Analyzer languageAnalyzer = createHardCodedPerFieldAnalyzerWrapper(stopwordsForLanguage, null);
                     analyzerMap.put(language, languageAnalyzer);
                 }
                 else {
@@ -266,7 +267,7 @@ public class SearchManager {
             Log.debug(Geonet.SEARCH_ENGINE, "Creating analyzer defined in Lucene config:" + analyzerClassName);
             // GNA analyzer
             if(analyzerClassName.equals("org.fao.geonet.kernel.search.GeoNetworkAnalyzer")) {
-                analyzer = createGeoNetworkAnalyzer(stopwords);
+                analyzer = createGeoNetworkAnalyzer(stopwords, _settingInfo.getAnalyzerIgnoreChars());
             }
             // non-GNA analyzer
             else {
@@ -302,7 +303,7 @@ public class SearchManager {
             // creation of analyzer has failed, default to GeoNetworkAnalyzer
             if(analyzer == null) {
                 Log.warning(Geonet.SEARCH_ENGINE, "Creating analyzer has failed, defaulting to GeoNetworkAnalyzer");
-                analyzer = createGeoNetworkAnalyzer(stopwords);
+                analyzer = createGeoNetworkAnalyzer(stopwords, _settingInfo.getAnalyzerIgnoreChars());
             }
         }
         return analyzer;
@@ -1121,85 +1122,6 @@ public class SearchManager {
     }
 
 	// utilities
-    /**
-     * If otherLanguages has a document that is the same locale as the default then remove it from
-     * otherlanguages and merge the fields with those in defaultLang
-     */
-    @SuppressWarnings("unchecked")
-    private void mergeDefaultLang( Element defaultLang, List<Element> otherLanguages ) {
-        final String langCode;
-        if (defaultLang.getAttribute("locale") == null) {
-            langCode = "";
-        }
-        else {
-            langCode = defaultLang.getAttributeValue("locale");
-        }
-
-        Element toMerge = null;
-
-        for( Element element : otherLanguages ) {
-            String clangCode;
-            if (element.getAttribute("locale") == null) {
-                clangCode = "";
-            }
-            else {
-                clangCode = element.getAttributeValue("locale");
-            }
-
-            if (clangCode.equals(langCode)) {
-                toMerge = element;
-                break;
-            }
-        }
-
-        SortedSet<Element> toInclude = new TreeSet<Element>(new Comparator<Element>(){
-            public int compare( Element o1, Element o2 ) {
-                // <Field name="_locale" string="{string($iso3LangId)}" store="true" index="true" token="false"/>
-                int name = compare(o1, o2, "name");
-                int string = compare(o1, o2, "string");
-                int store = compare(o1, o2, "store");
-                int index = compare(o1, o2, "index");
-                if (name != 0) {
-                    return name;
-                }
-                if (string != 0) {
-                    return string;
-                }
-                if (store != 0) {
-                    return store;
-                }
-                if (index != 0) {
-                    return index;
-                }
-                return 0;
-            }
-            private int compare( Element o1, Element o2, String attName ) {
-                return safeGet(o1, attName).compareTo(safeGet(o2, attName));
-            }
-            public String safeGet( Element e, String attName ) {
-                String att = e.getAttributeValue(attName);
-                if (att == null) {
-                    return "";
-                } else {
-                    return att;
-                }
-            }
-        });
-
-        if (toMerge != null) {
-            toMerge.detach();
-            otherLanguages.remove(toMerge);
-            for( Element element : (List<Element>) defaultLang.getChildren() ) {
-                toInclude.add(element);
-            }
-            for( Element element : (List<Element>) toMerge.getChildren() ) {
-                toInclude.add(element);
-            }
-            toMerge.removeContent();
-            defaultLang.removeContent();
-            defaultLang.addContent(toInclude);
-        }
-    }
 
     /**
      * If otherLanguages has a document that is the same locale as the default then remove it from
@@ -1544,7 +1466,13 @@ public class SearchManager {
 			Log.warning(Geonet.INDEX_ENGINE, "Failed to index numeric field: " + name + " with value: " + string + ", error is:" + e.getMessage());
 		}
 	}
+    public File getStylesheetsDir() {
+        return _stylesheetsDir;
+    }
 
+    public File getLuceneDir() {
+        return _luceneDir;
+    }
 	public Spatial getSpatial() {
         return _spatial;
     }

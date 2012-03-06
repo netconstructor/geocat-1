@@ -25,10 +25,6 @@ package org.fao.geonet.kernel;
 
 import jeeves.constants.Jeeves;
 import jeeves.resources.dbms.Dbms;
-<<<<<<< HEAD
-import jeeves.server.UserSession;
-=======
->>>>>>> mirror/master
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.Util;
@@ -158,14 +154,10 @@ public class XmlSerializerSvn extends XmlSerializer {
      *
      * @throws SQLException, SVNException
      */
-<<<<<<< HEAD
-	public void update(Dbms dbms, String id, Element xml, String changeDate, boolean updateDateStamp, UserSession session, ServiceContext srvContext) throws Exception {
-=======
 	public void update(Dbms dbms, String id, Element xml, String changeDate, boolean updateDateStamp, ServiceContext context) throws Exception {
->>>>>>> mirror/master
 
 		// old XML comes from the database
-	  Element oldXml = super.internalSelect(dbms, "metadata", id, srvContext);		
+	  Element oldXml = super.internalSelect(dbms, "metadata", id, context);		
 
 		updateDb(dbms, id, xml, changeDate, xml.getQualifiedName(), updateDateStamp);
 

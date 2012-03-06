@@ -500,7 +500,7 @@ public class DataManager {
                  * This transformation ensures this property
                  */
                 md = Xml.transform(md, stylePath+"characterstring-to-localisedcharacterstring.xsl");
-                xmlSerializer.update(dbms, id, md, new ISODate().toString(), false, servContext.getUserSession(), servContext);
+                xmlSerializer.update(dbms, id, md, new ISODate().toString(), false, servContext);
 
             }
              if("n".equalsIgnoreCase(isHarvested) && processSharedObjects && schema.trim().equals("iso19139.che")) {
@@ -510,7 +510,7 @@ public class DataManager {
 
 	                if(modified != null && !modified.isEmpty()) {
 	                    md = modified.get(0);
-	                    xmlSerializer.update(dbms, id, md, new ISODate().toString(), false, servContext.getUserSession(), servContext);
+	                    xmlSerializer.update(dbms, id, md, new ISODate().toString(), false, servContext);
 	                }
             	} catch (Exception e) {
             		Log.error(Geonet.DATA_MANAGER, "error while trying to update shared objects of metadata, "+id+" "+e.getMessage()); //DEBUG
@@ -2383,7 +2383,7 @@ public class DataManager {
      * @throws Exception
      */
 	private void manageCommons(Dbms dbms, ServiceContext context, String id, Element env, String styleSheet) throws Exception {
-		Element md = xmlSerializer.select(dbms, "Metadata", id);
+		Element md = xmlSerializer.select(dbms, "Metadata", id, context);
 
 		if (md == null) return;
 

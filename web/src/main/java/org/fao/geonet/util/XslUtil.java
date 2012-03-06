@@ -1,11 +1,17 @@
 package org.fao.geonet.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -185,6 +191,7 @@ public final class XslUtil {
             return "";
         }
     }
+
     public static String getIndexFieldById(Object appName, Object id, Object field, Object lang) {
         String webappName = appName.toString();
         String fieldname = field.toString();
@@ -700,39 +707,6 @@ public final class XslUtil {
         return out.toString("utf-8").replaceFirst("<\\?xml.+?>", "");
     }
 
-
-    /**
-     * For all text split the lines to a specified size and add hyperlinks when appropriate
-     */
-    public static String getIndexField(Object appName, Object uuid, Object field, Object lang) {
-        String webappName = appName.toString();
-        String id = uuid.toString();
-        String fieldname = field.toString();
-        String language = (lang.toString().equals("") ? null : lang.toString());
-        try {
-            String fieldValue = LuceneSearcher.getMetadataFromIndex(webappName, language, id, fieldname);
-            if(fieldValue == null) {
-                return getIndexFieldById(appName,uuid,field,lang);
-            }
-            return fieldValue == null ? "" : fieldValue;
-        } catch (Exception e) {
-            Log.error(Geonet.GEONETWORK, "Failed to get index field value caused by " + e.getMessage());
-            return "";
-        }
-    }
-
-    public static String getIndexFieldById(Object appName, Object id, Object field, Object lang) {
-        String webappName = appName.toString();
-        String fieldname = field.toString();
-        String language = (lang.toString().equals("") ? null : lang.toString());
-        try {
-            String fieldValue = LuceneSearcher.getMetadataFromIndexById(webappName, language, id.toString(), fieldname);
-            return fieldValue == null ? "" : fieldValue;
-        } catch (Exception e) {
-            Log.error(Geonet.GEONETWORK, "Failed to get index field value caused by " + e.getMessage());
-            return "";
-        }
-    }
 
     static Pattern LINK_PATTERN = Pattern.compile("(mailto:|https://|http://|ftp://|ftps://)[^\\s<>]*\\w");
     static Pattern NODE_PATTERN = Pattern.compile("<.+?>");

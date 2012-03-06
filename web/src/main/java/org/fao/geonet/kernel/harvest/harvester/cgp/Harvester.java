@@ -291,7 +291,7 @@ class Harvester
 	        String group = null, isTemplate = null, docType = null, title = null, category = null;
 	        boolean ufo = false, indexImmediate = false;
 	        String changeDate = DATE_FORMAT.format(date); 
-	        id = dataMan.insertMetadata(context.getUserSession(), dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, params.uuid,
+	        id = dataMan.insertMetadata(context, dbms, schema, md, context.getSerialFactory().getSerial(dbms, "Metadata"), uuid, userid, group, params.uuid,
 	                         isTemplate, docType, title, category, changeDate, changeDate, ufo, indexImmediate);
 
 			addPrivileges(id);
@@ -358,7 +358,7 @@ class Harvester
 			// TODO : unsetThumbnail(id);
 
 			// Remove metadata
-			dataMan.deleteMetadata(context.getUserSession(), dbms, id);
+			dataMan.deleteMetadata(context, dbms, id);
 
 			result.locallyRemoved++;
 		}
@@ -387,7 +387,7 @@ class Harvester
 				log.debug("    - Skipping removed category with id:" + catId);
 			} else
 			{
-				dataMan.setCategory(context.getUserSession(), dbms, id, catId);
+				dataMan.setCategory(context, dbms, id, catId);
 			}
 		}
 	}
@@ -416,7 +416,7 @@ class Harvester
 					//--- allow only: view, dynamic, featured
 					if (opId == 0 || opId == 5 || opId == 6)
 					{
-						dataMan.setOperation(context.getUserSession(), dbms, id, priv.getGroupId(), opId + "");
+						dataMan.setOperation(context, dbms, id, priv.getGroupId(), opId + "");
 					} else
 					{
 						log.debug("       --> " + name + " (skipped)");

@@ -35,6 +35,7 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.setting.domain.IndexLanguage;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -123,7 +124,7 @@ public final class GeoNetworkAnalyzer extends GeoNetworkReusableAnalyzerBase {
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
         final Tokenizer source = new StandardTokenizer(Version.LUCENE_30, wrapReader(reader));
-        if(CollectionUtils.isNotEmpty(this.stopwords)) {
+        if(this.stopwords!=null && !this.stopwords.isEmpty()) {
             return new TokenStreamComponents(source, new StopFilter(enablePositionIncrements, new ASCIIFoldingFilter(new LowerCaseFilter(new StandardFilter(source))), this.stopwords, ignoreCase)){
                 @Override
                 protected boolean reset(final Reader reader) throws IOException {

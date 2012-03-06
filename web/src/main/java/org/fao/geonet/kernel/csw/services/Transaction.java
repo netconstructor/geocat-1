@@ -325,7 +325,7 @@ public class Transaction extends AbstractOperation implements CatalogService
             boolean ufo = false;
             boolean index = false;
             String language = context.getLanguage();
-            dataMan.updateMetadata(context, dbms, id, xml, validate, ufo, index, language, changeDate, false);
+            dataMan.updateMetadata(context, dbms, id, xml, validate, ufo, index, language, changeDate, false, true);
 
             dbms.commit();
             toIndex.add(id);
@@ -423,7 +423,7 @@ public class Transaction extends AbstractOperation implements CatalogService
                     boolean ufo = false;
                     boolean index = false;
                     String language = context.getLanguage();
-                    dataMan.updateMetadata(context, dbms, id, metadata, validate, ufo, index, language, changeDate, false);
+                    dataMan.updateMetadata(context, dbms, id, metadata, validate, ufo, index, language, changeDate, false, true);
 
                     updatedMd.add(id);
 

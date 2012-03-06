@@ -301,12 +301,11 @@ public class Aligner
                 boolean ufo = false;
                 boolean index = false;
                 String language = context.getLanguage();
-				dataMan.updateMetadata(context, dbms, id, md, validate, ufo, index, language, ri.changeDate, false, false);
-
+				String schema = dataMan.autodetectSchema(md);
                 dbms.execute("UPDATE metadata SET schemaid = ? WHERE id=?", schema, Integer.parseInt(id));
                 // issue #18944 force namespace prefix for iso19139 metadata
                 dataMan.setNamespacePrefixUsingSchemas(schema, md);
-				dataMan.updateMetadata(session, dbms, id, md, validate, ufo, index, language, ri.changeDate, false, false);
+				dataMan.updateMetadata(context, dbms, id, md, validate, ufo, index, language, ri.changeDate, false, false);
 
 				dbms.execute("DELETE FROM OperationAllowed WHERE metadataId=?", Integer.parseInt(id));
 				addPrivileges(id);

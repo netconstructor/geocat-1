@@ -71,9 +71,8 @@ public class List implements Service
 
 		Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
 
-<<<<<<< HEAD
 		String userProfile = session.getProfile();
-		HashSet hsMyGroups = getGroups(dbms, session.getUserId(), userProfile);
+		Set<String> hsMyGroups = getGroups(dbms, session.getUserId(), userProfile);
 
 		Set profileSet = (userProfile == null) ?
 							Collections.emptySet():context.getProfileManager().getProfilesSet(userProfile);
@@ -130,15 +129,6 @@ public class List implements Service
 					+ "or name ilike '%" + name + "%') and publicaccess = 'y' "
 					+ "ORDER BY "+sortBy);
 		}
-=======
-		Set<String> hsMyGroups = getGroups(dbms, session.getUserId(), session.getProfile());
-
-		Set profileSet = context.getProfileManager().getProfilesSet(session.getProfile());
-
-		//--- retrieve all users
-
-		Element elUsers = dbms.select ("SELECT * FROM Users ORDER BY username");
->>>>>>> mirror/master
 
 		//--- now filter them
 
@@ -184,37 +174,18 @@ public class List implements Service
 
 	private Set<String> getGroups(Dbms dbms, String id, String profile) throws Exception
 	{
-<<<<<<< HEAD
-		HashSet hs = new HashSet();
-
-		if (profile == null) {
-			hs.add("1");	// Only Internet
-            return hs;
-        }
-
-		String query = (profile.equals(ProfileManager.ADMIN))
-							? "SELECT id FROM Groups"
-							: "SELECT groupId AS id FROM UserGroups WHERE userId=" + id;
-=======
 		Element groups;
 		if (profile.equals(ProfileManager.ADMIN)) {
 			groups = dbms.select("SELECT id FROM Groups");
 		} else {
 			groups = dbms.select("SELECT groupId AS id FROM UserGroups WHERE userId=?", new Integer(id));
 		}
->>>>>>> mirror/master
 
 		java.util.List<Element> list = groups.getChildren();
 
-<<<<<<< HEAD
-		for(int i=0; i<list.size(); i++)
-		{
-			Element el = (Element) list.get(i);
-=======
 		Set<String> hs = new HashSet<String>();
 
 		for(Element el : list) {
->>>>>>> mirror/master
 			hs.add(el.getChildText("id"));
 		}
         return hs;

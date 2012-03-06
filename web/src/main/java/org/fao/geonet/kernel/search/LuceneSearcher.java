@@ -104,6 +104,7 @@ import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -948,7 +949,7 @@ public class LuceneSearcher extends MetaSearcher
                     query = new WildcardQuery(new Term(luceneIndexField, analyzedString));
                 }
             }
-            if(StringUtils.hasLength(analyzedString) && tokenizedFieldSet.contains(luceneIndexField)) {
+            if(StringUtils.isNotEmpty(analyzedString) && tokenizedFieldSet.contains(luceneIndexField)) {
                 if(analyzedString.contains(" ")) {
                     // if analyzer creates spaces (by converting ignored characters like -) then make boolean query
                     String[] terms = analyzedString.split(" ");
@@ -1103,7 +1104,7 @@ public class LuceneSearcher extends MetaSearcher
 
 	//--------------------------------------------------------------------------------
 
-	private static Element addSortedSummaryKeys(Element elSummary, String langCode, HashMap<String,ObjectKeyIntOpenHashMap> summaryMaps, HashMap<String,HashMap<String,Object>> summaryConfigValues) throws Exception {
+	private static Element addSortedSummaryKeys(Element elSummary, String langCode, Map<String,ObjectKeyIntOpenHashMap> summaryMaps, Map<String,Map<String,Object>> summaryConfigValues) throws Exception {
 
 		for ( String indexKey : summaryMaps.keySet() ) {
 			Map <String,Object> summaryConfigValuesForKey = summaryConfigValues.get(indexKey);
@@ -1203,7 +1204,7 @@ public class LuceneSearcher extends MetaSearcher
 			// -- prepare
 			Map<String, Map<String,Object>> summaryConfigValues = getSummaryConfig(summaryConfig, resultType, maxSummaryKeys);
 			Log.debug(Geonet.SEARCH_ENGINE, "ResultType is "+resultType+", SummaryKeys are "+summaryConfigValues);
-			HashMap<String,ObjectKeyIntOpenHashMap> summaryMaps = prepareSummaryMaps(summaryConfigValues.keySet());
+			Map<String,ObjectKeyIntOpenHashMap> summaryMaps = prepareSummaryMaps(summaryConfigValues.keySet());
 
 			// -- get all hits from search to build the summary
 			tdocs = tfc.topDocs(0, numHits);

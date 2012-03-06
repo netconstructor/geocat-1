@@ -147,7 +147,7 @@ public class ReusableObjManager
             Element changed = process.get(0);
 
             if (changed != null) {
-                gc.getXmlSerializer().update(dbms, id, changed, new ISODate() .toString(),false, context.getUserSession(), context);
+                gc.getXmlSerializer().update(dbms, id, changed, new ISODate().toString(), false, context);
             }
         }
         return process != null;

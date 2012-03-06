@@ -171,16 +171,14 @@
 				</ows:HTTP>
 			</ows:DCP>
 		</ows:Operation>
-        <!--		
 		<ows:Operation name="Harvest">
 			<ows:DCP>
 				<ows:HTTP>
-					<ows:Get  xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/en/csw" />
-					<ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/en/csw"  />
+					<ows:Get  xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT" />
+					<ows:Post xlink:href="$PROTOCOL://$HOST:$PORT$SERVLET/srv/$LOCALE/$END-POINT"  />
 				</ows:HTTP>
 			</ows:DCP>
 		</ows:Operation>
--->
         <ows:Parameter name="service">
             <ows:Value>http://www.opengis.net/cat/csw/2.0.2</ows:Value>
         </ows:Parameter>

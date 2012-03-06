@@ -52,7 +52,7 @@ public class GetAll implements Service
 	{
 		//--- retrieve all groups
 		Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
-		return Lib.local.retrieve(dbms, "Groups", "id > 1");
+		return Lib.local.retrieveWhere(dbms, "Groups", "id > 1");
 	}
 }
 

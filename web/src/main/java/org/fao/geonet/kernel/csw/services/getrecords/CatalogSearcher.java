@@ -509,7 +509,7 @@ public class CatalogSearcher {
 
         Element replaceElements = replaceElements(filterExpr);
 		// TODO Handle NPE creating spatial filter (due to constraint
-        Filter spatialfilter = sm.getSpatial().filter(query, filterExpr, filterVersion);
+        Filter spatialfilter = sm.getSpatial().filter(query, replaceElements, filterVersion);
         Filter duplicateRemovingFilter = new DuplicateDocFilter(query, 1000000);
         Filter cFilter = null;
         if (spatialfilter == null) {
@@ -527,7 +527,7 @@ public class CatalogSearcher {
             numHits = Math.max(maxHitsInSummary, numHits);
         }
         if (sort == null) {
-			sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)), context.getLanguage());
+			sort = LuceneSearcher.makeSort(Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true)), context.getLanguage(), true);
 		}
 		// record globals for reuse
 		_query = query;
