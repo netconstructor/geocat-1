@@ -186,6 +186,9 @@
     	<addXml xpath="search/dumpFields">
 	      <field name="wms_uri" tagName="wmsuri"/>
     	</addXml>
+    	<addXml xpath="tokenized">
+    		<Field name="orgName"/>
+    	</addXml>
     </file>
     <file name=".*/WEB-INF/config-gui.xml">
         <replaceAtt xpath="client" attName="url" value="geocat"/>

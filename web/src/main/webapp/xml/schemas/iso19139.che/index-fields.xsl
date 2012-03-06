@@ -187,8 +187,9 @@
 	
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 	
-			<xsl:for-each select="//gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString|
-				//che:CHE_CI_ResponsibleParty/gmd:organisationName/gco:CharacterString">
+			<xsl:for-each select="//gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString |
+				//che:CHE_CI_ResponsibleParty/gmd:organisationName/gco:CharacterString |
+				//che:CHE_CI_ResponsibleParty/che:organisationAcronym/gco:CharacterString">
                 <Field name="orgName" string="{string(.)}" store="true" index="true" token="true"/>
                 <Field name="_orgName" string="{string(.)}" store="true" index="true" token="false"/>
 			</xsl:for-each>

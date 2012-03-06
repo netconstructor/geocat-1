@@ -185,8 +185,9 @@
 	
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
     
-           <xsl:for-each select="//gmd:CI_ResponsibleParty/gmd:organisationName//gmd:LocalisedCharacterString[@locale=$langId]|
-                    //che:CHE_CI_ResponsibleParty/gmd:organisationName//gmd:LocalisedCharacterString[@locale=$langId]">
+           <xsl:for-each select="//gmd:CI_ResponsibleParty/gmd:organisationName//gmd:LocalisedCharacterString[@locale=$langId] |
+                    //che:CHE_CI_ResponsibleParty/gmd:organisationName//gmd:LocalisedCharacterString[@locale=$langId] |
+				    //che:CHE_CI_ResponsibleParty/che:organisationAcronym/gco:CharacterString">
                     <Field name="orgName" string="{string(.)}" store="true" index="true" token="true"/>
                     <Field name="_orgName" string="{string(.)}" store="true" index="true" token="false"/>
             </xsl:for-each>
