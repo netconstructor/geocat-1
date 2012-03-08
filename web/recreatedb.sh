@@ -4,6 +4,9 @@ set -x
 if [ "jeichar" = $1 ]; then
   DB=geocat2_trunk
   SQL_DIR=/usr/local/share/postgis/
+else
+  echo "request a target parameter: ./recreatedb.sh <username>"
+  exit 1
 fi
 
 export PG_PASSWORD="www-data"

@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,6 +55,8 @@ import jeeves.utils.Xml;
 import jeeves.xlink.XLink;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.document.SetBasedFieldSelector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
@@ -235,17 +238,22 @@ public final class Utils {
             });
 
             for( String field : luceneFields ) {
+                Set<String> requiredFields = new HashSet<String>();
+                requiredFields.add("_id");
+                requiredFields.add(field);
+                FieldSelector selector = new SetBasedFieldSelector(requiredFields, Collections.<String>emptySet()); 
                 Term term = new Term(field, "*id=" + concreteId + "*");
                 WildcardQuery query = new WildcardQuery(term);
                 TopDocs tdocs = searcher.search(query, Integer.MAX_VALUE);
 
                 for( ScoreDoc sdoc : tdocs.scoreDocs ) {
-                    Document element = reader.document(sdoc.doc);
+                    Document element = reader.document(sdoc.doc, selector);
 
                     List<String> xlinks = new ArrayList<String>();
                     for( String value : element.getValues(field) ) {
                         if (equalIds(value, concreteId)) {
                             xlinks.add(value);
+                            break;
                         }
                     }
                     if (!xlinks.isEmpty()) {

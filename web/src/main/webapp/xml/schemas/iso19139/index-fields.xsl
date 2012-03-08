@@ -453,7 +453,7 @@
 			<xsl:variable name="layerName" select="string(.)" />
 			<xsl:variable name="uuid" select="string(../srv:identifier/gco:CharacterString)" />
 			<xsl:variable name="allConnectPoint" 
-				select="../../../srv:containsOperations/srv:SV_OperationMetadata/srv:connectPoint/gmd:CI_OnlineResource/gmd:linkage/(gmd:URL|che:LocalisedURL|.//che:LocalisedURL)" />
+				select="../../../srv:containsOperations/srv:SV_OperationMetadata/srv:connectPoint/gmd:CI_OnlineResource/gmd:linkage/gmd:URL" />
 		    <xsl:variable name="connectPoint" select="$allConnectPoint[1]"/>
 			<xsl:variable name="serviceUrl">
 				<xsl:choose>

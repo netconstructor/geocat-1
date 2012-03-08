@@ -495,11 +495,11 @@
 		<Field name="xlink_deleted" string="{@xlink:href}" store="true" index="true" token="false"/>
 	</xsl:template>
 
-	<xsl:template match="*[@xlink:href and @xlink:role]" mode="xlinks">
+	<xsl:template match="*[@xlink:href and @xlink:role = 'http://www.geonetwork.org/non_valid_obj']" mode="xlinks">
 		<xsl:apply-templates select="." mode="non-valid-xlink"/>
 	</xsl:template>
 
-	<xsl:template match="*[@xlink:href and not(@xlink:role)]" mode="xlinks">
+	<xsl:template match="*[@xlink:href and not(@xlink:role = 'http://www.geonetwork.org/non_valid_obj')]" mode="xlinks">
 		<xsl:apply-templates select="." mode="valid-xlink"/>
 	</xsl:template>
 	
