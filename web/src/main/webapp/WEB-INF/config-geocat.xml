@@ -436,7 +436,7 @@
         To be used with no outputSchema (ie. default ogc) to return
         search result in a pdf. Replace existing pdf.search service. -->
         <service name="csw.pdf">
-            <class name=".services.main.CswDispatcher" />
+            <class name=".services.main.CswDiscoveryDispatcher" />
 
             <output sheet="csw-pdf-fop.xsl" file="true" contentType="application/pdf">
                 <call name="siteURL" class=".guiservices.util.GetSiteURL" />
@@ -446,7 +446,7 @@
         To be used with outputSchema=own in order to be able to produce
         specific output according to schema. -->
         <service name="csw.csv">
-            <class name=".services.main.CswDispatcher" />
+            <class name=".services.main.CswDiscoveryDispatcher" />
 
             <output sheet="csv-search.xsl" contentType="text/plain; charset=UTF-8" />
         </service>
