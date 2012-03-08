@@ -36,7 +36,7 @@
             Env.proxy     = "<xsl:value-of select="/root/gui/config/proxy-url"/>";
 			
 			window.javascriptsLocation = "<xsl:value-of select="/root/gui/url"/>/scripts/";
-			
+			window.gMfLocation = javascriptsLocation+"mapfishIntegration/";
 			<xsl:if test="//service/@name = 'main.home'">
             document.onkeyup = alertkey;
             
