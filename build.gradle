@@ -4,6 +4,8 @@ allprojects {
   version=1.0
   charset='UTF-8'
   buildDir='target'
+  
+  tasks.withType(Compile) { options.compilerArgs = ["-g:source,lines,vars"] }
 }
 
 configure(subprojects.findAll {it.name != 'web-client' && it.name != 'schematrons'}) {
