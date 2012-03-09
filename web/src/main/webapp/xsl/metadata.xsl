@@ -5,7 +5,8 @@
 	xmlns:gmd="http://www.isotc211.org/2005/gmd"
 	xmlns:geonet="http://www.fao.org/geonetwork"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
-	xmlns:svrl="http://purl.oclc.org/dsdl/svrl" 
+	xmlns:svrl="http://purl.oclc.org/dsdl/svrl"
+	xmlns:srv="http://www.isotc211.org/2005/srv" 
 	xmlns:date="http://exslt.org/dates-and-times"
 	xmlns:saxon="http://saxon.sf.net/"
 	extension-element-prefixes="saxon"
@@ -789,6 +790,40 @@
 					display:none;
 				</xsl:attribute>
 			</xsl:if>
+			
+			
+        <xsl:variable name="requiredContact"
+            select="$edit = true() and 
+                   ((@name='contact' and @prefix='gmd' and count(parent::node()[@gco:isoType='gmd:MD_Metadata'])=1)
+                    or
+                    (@name='userContactInfo' and @prefix='gmd' and count(parent::gmd:MD_Usage)=1))
+                            " />
+                            
+        
+        <xsl:variable name="serviceIdentification" select ="parent::node()[@gco:isoType='srv:SV_ServiceIdentification']"/>
+        <xsl:variable name="dataIdentification"  select ="parent::node()[@gco:isoType='gmd:MD_DataIdentification']"/>
+        <xsl:variable name="mixedOrTightCouplingType">
+            <xsl:choose>
+                <xsl:when test="$serviceIdentification//srv:SV_CouplingType/@codeListValue = 'mixed' or
+                     $serviceIdentification//srv:SV_CouplingType/@codeListValue = 'tight'">
+                    <xsl:value-of select="true()"/>
+                 </xsl:when>
+                 <xsl:otherwise><xsl:value-of select="false()"/></xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        
+
+		<xsl:variable name="requiredExtent"
+            select="$edit = true() and 
+                    @name='extent' and  
+                    ( count($dataIdentification)>0 or
+                      (count($serviceIdentification)>0 and 
+                       string($mixedOrTightCouplingType) = true()
+                      )
+                    )
+            " />
+			
+			
 			<th class="md" width="20%" valign="top">
 				<xsl:choose>
 					<xsl:when test="$isXLinked = 'true'">
@@ -798,7 +833,9 @@
 						<xsl:attribute name="class">md</xsl:attribute>
 					</xsl:otherwise>
 				</xsl:choose>
-				
+				<xsl:if test="$requiredContact or $requiredExtent">
+					<xsl:attribute name="style">border-width: 3px 3px 3px 3px; border-style: solid solid solid solid; border-color: red red red red;</xsl:attribute>
+				</xsl:if>
                 <xsl:if test="$edit">
                 	<xsl:variable name="ref" select="geonet:element/@ref"></xsl:variable>
                     <xsl:call-template name="visibility-icons">
