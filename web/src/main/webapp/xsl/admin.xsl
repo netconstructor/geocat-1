@@ -127,7 +127,7 @@
 
                         <xsl:call-template name="addrow">
 							<xsl:with-param name="service" select="'main.search'"/>
-							<xsl:with-param name="args" select="'hitsPerPage=10&amp;editable=true'"/>
+							<xsl:with-param name="args" select="concat('hitsPerPage=10&amp;editable=true&amp;_owner=',/root/gui/session/userId)"/>
 
 							<xsl:with-param name="title"
 								select="/root/gui/strings/mymetadata"/>
