@@ -202,7 +202,7 @@ public class GetRecords extends AbstractOperation implements CatalogService {
         String filterVersion = getFilterVersion(constr);
 
         // Get max hits to be used for summary - CSW GeoNetwork extension
-        int maxHitsInSummary = 1000;
+        int maxHitsInSummary = 100000;
         String sMaxRecordsInKeywordSummary = query.getAttributeValue("maxHitsInSummary");
         if (sMaxRecordsInKeywordSummary != null) {
             // TODO : it could be better to use service config parameter instead

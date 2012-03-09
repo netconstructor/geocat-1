@@ -2282,7 +2282,7 @@ var geocat = {
                '  </xsl:template> '+
                geocat.getDefaultRefinementListTemplate('titles','titles','title','E1.0__title') +
                geocat.getDefaultRefinementListTemplate('keyword','keywords','keyword','E1.0_keyword') +
-               geocat.getRefinementListTemplate('resolution','denominators','denominator','E1.0_denominator', geocat.denominatorLabelFormat) +
+               geocat.getRefinementListTemplate('resolution','denominators','denominator','N_denominator', geocat.denominatorLabelFormat) +
                geocat.getDefaultRefinementListTemplate('category','categories','category','E1.0_topicCat') +
                geocat.getDefaultRefinementListTemplate('spatialRepresentation','spatialRepresentations','spatialRepresentation','E1.0_spatialRepresentation') +
                geocat.getDefaultRefinementListTemplate('organizationName','organizationNames','organizationName','E1.0__orgName') +

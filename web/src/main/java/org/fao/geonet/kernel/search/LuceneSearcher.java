@@ -1077,10 +1077,7 @@ public class LuceneSearcher extends MetaSearcher
                     ObjectKeyIntMap summary = summaryMaps.get(key);
                     String hits[] = doc.getValues(key);
                     if (hits != null) {
-                        Set<String> visited = new HashSet<String>();
                         for (String info : hits) {
-                            if(visited.contains(info)) continue;
-                            visited.add(info);
                             Integer catCount = summary.get(info);
                             if (catCount == null) {
                                 catCount = 1;

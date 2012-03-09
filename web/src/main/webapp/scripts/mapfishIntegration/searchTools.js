@@ -239,6 +239,13 @@ var searchTools = {
 	                value: value ? 'y' : 'n'
 	            }));
 			}
+        } else if (type == 'N') {    //Numeric
+            filters.push(new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.BETWEEN,
+                property: name,
+                lowerBoundary: parseInt(value),
+                upperBoundary: parseInt(value)
+            }));
         } else if (type == 'V') { //field name specified in the value, separated by a '/' with the value
             var subField = value.match("^([^/]+)/(.*)$");
             filters.push(new OpenLayers.Filter.Comparison({
