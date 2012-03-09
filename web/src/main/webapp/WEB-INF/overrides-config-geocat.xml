@@ -163,6 +163,7 @@
             
             <allow service="csw.pdf"/>
             <allow service="csw.csv"/>
+            <allow service="geocat.keywords.list"/>
 
         </addXML>
         <addXML xpath="">

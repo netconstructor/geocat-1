@@ -450,5 +450,15 @@
 
             <output sheet="csv-search.xsl" contentType="text/plain; charset=UTF-8" />
         </service>
+        
+        <!-- Custom keywords search that sorts keywords -->
+        <service name="geocat.keywords.list">
+            <class name=".services.main.Search">
+				<param name="maxSummaryKeys" value="1000" />
+				<param name="maxHitsInSummary" value="10000" />
+			</class>
+			<output sheet="thesaurus/sortedKeywords.xsl" contentType="text/xml; charset=UTF-8"/>
+        </service>
+        
     </services>
 </geonet>

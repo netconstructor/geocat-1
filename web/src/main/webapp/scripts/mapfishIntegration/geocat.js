@@ -1303,7 +1303,7 @@ var geocat = {
                 id: '@name'
             }, Keyword),
             proxy: new Ext.data.HttpProxy({
-                url: geocat.baseUrl + "srv/" + geocat.language + "/portal.search",
+                url: geocat.baseUrl + "srv/" + geocat.language + "/geocat.keywords.list",
                 method:'GET',
                 disableCaching: false
             })
