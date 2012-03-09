@@ -43,6 +43,7 @@ import jeeves.server.UserSession;
 import jeeves.utils.Xml;
 import jeeves.xlink.XLink;
 
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
@@ -391,8 +392,18 @@ public final class KeywordsStrategy extends ReplacementStrategy
     }
 
     @Override
-    public String createAsNeeded(String href, UserSession session) {
-        return href;  //not needed yet
+    public String createAsNeeded(String href, UserSession session) throws Exception {
+
+        String startId = Utils.id(href);
+        if(startId!=null) return href;
+         
+        String code = UUID.randomUUID().toString();
+        Thesaurus thesaurus = _thesaurusMan.getThesaurusByName(NON_VALID_THESAURUS_NAME);
+        
+        String keyword = "";
+        String id = URLEncoder.encode(thesaurus.addElement(NAMESPACE, code, keyword , keyword, Geocat.DEFAULT_LANG).toString(), "UTF-8");
+        
+        return XLink.LOCAL_PROTOCOL+"che.keyword.get?thesaurus=" + NON_VALID_THESAURUS_NAME + "&id=" + id + "&locales=en,it,de,fr";
     }
 
     @Override

@@ -38,11 +38,13 @@ import java.util.regex.Pattern;
 
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
+import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.SerialFactory;
 import jeeves.utils.Xml;
 import jeeves.xlink.XLink;
 
+import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.XslUtil;
@@ -207,15 +209,9 @@ public final class FormatsStrategy extends ReplacementStrategy
         if (!xml.isEmpty()) {
             List<Element> results = new ArrayList<Element>();
             for (Element element : xml) {
-                int id = _serialFactory.getSerial(dbms, TABLE);
                 String name = element.getAttributeValue("name");
                 String version = element.getAttributeValue("version");
-                if (version == null) {
-                    version = "";
-                }
-
-                String query = "INSERT INTO "+TABLE+"("+ID_COL+", "+NAME_COL+", "+VERSION_COL+", "+VALIDATED_COL+") VALUES (?, TRIM(?), TRIM(?), 'n')";
-                dbms.execute(query, id, name, version);
+                int id = insertNewFormat(dbms, name, version);
                 Element newElem = (Element) originalElem.clone();
                 xlinkIt(newElem, String.valueOf(id), false);
                 results.add(newElem);
@@ -223,6 +219,17 @@ public final class FormatsStrategy extends ReplacementStrategy
             return results;
         }
         return Collections.emptySet();
+    }
+
+    private int insertNewFormat(Dbms dbms, String name, String version) throws SQLException {
+        if (version == null) {
+            version = "";
+        }
+        int id = _serialFactory.getSerial(dbms, TABLE);
+
+        String query = "INSERT INTO "+TABLE+"("+ID_COL+", "+NAME_COL+", "+VERSION_COL+", "+VALIDATED_COL+") VALUES (?, TRIM(?), TRIM(?), 'n')";
+        dbms.execute(query, id, name, version);
+        return id;
     }
 
     public Collection<Element> updateObject(Element xlink, Dbms dbms, String metadataLang) throws Exception
@@ -249,17 +256,16 @@ public final class FormatsStrategy extends ReplacementStrategy
 
     public boolean isValidated(Dbms dbms, String href) throws Exception
     {
-
-        final String regex = ".+\\?.*id=(\\d+)&?.*";
-        Matcher matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(href);
-
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("cannot find id");
+        String id = Utils.id(href);
+        if(id==null) return false;
+        try {
+            int group = Integer.parseInt(id);
+            Element record = dbms.select("SELECT "+VALIDATED_COL+" FROM "+TABLE+" WHERE "+ID_COL+"=?", group).getChild("record");
+    
+            return record == null || !"n".equalsIgnoreCase(record.getChildTextTrim(VALIDATED_COL));
+        } catch (NumberFormatException e) {
+            return false;
         }
-        int group = Integer.parseInt(matcher.group(1));
-        Element record = dbms.select("SELECT "+VALIDATED_COL+" FROM "+TABLE+" WHERE "+ID_COL+"=?", group).getChild("record");
-
-        return record == null || !"n".equalsIgnoreCase(record.getChildTextTrim(VALIDATED_COL));
     }
 
     @Override
@@ -340,6 +346,12 @@ public final class FormatsStrategy extends ReplacementStrategy
 
     @Override
     public String createAsNeeded(String href, UserSession session) throws Exception {
-        return href;  //not needed yet
+
+        String startId = Utils.id(href);
+        if(startId!=null) return href;
+         
+        Dbms dbms = (Dbms) ServiceContext.get().getResourceManager().open(Geonet.Res.MAIN_DB);
+        int id = insertNewFormat(dbms, "", "");
+        return XLink.LOCAL_PROTOCOL+"xml.format.get?id="+id;
     }
 }

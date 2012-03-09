@@ -2,7 +2,6 @@ function createNewExtent() {
     var format = Ext.get('extent.format').getValue();
     var inclusion = Ext.get('extent.type.code').getValue();
 
-    var loc = window.location;
     xlinks[0].href = 'local://xml.extent.get?wfs=default&typename=gn:non_validated&id=createNewExtent&format=' + format + '&extentTypeCode=' + inclusion;
 
     submitXLink();
@@ -29,14 +28,15 @@ function submitXLink() {
 
 
 function createNewXLink() {
-	disableEditForm();
-	var eBusy = $('editorBusy');
-	if (eBusy) eBusy.show();
-    if(modalBox) {
-      modalBox.hide();
-    }
-		
-    doNewElementAction('metadata.elem.add', dialogRequest.ref, dialogRequest.name, dialogRequest.id,dialogRequest.replacement,1);
+	var lowercaseName = dialogRequest.name.toLowerCase();
+	if(lowercaseName.indexOf("resource") != -1) {
+		xlinks[0].href = 'local://xml.format.get';
+	} else if(lowercaseName.indexOf("contact") != -1) {
+		xlinks[0].href = 'local://xml.user.get?schema=iso19139.che&role=' + Ext.get('contact.role').getValue();
+	} else if(lowercaseName.indexOf("keyword") != -1) {
+		xlinks[0].href = 'local://che.keyword.get?thesaurus=local._none_.non_validated&locales=en,it,de,fr';
+	}
+	submitXLink();
 }
 
 function doXLinkNewElementAjax(index, metadataId, thisElement) {
@@ -802,6 +802,7 @@ function xlinkShowKeywordSelectionPanel(ref, name, id) {
             createKeyword: function() {
                 doNewElementAction('/geonetwork/srv/eng/metadata.elem.add', ref, name, id);
             },
+            addCreateXLinkButton: true,
             listeners: {
                 keywordselected: function(panel, keywords) {
                     xlinks = [];

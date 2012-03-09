@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.UserSession;
+import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 import jeeves.utils.SerialFactory;
 import jeeves.utils.Util;
@@ -49,6 +50,7 @@ import jeeves.xlink.Processor;
 import jeeves.xlink.XLink;
 
 import org.fao.geonet.constants.Geocat;
+import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.spatial.Pair;
 import org.fao.geonet.util.ElementFinder;
 import org.fao.geonet.util.LangUtils;
@@ -207,18 +209,22 @@ public final class ContactsStrategy extends ReplacementStrategy
         return doAdd (originalElem, id, dbms, metadataLang);
     }
 
+    private String insertQuery(int id) {
+        return "INSERT INTO Users (id, username, password, surname, name, profile, "
+            + "address, state, zip, country, email, organisation, kind, streetnumber, "
+            + "streetname, postbox, city, phone, facsimile, positionname, onlineresource, "
+            + "hoursofservice, contactinstructions, publicaccess, orgacronym, directnumber, mobile, validated, "
+            + "email1, phone1, facsimile1, email2, phone2, facsimile2, onlinename, onlinedescription, parentInfo) "
+            + "VALUES (" + id + ", ?, ?, ?, ?, '" + SHARED
+            + "', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+            + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    }
+
+    
     private Collection<Element> doAdd(Element originalElem, int id, Dbms dbms, String metadataLang) throws SQLException, Exception
     {
-        String query = "INSERT INTO Users (id, username, password, surname, name, profile, "
-                + "address, state, zip, country, email, organisation, kind, streetnumber, "
-                + "streetname, postbox, city, phone, facsimile, positionname, onlineresource, "
-                + "hoursofservice, contactinstructions, publicaccess, orgacronym, directnumber, mobile, validated, "
-                + "email1, phone1, facsimile1, email2, phone2, facsimile2, onlinename, onlinedescription, parentInfo) "
-                + "VALUES (" + id + ", ?, ?, ?, ?, '" + SHARED
-                + "', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        String role = processQuery(originalElem, dbms, id, query, false, metadataLang, true);
+        String role = processQuery(originalElem, dbms, id, insertQuery(id), false, metadataLang, true);
 
         return xlinkIt(originalElem, role, String.valueOf(id), false);
     }
@@ -455,16 +461,16 @@ public final class ContactsStrategy extends ReplacementStrategy
 
     public boolean isValidated(Dbms dbms, String href) throws NumberFormatException, SQLException
     {
-        final String regex = ".+\\?.*id=(\\d+)&?.*";
-        Matcher matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(href);
-
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("cannont find id");
+        String id = Utils.id(href);
+        if(id==null) return false;
+        try {
+            int group = Integer.parseInt(id);
+            Element record = dbms.select("SELECT validated FROM users WHERE id=?", group).getChild("record");
+    
+            return record == null || !record.getChildTextTrim("validated").equalsIgnoreCase("n");
+        } catch (NumberFormatException e) {
+            return false;
         }
-        int group = Integer.parseInt(matcher.group(1));
-        Element record = dbms.select("SELECT validated FROM users WHERE id=?", group).getChild("record");
-
-        return record == null || !record.getChildTextTrim("validated").equalsIgnoreCase("n");
     }
 
     @Override
@@ -504,7 +510,27 @@ public final class ContactsStrategy extends ReplacementStrategy
     }
 
     @Override
-    public String createAsNeeded(String href, UserSession session) {
-        return href;  //not needed yet
+    public String createAsNeeded(String href, UserSession session) throws Exception {
+        String startId = Utils.id(href);
+        if(startId!=null) return href;
+
+        final String regex = ".+\\?.*role=([^&#]+)&?.*";
+        Matcher matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(href);
+
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("cannot find role");
+        }
+        String role = matcher.group(1);
+        
+        Dbms dbms = (Dbms) ServiceContext.get().getResourceManager().open(Geonet.Res.MAIN_DB);
+        int id = _serialFactory.getSerial(dbms, "Users");
+        String username = UUID.randomUUID().toString();
+        String email = username+"@generated.org";
+        String sql = "INSERT INTO Users (id, username, password, profile, email, validated) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+        
+        String validated = "n";
+        dbms.execute(sql, id, username, "", SHARED, email, validated);
+        return XLink.LOCAL_PROTOCOL+"xml.user.get?id="+id+"&schema=iso19139.che&role="+role;
     }
 }

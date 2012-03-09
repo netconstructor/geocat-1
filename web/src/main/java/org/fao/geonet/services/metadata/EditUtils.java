@@ -176,19 +176,23 @@ class EditUtils {
         boolean ufo = true;
         // whether to index on update
         boolean index = true;
+        // does not need to process here.  AddXLink will handle 
+        // processing of reusable object
+        // mind you xml submission should probably change this.
+        boolean processReusableObject = false;
 
         boolean updateDateStamp = !minor.equals("true");
         String changeDate = null;
 		if (embedded) {
             Element updatedMetada = new AjaxEditUtils(context).applyChangesEmbedded(dbms, id, htChanges, htHide, version, context.getLanguage());
             if(updatedMetada != null) {
-                result = dataManager.updateMetadata(context, dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
+                result = dataManager.updateMetadata(context, dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, processReusableObject);
             }
    		}
         else {
             Element updatedMetada = applyChanges(dbms, id, htChanges, htHide, version, context.getLanguage());
             if(updatedMetada != null) {
-			    result = dataManager.updateMetadata(context, dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, false);
+			    result = dataManager.updateMetadata(context, dbms, id, updatedMetada, validate, ufo, index, context.getLanguage(), changeDate, updateDateStamp, processReusableObject);
             }
 		}
 		if (!result) {
