@@ -87,6 +87,7 @@ public class Show implements Service
 		//--- handle current tab
 
 		Element elCurrTab = params.getChild(Params.CURRTAB);
+		boolean removeSchemaLocation = Util.getParam(params, "removeSchemaLocation", "false").equals("true");
 
 		if (elCurrTab != null)
 			session.setProperty(Geonet.Session.METADATA_SHOW, elCurrTab.getText());
@@ -154,7 +155,9 @@ public class Show implements Service
 		if(cache) {
 		    cache(context.getUserSession(), elMd, id);
 		}
-		elMd.removeAttribute("schemaLocation", Xml.xsiNS);
+		if (removeSchemaLocation) {
+		    elMd.removeAttribute("schemaLocation", Xml.xsiNS);
+		}
 		return elMd;
 	}
 
