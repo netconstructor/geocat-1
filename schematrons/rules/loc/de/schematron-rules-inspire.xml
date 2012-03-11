@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
     <!-- INSPIRE metadata rules translation / START -->
-    <M35>[INSPIRE] - Titel ist obligatorisch</M35>
-    <M36>[INSPIRE] - Kurzbeschreibung ist obligatorisch</M36>
-    <M37>[INSPIRE] - Art der Ressource ist obligatorisch</M37>
-    <M38>[INSPIRE] - Identifikator der Ressource ist obligatorisch</M38>
-    <M39>[INSPIRE] - Thematik (ISO topic category) ist obligatorisch</M39>
-    <M40>[INSPIRE] - Schlüsselwort ist obligatorisch (GEMET)</M40>
-    <M41>[INSPIRE] - Geografisches Begrenzungsrechteck ist obligatorisch</M41>
-    <M42>[INSPIRE] - Zeitliche Angabe ist obligatorisch</M42>
-    <M43>[INSPIRE] - Herkunftsangabe ist obligatorisch</M43>
-    <M44>[INSPIRE] - Konformitätsangabe ist obligatorisch</M44>
-    <M45>[INSPIRE] - Eine Angabe zu Zugriffs- und Nutzungseinschränkungen ist obligatorisch</M45>
-    <M46>[INSPIRE] - Angabe zur Einschränkung des öffentlichen Zugangs ist obligatorisch</M46>
-    <M47>[INSPIRE] - Angabe der verantwortlichen Organistation ist obligatorisch</M47>
-    <M48>[INSPIRE] - Metadatenkontakt ist obligatorisch</M48>
-    <M49>[INSPIRE] - Metadatensprache ist obligatorisch</M49>
-    <M50>[INSPIRE] - Datum der Metadaten ist obligatorisch</M50>
-    <M51>[INSPIRE] (Dienste) - Coupled resource ist obligatorisch</M51>
-    <M52>[INSPIRE] - Resource locator ist obligatorisch wenn linkage vorhanden ist</M52>
-    <M53>[INSPIRE] - Es kann keine oder eine Bedingung für den Zugriff und die Nutzung der Ressource geben</M53>
-    <M54>[INSPIRE] - Der Wert bei Zugriffseinschränkungen lautet "Andere Einschränkungen" wenn, und NUR wenn "Andere Einschränkungen" Einschränkungen bezüglich öffentlichem Zugriff ausdrückt</M54>
-    <M55>[INSPIRE] (Datenbestand/Serie) - Sprache der Ressource ist obligatorisch</M55>
-    <M56>[INSPIRE] - Räumliche Auflösung ist obligatorisch</M56>
-    <M57>[ISO19119 for services] - OperationName ist obligatorisch</M57>
-    <M58>[ISO19119 for services] - DCP ist obligatorisch</M58>
-    <M59>[ISO19119 for services] - ConnectPoint ist obligatorisch</M59>
-    <M60>[ISO19119 for services] - ServiceType ist obligatorisch</M60>
-    
+    <report.M35><div>[INSPIRE] - Titel ist obligatorisch</div></report.M35>
+    <report.M36><div>[INSPIRE] - Kurzbeschreibung ist obligatorisch</div></report.M36>
+    <report.M37><div>[INSPIRE] - Art der Ressource ist obligatorisch</div></report.M37>
+    <report.M38><div>[INSPIRE] - Identifikator der Ressource ist obligatorisch</div></report.M38>
+    <report.M39><div>[INSPIRE] - Thematik (ISO topic category) ist obligatorisch</div></report.M39>
+    <report.M40><div>[INSPIRE] - Schlüsselwort ist obligatorisch (GEMET)</div></report.M40>
+    <report.M41><div>[INSPIRE] - Geografisches Begrenzungsrechteck ist obligatorisch</div></report.M41>
+    <report.M42><div>[INSPIRE] - Zeitliche Angabe ist obligatorisch</div></report.M42>
+    <report.M43><div>[INSPIRE] - Herkunftsangabe ist obligatorisch</div></report.M43>
+    <report.M44><div>[INSPIRE] - Konformitätsangabe ist obligatorisch</div></report.M44>
+    <report.M45><div>[INSPIRE] - Eine Angabe zu Zugriffs- und Nutzungseinschränkungen ist obligatorisch</div></report.M45>
+    <report.M46><div>[INSPIRE] - Angabe zur Einschränkung des öffentlichen Zugangs ist obligatorisch</div></report.M46>
+    <report.M47><div>[INSPIRE] - Angabe der verantwortlichen Organistation ist obligatorisch</div></report.M47>
+    <report.M48><div>[INSPIRE] - Metadatenkontakt ist obligatorisch</div></report.M48>
+    <report.M49><div>[INSPIRE] - Metadatensprache ist obligatorisch</div></report.M49>
+    <report.M50><div>[INSPIRE] - Datum der Metadaten ist obligatorisch</div></report.M50>
+    <report.M51><div>[INSPIRE] (Dienste) - Coupled resource ist obligatorisch</div></report.M51>
+    <report.M52><div>[INSPIRE] - Resource locator ist obligatorisch wenn linkage vorhanden ist</div></report.M52>
+    <report.M53><div>[INSPIRE] - Es kann keine oder eine Bedingung für den Zugriff und die Nutzung der Ressource geben</div></report.M53>
+    <report.M54><div>[INSPIRE] - Der Wert bei Zugriffseinschränkungen lautet "Andere Einschränkungen" wenn, und NUR wenn "Andere Einschränkungen" Einschränkungen bezüglich öffentlichem Zugriff ausdrückt</div></report.M54>
+    <report.M55><div>[INSPIRE] (Datenbestand/Serie) - Sprache der Ressource ist obligatorisch</div></report.M55>
+    <report.M56><div>[INSPIRE] - Räumliche Auflösung ist obligatorisch</div></report.M56>
+    <report.M57><div>[ISO19119 for services] - OperationName ist obligatorisch</div></report.M57>
+    <report.M58><div>[ISO19119 for services] - DCP ist obligatorisch</div></report.M58>
+    <report.M59><div>[ISO19119 for services] - ConnectPoint ist obligatorisch</div></report.M59>
+    <report.M60><div>[ISO19119 for services] - ServiceType ist obligatorisch</div></report.M60>
+
     <alert.M35><div><h2>INSPIRE - Titel ist obligatorisch</h2></div></alert.M35>
     <alert.M36><div><h2>INSPIRE - Kurzbeschreibung ist obligatorisch</h2></div></alert.M36>
     <alert.M37><div><h2>INSPIRE - Art der Ressource ist obligatorisch</h2></div></alert.M37>

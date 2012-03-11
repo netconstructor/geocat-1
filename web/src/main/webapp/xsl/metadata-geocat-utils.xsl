@@ -69,7 +69,7 @@
         <xsl:param name="baseURL"/>
 
 		<a class="noprint"
-			href="{/root/gui/locService}/xml.metadata.get?id={geonet:info/id}"
+			href="{/root/gui/locService}/xml.metadata.get?id={geonet:info/id}&amp;removeSchemaLocation=true"
 			target="_blank" title="Download raw xml metadata">
 			<img style="border:0px;max-height:16px;" src="{/root/gui/url}/images/download.png"
 				alt="Native Version" title="Download raw xml metadata" />
