@@ -162,7 +162,7 @@ or more metadata records:
 
 
 #. **Consider the hardware you have available** GeoNetwork uses a database as a transactional store and does 
-   all metadata searches using Lucene. Lucene is very fast and will remain fast for large catalogs if you supply 
+   all metadata searches using Lucene. Lucene is very fast and scale for large catalogs if you supply
    fast disk (solid state disk is best by far), lots of memory/RAM (16Gb+) and multiple processors as part of a 64bit 
    environment. Linux is probably the best operating system to take advantage of such an environment.
 
