@@ -39,59 +39,59 @@ where language-code is one of the ISO 639-1 (two-character) language codes, see 
 
 The auto-detection feature uses Language Detection Library for Java, see https://code.google.com/p/language-detection/. This library tries to detect the language of search terms in parameter 'any'. This may not work very well, depending on the language, if there is only one or very few search terms. This is why this feature is disabled by default. At the time of writing the auto-detection supports these languages:
 
-- Afrikaans
-- Arabic
-- Bulgarian
-- Bengali
-- Czech
-- Danish
-- German
-- Greek (modern)
-- English
-- Spanish
-- Estonian
-- Persian
-- Finnish
-- French
-- Gujarati
-- Hebrew
-- Hindi
-- Croatian
-- Hungarian
-- Indonesian
-- Italian
-- Japanese
-- Kannada
-- Korean
-- Lithuanian
-- Latvian
-- Macedonian
-- Malayalam
-- Marathi
-- Nepali
-- Dutch
-- Norvegian
-- Punjabi
-- Polish
-- Portuguese
-- Romanian
-- Russian
-- Slovak
-- Slovenian
-- Somali
-- Albanian
-- Swedish
-- Swahili
-- Tamil
-- Telugu
-- Thai
-- Tagalog
-- Turkish
-- Ukrainian
-- Urdu
-- Vietnamese
-- Chinese (traditional)
-- Chinese (simplified)
+    - Afrikaans
+    - Arabic
+    - Bulgarian
+    - Bengali
+    - Czech
+    - Danish
+    - German
+    - Greek (modern)
+    - English
+    - Spanish
+    - Estonian
+    - Persian
+    - Finnish
+    - French
+    - Gujarati
+    - Hebrew
+    - Hindi
+    - Croatian
+    - Hungarian
+    - Indonesian
+    - Italian
+    - Japanese
+    - Kannada
+    - Korean
+    - Lithuanian
+    - Latvian
+    - Macedonian
+    - Malayalam
+    - Marathi
+    - Nepali
+    - Dutch
+    - Norvegian
+    - Punjabi
+    - Polish
+    - Portuguese
+    - Romanian
+    - Russian
+    - Slovak
+    - Slovenian
+    - Somali
+    - Albanian
+    - Swedish
+    - Swahili
+    - Tamil
+    - Telugu
+    - Thai
+    - Tagalog
+    - Turkish
+    - Ukrainian
+    - Urdu
+    - Vietnamese
+    - Chinese (traditional)
+    - Chinese (simplified)
 
 - if autodetecting the language is disabled (the default), the current language of the user's GUI is used as the requested language
 
@@ -101,35 +101,35 @@ Stopwords
 ------------------------
 Stopwords are words that are considered to carry little or no meaning relevant to search. To improve relevance ranking of search results, stopwords are often removed from search terms. In GeoNetwork stopwords are automatically used if a stopwords list for the requested language is available; if not, no stopwords are used. At the time of writing there are stopword lists for:
 
-- Arabic
-- Bulgarian
-- Bengali
-- Catalan
-- Czech
-- Danish
-- German
-- Greek (modern)
-- English
-- Spanish
-- Persian
-- Finnish
-- French
-- Hindi
-- Hungarian
-- Italian
-- Japanese
-- Korean
-- Marathi
-- Malay
-- Dutch
-- Norvegian
-- Polish
-- Portuguese
-- Romanian
-- Russian
-- Swedish
-- Turkish
-- Chinese
+    - Arabic
+    - Bulgarian
+    - Bengali
+    - Catalan
+    - Czech
+    - Danish
+    - German
+    - Greek (modern)
+    - English
+    - Spanish
+    - Persian
+    - Finnish
+    - French
+    - Hindi
+    - Hungarian
+    - Italian
+    - Japanese
+    - Korean
+    - Marathi
+    - Malay
+    - Dutch
+    - Norvegian
+    - Polish
+    - Portuguese
+    - Romanian
+    - Russian
+    - Swedish
+    - Turkish
+    - Chinese
 
 System administrators may add additional languages' stopword lists by placing them in the directory <geonetwork>/web/resources/stopwords. The filenames should be <ISO 639-1 code>.txt. If you do add a stopwords list for another language, please consider contributing it for inclusion in GeoNetwork.
 
