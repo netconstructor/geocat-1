@@ -127,4 +127,6 @@ Stopwords are words that are considered to carry little or no meaning relevant t
 - Turkish
 - Chinese
 
-System administrators may add additional languages' stopword lists by placing them in the directory <geonetwork>/web/resources/stopwords. The filenames should be <ISO 639-1 code>.txt. Likewise, to disable stopwords usage for one or more languages, the stopword list files should be removed or renamed.
+System administrators may add additional languages' stopword lists by placing them in the directory <geonetwork>/web/resources/stopwords. The filenames should be <ISO 639-1 code>.txt. If you do add a stopwords list for another language, please consider contributing it for inclusion in GeoNetwork.
+
+Likewise, to disable stopwords usage for one or more languages, the stopword list files should be removed or renamed.
