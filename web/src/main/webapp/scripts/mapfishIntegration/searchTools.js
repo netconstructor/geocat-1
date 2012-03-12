@@ -587,12 +587,11 @@ var searchTools = {
                                 searchTools.alternateProj, searchTools.mainProj);
 
                             var b; digits;
-                            var checked = Ext.get("ch03_" + this.eltRef).dom.checked;
 
                             var wsen = this.targetBbox.split(',');
                             var wsenEl = searchTools.lookupWsen(wsen);
 
-                            if (checked) {
+                            if (Ext.get("ch03_" + this.eltRef) && Ext.get("ch03_" + this.eltRef).dom && Ext.get("ch03_" + this.eltRef).dom.checked) {
                                 b = bounds;
                                 digits = 0;
                                 type = "ch03";
