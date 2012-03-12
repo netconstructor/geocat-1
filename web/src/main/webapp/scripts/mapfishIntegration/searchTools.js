@@ -803,7 +803,7 @@ var searchTools = {
                 values[2] = wsenEl[2].getValue();
                 values[3] = wsenEl[3].getValue();
 
-                if (Ext.get("ch03_" + eltRef).dom.checked) {
+                if (Ext.get("ch03_" + eltRef) && Ext.get("ch03_" + eltRef).dom && Ext.get("ch03_" + eltRef).dom.checked) {
                     wsenEl[0].ch03 = values[0];
                     wsenEl[1].ch03 = values[1];
                     wsenEl[2].ch03 = values[2];
