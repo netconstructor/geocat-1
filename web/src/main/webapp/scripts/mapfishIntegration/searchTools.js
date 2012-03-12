@@ -715,12 +715,16 @@ var searchTools = {
 
                 var cheBounds;
                 var nativeCoordsDiv;
-
-                var nativeEl = Ext.get("native_"+eltRef).dom;
-                if(nativeEl.innerText !== undefined) {
-                    nativeCoordsDiv = nativeEl.innerText;
-                } else {
-                    nativeCoordsDiv = nativeEl.textContent;
+                
+                
+                var nativeEl = Ext.get("native_"+eltRef);
+                if (nativeEl) {
+                    nativeEl = nativeEl.dom;
+                    if(nativeEl.innerText !== undefined) {
+                        nativeCoordsDiv = nativeEl.innerText;
+                    } else {
+                        nativeCoordsDiv = nativeEl.textContent;
+                    }
                 }
                 if(nativeCoordsDiv === undefined) {
                     nativeCoordsDiv = "";
@@ -741,9 +745,9 @@ var searchTools = {
                 wsenEl[3].ch03 = cheBounds.top.toFixed(0);
 
                 var digits = 3;
-                var ch03Radio = Ext.get("ch03_" + eltRef).dom;
+                var ch03Radio = Ext.get("ch03_" + eltRef) && Ext.get("ch03_" + eltRef).dom;
 
-                if (ch03Radio.checked) {
+                if (ch03Radio && ch03Radio.checked) {
                     digits = 0;
 
                     bounds = cheBounds;
@@ -753,7 +757,6 @@ var searchTools = {
                         Ext.get("_" + wsen[2]).dom.value = wsenEl[2].ch03+"ch";
                         Ext.get("_" + wsen[3]).dom.value = wsenEl[3].ch03+"ch";
                     }
-                } else {
                 }
 
                 if (w != "") {
@@ -853,7 +856,7 @@ var searchTools = {
 
     watchRadios: function(wsen, eltRef) {
 
-        var currProj = Ext.get("ch03_" + eltRef).dom.checked ?
+        var currProj = Ext.get("ch03_" + eltRef) && Ext.get("ch03_" + eltRef).dom && Ext.get("ch03_" + eltRef).dom.checked ?
                        searchTools.alternateProj : searchTools.mainProj;
 
         function updateInputTextFields(toProj, digits,type) {
@@ -916,12 +919,12 @@ var searchTools = {
             currProj = toProj;
         }
 
-        Ext.get("ch03_" + eltRef).on('click', function() {
+        Ext.get("ch03_" + eltRef) && Ext.get("ch03_" + eltRef).on('click', function() {
             digits = 0;
             updateInputTextFields(searchTools.alternateProj, digits,"ch03");
         });
 
-        Ext.get("wgs84_" + eltRef).on('click', function() {
+        Ext.get("wgs84_" + eltRef) && Ext.get("wgs84_" + eltRef).on('click', function() {
             digits = 3;
             updateInputTextFields(searchTools.mainProj, digits,"wgs84");
         });
