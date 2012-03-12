@@ -33,7 +33,7 @@ The requested language is determined as follows (in this order):
 
 where language-code is one of the ISO 639-1 (two-character) language codes, see http://www.iso.org/iso/catalogue_detail?csnumber=22109.
 
-- if the request parameter is not sent (the user selected "any" language, or it's not in the XML request), the requested language may be automatically detected, if and Administrator has enabled this in the System Configuration:
+- if the request parameter is not sent (the user selected "any" language, or it's not in the XML request), the requested language may be automatically detected, if an Administrator user has enabled this in the System Configuration:
 
 .. figure:: enable-auto-detection.png
 
