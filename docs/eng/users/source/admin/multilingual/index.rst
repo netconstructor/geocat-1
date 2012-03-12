@@ -23,7 +23,11 @@ Requested language
 
 The requested language is determined as follows (in this order):
 
-- request parameter: in the GUI, the user may select a language. For XML searches, the client may add::
+- request parameter: in the GUI, the user may select a language:
+
+.. figure:: requested-language-in-search-form.png
+
+ For XML searches, the client may add::
 
     <requestedLanguage>language-code</requestedLanguage>
 
