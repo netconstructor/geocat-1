@@ -2285,7 +2285,7 @@ var geocat = {
                geocat.getRefinementListTemplate('resolution','denominators','denominator','N_denominator', geocat.denominatorLabelFormat) +
                geocat.getDefaultRefinementListTemplate('category','categories','category','E1.0_topicCat') +
                geocat.getDefaultRefinementListTemplate('spatialRepresentation','spatialRepresentations','spatialRepresentation','E1.0_spatialRepresentation') +
-               geocat.getDefaultRefinementListTemplate('organizationName','organizationNames','organizationName','E1.0__orgName') +
+               geocat.getDefaultRefinementListTemplate('organisationName','organisationNames','organizationName','E1.0__orgName') +
                geocat.getDefaultRefinementListTemplate('serviceType','serviceTypes','serviceType','E1.0_serviceType') +
                geocat.getDefaultRefinementListTemplate('type','types','type','E1.0_type') +
                 '  <xsl:template match="text()"/>' +
