@@ -1074,11 +1074,14 @@ public class LuceneSearcher extends MetaSearcher
                 read.add(id);
 
                 for (String key : summaryMaps.keySet()) {
+                    Set<String> alreadyFound = new HashSet<String>();
                     ObjectKeyIntMap summary = summaryMaps.get(key);
                     String hits[] = doc.getValues(key);
                     if (hits != null) {
                         for (String info : hits) {
                             Integer catCount = summary.get(info);
+                            if(alreadyFound.contains(info)) continue;
+                            alreadyFound.add(info);
                             if (catCount == null) {
                                 catCount = 1;
                             }
