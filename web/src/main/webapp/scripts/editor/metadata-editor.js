@@ -1359,6 +1359,9 @@ function showLinkedServiceMetadataSelectionPanel(name, serviceUrl, uuid) {
 				var layerName = Ext.getCmp('getCapabilitiesLayerName').getValue();
 		 		// update dataset metadata record
 				// and/or the service. Failed on privileges error.
+				var eBusy = $('editorBusy');
+				if (eBusy) eBusy.show();
+				disableEditForm();
 				if (name=='attachService') {
 					// Current dataset is a dataset metadata record.
 					// 1. Update service (if current user has privileges), using XHR request
@@ -1366,9 +1369,6 @@ function showLinkedServiceMetadataSelectionPanel(name, serviceUrl, uuid) {
 	    					"&process=update-srv-attachDataset&uuidref=" +
 	    					uuid +
 	    					"&scopedName=" + layerName;
-					var eBusy = $('editorBusy');
-					if (eBusy) eBusy.show();
-					disableEditForm();
 
                     Ext.Ajax.request({
                         url: serviceUpdateUrl,
@@ -1409,6 +1409,14 @@ function showLinkedServiceMetadataSelectionPanel(name, serviceUrl, uuid) {
 				} else {
 					// Current dataset is a service metadata record.
 					// 1. Update dataset (if current user has privileges), using XHR request
+
+/* GEOCAT START */
+					// 2. Update current metadata record, in current window
+					window.location.replace("metadata.processing?uuid=" + uuid + 
+	    					"&process=update-srv-attachDataset&uuidref=" +
+	    					metadata[0].data.uuid +
+	    					"&scopedName=" + layerName);	
+/** GEOCAT: comment this out and just update service MD.  Updating MDD will be optional  					
 					var datasetUpdateUrl = "xml.metadata.processing?uuid=" + metadata[0].data.uuid + 
 	    					"&process=update-onlineSrc&desc=" +
 	    					layerName + "&url=" +
@@ -1438,7 +1446,8 @@ function showLinkedServiceMetadataSelectionPanel(name, serviceUrl, uuid) {
 							Ext.MessageBox.alert(translate("ServiceUpdateError"));
 							setBunload(true);
 						}
-					});		
+					});*/	
+					/* GEOCAT END */
 				}
             },
             scope: this
