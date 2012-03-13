@@ -212,6 +212,8 @@ Il est possible d'ajouter ces paramètres au lancement du container Java avec le
   -Dhttp.proxyHost=my.proxy.org -Dhttp.proxyPort=8080
 
 
+.. _configuration_system_email:
+
 Alerte et notification
 ``````````````````````
 

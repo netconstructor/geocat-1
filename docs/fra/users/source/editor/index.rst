@@ -12,5 +12,7 @@ Création et édition de métadonnées
     gui/index.rst
     new_metadata/index.rst
     metadata_ownership/index.rst
+    metadata_status/index.rst
+    metadata_versionning/index.rst
 
 
