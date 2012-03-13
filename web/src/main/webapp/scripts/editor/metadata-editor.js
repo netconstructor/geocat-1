@@ -1384,12 +1384,16 @@ function showLinkedServiceMetadataSelectionPanel(name, serviceUrl, uuid) {
 							}
 
 							// 2. Update current metadata record, in current window
-							doSaveThen("metadata.processing?uuid=" + uuid + 
+							// GEOCAT: disabled, we want it to be an option to update MDD
+							/*doSaveThen("metadata.processing?uuid=" + uuid + 
 			    					"&process=update-onlineSrc&desc=" +
 			    					layerName + "&url=" +
 			    					escape(metadata[0].data.uri) +
-			    					"&scopedName=" + layerName);
+			    					"&scopedName=" + layerName);*/
+							if (eBusy) eBusy.hide();
+							Element.remove($("editorOverlay"));
 
+							setBunload(true);
 						},
 						failure:function (result, request) {
 							if (eBusy) eBusy.hide();
