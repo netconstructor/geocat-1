@@ -765,9 +765,6 @@ public class LuceneSearcher extends MetaSearcher
                                             boolean requestedLanguageOnly )
             throws Exception {
         Query returnValue = makeQuery(xmlQuery, analyzer, tokenizedFieldSet, numericFieldSet);
-        if(StringUtils.isNotEmpty(langCode)) {
-            returnValue = LuceneQueryBuilder.addLocaleTerm(returnValue, langCode, requestedLanguageOnly);
-        }
         Log.debug(Geonet.SEARCH_ENGINE, "Lucene Query: " + returnValue.toString());
         return returnValue;
     }
@@ -1109,6 +1106,7 @@ public class LuceneSearcher extends MetaSearcher
 		for ( String indexKey : summaryMaps.keySet() ) {
 			Map <String,Object> summaryConfigValuesForKey = summaryConfigValues.get(indexKey);
             Element rootElem = new Element((String)summaryConfigValuesForKey.get("plural"));
+            
             // sort according to frequency
 			SummaryComparator summaryComparator = getSummaryComparator(langCode, summaryConfigValuesForKey);
 			ObjectKeyIntOpenHashMap summary = summaryMaps.get(indexKey);
@@ -1134,9 +1132,12 @@ public class LuceneSearcher extends MetaSearcher
                 String keyword = me.name;
                 int keyCount = me.count;
 
-                Element childElem = new Element((String) summaryConfigValuesForKey.get("name"));
+                String name = (String) summaryConfigValuesForKey.get("name");
+                
+                Element childElem = new Element(name);
                 childElem.setAttribute("count", Integer.toString(keyCount));
                 childElem.setAttribute("name", keyword);
+                childElem.setAttribute("indexKey", indexKey);
                 rootElem.addContent(childElem);
             }
 			elSummary.addContent(rootElem);
