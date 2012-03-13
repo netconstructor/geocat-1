@@ -398,7 +398,7 @@
 	<copyright1>Copyright</copyright1>
 	<copyright2><p>Tout droit réservé.</p></copyright2>
 	<country js="true">Pays</country>
-	<create js="true">Dupliquer</create>
+	<create js="true">Créer</create>
 	<createTip>Créer des métadonnées à partir de ce template</createTip>
 	<crs code="EPSG:4326">WGS 84</crs>
 	<crs code="EPSG:2154">RGF93 / Lambert-93</crs>
