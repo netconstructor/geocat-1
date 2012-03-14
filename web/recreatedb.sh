@@ -4,6 +4,9 @@ set -x
 if [ "jeichar" = $1 ]; then
   DB=geocat2_trunk
   SQL_DIR=/usr/local/share/postgis/
+elif [ "fvanderbiest" = $1 ]; then
+  DB=geocat
+  SQL_DIR=/usr/share/postgresql/8.4/contrib/postgis-1.5/
 else
   echo "request a target parameter: ./recreatedb.sh <username>"
   exit 1
