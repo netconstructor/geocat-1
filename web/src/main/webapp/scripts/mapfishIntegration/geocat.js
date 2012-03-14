@@ -828,6 +828,10 @@ var geocat = {
             },
             cls: 'simpleFormFieldset',
             items: [{
+		            xtype: 'hidden',
+		            name: 'E_similarity',
+		            value: searchTools.DEFAULT_SIMILARITY
+		        },{
                 fieldLabel: translate('searchText'),
                 anchor: '100%',
                 id: 'anyField',
