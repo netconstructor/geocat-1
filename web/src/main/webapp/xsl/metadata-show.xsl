@@ -39,15 +39,6 @@
 		<xsl:call-template name="jsHeader">
 			<xsl:with-param name="small" select="false()"/>
 		</xsl:call-template>
-		<script language="JavaScript" type="text/javascript">
-		function permlink(url) {
-		    Ext.MessageBox.show({
-		        title: translate("permlink"),
-		        msg: '<a href = "'+url+'" target="_newtab">'+url+'</a>',
-		        animEl: 'mb7'
-		    });
-		}
-		</script>		
 		<xsl:choose>
             <xsl:when test="/root/request/debug">
 	    		<script type="text/javascript" src="{/root/gui/url}/scripts/editor/metadata-show.js"></script>
