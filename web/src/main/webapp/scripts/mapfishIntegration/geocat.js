@@ -47,6 +47,15 @@ function checkBoxModalUpdate(div, service, modalbox, title) {
 /**
  * Geocat specific stuff
  */
+
+function permlink(url) {
+    Ext.MessageBox.show({
+        title: translate("permlink"),
+        msg: '<a href="'+url+'" target="_newtab">'+url+'</a>',
+        animEl: 'mb7'
+    });
+}
+
 var geocatConf = {
     header : {
         region : 'north',

@@ -22,14 +22,6 @@
         <link rel="stylesheet" type="text/css" href="../../scripts/ext/resources/css/ext-all.css"/>
 
 		<script language="JavaScript" type="text/javascript">
-		function permlink(url) {
-		    Ext.MessageBox.show({
-		        title: translate("permlink"),
-		        msg: '<a href = "'+url+'" target="_newtab">'+url+'</a>',
-		        animEl: 'mb7'
-		    });
-		}
-		
             var translations = {
 				<xsl:apply-templates select="/root/gui/strings/*[@js='true' and not(*) and not(@id)]" mode="js-translations"/>
 			};
