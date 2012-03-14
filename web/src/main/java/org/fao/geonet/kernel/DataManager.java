@@ -286,7 +286,7 @@ public class DataManager {
             int start = index;
             int count = Math.min(perThread,ids.size()-start);
             // create threads to process this chunk of ids
-            Runnable worker = new IndexMetadataTask(context, false, ids, start, count);
+            Runnable worker = new IndexMetadataTask(context, true, ids, start, count);
             executor.execute(worker);
             index += count;
         }
