@@ -31,7 +31,7 @@ The requested language is determined as follows (in this order):
 
     <requestedLanguage>language-code</requestedLanguage>
 
-where language-code is one of the ISO 639-1 (two-character) language codes, see http://www.iso.org/iso/catalogue_detail?csnumber=22109.
+where language-code is one of the ISO 639-2 (three-character) language codes, see http://www.loc.gov/standards/iso639-2/php/code_list.php.
 
 - if the request parameter is not sent (the user selected "any" language, or it's not in the XML request), the requested language may be automatically detected, if an Administrator user has enabled this in the System Configuration:
 
@@ -131,6 +131,6 @@ Stopwords are words that are considered to carry little or no meaning relevant t
     - Turkish
     - Chinese
 
-System administrators may add additional languages' stopword lists by placing them in the directory <geonetwork>/web/resources/stopwords. The filenames should be <ISO 639-1 code>.txt. If you do add a stopwords list for another language, please consider contributing it for inclusion in GeoNetwork.
+System administrators may add additional languages' stopword lists by placing them in the directory <geonetwork>/web/resources/stopwords. The filenames should be <ISO 639-2 code>.txt. If you do add a stopwords list for another language, please consider contributing it for inclusion in GeoNetwork.
 
 Likewise, to disable stopwords usage for one or more languages, the stopword list files should be removed or renamed.
