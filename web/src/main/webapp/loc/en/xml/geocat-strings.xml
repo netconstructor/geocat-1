@@ -193,4 +193,5 @@
     <toggleVisibilityEdit>Enable element visibility editing</toggleVisibilityEdit>
     <addLayerConfirmTitle js="true">Adding new WMS layer</addLayerConfirmTitle>
     <addLayerConfirmText js="true">Would you like to remove previously added layers ?</addLayerConfirmText>
+    <other js="true">- Other -</other>
 </strings>

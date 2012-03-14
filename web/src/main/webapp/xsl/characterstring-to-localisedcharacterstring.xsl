@@ -130,6 +130,7 @@
     <!-- The following are NOT multilingual text -->
     <xsl:template priority="100" match="gmd:identifier|
         gmd:fileIdentifier|
+        
         gmd:metadataStandardName|
         gmd:metadataStandardVersion|
         gmd:hierarchyLevelName|
@@ -190,6 +191,7 @@
         che:individualLastName|
         che:internalReference | 
         gmd:name[count(ancestor::gmd:MD_Format) > 0] |
+        gmd:name[count(ancestor::gmd:onLine) > 0] |
         gmd:version[count(ancestor::gmd:MD_Format) > 0] |
         gmd:electronicMailAddress">
         <xsl:copy>

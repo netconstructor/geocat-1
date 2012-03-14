@@ -184,4 +184,5 @@ Votre équipe geocat.ch</msg>
     <toggleVisibilityEdit>Activer la gestion de la visibilité des informations</toggleVisibilityEdit>
     <addLayerConfirmTitle js="true">Ajout d'une nouvelle couche WMS</addLayerConfirmTitle>
     <addLayerConfirmText js="true">Voulez-vous supprimer les couches déjà ajoutées à la carte ?</addLayerConfirmText>
+    <other js="true">- Autre -</other>
 </strings>

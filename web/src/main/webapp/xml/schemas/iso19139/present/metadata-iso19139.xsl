@@ -2626,7 +2626,9 @@
 				    </xsl:apply-templates>
 				  </xsl:when>				  
 					<xsl:otherwise>
+					
 						<!-- use elementEP for geonet:child only -->
+						<!-- GEOCAT CHANGE
 						<xsl:apply-templates mode="elementEP" select="geonet:child[string(@name)='name']">
 							<xsl:with-param name="schema" select="$schema"/>
 							<xsl:with-param name="edit"   select="true()"/>
@@ -2636,6 +2638,13 @@
 							<xsl:with-param name="schema" select="$schema"/>
 							<xsl:with-param name="edit"   select="true()"/>
 						</xsl:apply-templates>
+						  -->
+						<xsl:apply-templates mode="elementEP" select="gmd:name|geonet:child[string(@name)='name']">
+							<xsl:with-param name="schema" select="$schema"/>
+							<xsl:with-param name="edit"   select="true()"/>
+						</xsl:apply-templates>
+						
+						<!-- End GEOCAT Change -->  
 					</xsl:otherwise>
 				</xsl:choose>
 
@@ -2918,19 +2927,47 @@
 						<xsl:variable name="isXLinked"><xsl:call-template name="validatedXlink"/></xsl:variable>
 						<xsl:variable name="isDisabled" select="count(ancestor-or-self::*/geonet:element/@disabled) > 0"/>
 						<xsl:variable name="rejected" select="count(ancestor-or-self::*[contains(@xlink:title,'rejected')]) > 0"/>
+						<xsl:variable name="hideInput">
+							<xsl:choose>
+								<xsl:when test="/root/gui/strings/protocolChoice[@value = $value and string-length($value) &gt; 0]">true</xsl:when>
+								<xsl:otherwise>false</xsl:otherwise>
+							</xsl:choose>
+						</xsl:variable>
 						
-						<input type="hidden" id="_{$ref}" name="_{$ref}" value="{$value}">
+						<input class="md" size="50" id="_{$ref}" name="_{$ref}" value="{$value}">
 							<xsl:if test="$rejected or $isXLinked = 'true' or $isDisabled">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>
+							<xsl:choose>
+								<xsl:when test="string($hideInput) = 'true'">
+			                        <xsl:attribute name="style">display:none</xsl:attribute>
+			                        <xsl:attribute name="name">disabled_<xsl:value-of select="$ref"/></xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+			                        <xsl:attribute name="style">display:block</xsl:attribute>
+			                        <xsl:attribute name="name">_<xsl:value-of select="$ref"/></xsl:attribute>
+			                        <xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
 						</input>
-						<select id="s_{$ref}" name="s_{$ref}" size="1" onchange="checkForFileUpload('{$fref}', '{$ref}');" class="md">
+						<select id="s_{$ref}" size="1" onchange="doProtocolChange('{$ref}');checkForFileUpload('{$fref}', '{$ref}');" class="md">
+							<xsl:choose>
+								<xsl:when test="string($hideInput) = 'true'">
+									<xsl:attribute name="name">s_<xsl:value-of select="$ref"/></xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="name">disabled_<xsl:value-of select="$ref"/></xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
 							<xsl:if test="$rejected or $isXLinked = 'true' or $isDisabled">
 								<xsl:attribute name="disabled">disabled</xsl:attribute>
 							</xsl:if>
-							<xsl:if test="$value=''">
-								<option value=""/>
-							</xsl:if>
+							<option value="{/root/gui/strings/other}">
+                                   <xsl:if test="string($hideInput) = 'false'">
+                                       <xsl:attribute name="selected"/>
+                                   </xsl:if>
+                                <xsl:value-of select="/root/gui/strings/other"/>
+							</option>
 							<xsl:for-each select="/root/gui/strings/protocolChoice[@value]">
 								<option>
 									<xsl:if test="string(@value)=$value">

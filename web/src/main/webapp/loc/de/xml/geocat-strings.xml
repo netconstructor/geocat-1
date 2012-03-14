@@ -185,4 +185,5 @@ Ihr geocat.ch-Team</msg>
     <toggleVisibilityEdit>Option zum Verstecken einzelner Attribute</toggleVisibilityEdit>
     <addLayerConfirmTitle js="true">Hinzufügen eines neuen WMS-Layers</addLayerConfirmTitle>
     <addLayerConfirmText js="true">Wollen Sie die bereits hinzugefügten WMS-Layer von der Karte entfernen?</addLayerConfirmText>
+    <other js="true">- Andere -</other>
 </strings>    

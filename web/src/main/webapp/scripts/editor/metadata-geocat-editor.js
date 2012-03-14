@@ -1054,3 +1054,18 @@ function updateMDforServices() {
 
 	doAction(Env.locService+'/metadata.update.onlineSrc');
 }
+
+function doProtocolChange(ref) {
+	var selectObj = Ext.get('s_'+ref);
+	var inputObj = Ext.get('_'+ref);
+	var selection = selectObj.dom.value;
+	if(selection == translate('other')) {
+		inputObj.setStyle("display","block");
+		inputObj.dom.name = '_'+ref;
+		selectObj.dom.name = 'disabled_'+ref;
+	} else {
+		inputObj.setStyle("display","none");
+		selectObj.dom.name = 's_'+ref;
+		inputObj.dom.name = 'disabled_'+ref;
+	}
+}
