@@ -22,7 +22,7 @@
 	<theme js="true">ISO topic category</theme>
 	<contact js="true">Contact</contact>
 	<rtitle js="true">Title</rtitle>
-	<organizationName js="true">Organisation</organizationName>
+	<organisationName js="true">Organisation</organisationName>
 	<kantone js="true">Canton(s)</kantone>
 	<theme js="true">Topic(s)</theme>
 	<formatTxt js="true">Format</formatTxt>
