@@ -146,7 +146,7 @@ public class CatalogSearcher {
 	private FieldSelector _selector;
 	private Query         _query;
 	private volatile IndexReader   _reader;
-	private CachingWrapperFilter _filter;
+	private Filter _filter;
 	private Sort          _sort;
 	private String        _lang;
 
@@ -536,7 +536,7 @@ public class CatalogSearcher {
 		_lang = context.getLanguage();
 	
 		Pair<TopDocs,Element> searchResults = LuceneSearcher.doSearchAndMakeSummary(numHits, startPosition - 1,
-                maxRecords, Integer.MAX_VALUE, _lang, resultType.toString(), _summaryConfig, _reader, query, cFilter,
+                maxRecords, Integer.MAX_VALUE, _lang, resultType.toString(), _summaryConfig, _reader, query, _filter,
                 sort, buildSummary, _luceneConfig.isTrackDocScores(), _luceneConfig.isTrackMaxScore(),
                 _luceneConfig.isDocsScoredInOrder()
 		);
