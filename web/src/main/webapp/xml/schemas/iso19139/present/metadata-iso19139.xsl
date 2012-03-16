@@ -391,6 +391,7 @@
     <xsl:param name="langId" />
     <xsl:param name="widget" />
     <xsl:param name="validator" />
+
     <xsl:choose>
       <xsl:when test="not(gco:*)">
         <xsl:for-each select="gmd:PT_FreeText">

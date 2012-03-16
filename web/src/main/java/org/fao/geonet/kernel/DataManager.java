@@ -1717,10 +1717,8 @@ public class DataManager {
 			if (withEditorValidationErrors) {
 			    version = doValidate(srvContext, dbms, schema, id, md, srvContext.getLanguage(), forEditing).two();
 			}
-            else {
-                editLib.expandElements(schema, md);
-                version = editLib.getVersionForEditing(schema, id, md);
-            }
+            editLib.expandElements(schema, md);
+            version = editLib.getVersionForEditing(schema, id, md);
 		}
         else {
 			if (doXLinks) {

@@ -524,6 +524,14 @@ function doSaveAction(action,validateAction)
 						setBunload(true); // reset warning for window destroy
 						initCalendar();
 						validateMetadataFields();
+						if (typeof(Ext) != "undefined") {
+			                //Ext.onReady(delayedInit);
+			                Ext.onReady(searchTools.initMapDiv);
+			            } else {
+			                // user geocat map handler
+			                //Event.observe(window,'load',delayedInit);
+			                Event.observe(window,'load',searchTools.initMapDiv);
+			            }
 					} else {
 						alert("Status returned was "+req.status+" this could be a problem");
 					}

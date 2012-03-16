@@ -836,12 +836,10 @@
 				<xsl:if test="$requiredContact or $requiredExtent">
 					<xsl:attribute name="style">border-width: 3px 3px 3px 3px; border-style: solid solid solid solid; border-color: red red red red;</xsl:attribute>
 				</xsl:if>
-                <xsl:if test="$edit">
                 	<xsl:variable name="ref" select="geonet:element/@ref"></xsl:variable>
                     <xsl:call-template name="visibility-icons">
                         <xsl:with-param name="ref" select="$ref"/>
                     </xsl:call-template>
-                </xsl:if>
 				<xsl:choose>
 					<xsl:when test="$helpLink!=''">
 						<span id="stip.{$helpLink}|{$id}" onclick="toolTip(this.id);" class="content" style="cursor:help;">
