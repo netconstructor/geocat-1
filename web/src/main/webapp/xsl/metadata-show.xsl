@@ -49,6 +49,15 @@
 				<script type="text/javascript" src="{/root/gui/url}/scripts/lib/gn.editor.js"></script>
             </xsl:otherwise>
         </xsl:choose>
+        <script language="JavaScript" type="text/javascript">
+        function permlink(url) {
+		    Ext.MessageBox.show({
+		        title: translate("permlink"),
+		        msg: '<a href="'+url+'" target="_newtab">'+url+'</a>',
+		        animEl: 'mb7'
+		    });
+		}
+		</script>
     <xsl:call-template name="extentViewerJavascriptInit"/>
 	</xsl:template>
 	

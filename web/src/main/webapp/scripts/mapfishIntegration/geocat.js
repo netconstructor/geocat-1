@@ -47,7 +47,6 @@ function checkBoxModalUpdate(div, service, modalbox, title) {
 /**
  * Geocat specific stuff
  */
-
 function permlink(url) {
     Ext.MessageBox.show({
         title: translate("permlink"),

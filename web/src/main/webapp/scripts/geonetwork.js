@@ -7,7 +7,7 @@ var getGNServiceURL = function(service) {
 function init() {};
 
 function translate(text) {
-	return translations[text] || "Need Translation - " + text;
+	return translations[text] || text;
 };
 
 /**
