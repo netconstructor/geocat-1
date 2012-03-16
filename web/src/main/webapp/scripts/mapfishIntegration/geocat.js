@@ -584,6 +584,8 @@ var geocat = {
             for (var j = 0; j < uris.length; ++j) {
                 var uri = uris[j];
                 var proto = uri.attributes.getNamedItem("proto").value;
+                var rawproto = proto;
+                
                 if (proto.toLowerCase().contains('wms')) proto = "WMS";
                 else if(proto.toLowerCase() != 'show' &&
                 		proto.toLowerCase() != '_edit' &&
@@ -593,10 +595,22 @@ var geocat = {
                 }
                 var array = byProtos[proto] || [];
                 var url = uri.firstChild ? uri.firstChild.nodeValue : null;
-                var title = uri.attributes.getNamedItem("title") ? uri.attributes.getNamedItem("title").value : url;
+                var name = uri.attributes.getNamedItem("name") ? uri.attributes.getNamedItem("name").value : url;
+                name = name.trim();
+                if(!name || name === "") {
+                	name = url;
+                }
+                var title = uri.attributes.getNamedItem("title") ? uri.attributes.getNamedItem("title").value : name;
+                title = title.trim();
+                if(!title || title === "") {
+                	title = name;
+                }
+                if(proto === 'WMS') {
+                	title = title + " ("+proto+")";
+                }
                 var cur = {
                     title: title,
-                    name: uri.attributes.getNamedItem("name") ? uri.attributes.getNamedItem("name").value : title,
+                    name: name,
                     url: url,
                     uuid: uuid
                 };
@@ -2244,7 +2258,7 @@ var geocat = {
             '          <ul style="padding-top:4px" class="URIButtons" uuid="{dc:identifier}">\n' +
             '            <li proto="show" title="' + translate("show") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.show.embedded?id=<xsl:value-of select="geonet:info/id"/>&amp;currTab=simple</li>\n' +
             '          <xsl:for-each select="dc:URI">\n' +
-            '              <li proto="{@protocol}" name="{@name}" title="{@title}({@protocol})"><xsl:value-of select="."/></li>\n' +
+            '              <li proto="{@protocol}" name="{@name}" title="{@title}"><xsl:value-of select="."/></li>\n' +
             '          </xsl:for-each>\n' +
             '          <xsl:if test="geonet:info/edit=\'true\' and not(geonet:info/isHarvested=\'y\')">\n' +
             '              <li proto="_edit" title="' + translate("edit") + '">' + geocat.baseUrl + 'srv/' + geocat.language + '/metadata.edit?id=<xsl:value-of select="geonet:info/id"/></li>\n' +

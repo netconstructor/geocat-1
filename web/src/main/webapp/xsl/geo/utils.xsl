@@ -71,6 +71,7 @@
                 
                 <script type="text/javascript" src="{/root/gui/url}/scripts/geoext/lib/GeoExt.js"></script>
                 <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/> <!-- to avoid using gn map component but user geocat one -->
+                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js"/> <!-- to avoid using gn map component but user geocat one -->
                 <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/MapFish.js"></script--> <!-- must not be loaded anymore -->
             </xsl:when>
             <xsl:otherwise>
