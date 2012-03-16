@@ -286,7 +286,8 @@ public class DataManager {
             int start = index;
             int count = Math.min(perThread,ids.size()-start);
             // create threads to process this chunk of ids
-            Runnable worker = new IndexMetadataTask(context, true, ids, start, count);
+            boolean performValidation = true;
+            Runnable worker = new IndexMetadataTask(context, true, ids, start, count, performValidation);
             executor.execute(worker);
             index += count;
         }
@@ -316,7 +317,7 @@ public class DataManager {
      * @throws SQLException
      */
 	public void indexInThreadPool(ServiceContext context, String id, Dbms dbms, boolean processSharedObjects) throws SQLException {
-        indexInThreadPool(context, Collections.singletonList(id), dbms, processSharedObjects);
+        indexInThreadPool(context, Collections.singletonList(id), dbms, processSharedObjects, false);
     }
     /**
      * Adds metadata ids to the thread pool for indexing.
@@ -325,14 +326,14 @@ public class DataManager {
      * @param ids
      * @throws SQLException
      */
-    public void indexInThreadPool(ServiceContext context, List<String> ids, Dbms dbms, boolean processSharedObjects) throws SQLException {
+    public void indexInThreadPool(ServiceContext context, List<String> ids, Dbms dbms, boolean processSharedObjects, boolean performValidation) throws SQLException {
 
         if(dbms != null) dbms.commit();
         try {
             GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 
             if (ids.size() > 0) {
-                Runnable worker = new IndexMetadataTask(context, processSharedObjects, ids);
+                Runnable worker = new IndexMetadataTask(context, processSharedObjects, ids, performValidation);
                 gc.getThreadPool().runTask(worker, 5, TimeUnit.SECONDS);
             }
         } 
@@ -355,8 +356,9 @@ public class DataManager {
         private final int beginIndex;
         private final int count;
         private final boolean processSharedObjects;
+        private final boolean performValidation;
 
-        IndexMetadataTask(ServiceContext context, boolean processSharedObjects, List<String> ids) {
+        IndexMetadataTask(ServiceContext context, boolean processSharedObjects, List<String> ids, boolean performValidation) {
             synchronized (indexing) {
                 indexing.add(this);
             }
@@ -365,8 +367,9 @@ public class DataManager {
             this.beginIndex = 0;
             this.count = ids.size();
             this.processSharedObjects = processSharedObjects;
+            this.performValidation = performValidation;
         }
-        IndexMetadataTask(ServiceContext context, boolean processSharedObjects, List<String> ids, int beginIndex, int count) {
+        IndexMetadataTask(ServiceContext context, boolean processSharedObjects, List<String> ids, int beginIndex, int count, boolean performValidation) {
             synchronized (indexing) {
                 indexing.add(this);
             }
@@ -375,6 +378,7 @@ public class DataManager {
             this.beginIndex = beginIndex;
             this.count = count;
             this.processSharedObjects = processSharedObjects;
+            this.performValidation = performValidation;
         }
 
         /**
@@ -388,7 +392,6 @@ public class DataManager {
                     Thread.sleep(10000); // sleep 10 seconds
                 }
                 Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
-
                 try {
                     if (ids.size() > 1) {
                         // servlet up so safe to index all metadata that needs indexing
@@ -396,6 +399,9 @@ public class DataManager {
                         try {
                             for(int i=beginIndex; i<beginIndex+count; i++) {
                                 try {
+                                    if(performValidation) {
+                                        getGeocatMetadata(context, ids.get(i), false, true, true, true, false);
+                                    }
                                     indexMetadataGroup(dbms, ids.get(i).toString(), processSharedObjects, context);
                                 }
                                 catch (Exception e) {
@@ -408,6 +414,9 @@ public class DataManager {
                         }
                     }
                     else {
+                        if(performValidation) {
+                            getGeocatMetadata(context, ids.get(0), false, true, true, true, false);
+                        }
                         indexMetadata(dbms, ids.get(0), false, processSharedObjects, context);
                     }
                 }
@@ -1706,7 +1715,7 @@ public class DataManager {
 			String schema = getMetadataSchema(dbms, id);
 
 			if (withEditorValidationErrors) {
-			    version = doValidate(srvContext.getUserSession(), dbms, schema, id, md, srvContext.getLanguage(), forEditing).two();
+			    version = doValidate(srvContext, dbms, schema, id, md, srvContext.getLanguage(), forEditing).two();
 			}
             else {
                 editLib.expandElements(schema, md);
@@ -1859,7 +1868,7 @@ public class DataManager {
 		try {
     		//--- do the validation last - it throws exceptions
     		if (session != null && validate) {
-    			doValidate(session, dbms, schema,id,md,lang, false);
+    			doValidate(context, dbms, schema,id,md,lang, false);
     		}
 		}
         finally {
@@ -1990,10 +1999,15 @@ public class DataManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public Pair <Element, String> doValidate(UserSession session, Dbms dbms, String schema, String id, Element md, String lang, boolean forEditing) throws Exception {
+	public Pair <Element, String> doValidate(ServiceContext context, Dbms dbms, String schema, String id, Element metadata, String lang, boolean forEditing) throws Exception {
 	    String version = null;
 		Log.debug(Geonet.DATA_MANAGER, "Creating validation report for record #" + id + " [schema: " + schema + "].");
 
+		UserSession session = context.getUserSession();
+		Element md = (Element) metadata.clone();
+		// always hideElements for validation
+		hideElements(context, dbms, md, id, false, true);
+		
 		Element sessionReport = (Element)session.getProperty(Geonet.Session.VALIDATION_REPORT + id);
 		if (sessionReport != null && !forEditing) {
 			Log.debug(Geonet.DATA_MANAGER, "  Validation report available in session.");
@@ -3365,7 +3379,8 @@ public class DataManager {
     private void hideElements(ServiceContext context, Element elMd, String id, boolean forEditing, boolean allowDbmsClosing) throws Exception {
         Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
         try {
-            hideElements(context, dbms, elMd, id, forEditing);
+            boolean forceHideElements = false;
+            hideElements(context, dbms, elMd, id, forEditing, forceHideElements);
         } finally {
             try {
                 dbms.commit();
@@ -3385,18 +3400,15 @@ public class DataManager {
      * @param forEditing
      * @throws Exception
      */
-    private void hideElements(ServiceContext context, Dbms dbms, Element elMd, String id, boolean forEditing) throws Exception
+    private void hideElements(ServiceContext context, Dbms dbms, Element elMd, String id, boolean forEditing, boolean forceHide) throws Exception
     {
         Element xPathExpressions = dbms.select(
                 "SELECT xPathExpr, level FROM HiddenMetadataElements WHERE metadataId = ?", new Integer(id));
 
-        Namespace ns = Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
-
         AccessManager am = this.getAccessManager();
 
         // Editors can always see all elements
-        if (forEditing || (context != null && am.canEdit(context, id)))
-        {
+        if (!forceHide && (forEditing || (context != null && am.canEdit(context, id)))) {
             return;
         }
 

@@ -629,18 +629,18 @@ public class AjaxEditUtils extends EditUtils {
     /**
      * For Ajax Editing : retrieves metadata from session and validates it.
      *
-     * @param session
+     * @param context
      * @param dbms
      * @param id
      * @param lang
      * @return
      * @throws Exception
      */
-	public Element validateMetadataEmbedded(UserSession session, Dbms dbms, String id, String lang) throws Exception {
+	public Element validateMetadataEmbedded(ServiceContext context, Dbms dbms, String id, String lang) throws Exception {
 		String schema = dataManager.getMetadataSchema(dbms, id);
 
 		//--- get metadata from session and clone it for validation
-		Element realMd = getMetadataFromSession(session, id);
+		Element realMd = getMetadataFromSession(context.getUserSession(), id);
 		Element md = (Element)realMd.clone();
 
 		//--- remove editing info
@@ -651,7 +651,7 @@ public class AjaxEditUtils extends EditUtils {
         md = dataManager.updateFixedInfo(schema, id, null, md, parentUuid, DataManager.UpdateDatestamp.no, dbms);
 
 		//--- do the validation on the metadata
-		return dataManager.doValidate(session, dbms, schema, id, md, lang, false).one();
+		return dataManager.doValidate(context, dbms, schema, id, md, lang, false).one();
 
 	}
 
