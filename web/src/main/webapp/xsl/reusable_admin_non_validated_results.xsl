@@ -49,7 +49,7 @@
 
          <script src="{/root/gui/url}/scripts/mapfishIntegration/MapComponent.js" type="text/javascript"/>
          <script src="{/root/gui/url}/scripts/mapfishIntegration/MapDrawComponent.js" type="text/javascript"/>
-         <script src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js" type="text/javascript"/>
+         <script src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js" type="text/javascript"/>
          <script src="{/root/gui/url}/scripts/reusable-validate.js" type="text/javascript"/>
     </xsl:template>
     

@@ -97,7 +97,7 @@
                                 
                 <!--script type="text/javascript" src="{/root/gui/url}/scripts/geoext/GeoExt.js"></script--> <!-- in gn.geo.libs.js -->
                 <!--script type="text/javascript" src="{/root/gui/url}/scripts/mapfish/MapFish.js"></script--> <!-- must not be loaded anymore -->
-                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/> <!-- to avoid using gn map component but user geocat one -->
+                <script type="text/javascript" src="{/root/gui/url}/scripts/lib/geocat.js"/> <!-- to avoid using gn map component but use geocat one -->
             </xsl:otherwise>
         </xsl:choose>
         
@@ -213,15 +213,13 @@
                 setTimeout(searchTools.initMapDiv,500);
             }
 
-            if (typeof(geocat) == "undefined") {
-                if (typeof(Ext) != "undefined") {
-                    //Ext.onReady(delayedInit);
-                    Ext.onReady(searchTools.initMapDiv);
-                } else {
-                    // user geocat map handler
-                    //Event.observe(window,'load',delayedInit);
-                    Event.observe(window,'load',searchTools.initMapDiv);
-                }
+            if (typeof(Ext) != "undefined") {
+                //Ext.onReady(delayedInit);
+                Ext.onReady(searchTools.initMapDiv);
+            } else {
+                // user geocat map handler
+                //Event.observe(window,'load',delayedInit);
+                Event.observe(window,'load',searchTools.initMapDiv);
             }
         </script>
     </xsl:template>

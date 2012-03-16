@@ -3,14 +3,15 @@
  */
 
 // code borrowed from Sarissa, to prevent mixing of XML parsers on geocat home page -- see https://intranet.camptocamp.com/rt/Ticket/Display.html?id=155325
-if(!window._SARISSA_DOM_PROGID){
+if (!window._SARISSA_DOM_PROGID) {
     if (!window.Sarissa) Sarissa = {};
     if (!Sarissa.pickRecentProgID) {
         Sarissa.pickRecentProgID = function (idList){
             // found progID flag
             var bFound = false, e;
             var o2Store;
-            for(var i=0; i < idList.length && !bFound; i++){
+            var i;
+            for (i=0; i < idList.length && !bFound; i++) {
                 try{
                     var oDoc = new ActiveXObject(idList[i]);
                     o2Store = idList[i];
@@ -58,13 +59,13 @@ var searchTools = {
     doCSWQueryFromForm: function(formId, url, recordNum, onSuccess, onFailure, addFilters) {
         OpenLayers.Request.GET({
             url: 'metadata.select?selected=remove-all',
-            success: function(){searchTools.execCswQuery(formId,url,recordNum, onSuccess, onFailure, addFilters)},
-            failure: function(){searchTools.execCswQuery(formId,url,recordNum, onSuccess, onFailure, addFilters)}
+            success: function(){searchTools.execCswQuery(formId,url,recordNum, onSuccess, onFailure, addFilters);},
+            failure: function(){searchTools.execCswQuery(formId,url,recordNum, onSuccess, onFailure, addFilters);}
         });
     },
     execCswQuery: function(formId, url, recordNum, onSuccess, onFailure, addFilters) {
         var query = searchTools.buildCSWQueryFromForm(searchTools.cswMethod, Ext.getCmp(formId), recordNum, geocat.sortBy, addFilters);
-        if (searchTools.cswMethod == 'POST') {
+        if (searchTools.cswMethod === 'POST') {
             var getQuery = searchTools.buildCSWQueryFromForm('GET', Ext.getCmp(formId), recordNum, geocat.sortBy, addFilters);
             OpenLayers.Request.POST({
                 url: url,

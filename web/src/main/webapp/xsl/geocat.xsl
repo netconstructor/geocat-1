@@ -35,21 +35,6 @@
         <xsl:call-template name="geoHeader"/>
         <xsl:call-template name="mapfish_script_includes"/>
         
-        <xsl:choose>
-            <xsl:when test="/root/request/debug">
-                <!--<script type="text/javascript"
-                        src="{/root/gui/url}/scripts/mapfishIntegration/searchTools.js"/>--> <!-- loaded from geo/utils.xsl -->
-                <!--script type="text/javascript"
-                        src="{/root/gui/url}/scripts/mapfishIntegration/EMailPDFAction.js"/--> <!-- depends on mapfish -->
-                <script type="text/javascript"
-                        src="{/root/gui/url}/scripts/mapfishIntegration/DomQueryNS.js"/>
-                <script type="text/javascript" src="{/root/gui/url}/scripts/mapfishIntegration/geocat.js"></script>
-            </xsl:when>
-            <xsl:otherwise>
-              <script type="text/javascript" src="{/root/gui/url}/scripts/lib/geocat.js"></script>      
-            </xsl:otherwise>
-        </xsl:choose>
-        
         <script type="text/javascript">
             Ext.apply(translations, {
                         'sortByTypes':[<xsl:apply-templates select="/root/gui/strings/sortByType" mode="js-translations-combo"/>],

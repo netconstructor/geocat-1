@@ -10,6 +10,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    
     xmlns:xlink="http://www.w3.org/1999/xlink"
 	xmlns:geonet="http://www.fao.org/geonetwork"
+	xmlns:util="java:org.fao.geonet.util.XslUtil"
 	xmlns:xalan = "http://xml.apache.org/xalan">
 
     <xsl:include href="xml-to-string.xsl"/>
@@ -1966,5 +1967,274 @@
         <xsl:text>displayXLinkSearchBox</xsl:text>
     </xsl:template>
     <xsl:template mode="addXMLFragment" match="gmd:referenceSystemInfo|geonet:child[@name='referenceSystemInfo' and @prefix='gmd']" priority="100"/>
+
+
+
+<xsl:template mode="iso19139" match="gmd:EX_BoundingPolygon" priority="40">
+<xsl:param name="schema" />
+<xsl:param name="edit" />
+<xsl:apply-templates mode="iso19139" select="gmd:extentTypeCode">
+    <xsl:with-param name="schema" select="$schema" />
+    <xsl:with-param name="edit" select="$edit" />
+</xsl:apply-templates>
+
+
+<xsl:apply-templates mode="iso19139" select="gmd:polygon">
+    <xsl:with-param name="schema" select="$schema" />
+    <xsl:with-param name="edit" select="$edit" />
+</xsl:apply-templates>
+</xsl:template>
+
+<xsl:template mode="iso19139" match="gmd:polygon"
+priority="40">
+<xsl:param name="schema" />
+<xsl:param name="edit" />
+
+<xsl:variable name="targetId" select="geonet:element/@ref"/>
+<xsl:variable name="geometry">
+    <xsl:apply-templates mode="editXMLElement"/>
+</xsl:variable>
+
+<xsl:apply-templates mode="complexElement" select=".">
+    <xsl:with-param name="schema" select="$schema" />
+    <xsl:with-param name="edit" select="$edit" />
+    <xsl:with-param name="content">
+        <input type="hidden" id="_X{$targetId}" name="_X{$targetId}" value="{string($geometry)}"/>
+        <td class="padded" align="center" style="width:100%;">
+            <xsl:variable name="geom" select="util:gmlToWKT($geometry)"/>
+            <xsl:call-template name="showMap">
+                <xsl:with-param name="edit" select="$edit" />
+                <xsl:with-param name="coords" select="$geom"/>
+                <xsl:with-param name="targetPolygon" select="$targetId"/>
+            </xsl:call-template>
+        </td>
+    </xsl:with-param>
+</xsl:apply-templates>
+</xsl:template>
+
+
+<xsl:template mode="iso19139" match="gmd:EX_GeographicBoundingBox[../../gmd:geographicElement/gmd:EX_BoundingPolygon]"
+    priority="23">
+    <!-- don't display bounding boxes when there is a bounding polygon. It's
+         managed behind the scene by the server automatically-->
+</xsl:template>
+
+<xsl:template mode="iso19139" match="gmd:EX_GeographicBoundingBox"
+    priority="20">
+    <xsl:param name="schema" />
+    <xsl:param name="edit" />
+
+    <xsl:apply-templates mode="iso19139" select="gmd:extentTypeCode">
+        <xsl:with-param name="schema" select="$schema" />
+        <xsl:with-param name="edit" select="$edit" />
+    </xsl:apply-templates>
+
+    <xsl:variable name="geoBox">
+        <xsl:apply-templates mode="iso19139GeoBox"
+            select=".">
+            <xsl:with-param name="schema" select="$schema" />
+            <xsl:with-param name="edit" select="$edit" />
+        </xsl:apply-templates>
+    </xsl:variable>
+
+    <xsl:apply-templates mode="complexElement"
+        select=".">
+        <xsl:with-param name="schema" select="$schema" />
+        <xsl:with-param name="edit" select="$edit" />
+        <xsl:with-param name="content">
+            <tr>
+                <td>
+                    <xsl:copy-of select="$geoBox" />
+                </td>
+            </tr>
+        </xsl:with-param>
+    </xsl:apply-templates>
+</xsl:template>
+
+<!--
+    =============================================================================
+-->
+
+<xsl:template mode="iso19139GeoBox" match="*">
+    <xsl:param name="schema" />
+    <xsl:param name="edit" />
+
+    <xsl:variable name="eltRef">
+        <xsl:choose>
+            <xsl:when test="$edit=true()">
+                <xsl:value-of select="geonet:element/@ref"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="generate-id(.)"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="wID">
+        <xsl:choose>
+            <xsl:when test=".//gmd:westBoundLongitude/gco:Decimal/geonet:element/@ref"><xsl:value-of select=".//gmd:westBoundLongitude/gco:Decimal/geonet:element/@ref"/></xsl:when>
+            <xsl:otherwise>w<xsl:value-of select="$eltRef"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="eID">
+        <xsl:choose>
+            <xsl:when test="./gmd:eastBoundLongitude/gco:Decimal/geonet:element/@ref"><xsl:value-of select="./gmd:eastBoundLongitude/gco:Decimal/geonet:element/@ref"/></xsl:when>
+            <xsl:otherwise>e<xsl:value-of select="$eltRef"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="nID">
+        <xsl:choose>
+            <xsl:when test="./gmd:northBoundLatitude/gco:Decimal/geonet:element/@ref"><xsl:value-of select="./gmd:northBoundLatitude/gco:Decimal/geonet:element/@ref"/></xsl:when>
+            <xsl:otherwise>n<xsl:value-of select="$eltRef"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="sID">
+        <xsl:choose>
+            <xsl:when test="./gmd:southBoundLatitude/gco:Decimal/geonet:element/@ref"><xsl:value-of select="./gmd:southBoundLatitude/gco:Decimal/geonet:element/@ref"/></xsl:when>
+            <xsl:otherwise>s<xsl:value-of select="$eltRef"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
+
+    <input id="ch03_{$eltRef}" type="radio" name="proj_{$eltRef}" value="ch03" checked="checked" />
+    <label for="ch03_{$eltRef}">CH03</label>
+    <input id="wgs84_{$eltRef}" type="radio" name="proj_{$eltRef}" value="wgs84" />
+    <label for="wgs84_{$eltRef}">WGS84</label>
+
+    <table style="width:100%">
+        <tr>
+            <td />
+            <div id="native_{$eltRef}" style="display:none"><xsl:value-of select="comment()"/></div>
+            <td class="padded" align="center">
+                <xsl:apply-templates mode="iso19139VertElement"
+                        select="gmd:northBoundLatitude/gco:Decimal">
+                    <xsl:with-param name="schema" select="$schema" />
+                    <xsl:with-param name="edit" select="$edit" />
+                    <xsl:with-param name="name" select="'gmd:northBoundLatitude'" />
+                    <xsl:with-param name="eltRef" select="$nID"/>
+                </xsl:apply-templates>
+            </td>
+            <td />
+        </tr>
+        <tr>
+            <td class="padded" align="center">
+                <xsl:apply-templates mode="iso19139VertElement"
+                        select="gmd:westBoundLongitude/gco:Decimal">
+                    <xsl:with-param name="schema" select="$schema" />
+                    <xsl:with-param name="edit" select="$edit" />
+                    <xsl:with-param name="name" select="'gmd:westBoundLongitude'" />
+                    <xsl:with-param name="eltRef" select="$wID"/>
+                </xsl:apply-templates>
+            </td>
+
+
+            <td class="padded" style="width:100%">
+                <xsl:variable name="w" select="./gmd:westBoundLongitude/gco:Decimal"/>
+                <xsl:variable name="e" select="./gmd:eastBoundLongitude/gco:Decimal"/>
+                <xsl:variable name="n" select="./gmd:northBoundLatitude/gco:Decimal"/>
+                <xsl:variable name="s" select="./gmd:southBoundLatitude/gco:Decimal"/>
+
+                <xsl:variable name="geom" >
+                    <xsl:value-of select="concat('Polygon((', $w, ' ', $s,',',$e,' ',$s,',',$e,' ',$n,',',$w,' ',$n,',',$w,' ',$s, '))')"/>
+                </xsl:variable>
+                <xsl:call-template name="showMap">
+                    <xsl:with-param name="edit" select="$edit" />
+                    <xsl:with-param name="coords" select="$geom"/>
+                    <xsl:with-param name="watchedBbox" select="concat($wID, ',', $sID, ',', $eID, ',', $nID)"/>
+                    <xsl:with-param name="eltRef" select="$eltRef"/>
+                </xsl:call-template>
+            </td>
+
+            <td class="padded" align="center">
+                <xsl:apply-templates mode="iso19139VertElement"
+                        select="gmd:eastBoundLongitude/gco:Decimal">
+                    <xsl:with-param name="schema" select="$schema" />
+                    <xsl:with-param name="edit" select="$edit" />
+                    <xsl:with-param name="name" select="'gmd:eastBoundLongitude'" />
+                    <xsl:with-param name="eltRef" select="$eID"/>
+                </xsl:apply-templates>
+            </td>
+        </tr>
+        <tr>
+            <td />
+            <td class="padded" align="center">
+                <xsl:apply-templates mode="iso19139VertElement"
+                        select="gmd:southBoundLatitude/gco:Decimal">
+                    <xsl:with-param name="schema" select="$schema" />
+                    <xsl:with-param name="edit" select="$edit" />
+                    <xsl:with-param name="name" select="'gmd:southBoundLatitude'" />
+                    <xsl:with-param name="eltRef" select="$sID"/>
+                </xsl:apply-templates>
+            </td>
+            <td />
+        </tr>
+    </table>
+</xsl:template>
+
+
+    <xsl:template mode="iso19139VertElement" match="*">
+        <xsl:param name="schema" />
+        <xsl:param name="edit" />
+        <xsl:param name="name" />
+        <xsl:param name="eltRef" />
+
+        <xsl:variable name="title">
+            <xsl:call-template name="getTitle">
+                <xsl:with-param name="schema" select="$schema" />
+                <xsl:with-param name="name" select="$name" />
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="helpLink">
+            <xsl:call-template name="getHelpLink">
+                <xsl:with-param name="schema" select="$schema" />
+                <xsl:with-param name="name" select="$name" />
+            </xsl:call-template>
+        </xsl:variable>
+        <b>
+            <xsl:choose>
+                <xsl:when test="$helpLink!=''">
+                    <span id="tip.{$helpLink}" style="cursor:help;">
+                        <xsl:value-of select="$title" />
+                        <xsl:call-template name="asterisk">
+                            <xsl:with-param name="link" select="$helpLink" />
+                            <xsl:with-param name="edit" select="$edit" />
+                        </xsl:call-template>
+                    </span>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="$title" />
+                </xsl:otherwise>
+            </xsl:choose>
+        </b>
+        <br/>
+        <xsl:choose>
+            <xsl:when test="$edit=true()">
+                <xsl:call-template name="getElementText">
+                    <xsl:with-param name="schema" select="$schema" />
+                    <xsl:with-param name="edit" select="$edit" />
+                    <xsl:with-param name="cols" select="10" />
+                    <xsl:with-param name="visible" select="'true'" />
+                    <xsl:with-param name="validator" select="'validateNumber(this, false)'" />
+                    <xsl:with-param name="no_name" select="true()" />
+                </xsl:call-template>
+                <xsl:call-template name="getElementText">
+                    <xsl:with-param name="schema" select="$schema" />
+                    <xsl:with-param name="edit" select="true()" />
+                    <xsl:with-param name="visible" select="'true'" />
+                    <xsl:with-param name="cols" select="10" />
+                    <xsl:with-param name="input_type" select="'hidden'" />
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise>
+                <input class="md" type="text" id="{$eltRef}" value="{text()}" readonly="readonly"/>
+                <input class="md" type="hidden" id="_{$eltRef}" name="_{$eltRef}" value="{text()}" readonly="readonly"/>
+            </xsl:otherwise>
+        </xsl:choose>
+
+    </xsl:template>
+
 	
 </xsl:stylesheet>
