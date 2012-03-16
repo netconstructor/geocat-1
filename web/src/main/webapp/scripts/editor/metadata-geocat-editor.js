@@ -81,7 +81,8 @@ function doXLinkNewElementAjax(index, metadataId, thisElement) {
                 	|| dialogRequest.name == 'gmd:extent' || dialogRequest.name == 'gmd:serviceExtent'
             		|| dialogRequest.name == 'gmd:sourceExtent' || dialogRequest.name == 'gmd:spatialExtent'
             		|| dialogRequest.name == 'che:revisionExtent' ) {
-                  extentMap.initMapDiv();
+                	if(typeof(searchTools) != "undefined")
+                		searchTools.initMapDiv();
                 }
 
                 // Check elements

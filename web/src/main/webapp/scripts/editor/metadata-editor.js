@@ -423,8 +423,10 @@ function doNewElementAjax(action, ref, name, child, id, what, max, orElement, ex
 				}
 
 				// Init map if spatial extent editing - usually bounding box or bounding polygon
-				if (name == 'gmd:geographicElement' || name == 'gmd:polygon')
-					extentMap.initMapDiv();
+				if (name == 'gmd:geographicElement' || name == 'gmd:polygon') {
+					searchTools.initMapDiv();
+//					extentMap.initMapDiv();
+				}
 				
 				initCalendar();
 				
