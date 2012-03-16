@@ -203,7 +203,8 @@ public final class KeywordsStrategy extends ReplacementStrategy
                     + NON_VALID_THESAURUS_NAME + "&id=" + id;
             addChild(e, REPORT_ID, id);
             addChild(e, REPORT_URL, url);
-            addChild(e, REPORT_DESC, "" + element.getChildTextTrim("value"));
+            String childTextTrim = element.getChildTextTrim("value");
+            addChild(e, REPORT_DESC, "" + childTextTrim);
             keywords.addContent(e);
         }
 

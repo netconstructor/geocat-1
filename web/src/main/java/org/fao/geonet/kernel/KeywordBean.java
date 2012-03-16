@@ -449,7 +449,9 @@ public class KeywordBean {
      * @return
      */
     public Element toElement(String defaultLang, String... langs) {
+        defaultLang = LangUtils.to2CharLang(defaultLang);
         List<String> prioritizedList = new ArrayList<String>();
+        prioritizedList.add(defaultLang);
         for (String s : langs) {
             s = LangUtils.to2CharLang(s);
             prioritizedList.add(s.toLowerCase());
@@ -467,7 +469,7 @@ public class KeywordBean {
         elId.addContent(Integer.toString(this.getId()));
         Element elCode = new Element("code");
         String code = this.getRelativeCode();
-
+        elCode.setText(code);
         // TODO : Add Thesaurus name
         Element elSelected = new Element("selected");
         if (this.isSelected()) {

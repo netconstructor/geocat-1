@@ -571,7 +571,7 @@ public class KeywordsSearcher {
         for (int i = 0; i <= nbResults - 1; i++) {
             KeywordBean kb = _results.get(i);
 
-            elDescKeys.addContent(kb.toElement("eng","fra","eng","ita"));
+            elDescKeys.addContent(kb.toElement("deu","fra","eng","ita"));
         }
 
         return elDescKeys;
