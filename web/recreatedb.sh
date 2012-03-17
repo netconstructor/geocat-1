@@ -1,10 +1,10 @@
 #!/bin/sh
 set -x
 
-if [ "jeichar" = $1 ]; then
+if [ "jeichar" = "`whoami`" ]; then
   DB=geocat2_trunk
   SQL_DIR=/usr/local/share/postgis/
-elif [ "fvanderbiest" = $1 ]; then
+elif [ "fvanderbiest" = "`whoami`" ]; then
   DB=geocat
   SQL_DIR=/usr/share/postgresql/8.4/contrib/postgis-1.5/
 else

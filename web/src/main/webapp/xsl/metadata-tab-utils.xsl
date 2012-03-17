@@ -149,7 +149,6 @@
 		<xsl:param name="tabLink"/>
 		
 		<xsl:variable name="currTab" select="/root/gui/currTab"/>
-	
 	  <tr>
 	    <xsl:attribute name="class">
 	      <xsl:choose>
