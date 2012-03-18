@@ -330,6 +330,12 @@
 								<xsl:with-param name="icon">chart_bar.png</xsl:with-param>
 							</xsl:call-template>
 						</xsl:if>
+						<xsl:call-template name="addrow">
+							<xsl:with-param name="service" select="'monitor.report'"/>
+							<xsl:with-param name="title" select="/root/gui/strings/monitoring"/>
+							<xsl:with-param name="desc"
+								select="/root/gui/strings/monitoringDes"/>
+						</xsl:call-template>
 
 					</xsl:variable>
 
