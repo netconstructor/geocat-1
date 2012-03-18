@@ -122,14 +122,14 @@
 
         <xsl:variable name="identification" select="/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']/gmd:identificationInfo/*[name(.)='gmd:MD_DataIdentification' or @gco:isoType='gmd:MD_DataIdentification' or name(.)='srv:SV_ServiceIdentification' or @gco:isoType='srv:SV_ServiceIdentification']"></xsl:variable>
         <xsl:choose>
-             <xsl:when test="string-length($identification/gmd:citation//gmd:title//gmd:LocalisedCharacterString[@locale=$poundLangId and string-length(.) > 0]) != 0">
-                 <xsl:value-of select="string($identification/gmd:citation//gmd:title//gmd:LocalisedCharacterString[@locale=$poundLangId and string-length(.) > 0])"></xsl:value-of>
+             <xsl:when test="string-length($identification/gmd:citation/*/gmd:title//gmd:LocalisedCharacterString[@locale=$poundLangId and string-length(.) > 0]) != 0">
+                 <xsl:value-of select="string($identification/gmd:citation/*/gmd:title//gmd:LocalisedCharacterString[@locale=$poundLangId and string-length(.) > 0])"></xsl:value-of>
              </xsl:when>
-             <xsl:when test="string-length($identification/gmd:citation//gmd:title/gco:CharacterString[1]) != 0">
-                 <xsl:value-of select="string($identification/gmd:citation//gmd:title/gco:CharacterString[1])"></xsl:value-of>
+             <xsl:when test="string-length($identification/gmd:citation/*/gmd:title/gco:CharacterString[1]) != 0">
+                 <xsl:value-of select="string($identification/gmd:citation/*/gmd:title/gco:CharacterString[1])"></xsl:value-of>
              </xsl:when>
              <xsl:otherwise>
-                 <xsl:value-of select="string(($identification/gmd:citation//gmd:title//gmd:LocalisedCharacterString))"></xsl:value-of>
+                 <xsl:value-of select="string(($identification/gmd:citation/*/gmd:title//gmd:LocalisedCharacterString))"></xsl:value-of>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
