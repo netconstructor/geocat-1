@@ -299,6 +299,7 @@ GeoNetwork.Lang.fr = {
     'editing': "${title} (${uuid}) en cours d'édition",
     'GetCapabilitiesDocumentError': "Erreur lors de la tentative de récupération des informations du service (ie. GetCapabilities) avec l'adresse: ",
     'maxResults': "Nombre de résultats",
+    'keywordsLang': "Langue des mots clés : ",
     'mdTitle': "Titre de la métadonnée",
     'keywords': "Mots-clés",
     'createRelation': "Créer la relation",

@@ -47,6 +47,7 @@ GeoNetwork.admin.ThesaurusManagerPanel = Ext.extend(Ext.Panel, {
     border: false,
     frame: false,
     selectedThesaurus: undefined,
+    kwLang: undefined,
     layout: 'border',
     catalogue: undefined,
     toolbar: undefined,
@@ -74,6 +75,9 @@ GeoNetwork.admin.ThesaurusManagerPanel = Ext.extend(Ext.Panel, {
         // A store with the list of available thesauri
         this.thesaurusStore = new GeoNetwork.data.ThesaurusStore({
             url: this.catalogue.services.getThesaurus});
+        
+        // by default, the keyword lang is the default one:
+        this.kwLang = this.catalogue.lang;
 
         var Keyword = Ext.data.Record.create([{
             name: 'id'
@@ -415,9 +419,7 @@ GeoNetwork.admin.ThesaurusManagerPanel = Ext.extend(Ext.Panel, {
                     var namespace = tokens[0];
                     var newId = tokens[1];
                     var oldId = newId;
-                    // Edit keyword in current GUI language
-                    // TODO : improved to select the language to be updated
-                    var lang = this.catalogue.lang;
+                    var lang = this.kwLang;
                     var prefLab = e.record.data.value;
                     var definition = e.record.data.definition;
                     var requestPayLoad;
@@ -484,7 +486,7 @@ GeoNetwork.admin.ThesaurusManagerPanel = Ext.extend(Ext.Panel, {
                         var ref = this.keywordStore.baseParams.pThesauri;
                         var refType = ref.split(".")[1];
                         var newId = newUri.split("#")[1];
-                        var lang = this.catalogue.lang;
+                        var lang = this.kwLang;
                         var prefLab = OpenLayers.i18n('newLabel');
                         var definition = OpenLayers.i18n('newDefinition');
                         var requestPayLoad;
@@ -561,6 +563,10 @@ GeoNetwork.admin.ThesaurusManagerPanel = Ext.extend(Ext.Panel, {
                 },
                 '->',
                 this.getKeyword(),
+                '-',
+                OpenLayers.i18n('keywordsLang'),
+                this.getLangInput(),
+                '-',
                 OpenLayers.i18n('maxResults') + ' ' + OpenLayers.i18n('perThesaurus'),
                 this.getLimitInput()]
             }
@@ -973,6 +979,35 @@ GeoNetwork.admin.ThesaurusManagerPanel = Ext.extend(Ext.Panel, {
                 scope: this,
                 change: function(field, newValue, oldValue) {
                     this.keywordStore.baseParams.maxResults = newValue;
+                }
+            }
+        };
+    },
+    
+    /**
+     * Method: getLangInput
+     *
+     *
+     */
+    getLangInput: function(){
+        return {
+            xtype: 'combo',
+            name: 'kw_lang',
+            id: 'kw_lang',
+            value: this.kwLang,
+            mode: 'local',
+            store: [['fra', 'Français'],['eng', 'English'], ['deu', 'Deutsch']], // TODO: get this Array from Env object
+            triggerAction: 'all',
+            editable: false,
+            width: 100,
+            listeners: {
+                scope: this,
+                select: function(field, rec, idx) {
+                    var p = this.keywordStore.proxy;
+                    this.kwLang = rec.data.field1;
+                    // update proxy URL to the chosen language:
+                    p.setUrl(p.url.replace(/\/srv\/...\/xml/i, "/srv/"+this.kwLang+"/xml"));
+                    this.keywordStore.reload();
                 }
             }
         };

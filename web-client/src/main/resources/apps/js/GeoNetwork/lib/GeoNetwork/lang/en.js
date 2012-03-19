@@ -301,6 +301,7 @@ GeoNetwork.lang.en = {
     'editing': 'Editing ${title} (${uuid})',
     'GetCapabilitiesDocumentError': "Error loading service GetCapabilities document from URL: ",
     'maxResults': "Number of results",
+    'keywordsLang': "Keywords language: ",
     'mdTitle': "Metadata title",
     'keywords': "Keywords",
     'createRelation': "Create relation",
