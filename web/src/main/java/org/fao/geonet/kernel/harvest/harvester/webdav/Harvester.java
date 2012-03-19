@@ -83,6 +83,8 @@ class Harvester {
 			rr = new WebDavRetriever();
 		else if(params.subtype.equals("waf"))
 			rr = new WAFRetriever();
+		else
+		    rr = new WebDavRetriever();
 		
 		Log.info(Log.SERVICE, "webdav harvest subtype : "+params.subtype);		
 		rr.init(log, context, params);
