@@ -1471,6 +1471,12 @@
 				</xsl:call-template>
 			</xsl:when>
 			
+			<xsl:when test="$currTab='complete'">
+				<xsl:call-template name="iso19139Complete">
+					<xsl:with-param name="schema" select="$schema"/>
+					<xsl:with-param name="edit"   select="$edit"/>
+				</xsl:call-template>
+			</xsl:when>
 			
 			<!-- default -->
 			<xsl:otherwise>

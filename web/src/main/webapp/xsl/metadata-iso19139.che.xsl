@@ -14,40 +14,39 @@
 	xmlns:xalan = "http://xml.apache.org/xalan">
 
     <xsl:include href="xml-to-string.xsl"/>
-
-    <!-- Profil for switzerland define a new node in root element
-    for legislation information (che:legislationInformation). 
-    That's why we need to overhide 3 main templates:
-     * tab menu on the viewer/editor
-     * editor simple mode
-     * editor advanced mode (priority set to 100 in order 
-     to be processed for che:CHE_MD_Metadata even if it has
-     a gco:type attribute.)
-        -->
-
+   
     <xsl:template name="iso19139.cheCompleteTab">
-    <xsl:param name="tabLink"/>
-    <xsl:param name="schema"/>
-
+	    <xsl:param name="tabLink"/>
+	    <xsl:param name="schema"/>
+		<xsl:call-template name="displayTab">
+			<xsl:with-param name="tab"     select="'complete'"/>
+			<xsl:with-param name="text"    select="/root/gui/strings/completeTab"/>
+			<xsl:with-param name="tabLink" select="$tabLink"/>
+		</xsl:call-template>
         <xsl:call-template name="iso19139CompleteTab">
             <xsl:with-param name="schema" select="$schema"/>
             <xsl:with-param name="tabLink" select="$tabLink"/>
         </xsl:call-template>
-        
     </xsl:template>
-    
+
   	<!-- main template - the way into processing iso19139 -->
   	<xsl:template name="metadata-iso19139.che">
   		<xsl:param name="schema"/>
   		<xsl:param name="edit" select="false()"/>
   		<xsl:param name="embedded"/>
 
-     	<xsl:apply-templates mode="iso19139" select="." >
-      	<xsl:with-param name="schema" select="$schema"/>
-       	<xsl:with-param name="edit"   select="$edit"/>
-       	<xsl:with-param name="embedded" select="$embedded" />
-     	</xsl:apply-templates>
+		<xsl:call-template name="toggle-visibility-edit">
+			<xsl:with-param name="edit" select="$edit"/>
+		</xsl:call-template>
+
+
+		<xsl:apply-templates mode="iso19139" select=".">
+			<xsl:with-param name="schema" select="'iso19139'"/>
+			<xsl:with-param name="edit"   select="$edit"/>
+			<xsl:with-param name="currTab"   select="$currTab"/>
+		</xsl:apply-templates>
     </xsl:template>
+
     
 	<!-- Do not display those elements -->
 	<xsl:template mode="elementEP"
@@ -1749,26 +1748,6 @@
      </xsl:otherwise>
      </xsl:choose>
    </xsl:template>
- 	<!--
- 	adds toggle for Hidden Element editing in Advanced View
- 	<xsl:template name="toggle-visibility-edit">
- 		<xsl:param name="edit" select="false()"/>
-
- 		<xsl:if test="$edit=true()">
- 			<tr align="left">
-                 <td></td>
- 				<td colspan="1">
- 					<xsl:if test="$currTab!='simple'">
- 					<input class="content" type="checkbox" onclick="toggleVisibilityEdit()" name="toggleVisibilityEditCB" id="toggleVisibilityEditCB" value="true"/><label for="toggleVisibilityEditCB" style="margin-left:0.5em"><xsl:value-of select="/root/gui/strings/toggleVisibilityEdit"/></label>
- 					</xsl:if>
- 					<xsl:call-template name="relatedResources">
- 						<xsl:with-param name="edit" select="true()"/>
- 					</xsl:call-template>
- 				</td>
- 			</tr>
- 		</xsl:if>
- 	</xsl:template>
- 	-->
  	
     <xsl:template mode="addXMLFragment"  priority="100"
     match="

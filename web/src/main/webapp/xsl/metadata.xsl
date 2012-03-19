@@ -37,11 +37,8 @@
 		<xsl:param name="embedded" />
 
 		<xsl:variable name="schemaTemplate">
-			<xsl:choose>
-				<xsl:when test="string($schema) = 'iso19139.che'">metadata-iso19139</xsl:when>
-				<xsl:otherwise><xsl:value-of select="concat('metadata-',$schema)"/></xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
+				<xsl:value-of select="concat('metadata-',$schema)"/>
+		</xsl:variable>	
 		<saxon:call-template name="{$schemaTemplate}"> 
 			<xsl:with-param name="schema" select="$schema"/>
 			<xsl:with-param name="edit"   select="$edit"/>

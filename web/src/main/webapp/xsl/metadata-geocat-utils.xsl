@@ -185,7 +185,7 @@
 	<xsl:template name="toggle-visibility-edit">
 		<xsl:param name="edit" select="false()"/>
 
-		<xsl:if test="$edit=true()">
+		<xsl:if test="$edit=true() or $edit='true'">
 			<tr align="left">
                 <td></td>
 				<td colspan="1">
