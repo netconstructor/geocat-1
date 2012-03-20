@@ -1675,11 +1675,20 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getMetadata(Dbms dbms, String id) throws Exception {
-		boolean doXLinks = xmlSerializer.resolveXLinks();
+	    ServiceContext context = ServiceContext.get();
+	    if(context == null) {
+	        throw new IllegalStateException("This method is not supported by Geocat because hiding is not currently supported.  We can add it later");
+	    } else {
+	        Element md = getMetadata(context, id, false, false, false);
+	        if (md == null) return null;
+	        md.detach();
+	        return md;
+	    }
+		/*boolean doXLinks = xmlSerializer.resolveXLinks();
 		Element md = xmlSerializer.selectNoXLinkResolver(dbms, "Metadata", id, getServiceContext());
 		if (md == null) return null;
 		md.detach();
-		return md;
+		return md;*/
 	}
 
     private ServiceContext getServiceContext() {
@@ -3375,7 +3384,7 @@ public class DataManager {
     }
 
     private void hideElements(ServiceContext context, Element elMd, String id, boolean forEditing, boolean allowDbmsClosing) throws Exception {
-        Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
+        Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
         try {
             boolean forceHideElements = false;
             hideElements(context, dbms, elMd, id, forEditing, forceHideElements);
