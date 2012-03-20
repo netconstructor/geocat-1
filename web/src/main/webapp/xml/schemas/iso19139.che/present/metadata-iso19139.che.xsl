@@ -13,7 +13,8 @@
 	xmlns:util="java:org.fao.geonet.util.XslUtil"
 	xmlns:xalan = "http://xml.apache.org/xalan">
 
-    <xsl:include href="xml-to-string.xsl"/>
+    <xsl:include href="metadata-che-layouts.xsl"/>
+    <xsl:include href="../../../../xsl/xml-to-string.xsl"/>
    
     <xsl:template name="iso19139.cheCompleteTab">
 	    <xsl:param name="tabLink"/>
@@ -27,6 +28,14 @@
             <xsl:with-param name="schema" select="$schema"/>
             <xsl:with-param name="tabLink" select="$tabLink"/>
         </xsl:call-template>
+		<xsl:call-template name="displayTab">
+			<xsl:with-param name="tab" select="'legislationInformation'"/>
+			<xsl:with-param name="text" select="'Leg'"/>
+			<!-- <xsl:with-param name="text" select="/root/gui/strings/legislationInformation"/> -->
+			<xsl:with-param name="indent" select="'&#xA0;&#xA0;&#xA0;'"/>
+			<xsl:with-param name="tabLink" select="$tabLink"/>
+		</xsl:call-template>
+        
     </xsl:template>
 
   	<!-- main template - the way into processing iso19139 -->
@@ -45,6 +54,8 @@
 			<xsl:with-param name="edit"   select="$edit"/>
 			<xsl:with-param name="currTab"   select="$currTab"/>
 		</xsl:apply-templates>
+		
+		
     </xsl:template>
 
     
