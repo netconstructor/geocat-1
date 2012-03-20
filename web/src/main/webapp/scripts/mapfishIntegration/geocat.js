@@ -97,6 +97,7 @@ var geocat = {
     zoomToResults: false,
     maxRecords: [10, 20, 50, 100],
     maxAbstract: 350,
+    labelWidth: 90,
     layerTreePopup: null,
     advancedSearchMode: false,
     layersAdded: [],
@@ -313,7 +314,7 @@ var geocat = {
     },
 
     createSearchForm: function() {
-        var labelWidth = 70;
+        var labelWidth = this.labelWidth;
 
         return {
             region: 'center',
@@ -843,7 +844,7 @@ var geocat = {
             xtype: 'fieldset',
             autoHeight: true,
             defaultType: 'textfield',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
@@ -980,7 +981,7 @@ var geocat = {
             title: translate('what'),
             autoHeight: true,
             defaultType: 'textfield',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
@@ -1029,7 +1030,7 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             title: translate('type')+'?',
             autoHeight: true,
             defaultType: 'textfield',
@@ -1080,7 +1081,7 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             id: 'searchWhere',
             title: translate('where'),
             autoHeight: true,
@@ -1184,7 +1185,7 @@ var geocat = {
             defaultType: 'textfield',
             cls: 'compressedFieldSet',
             layout: 'form',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             layoutConfig: {
                 labelSeparator: ''
             },
@@ -1205,7 +1206,7 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             title: translate('source'),
             autoHeight: true,
             defaultType: 'textfield',
