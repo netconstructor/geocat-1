@@ -1175,7 +1175,7 @@
 
         <xsl:variable name="title">
             <xsl:choose>
-                <xsl:when test="starts-with($schema,'iso19139') and string(/root/gui/schemas/iso19139.che/labels/element[@name=$name and not(@context)]/label)">
+                <xsl:when test="starts-with($schema,'iso19139') and string(/root/gui/schemas/iso19139.che/labels/element[@name=$name]/label)">
                  	<xsl:value-of select="string(/root/gui/schemas/iso19139.che/labels/element[@name=$name]/label)"/>
                 </xsl:when>
                 <xsl:when test="starts-with($schema,'iso19139')">

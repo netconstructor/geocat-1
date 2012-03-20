@@ -880,7 +880,7 @@
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:copy-of
-								select="/root/gui/schemas/*[name(.)='iso19139']/codelists/codelist[@name = $qname]/*" />
+								select="/root/gui/schemas/*[name(.)='iso19139' or name(.)='iso19139.che']/codelists/codelist[@name = $qname]/*" />
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
