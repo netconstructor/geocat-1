@@ -31,6 +31,9 @@ Ext.namespace('GeoNetwork.data');
  *  for GeoNetwork SKOS thesaurus.
  *
  *  :param url: ``String`` Usually the xml.thesaurus.getList service URL.
+ *
+ * FIXME: this implementation is not correct, since Ext.data.Store config options are not taken into account (other than url)
+ *
  */
 GeoNetwork.data.ThesaurusStore = function(config){
     var DataRecord = Ext.data.Record.create([{
@@ -77,7 +80,7 @@ GeoNetwork.data.ThesaurusStore = function(config){
             var coll = this.query('activated', 'n');
             coll.each(function (item, idx) {
                 this.removeAt(this.indexOf(item));
-                }, store);
+            }, store);
         }, store);
     }
     
