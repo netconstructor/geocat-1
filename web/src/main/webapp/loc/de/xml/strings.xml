@@ -316,7 +316,7 @@
 	<foundCRS js="true">Available coordinate systems</foundCRS>
 	
 	<about>Über</about>
-	<abstract js="true">Kurzübersicht</abstract>
+	<abstract js="true">Zusammenfassung</abstract>
 	<accept>Abschicken</accept>
 	<actionOnSelect>Actions on selected metadata</actionOnSelect>
 	<add js="true">hinzufügen</add>
@@ -503,7 +503,7 @@
 	<i18n>Test i18n</i18n>
 	<i18nDesc>This service should help GeoNetwork opensource developers to have up to date localized files for the GUI.</i18nDesc>
 	<identificationTab>Identifikation</identificationTab>
-	<identifier js="true">Identifikator</identifier>
+	<identifier js="true">Geobasisdaten-ID</identifier>
 	<imAreaInterest>Fläche auswählen</imAreaInterest>
 	<imPan>Kartenausschnitt verschieben</imPan>
 	<import>Import</import>

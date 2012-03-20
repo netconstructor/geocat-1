@@ -97,6 +97,7 @@ var geocat = {
     zoomToResults: false,
     maxRecords: [10, 20, 50, 100],
     maxAbstract: 350,
+    labelWidth: 100,
     layerTreePopup: null,
     advancedSearchMode: false,
     layersAdded: [],
@@ -235,7 +236,7 @@ var geocat = {
                         layout: 'border',
                         defaults: {border: false},
                         items: [
-                            geocat.createSearchForm(),
+                            geocat.createSearchForm.call(geocat),
                             {
                                 region: 'south',
                                 id: 'searchSwitch',
@@ -313,8 +314,7 @@ var geocat = {
     },
 
     createSearchForm: function() {
-        var labelWidth = 70;
-
+        var labelWidth = this.labelWidth;
         return {
             region: 'center',
             xtype: 'form',
@@ -327,7 +327,7 @@ var geocat = {
                 labelSeparator: ''
             },
             defaults: this.formDefaults,
-            items: geocat.getSimpleFormContent(),
+            items: geocat.getSimpleFormContent.call(geocat),
             listeners: {
                 resize: function(component) {
                     geocat.updateComboSizes(component, component.body.dom.clientWidth);
@@ -843,7 +843,7 @@ var geocat = {
             xtype: 'fieldset',
             autoHeight: true,
             defaultType: 'textfield',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
@@ -980,7 +980,7 @@ var geocat = {
             title: translate('what'),
             autoHeight: true,
             defaultType: 'textfield',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             layout: 'form',
             layoutConfig: {
                 labelSeparator: ''
@@ -1029,7 +1029,7 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             title: translate('type')+'?',
             autoHeight: true,
             defaultType: 'textfield',
@@ -1080,7 +1080,7 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             id: 'searchWhere',
             title: translate('where'),
             autoHeight: true,
@@ -1184,7 +1184,7 @@ var geocat = {
             defaultType: 'textfield',
             cls: 'compressedFieldSet',
             layout: 'form',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             layoutConfig: {
                 labelSeparator: ''
             },
@@ -1205,7 +1205,7 @@ var geocat = {
 
         content.push({
             xtype: 'fieldset',
-            labelWidth: 70,
+            labelWidth: this.labelWidth,
             title: translate('source'),
             autoHeight: true,
             defaultType: 'textfield',
@@ -1361,11 +1361,11 @@ var geocat = {
         if (advanced) {
             form.defaults = {};
             button.innerHTML = geocat.getAdvancedSearchSwitch();
-            items = geocat.getAdvancedFormContent();
+            items = geocat.getAdvancedFormContent.call(geocat);
         } else {
             form.defaults = this.formDefaults;
             button.innerHTML = geocat.getSimpleSearchSwitch();
-            items = geocat.getSimpleFormContent();
+            items = geocat.getSimpleFormContent.call(geocat);
         }
         for (var i = 0; i < items.length; ++i) {
             form.add(items[i]);
