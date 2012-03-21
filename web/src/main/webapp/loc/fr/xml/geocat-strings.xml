@@ -185,4 +185,84 @@ Votre équipe geocat.ch</msg>
     <addLayerConfirmTitle js="true">Ajout d'une nouvelle couche WMS</addLayerConfirmTitle>
     <addLayerConfirmText js="true">Voulez-vous supprimer les couches déjà ajoutées à la carte ?</addLayerConfirmText>
     <other js="true">- Autre -</other>
+	<ajaxRequestFailed mode="js">Echec lors de la recherche</ajaxRequestFailed>
+	<searchElements mode="js">Rechercher un élément</searchElements>
+	<viewCapabilities>Consulter le document GetCapabilities</viewCapabilities>
+	<viewCapabilitiesHelp>Le fichier GetCapabilities contient les noms des couches diffusées par le service. Saisir ici le nom d'une couche (ie. layername).</viewCapabilitiesHelp>
+	<noCapabilities>URL du service invalide</noCapabilities>
+	<createAssoServiceHelp>
+	        <ul>
+	            <li class="arrow">Utiliser le formulaire de recherche pour trouver des métadonnées de services</li>
+	            <li class="arrow">
+	                En sélectionnant une ou plusieurs métadonnées de service, vous allez ajouter une référence (ie. les éléments operatesOn et coupledResource) vers la métadonnée de données en cours d'édition fonction de vos privilèges.
+	            </li>
+	            <li class="arrow">
+	                Saisir le nom de la couche tel que définit dans le service OGC (eg. layername du document GetCapabilities)
+	            </li>
+	            <li class="arrow">
+	                Pour ajouter une section ressource en ligne ou si vous n'avez pas les privilèges de mise à jour des métadonnées
+	                de service, vous pouvez cocher l'option mise à jour de la métadonnée de donnée.
+	            </li>
+	        </ul>
+	    </createAssoServiceHelp>
+	<standardValid>Valide ISO et GM03</standardValid>
+	<scopedName>Layer name</scopedName>
+	<boxSelectEmptyText>Saisissez un texte ou pressez flèche vers le bas</boxSelectEmptyText>
+	<legislationInformation>Information sur la législation</legislationInformation>
+	<months>mois</months>
+	<searchBoxLegend>Rechercher des métadonnées</searchBoxLegend>
+	<codelistManager>Gestion des listes de valeurs</codelistManager>
+	<completeTabPrint>Vue print</completeTabPrint>
+	<confirmMassiveDelete>Confirmer la suppression</confirmMassiveDelete>
+	<creation>Création</creation>
+	<datasets>Données</datasets>
+	<elementAdd>Ajouter un élément</elementAdd>
+	<elementDel>Supprimer</elementDel>
+	<elementDown>Descendre</elementDown>
+	<elementMandatory>Obligatoire</elementMandatory>
+	<elementSch>Condition</elementSch>
+	<elementUp>Monter</elementUp>
+	<elementVisAll>Visible à tous</elementVisAll>
+	<elementVisibility>Visibilité des éléments (disponible dans la Vue ISO)</elementVisibility>
+	<elementVisIntra>Uniquement pour le groupe</elementVisIntra>
+	<elementVisNo>Invisible</elementVisNo>
+	<elementXLink>Ajouter des valeurs prédéfinies</elementXLink>
+	<emailAddress>Email</emailAddress>
+	<generateUUID><span>Générer un <a href="http://fr.wikipedia.org/wiki/Universal_Unique_Identifier">UUID (Universally Unique Identifier)</a></span></generateUUID>
+	<deleteGroup.confirm>Effacer le groupe?</deleteGroup.confirm>
+	<deleteGroup.deleteUsers.confirm>Effacer le groupe, mais garder les utilisateurs (Annuler efface le groupe ET les utilisateurs)?</deleteGroup.deleteUsers.confirm>
+	<interMapInfo><a target="_blank" class="sm" href="http://www.opengeospatial.org">Open GeoSpatial®
+	            Consortium</a><a target="_blank" class="sm" href="http://www.esri.com">ESRI®
+	            ArcIMS</a></interMapInfo>
+	<languageIso3>fra</languageIso3>
+	<mainpage1><ul>
+	            <li>Améliorer l'accès et l'usage des informations et données spatiales</li>
+	            <li>Aider les processus de prise de décision</li>
+	            <li>Favoriser l'approche multidisciplinaire nécessaire au développement durable</li>
+	            <li>Améliorer la compréhension des apports de l'information géographique</li>
+	        </ul></mainpage1>
+	<mainMetadataLanguageNotSet>(Langue des métadonnées non définie)</mainMetadataLanguageNotSet>
+	<massiveActions>Actions</massiveActions>
+	<mef2File>Fichier MEF v2</mef2File>
+	<organizationName>Organisation</organizationName>
+	<parent>Consulter la fiche du parent</parent>
+	<publicaccess>Autoriser l'utilisation de cet utilisateur dans les métadonnées</publicaccess>
+	<searchIn>Recherche dans :</searchIn>
+	<services>Services</services>
+	<serviceType>Type de service</serviceType>
+	<showPdf>Fiche complète</showPdf>
+	<sort>Trier</sort>
+	<stat.requestParamsLink>le lien entre requetes et paramètres se fait par le champs requestId</stat.requestParamsLink>
+	<titles>Titres</titles>
+	<users>Utilisateurs</users>
+	<version>Version</version>
+	<website>Website</website>
+	<xlink>Search</xlink>
+	<emailPDF>Envoyer un PDF</emailPDF>
+	<emailFrom>Expéditeur</emailFrom>
+	<emailTo>Destinataire</emailTo>
+	<subject>Sujet</subject>
+	<emailSent>E-Mail envoyé!</emailSent>
+	<replaceDuplicates>Doublons</replaceDuplicates>
+	<permlink mode="js">Lien permanent</permlink>
 </strings>

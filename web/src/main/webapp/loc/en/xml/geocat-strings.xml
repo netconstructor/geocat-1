@@ -194,5 +194,84 @@
     <addLayerConfirmTitle js="true">Adding new WMS layer</addLayerConfirmTitle>
     <addLayerConfirmText js="true">Would you like to remove previously added layers ?</addLayerConfirmText>
     <other js="true">- Other -</other>
-
+	<ajaxRequestFailed mode="js">Ajax request failed</ajaxRequestFailed>
+	<searchElements mode="js">Search for an element</searchElements>
+	<viewCapabilities>Open GetCapabilities document</viewCapabilities>
+	<viewCapabilitiesHelp>Select one layername from the capabilities document.</viewCapabilitiesHelp>
+	<noCapabilities>Adresse du service invalide</noCapabilities>
+	<createAssoServiceHelp>
+	              <ul>
+	                     <li class="arrow">Use the search form to search for services metadata</li>
+	                     <li class="arrow">
+	                         Checking one or more service metadata will add a reference (ie. operatesOn and coupledResource elements) to current metadata in edition according to your privileges.
+	                     </li>
+	                     <li class="arrow">
+	                         Layer name define the name of the layer as defined in the OGC service (eg. layername in the GetCapabilities document)
+	                     </li>
+	                     <li class="arrow">
+	                            Use the update metadata checkbox only if you don't have privileges to update services metadata or
+	                            if you want to add a specific on-line source section.
+	                     </li>
+	              </ul>
+	       </createAssoServiceHelp>
+	<scopedName>Layer name </scopedName>
+	<boxSelectEmptyText>Type in or press arrow down</boxSelectEmptyText>
+	<standardValid>ISO and GM03 valid</standardValid>
+	<legislationInformation>Legislation Info</legislationInformation>
+	<searchBoxLegend>Search metadata</searchBoxLegend>
+	<codelistManager>Codelist management</codelistManager>
+	<completeTabPrint>Print view</completeTabPrint>
+	<confirmMassiveDelete>Are you sure you want to Delete all selected Metadata from the Database?</confirmMassiveDelete>
+	<copyright2><p><br></br></p></copyright2>
+	<creation>Creation</creation>
+	<datasets>Datasets</datasets>
+	<disclaimer1>Your Disclaimer title</disclaimer1>
+	<disclaimer2>Your Disclaimer text</disclaimer2>
+	<elementAdd>Add element</elementAdd>
+	<elementDel>Remove element</elementDel>
+	<elementDown>Down</elementDown>
+	<elementMandatory>Mandatory</elementMandatory>
+	<elementSch>Conditional</elementSch>
+	<elementUp>Up</elementUp>
+	<elementVisAll>Visible to all</elementVisAll>
+	<elementVisibility>Element visibility (available in ISO View</elementVisibility>
+	<elementVisIntra>Group only</elementVisIntra>
+	<elementVisNo>Intranet only</elementVisNo>
+	<elementXLink>Add from dictionary</elementXLink>
+	<generateUUID><span>Generate <a href="http://en.wikipedia.org/wiki/Universally_Unique_Identifier">UUID (Universally Unique Identifier)</a> for inserted metadata</span></generateUUID>
+	<deleteGroup.confirm>Delete the group?</deleteGroup.confirm>
+	<deleteGroup.deleteUsers.confirm>Delete group but keep users (Cancel will remove group AND users)?</deleteGroup.deleteUsers.confirm>
+	<interMapInfo><a target="_blank" class="sm" href="http://www.opengeospatial.org">Open
+	                     GeoSpatial® Consortium</a><a target="_blank" class="sm" href="http://www.esri.com">ESRI®
+	              ArcIMS</a></interMapInfo>
+	<languageIso3>eng</languageIso3>
+	<localizationHelp><br></br></localizationHelp>
+	<mainpage2><p> GeoNetwork opensource allows to easily share geographically referenced thematic
+	                     information between different organisations. For more information please
+	                     contact </p></mainpage2>
+	<mainMetadataLanguageNotSet>(Default metadata language not defined)</mainMetadataLanguageNotSet>
+	<massiveActions>Massive actions : </massiveActions>
+	<mef2File>MEF2 file</mef2File>
+	<organizationName>Organisation</organizationName>
+	<parent>View parent metadata</parent>
+	<publicaccess>Allow user to be used in metadata records</publicaccess>
+	<searchIn>Search in:</searchIn>
+	<services>Services</services>
+	<serviceType>Service Type</serviceType>
+	<showPdf>Metadata</showPdf>
+	<stat.></stat.>
+	<titles>Title</titles>
+	<users>Users</users>
+	<version>Version</version>
+	<website>Website</website>
+	<xlink>Search</xlink>
+	<months>Months</months>
+	<emailPDF>Send pdf</emailPDF>
+	<emailFrom>Email from</emailFrom>
+	<emailTo>Email to</emailTo>
+	<subject>Subject</subject>
+	<emailSent>Email sent!</emailSent>
+	<rm>Romanche</rm>
+	<replaceDuplicates>Duplicates</replaceDuplicates>
+	<permlink mode="js">Permlink</permlink>
 </strings>
