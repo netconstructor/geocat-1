@@ -762,7 +762,7 @@
 	<select>Select : </select>
 	<selectAll>Select all metadata</selectAll>
 	<selectAllNotPossible>Too many hits! Must be less than </selectAllNotPossible>
-	<selected> selected</selected>
+	<selected js="true"> selected</selected>
 	<selectedOnly>Display selected only</selectedOnly>
 	<selection>Auswahl</selection>
 	<selectNone>Unselect metadata selected</selectNone>

@@ -769,7 +769,7 @@
 	<select>Sélectionner : </select>
 	<selectAll>Tout sélectionner</selectAll>
 	<selectAllNotPossible>Trop d'enregistrement ! Doit être inférieur à </selectAllNotPossible>
-	<selected> selectionné(s)</selected>
+	<selected js="true"> selectionné(s)</selected>
 	<selectedOnly>Afficher la sélection</selectedOnly>
 	<selection>Sélection</selection>
 	<selectNone>Unselect metadata selected</selectNone>
