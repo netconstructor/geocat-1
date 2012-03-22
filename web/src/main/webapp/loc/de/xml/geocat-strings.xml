@@ -1,7 +1,7 @@
 <strings>
 	<duplicate>Vervielfältigen</duplicate>
-    <geocatNext>Vorwärts</geocatNext>
-    <geocatPrevious>Zurück</geocatPrevious>
+    <geocatNext js="true">Vorwärts</geocatNext>
+    <geocatPrevious js="true">Zurück</geocatPrevious>
     <nav>
         <home>Startseite</home>
         <overview>Übersicht</overview>

@@ -1,7 +1,7 @@
 <strings>
 	<duplicate>Duplicate</duplicate>
-    <geocatNext>Next</geocatNext>
-    <geocatPrevious>Previous</geocatPrevious>
+    <geocatNext js="true">Next</geocatNext>
+    <geocatPrevious js="true">Previous</geocatPrevious>
     <nav>
         <home>Homepage</home>
         <overview>Overview</overview>

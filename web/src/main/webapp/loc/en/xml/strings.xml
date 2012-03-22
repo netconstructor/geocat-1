@@ -729,7 +729,7 @@
 	<registrationDetails>Key registration details entered: </registrationDetails>
 	<remote>Remote search</remote>
 	<remoteType>Remote</remoteType>
-	<remove>remove</remove>
+	<remove js="true">remove</remove>
 	<res>results</res>
 	<reset>Reset</reset>
 	<resetFeedbackForm>Reset the feedback form</resetFeedbackForm>

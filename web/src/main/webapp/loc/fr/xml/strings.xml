@@ -730,7 +730,7 @@
 	<registrationDetails>Information sur l'inscription :</registrationDetails>
 	<remote>Recherche distante</remote>
 	<remoteType>Distant</remoteType>
-	<remove>Supprimer</remove>
+	<remove js="true">Supprimer</remove>
 	<res>résultats</res>
 	<reset>Réinitialiser</reset>
 	<resetFeedbackForm>Réinitialiser</resetFeedbackForm>

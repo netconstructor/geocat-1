@@ -1,7 +1,7 @@
 <strings>
 	<duplicate>Dupliquer</duplicate>
-    <geocatNext>Prochain</geocatNext>
-    <geocatPrevious>Précédente</geocatPrevious>
+    <geocatNext js="true">Prochain</geocatNext>
+    <geocatPrevious js="true">Précédente</geocatPrevious>
     <nav>
         <home>Page d'accueil</home>
         <overview>Vue d'ensemble</overview>

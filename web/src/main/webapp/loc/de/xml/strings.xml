@@ -723,7 +723,7 @@
 	<registrationDetails>Eingegebene Details: </registrationDetails>
 	<remote>enfernte Suche</remote>
 	<remoteType>entfernt</remoteType>
-	<remove>entfernen</remove>
+	<remove js="true">entfernen</remove>
 	<res>Ergebnisse</res>
 	<reset>Zurücksetzen</reset>
 	<resetFeedbackForm>Feedbackformular zurücksetzen</resetFeedbackForm>
