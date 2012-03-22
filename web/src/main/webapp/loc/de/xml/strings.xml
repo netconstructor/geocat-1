@@ -633,7 +633,7 @@
 	<noHelp>Entschuldigung, keine Hilfe verfügbar</noHelp>
 	<noInfo>Entschuldigung, keine Informationen verfügbar</noInfo>
 	<noLogin>Sie sind nicht angemeldet</noLogin>
-	<none>nichts</none>
+	<none js="true">nichts</none>
 	<noOwnerRights>Privilegien/Kategorien gesperrt: Sie haben keine Besitzerrechte</noOwnerRights>
 	<northbc>nördliche Grenzkoordinate</northbc>
 	<noSelectedMd>No metadata selected! Please at least select one before select an action.</noSelectedMd>

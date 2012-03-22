@@ -645,7 +645,7 @@
 	<noHelp>Désolé, pas d'aide disponible</noHelp>
 	<noInfo>Désolé, pas d'information disponible</noInfo>
 	<noLogin>Vous n'étes pas connecté.</noLogin>
-	<none>Aucun</none>
+	<none js="true">Aucun</none>
 	<noOwnerRights>Privilèges/Catégories bloqués: vous n'avez pas ce privilège</noOwnerRights>
 	<northbc>Coordonnée nord de l'emprise</northbc>
 	<noSelectedMd>Sélectionner au moins une métadonnée avant d\'utiliser une action.</noSelectedMd>
