@@ -937,11 +937,11 @@
                             <xsl:for-each select="/root/gui/countries/country">
                                 <xsl:sort select="text()"/>
                                 <option>
-                                    <xsl:if test="@iso2=$value">
+                                    <xsl:if test="upper-case(@iso2) = upper-case($value)">
                                         <xsl:attribute name="selected" />
                                     </xsl:if>
                                     <xsl:attribute name="value">
-                                        <xsl:value-of select="@iso2" />
+                                        <xsl:value-of select="upper-case(@iso2)" />
                                     </xsl:attribute>
                                     <xsl:value-of select="text()" />
                                 </option>
@@ -950,7 +950,7 @@
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:value-of
-                            select="/root/gui/countries/country[$value=text() or $value=@iso2]/text()" />
+                            select="/root/gui/countries/country[upper-case($value)=upper-case(text()) or upper-case($value)=upper-case(@iso2)]/text()" />
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:with-param>
