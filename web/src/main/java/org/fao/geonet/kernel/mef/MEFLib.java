@@ -30,7 +30,6 @@ import jeeves.server.context.ServiceContext;
 import jeeves.utils.BinaryFile;
 import jeeves.utils.Xml;
 import jeeves.xlink.Processor;
-
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
@@ -166,7 +165,8 @@ public class MEFLib {
 
 	public static String doExport(ServiceContext context, String uuid,
 			String format, boolean skipUUID, boolean resolveXlink, boolean removeXlinkAttribute) throws Exception {
-		return MEFExporter.doExport(context, uuid, Format.parse(format), skipUUID, resolveXlink, removeXlinkAttribute);
+		return MEFExporter.doExport(context, uuid, Format.parse(format),
+				skipUUID, resolveXlink, removeXlinkAttribute);
 	}
 
 	// --------------------------------------------------------------------------
@@ -241,9 +241,9 @@ public class MEFLib {
         record.removeChildren("data");
         boolean forEditing = false;
         boolean withEditorValidationErrors = false;
-        boolean elementsHide = true;
+		boolean elementsHide = true;
         boolean allowDbmsClosing = false;
-        Element metadata = dm.getGeocatMetadata(context, id, forEditing, withEditorValidationErrors, !removeXlinkAttribute, elementsHide, allowDbmsClosing);
+        Element metadata = dm.getMetadata(context, id, forEditing, withEditorValidationErrors, !removeXlinkAttribute, elementsHide, allowDbmsClosing);
         if(resolveXlink) {
             Processor.detachXLink(metadata, context);
         }

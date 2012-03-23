@@ -65,6 +65,16 @@ import jeeves.utils.Xml;
 import org.jdom.Element;
 import org.jdom.filter.Filter;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 //=============================================================================
 
 public class ServiceManager

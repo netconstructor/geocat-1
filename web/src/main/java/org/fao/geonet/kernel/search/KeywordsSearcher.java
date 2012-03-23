@@ -29,8 +29,7 @@ import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.LocaleUtil;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
-import org.fao.geonet.util.LangUtils;
-import org.hibernate.lucene.Keyword;
+import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.jdom.Element;
 import org.openrdf.model.Value;
 import org.openrdf.sesame.config.AccessDeniedException;
@@ -235,10 +234,10 @@ public class KeywordsSearcher {
 		    }
             // Keyword to look for
             if (!sKeyword.equals("")) {
-                String lang = defaultLang;
+                String lang = IsoLanguagesMapper.getInstance().iso639_2_to_iso639_1(srvContext.getLanguage());
                 createQuery(lang, sKeyword, pTypeSearch);
             }
-            search(defaultLang, listThesauri);
+            search(IsoLanguagesMapper.getInstance().iso639_2_to_iso639_1(srvContext.getLanguage()), listThesauri);
             List<KeywordBean> resultsWithLanguage = _results;
 
             // repeat search for language = "#default"
@@ -287,11 +286,9 @@ public class KeywordsSearcher {
         int idKeyword = 0;
         HashMap<String/*Code*/, KeywordBean> bag = new HashMap<String, KeywordBean>();
 
-        for (Object aListThesauri : listThesauri) {             // Search in all Thesaurus if none selected
-            Element el = (Element) aListThesauri;
-            String sThesaurusName = el.getTextTrim();
-
-            Thesaurus thesaurus = _thesaurusManager.getThesaurusByName(sThesaurusName);
+        // Search in all Thesaurus if none selected
+        for (Element thesaurusName : listThesauri) {
+            Thesaurus thesaurus = _thesaurusManager.getThesaurusByName(thesaurusName.getTextTrim());
 
             // Perform request
             QueryResultsTable resultsTable = thesaurus.performRequest(_query);
@@ -368,7 +365,7 @@ public class KeywordsSearcher {
 		String id = Util.getParam(params, "id");
 		String sThesaurusName = Util.getParam(params, "thesaurus");
 
-        String _lang = srvContext.getLanguage();
+        String _lang = IsoLanguagesMapper.getInstance().iso639_2_to_iso639_1(srvContext.getLanguage());
 
 		searchBN(id, sThesaurusName, request, _lang);
 	}

@@ -38,7 +38,7 @@ import javax.servlet.ServletContext;
 
 public class XmlFileCacher
 {
-    private ServletContext servletContext;
+	private ServletContext servletContext;
     private String appPath;
 
     //--------------------------------------------------------------------------
@@ -53,23 +53,23 @@ public class XmlFileCacher
     /**
      * @param servletContext if non-null the config-overrides can be applied to the xml file when it is loaded
      */
-    public XmlFileCacher(File file, ServletContext servletContext, String appPath)
-    {
-        //--- 10 seconds as default interval
-        this(file, 10, servletContext, appPath);
-    }
+	public XmlFileCacher(File file, ServletContext servletContext, String appPath)
+	{
+		//--- 10 seconds as default interval
+		this(file, 10, servletContext, appPath);
+	}
 
-    //--------------------------------------------------------------------------
-    /**
-     * @param servletContext if non-null the config-overrides can be applied to the xml file when it is loaded
-     */
-    public XmlFileCacher(File file, int interval, ServletContext servletContext, String appPath)
-    {
-        this.file     = file;
-        this.interval = interval;
-        this.servletContext = servletContext;
-        this.appPath = appPath;
-    }
+	//--------------------------------------------------------------------------
+	/**
+	 * @param servletContext if non-null the config-overrides can be applied to the xml file when it is loaded
+	 */
+	public XmlFileCacher(File file, int interval, ServletContext servletContext, String appPath)
+	{
+		this.file     = file;
+		this.interval = interval;
+		this.servletContext = servletContext;
+		this.appPath = appPath;
+	}
 
     //--------------------------------------------------------------------------
     //---
@@ -117,10 +117,10 @@ public class XmlFileCacher
     /** Overriding this method makes it possible a conversion to XML on the fly
       * of files in other formats */
 
-    protected Element load() throws JDOMException, IOException
-    {
-        Element xml = Xml.loadFile(file);
-        ConfigurationOverrides.updateWithOverrides(file.getPath(), servletContext, appPath, xml);
+	protected Element load() throws JDOMException, IOException
+	{
+		Element xml = Xml.loadFile(file);
+	    ConfigurationOverrides.updateWithOverrides(file.getPath(), servletContext, appPath, xml);
         return xml;
     }
 

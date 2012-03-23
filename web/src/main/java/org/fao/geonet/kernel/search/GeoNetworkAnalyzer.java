@@ -22,7 +22,6 @@
 
 package org.fao.geonet.kernel.search;
 
-import jeeves.utils.Log;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.LowerCaseFilter;
@@ -31,15 +30,9 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.util.Version;
-import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.setting.domain.IndexLanguage;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**

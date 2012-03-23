@@ -43,6 +43,7 @@ import org.fao.geonet.lib.Lib;
 import org.fao.geonet.services.Utils;
 import org.jdom.Attribute;
 import org.jdom.Element;
+import jeeves.utils.Xml;
 
 //=============================================================================
 

@@ -27,21 +27,8 @@
 
 package org.fao.geonet.kernel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Vector;
-
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
-import jeeves.xlink.Processor;
-import jeeves.xlink.XLink;
-
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.reusable.ReusableObjManager;
@@ -55,12 +42,19 @@ import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.filter.ElementFilter;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import java.util.Vector;
 
-//=============================================================================
-
-public class EditLib
-{
-  private Hashtable<String, Integer> htVersions   = new Hashtable<String, Integer>(1000);
+/**
+ * TODO javadoc.
+ *
+ */
+public class EditLib {
+    private Hashtable<String, Integer> htVersions   = new Hashtable<String, Integer>(1000);
 	private SchemaManager scm;
 
 	//--------------------------------------------------------------------------
@@ -69,12 +63,14 @@ public class EditLib
 	//---
 	//--------------------------------------------------------------------------
 
-	/** Init structures
-	  */
-
+    /**
+     * Init structures.
+     *
+     * @param scm
+     */
 	public EditLib(SchemaManager scm) {
 		this.scm = scm;
-    htVersions.clear();
+        htVersions.clear();
 	}
 
 	//--------------------------------------------------------------------------
@@ -83,19 +79,31 @@ public class EditLib
 	//---
 	//--------------------------------------------------------------------------
 
-  //--------------------------------------------------------------------------
-	/** Expands a metadata adding all information needed for editing.
-	  */
-
-	public String getVersionForEditing(String schema, String id, Element md) throws Exception
-	{
+    /**
+     * Expands a metadata adding all information needed for editing.
+     *
+     * @param schema
+     * @param id
+     * @param md
+     * @return
+     * @throws Exception
+     */
+	public String getVersionForEditing(String schema, String id, Element md) throws Exception {
 		String version = getVersion(id, true) +"";
 	  addEditingInfo(schema,md,1,0);
 		return version;
 	}
 
-	public void addEditingInfo(String schema, Element md, int id, int parent) throws Exception
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param schema
+     * @param md
+     * @param id
+     * @param parent
+     * @throws Exception
+     */
+	public void addEditingInfo(String schema, Element md, int id, int parent) throws Exception {
 		Log.debug(Geonet.EDITOR,"MD before editing infomation:\n" + jeeves.utils.Xml.getString(md));
 		
 		Map<String, Integer> xlinks = new HashMap<String,Integer>();
@@ -104,57 +112,79 @@ public class EditLib
 		Log.debug(Geonet.EDITOR,"MD after editing infomation:\n" + jeeves.utils.Xml.getString(md));
 	}
 
-    //--------------------------------------------------------------------------
-
-	public void enumerateTree(Element md) throws Exception
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param md
+     * @throws Exception
+     */
+	public void enumerateTree(Element md) throws Exception {
         Map<String, Integer> xlinks = new HashMap<String,Integer>();
-		enumerateTree(md,1,0,xlinks, false);
+		enumerateTree(md,1,0,xlinks, flase);
 	}
 
-	//--------------------------------------------------------------------------
-
-	public void enumerateTreeStartingAt(Element md, int id, int parent) throws Exception
-	{
-	      Map<String, Integer> xlinks = new HashMap<String,Integer>();
-	      enumerateTree(md,id,parent,xlinks, false);
+    /**
+     * TODO javadoc.
+     *
+     * @param md
+     * @param id
+     * @param parent
+     * @throws Exception
+     */
+	public void enumerateTreeStartingAt(Element md, int id, int parent) throws Exception {
+        Map<String, Integer> xlinks = new HashMap<String,Integer>();
+		enumerateTree(md,id,parent,xlinks,false);
 	}
 
-	//--------------------------------------------------------------------------
-	public String getVersion(String id)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param id
+     * @return
+     */
+	public String getVersion(String id) {
 		return Integer.toString(getVersion(id, false));
 	}
 
-	//--------------------------------------------------------------------------
-
-	public String getNewVersion(String id)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param id
+     * @return
+     */
+	public String getNewVersion(String id) {
 		return Integer.toString(getVersion(id, true));
 	}
 
-	//--------------------------------------------------------------------------
-	/** Given an element, creates all mandatory sub-elements. The given element
-	  * should be empty.
-	  */
-
-	public void fillElement(String schema, Element parent, Element md) throws Exception
-	{
+    /**
+     * Given an element, creates all mandatory sub-elements. The given element should be empty.
+     * @param schema
+     * @param parent
+     * @param md
+     * @throws Exception
+     */
+	public void fillElement(String schema, Element parent, Element md) throws Exception {
 		fillElement(scm.getSchema(schema), scm.getSchemaSuggestions(schema), parent, md);
 	}
 
-	public void fillElement(String schema, String parentName, Element md) throws Exception
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param schema
+     * @param parentName
+     * @param md
+     * @throws Exception
+     */
+	public void fillElement(String schema, String parentName, Element md) throws Exception {
 		fillElement(scm.getSchema(schema), scm.getSchemaSuggestions(schema), parentName, md);
 	}
 
-	//--------------------------------------------------------------------------
-	/** Given an expanded tree, removes all info added for editing and replaces
-	  * choice_elements with their children
-	  */
-
-	public void removeEditingInfo(Element md)
-	{
+    /**
+     * Given an expanded tree, removes all info added for editing and replaces choice_elements with their children.
+     *
+     * @param md
+     */
+	public void removeEditingInfo(Element md) {
 		//--- purge geonet: attributes
 
 		List listAtts = md.getAttributes();
@@ -167,7 +197,6 @@ public class EditLib
 		}
 
 		//--- purge geonet: children
-
 		List list = md.getChildren();
 		for (int i=0; i<list.size(); i++) {
 			Element child = (Element) list.get(i);
@@ -180,14 +209,14 @@ public class EditLib
 		}
 	}
 
-	//--------------------------------------------------------------------------
-	/** Returns the element at a given reference.
-	  * @param md the metadata element expanded with editing info
-	  * @param ref the element position in a pre-order visit
-	  */
-
-	public Element findElement(Element md, String ref)
-	{
+    /**
+     * Returns the element at a given reference.
+     *
+     * @param md the metadata element expanded with editing info
+     * @param ref the element position in a pre-order visit
+     * @return
+     */
+	public Element findElement(Element md, String ref) {
 		Element elem = md.getChild(Edit.RootChild.ELEMENT, Edit.NAMESPACE);
 
 		if (elem != null && ref.equals(elem.getAttributeValue(Edit.Element.Attr.REF)))
@@ -208,24 +237,27 @@ public class EditLib
                 }
             }
         }
-
 		return null;
 	}
 
-	//--------------------------------------------------------------------------
-
-	public Element addElement(String schema, Element el, String qname) throws Exception
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param schema
+     * @param el
+     * @param qname
+     * @return
+     * @throws Exception
+     */
+	public Element addElement(String schema, Element el, String qname) throws Exception {
 		Log.debug(Geonet.EDITORADDELEMENT,"#### in addElement()"); 
-
-		Log.debug(Geonet.EDITORADDELEMENT,"#### - parent = " + el.getName()); 
+		Log.debug(Geonet.EDITORADDELEMENT,"#### - parent = " + el.getName());
 		Log.debug(Geonet.EDITORADDELEMENT,"#### - child qname = " + qname); 
 
 		String name   = getUnqualifiedName(qname);
 		String ns     = getNamespace(qname, el, scm.getSchema(schema));
 		String prefix = getPrefix(qname);
 		String parentName = getParentNameFromChild(el); 
-		
 
 		Log.debug(Geonet.EDITORADDELEMENT,"#### - parent name for type retrieval = " + parentName); 
 		Log.debug(Geonet.EDITORADDELEMENT,"#### - child name = " + name);
@@ -236,7 +268,6 @@ public class EditLib
 			Element elChildS = (Element)childS.get(0);
 			Log.debug(Geonet.EDITORADDELEMENT,"#### 	- parents first child = " + elChildS.getName());
 		}
-
 
 		Element child = new Element(name, prefix, ns);
 
@@ -255,8 +286,7 @@ public class EditLib
 
 		Vector<Element> children = new Vector<Element>();
 
-		for(int i=0; i<type.getElementCount(); i++)
-		{
+		for(int i=0; i<type.getElementCount(); i++) {
 			List<Element> list = getChildren(el, type.getElementAt(i));
 
             Log.debug(Geonet.EDITORADDELEMENT,"####   - child of type " + type.getElementAt(i) + " list size = " + list.size());
@@ -268,8 +298,8 @@ public class EditLib
 			if (qname.equals(type.getElementAt(i)))
 				children.add(child);
 		}
-		//--- remove everything and then add all collected children to the element 
-		//--- to assure a correct position for the new one
+		//--- remove everything and then add all collected children to the element to assure a correct position for the
+		// new one
 
 		el.removeContent();
         for (Element aChildren : children) {
@@ -283,7 +313,7 @@ public class EditLib
 	}
 	
     /**
-     * Add XML fragment to the metadata record in the last element 
+     * Adds XML fragment to the metadata record in the last element
      * of the type of the element in its parent.
      * 
      * @param schema The metadata schema
@@ -294,23 +324,20 @@ public class EditLib
      * @throws Exception
      * @throws IllegalStateException Fail to parse the fragment.
      */
-    public void addFragment(String schema, Element el, String qname, String fragment)
-            throws Exception {
+    public void addFragment(String schema, Element el, String qname, String fragment) throws Exception {
         
         MetadataSchema mdSchema = scm.getSchema(schema);
         String parentName = getParentNameFromChild(el);
         Element fragElt;
         
-        Log.debug(Geonet.EDITORADDELEMENT, "Add XML fragment for element name:" + qname
-                + ", parent: " + parentName);
-        
+        Log.debug(Geonet.EDITORADDELEMENT, "Add XML fragment for element name:" + qname + ", parent: " + parentName);
         
         try {
             fragElt = Xml.loadString(fragment, false);
-        } catch (JDOMException e) {
+        }
+        catch (JDOMException e) {
             Log.error("EditLib : Error parsing XML fragment, ", e.toString());
-            throw new IllegalStateException("EditLib : Error when loading XML fragment, "
-                    + e.getMessage());
+            throw new IllegalStateException("EditLib : Error when loading XML fragment, " + e.getMessage());
         }
         
         String typeName = mdSchema.getElementType(el.getQualifiedName(), parentName);
@@ -342,8 +369,14 @@ public class EditLib
 	//---
 	//--------------------------------------------------------------------------
 
-	private List<Element> getChildren(Element el, String qname)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param el
+     * @param qname
+     * @return
+     */
+	private List<Element> getChildren(Element el, String qname) {
 		Vector<Element> result = new Vector<Element>();
 
 		List children = el.getChildren();
@@ -358,13 +391,14 @@ public class EditLib
 		return result;
 	}
 
-	//--------------------------------------------------------------------------
-
-	/** Returns the version of a metadata, incrementing it if necessary
-	  */
-
-	private synchronized int getVersion(String id, boolean increment)
-	{
+    /**
+     * Returns the version of a metadata, incrementing it if necessary.
+     *
+     * @param id
+     * @param increment
+     * @return
+     */
+	private synchronized int getVersion(String id, boolean increment) {
 		Integer inVer = htVersions.get(id);
 
 		if (inVer == null)
@@ -378,17 +412,31 @@ public class EditLib
 		return inVer;
 	}
 
-	//--------------------------------------------------------------------------
-
-	private void fillElement(MetadataSchema schema, SchemaSuggestions sugg, Element parent, Element md) throws Exception
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param schema
+     * @param sugg
+     * @param parent
+     * @param md
+     * @throws Exception
+     */
+	private void fillElement(MetadataSchema schema, SchemaSuggestions sugg, Element parent, Element md) throws Exception {
 		Log.debug(Geonet.EDITOR,"#### entering fillElement()"); 
 		String parentName = parent.getQualifiedName();
 		fillElement(schema,sugg,parentName,md);
 	}
 
-	private void fillElement(MetadataSchema schema, SchemaSuggestions sugg, String parentName, Element md) throws Exception
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param schema
+     * @param sugg
+     * @param parentName
+     * @param md
+     * @throws Exception
+     */
+	private void fillElement(MetadataSchema schema, SchemaSuggestions sugg, String parentName, Element md) throws Exception {
 		Log.debug(Geonet.EDITOR,"#### entering fillElement()"); 
 		String elemName = md.getQualifiedName();
 		
@@ -496,10 +544,16 @@ public class EditLib
 	//--- Tree expansion methods
 	//---
 	//--------------------------------------------------------------------------
-	
-	/** searches children of container elements for containers
-	  */
 
+    /**
+     * Searches children of container elements for containers.
+     *
+     * @param chName
+     * @param md
+     * @param schema
+     * @return
+     * @throws Exception
+     */
 	public List<Element> searchChildren(String chName, Element md, String schema) throws Exception	{
 
 		// FIXME? CHOICE_ELEMENT containers can only have one element in them
@@ -544,10 +598,14 @@ public class EditLib
 		return holder;
 	}
 
-	/** Given an unexpanded tree, creates container elements and their children 
-	  */
-	public void expandElements(String schema, Element md) throws Exception
-	{
+    /**
+     * Given an unexpanded tree, creates container elements and their children.
+     *
+     * @param schema
+     * @param md
+     * @throws Exception
+     */
+	public void expandElements(String schema, Element md) throws Exception {
 
 		//--- create containers and fill them with elements using a depth first 
 		//--- search 
@@ -585,13 +643,13 @@ public class EditLib
 			md.removeContent();
 			md.addContent(holder);
 		}
-
 	}
 
-	//--------------------------------------------------------------------------
-	/** For each container element - descend and collect children
-	  */
-
+    /**
+     * For each container element - descend and collect children.
+     * @param md
+     * @return
+     */
 	private Vector<Object> getContainerChildren(Element md) {
 		Vector<Object> result = new Vector<Object>();
 
@@ -612,11 +670,12 @@ public class EditLib
 		return result;
 	}
 
-	//--------------------------------------------------------------------------
-	/** Contract container elements
-	  */
-	public void contractElements(Element md)
-	{
+    /**
+     * Contracts container elements.
+     *
+     * @param md
+     */
+	public void contractElements(Element md) {
 		//--- contract container children at each level in the XML tree
 		
 		Vector<Object> children = new Vector<Object>();
@@ -655,13 +714,17 @@ public class EditLib
         }
 	}
 
-	//--------------------------------------------------------------------------
-	/** Does a pre-order visit enumerating each node
-	 * @param parentInDisabledXLinkElem if node's parent is within an xlink that is for some reason disabled, forexample is the second element in the document
-	  */
-	private int enumerateTree(Element md, int originalRef, int parent, Map<String,Integer> xlinks, boolean parentInDisabledXLinkElem) throws Exception
-	{
-	    int ref = originalRef;
+    /**
+     * Does a pre-order visit enumerating each node.
+     *
+     * @param md
+     * @param ref
+     * @param parent
+     * @return
+     * @throws Exception
+     */
+	private int enumerateTree(Element md, int ref, int parent, Map<String,Integer> xlinks, boolean parentInDisabledXLinkElem)) throws Exception {
+
 		int thisRef = ref;
 		int thisParent = ref;
 		boolean inDisabledXlinkElem = parentInDisabledXLinkElem;
@@ -695,11 +758,13 @@ public class EditLib
 	    return ref;
 	}
 
-	//--------------------------------------------------------------------------
-	/** Finds the ref element with the maximum ref value and returns it
-	  */
-	public int findMaximumRef(Element md)
-	{
+    /**
+     * Finds the ref element with the maximum ref value and returns it.
+     *
+     * @param md
+     * @return
+     */
+	public int findMaximumRef(Element md) {
 		int iRef = 0;
 		Iterator mdIt = md.getDescendants(new ElementFilter("element"));
 		while (mdIt.hasNext()) {
@@ -710,16 +775,17 @@ public class EditLib
 				if (i > iRef) iRef = i; 	
 			}
 		}
-
 		return iRef;
 	}
 
-    //--------------------------------------------------------------------------
-	/** Given a metadata, does a recursive scan adding information for editing
-	  */
-
-	public void expandTree(MetadataSchema schema, Element md) throws Exception
-	{
+    /**
+     * Given a metadata, does a recursive scan adding information for editing.
+     *
+     * @param schema
+     * @param md
+     * @throws Exception
+     */
+	public void expandTree(MetadataSchema schema, Element md) throws Exception {
 		expandElement(schema, md);
 
 		List list = md.getChildren();
@@ -733,8 +799,12 @@ public class EditLib
         }
 	}
 
-	//--------------------------------------------------------------------------
-
+    /**
+     * TODO javadoc.
+     *
+     * @param child
+     * @return
+     */
 	private String getParentNameFromChild(Element child) {
         String parentName = "root";
 		Element parent = child.getParentElement();
@@ -744,12 +814,14 @@ public class EditLib
 		return parentName;
 	}
 
-	//--------------------------------------------------------------------------
-	/** Adds editing information to a single element
-	  */
-
-	public void expandElement(MetadataSchema schema, Element md) throws Exception
-	{
+    /**
+     * Adds editing information to a single element.
+     *
+     * @param schema
+     * @param md
+     * @throws Exception
+     */
+	public void expandElement(MetadataSchema schema, Element md) throws Exception {
 		Log.debug(Geonet.EDITOREXPANDELEMENT,"entering expandElement()"); 
 
 		String elemName = md.getQualifiedName();
@@ -831,28 +903,39 @@ public class EditLib
 		addAttribs(type, md, schema);
 	}
 
-	//--------------------------------------------------------------------------
-
-	public String getUnqualifiedName(String qname)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param qname
+     * @return
+     */
+	public String getUnqualifiedName(String qname) {
 		int pos = qname.indexOf(':');
 		if (pos < 0) return qname;
 		else         return qname.substring(pos + 1);
 	}
 
-	//--------------------------------------------------------------------------
-
-	public String getPrefix(String qname)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param qname
+     * @return
+     */
+	public String getPrefix(String qname) {
 		int pos = qname.indexOf(':');
 		if (pos < 0) return "";
 		else         return qname.substring(0, pos);
 	}
 
-	//--------------------------------------------------------------------------
-
-	public String getNamespace(String qname, Element md, MetadataSchema schema)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param qname
+     * @param md
+     * @param schema
+     * @return
+     */
+	public String getNamespace(String qname, Element md, MetadataSchema schema) {
 		// check the element first to see whether the namespace is
 		// declared locally
 		String result = checkNamespaces(qname,md);
@@ -876,8 +959,14 @@ public class EditLib
 		return result;
 	}
 
-	public String getNamespace(String qname, MetadataSchema schema)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param qname
+     * @param schema
+     * @return
+     */
+	public String getNamespace(String qname, MetadataSchema schema) {
 		// check the list of namespaces we collected as we parsed the schema
 		String result;
 		String prefix = getPrefix(qname);
@@ -887,10 +976,15 @@ public class EditLib
 		} else result="UNKNOWN";
 		return result;
 	}
-	//--------------------------------------------------------------------------
 
-	public String checkNamespaces(String qname, Element md)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param qname
+     * @param md
+     * @return
+     */
+	public String checkNamespaces(String qname, Element md) {
 		// get prefix
 		String prefix = getPrefix(qname);
 
@@ -906,10 +1000,13 @@ public class EditLib
 		return "UNKNOWN";
 	}
 
-	//--------------------------------------------------------------------------
-
-	private void insertFirst(Element md, Element child)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param md
+     * @param child
+     */
+	private void insertFirst(Element md, Element child) {
 		Vector<Element> v = new Vector<Element>();
 		v.add(child);
 
@@ -928,10 +1025,15 @@ public class EditLib
         }
 	}
 
-	//--------------------------------------------------------------------------
-
-	private void insertLast(Element md, String childName, String childNS, Element child)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param md
+     * @param childName
+     * @param childNS
+     * @param child
+     */
+	private void insertLast(Element md, String childName, String childNS, Element child) {
 		boolean added = false;
 
 		List list = md.getChildren();
@@ -971,12 +1073,16 @@ public class EditLib
         }
 	}
 
-	//--------------------------------------------------------------------------
-
-	private boolean equal(String childName, String childNS, Element el)
-	{
-		if (Edit.NS_URI.equals(el.getNamespaceURI()))
-		{
+    /**
+     * TODO javadoc.
+     *
+     * @param childName
+     * @param childNS
+     * @param el
+     * @return
+     */
+	private boolean equal(String childName, String childNS, Element el) {
+		if (Edit.NS_URI.equals(el.getNamespaceURI())) {
             return Edit.RootChild.CHILD.equals(el.getName())
                     && childName.equals(el.getAttributeValue(Edit.ChildElem.Attr.NAME))
                     && childNS.equals(el.getAttributeValue(Edit.ChildElem.Attr.NAMESPACE));
@@ -985,17 +1091,19 @@ public class EditLib
 			return childName.equals(el.getName()) && childNS.equals(el.getNamespaceURI());
 	}
 
-	//--------------------------------------------------------------------------
-
-	private boolean equal(Element el1, Element el2)
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param el1
+     * @param el2
+     * @return
+     */
+	private boolean equal(Element el1, Element el2) {
 		String elemNS1 = el1.getNamespaceURI();
 		String elemNS2 = el2.getNamespaceURI();
 
-		if (Edit.NS_URI.equals(elemNS1))
-		{
-			if (Edit.NS_URI.equals(elemNS2))
-			{
+		if (Edit.NS_URI.equals(elemNS1)) {
+			if (Edit.NS_URI.equals(elemNS2)) {
 				//--- both are geonet:child elements
 
 				if (!Edit.RootChild.CHILD.equals(el1.getName()))
@@ -1012,8 +1120,7 @@ public class EditLib
 
 				return name1.equals(name2) && ns1.equals(ns2);
 			}
-			else
-			{
+			else {
 				//--- el1 is a geonet:child, el2 is not
 
 				if (!Edit.RootChild.CHILD.equals(el1.getName()))
@@ -1025,10 +1132,8 @@ public class EditLib
 				return el2.getName().equals(name1) && el2.getNamespaceURI().equals(ns1);
 			}
 		}
-		else
-		{
-			if (Edit.NS_URI.equals(elemNS2))
-			{
+		else {
+			if (Edit.NS_URI.equals(elemNS2)) {
 				//--- el2 is a geonet:child, el1 is not
 
 				if (!Edit.RootChild.CHILD.equals(el2.getName()))
@@ -1039,18 +1144,21 @@ public class EditLib
 
 				return el1.getName().equals(name2) && el1.getNamespaceURI().equals(ns2);
 			}
-			else
-			{
+			else {
 				//--- both not geonet:child elements
-
 				return el1.getName().equals(el2.getName()) && el1.getNamespaceURI().equals(el2.getNamespaceURI());
 			}
 		}
 	}
 
-	//--------------------------------------------------------------------------
-	/** Return MetadataType associated with an element
-	  */
+    /**
+     * Returns MetadataType associated with an element.
+     *
+     * @param mds
+     * @param elem
+     * @return
+     * @throws Exception
+     */
 	public MetadataType getType(MetadataSchema mds, Element elem) throws Exception {
 
 		String elemName = elem.getQualifiedName();
@@ -1058,13 +1166,16 @@ public class EditLib
 
 		String elemType = mds.getElementType(elemName,parentName);
 		return mds.getTypeInfo(elemType);
-
 	}
 
-	//--------------------------------------------------------------------------
-	/** Create a new element for editing - used by Ajax new element addition
-	  */
-
+    /**
+     * Creates a new element for editing - used by Ajax new element addition.
+     * @param schema
+     * @param child
+     * @param parent
+     * @return
+     * @throws Exception
+     */
 	public Element createElement(String schema, Element child, Element parent) throws Exception {
 
 		String childQName = child.getQualifiedName();
@@ -1083,9 +1194,18 @@ public class EditLib
 		return createElement(mds,parent.getQualifiedName(),child.getQualifiedName(), child.getNamespaceURI(), min, max);
 	}
 
-	//--------------------------------------------------------------------------
-	/** Create a new element for editing, adding all mandatory subtags
-	  */
+    /**
+     * Creates a new element for editing, adding all mandatory subtags.
+     *
+     * @param schema
+     * @param parent
+     * @param qname
+     * @param childNS
+     * @param min
+     * @param max
+     * @return
+     * @throws Exception
+     */
 	private Element createElement(MetadataSchema schema, String parent, String qname, String childNS, int min, int max) throws Exception {
 
 		Element child = new Element(Edit.RootChild.CHILD, Edit.NAMESPACE);
@@ -1125,7 +1245,7 @@ public class EditLib
 					for(int l=0; l<type.getElementCount(); l++) {
 						String chElem = type.getElementAt(l);
 						if (chElem.contains(Edit.RootChild.CHOICE)) {
-							ArrayList<String> chElems = recurseOnNestedChoices(schema,chElem,parent);
+							List<String> chElems = recurseOnNestedChoices(schema,chElem,parent);
 
                             for (String chElem1 : chElems) {
                                 chElem = chElem1;
@@ -1154,14 +1274,23 @@ public class EditLib
 		return child;
 	}
 
-	private ArrayList<String> recurseOnNestedChoices(MetadataSchema schema,String chElem,String parent) throws Exception {
-		ArrayList<String> chElems = new ArrayList<String>();
+    /**
+     * TODO javadoc.
+     *
+     * @param schema
+     * @param chElem
+     * @param parent
+     * @return
+     * @throws Exception
+     */
+	private List<String> recurseOnNestedChoices(MetadataSchema schema,String chElem,String parent) throws Exception {
+		List<String> chElems = new ArrayList<String>();
 		String elemType = schema.getElementType(chElem,parent);
 		MetadataType type = schema.getTypeInfo(elemType);
 		for(int l=0; l<type.getElementCount(); l++) {
 			String subChElem = type.getElementAt(l);
 			if (subChElem.contains(Edit.RootChild.CHOICE)) {
-				ArrayList<String> subChElems = recurseOnNestedChoices(schema,subChElem,chElem);
+				List<String> subChElems = recurseOnNestedChoices(schema,subChElem,chElem);
 				chElems.addAll(subChElems);
 			}
 			else { chElems.add(subChElem); }
@@ -1169,16 +1298,28 @@ public class EditLib
 		return chElems;
 	}
 
+    /**
+     * TODO javadoc.
+     *
+     * @param child
+     * @param chType
+     */
 	private void createAndAddChoose(Element child,String chType) {
 		Element choose = new Element(Edit.ChildElem.Child.CHOOSE, Edit.NAMESPACE);
 		choose.setAttribute(new Attribute(Edit.Choose.Attr.NAME, chType));
 		child.addContent(choose);
 	}
 
-	//--------------------------------------------------------------------------
-
-	private void addValues(MetadataSchema schema, Element elem, String name, String parent) throws Exception
-	{
+    /**
+     * TODO javadoc.
+     *
+     * @param schema
+     * @param elem
+     * @param name
+     * @param parent
+     * @throws Exception
+     */
+	private void addValues(MetadataSchema schema, Element elem, String name, String parent) throws Exception {
 		List values = schema.getElementValues(name,parent);
 		if (values != null)
             for (Object value : values) {
@@ -1189,12 +1330,15 @@ public class EditLib
             }
 	}
 
-	//--------------------------------------------------------------------------
-
-	private void addAttribs(MetadataType type, Element md, MetadataSchema schema)
-	{
-		for(int i=0; i<type.getAttributeCount(); i++)
-		{
+    /**
+     * TODO javadoc.
+     *
+     * @param type
+     * @param md
+     * @param schema
+     */
+	private void addAttribs(MetadataType type, Element md, MetadataSchema schema) {
+		for(int i=0; i<type.getAttributeCount(); i++) {
 			MetadataAttribute attr = type.getAttributeAt(i);
 
 			Element attribute = new Element(Edit.RootChild.ATTRIBUTE, Edit.NAMESPACE);
@@ -1202,16 +1346,14 @@ public class EditLib
 			attribute.setAttribute(new Attribute(Edit.Attribute.Attr.NAME, attr.name));
 			//--- add default value (if any)
 
-			if (attr.defValue != null)
-			{
+			if (attr.defValue != null) {
 				Element def = new Element(Edit.Attribute.Child.DEFAULT, Edit.NAMESPACE);
 				def.setAttribute(Edit.Attribute.Attr.VALUE, attr.defValue);
 
 				attribute.addContent(def);
 			}
 
-			for(int j=0; j<attr.values.size(); j++)
-			{
+			for(int j=0; j<attr.values.size(); j++) {
 				Element text = new Element(Edit.Attribute.Child.TEXT, Edit.NAMESPACE);
 				text.setAttribute(Edit.Attribute.Attr.VALUE, (String) attr.values.get(j));
 
@@ -1246,123 +1388,4 @@ public class EditLib
 		}
 	}
 
-	public String addEditingInfo(String schema, String id, Element md) throws Exception {
-		String version = getVersion(id, true) +"";
-
-		//TODO : porting back the code from previous geocat
-		// some functions (this one, and enumerateTree / getSchema) seem to
-		// have their equivalent in this version of geonetwork. I took a "lazy approach"
-		// and there may be a better reuse to do of the existing code.
-
-		// (entry point of the current modification is here : DataManager.java:2890)
-		
-		enumerateTree(md, 1);
-		expandTree(getSchema(schema), md);
-
-		return version;
-	}
-	private int enumerateTree(Element md, int ref)
-	{
-		Element elem = new Element(Edit.RootChild.ELEMENT, Edit.NAMESPACE);
-		elem.setAttribute(new Attribute(Edit.Element.Attr.REF, ref +""));
-
-		List list = md.getChildren();
-
-		for(int i=0; i<list.size(); i++)
-			ref = enumerateTree((Element) list.get(i), ref +1);
-
-		md.addContent(elem);
-
-		return ref;
-	}
-	public MetadataSchema getSchema(String name)
-	{
-		MetadataSchema schema = (MetadataSchema) scm.getSchema(name);
-
-		if (schema == null)
-			throw new IllegalArgumentException("Schema not registered : " + name);
-
-		return schema;
-	}
-
-
-    //--------------------------------------------------------------------------
-
-    /**
-     * Get the XPath expression for identified Element.
-     *
-     * @param md metadata element
-     * @param ref id of the target Element
-     * @return XPath expression String or null (error)
-     */
-    public String getXPathExpr(Element md, String ref)
-    {
-        // TODO: optimize, this is simple but inefficient
-        String xPath = null;
-
-        try {
-            Element origElm = Xml.selectElement(md, "*//*[@ref='" + ref + "']");
-            Element parent = origElm.getParentElement();
-
-            if (parent == null) {
-                // What should we do (means entire doc to be hidden)
-                return "//";
-            }
-
-            String name = parent.getName();
-            String namespace = parent.getNamespace().getPrefix();
-
-            int index = 1;
-
-            // Base expression using "AbbreviatedAbsoluteLocationPath"
-            // (See XSLT 2nd ed. wrox p353)
-            // We now mainly need to figure out the number (index) of
-            // the target element within all descendants.
-            // We could select all nodes with only this expression and
-            // then figure out the index but somehow the order may not be
-            // guaranteed in all XPath implementations, see
-            // http://bytes.com/groups/net-xml/500575-xmlnode-selectnodes-order-nodes
-            String xPathBase = "descendant::" + namespace + ":" + name;
-            while (true)
-            {
-                xPath = xPathBase + "[" + index + "]";
-                String xPathRef = xPath + "/*[@ref]";
-
-                // Test the expression by getting the element using the ref
-                // And comparing with the original
-                List<Namespace> namespaces = Arrays.asList(new Namespace[]{parent.getNamespace()});
-                List<?> foundElms = Xml.selectNodes(md, xPathRef, namespaces);
-                if (foundElms.size() == 0) {
-                    // System.out.println("no elements found for xPathRef=" + xPathRef + " el=" + el.getName());
-                    xPath = null;
-                    break;
-                }
-
-                // Found at least one element
-
-                // Compare found element to original
-                if (foundElms.get(0).equals(origElm)) {
-                    // System.out.println("Found xPath=" + xPath + " el=" + el.getName());
-                    // Found it!!
-                    break;
-                }
-
-                // Not found: try next
-                index++;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            xPath = null;
-        }
-        finally {
-            md.detach();
-        }
-
-        return xPath;
-    }
-
-
 }
-
-//=============================================================================
-

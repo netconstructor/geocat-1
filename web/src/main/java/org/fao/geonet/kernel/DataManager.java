@@ -61,15 +61,15 @@ import jeeves.utils.Util;
 import jeeves.utils.Xml;
 import jeeves.utils.Xml.ErrorHandler;
 import jeeves.xlink.Processor;
-
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
-import org.fao.geonet.exceptions.SchematronValidationErrorEx;
-import org.fao.geonet.exceptions.SchemaMatchConflictException;
 import org.fao.geonet.exceptions.NoSchemaMatchesException;
+import org.fao.geonet.exceptions.SchemaMatchConflictException;
+import org.fao.geonet.exceptions.SchematronValidationErrorEx;
 import org.fao.geonet.kernel.csw.domain.CswCapabilitiesInfo;
 import org.fao.geonet.kernel.csw.domain.CustomElementSet;
 import org.fao.geonet.kernel.harvest.HarvestManager;
@@ -94,7 +94,17 @@ import org.jdom.filter.ElementFilter;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -134,13 +144,12 @@ public class DataManager {
      * @param extentMan
      * @param thesMan
      * @param baseURL
-     * @param htmlCacheDir
      * @param dataDir
      * @param thesaurusDir TODO
      * @param appPath
      * @throws Exception
      */
-	public DataManager(final Element params, ServiceContext context, SvnManager svnManager, XmlSerializer xmlSerializer, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, String baseURL, String htmlCacheDir, String dataDir, String thesaurusDir, ThesaurusManager thesaurusMan, ReusableObjManager reusableObjMan, ExtentManager extentMan, String appPath) throws Exception {
+	public DataManager(ServiceContext context, SvnManager svnManager, XmlSerializer xmlSerializer, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, String baseURL, String dataDir, String thesaurusDir, ThesaurusManager thesaurusMan, ReusableObjManager reusableObjMan, ExtentManager extentMan, String appPath) throws Exception {
 		searchMan = sm;
 		accessMan = am;
 		settingMan= ss;
@@ -329,6 +338,7 @@ public class DataManager {
     public void indexInThreadPool(ServiceContext context, List<String> ids, Dbms dbms, boolean processSharedObjects, boolean performValidation) throws SQLException {
 
         if(dbms != null) dbms.commit();
+
         try {
             GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 
@@ -3042,7 +3052,7 @@ public class DataManager {
 
 		// add operations
 		Element operations = accessMan.getAllOperations(context, id, context.getIpAddress());
-		HashSet<String> hsOper = accessMan.getOperations(context, id, context.getIpAddress(), operations);
+		Set<String> hsOper = accessMan.getOperations(context, id, context.getIpAddress(), operations);
 
 		addElement(info, Edit.Info.Elem.VIEW,     			String.valueOf(hsOper.contains(AccessManager.OPER_VIEW)));
 		addElement(info, Edit.Info.Elem.NOTIFY,   			String.valueOf(hsOper.contains(AccessManager.OPER_NOTIFY)));
@@ -3134,6 +3144,32 @@ public class DataManager {
 		addElement(info, Edit.Info.Elem.LOCSERV, "/srv/en" );
 		return info;
 	}
+
+    /**
+     * Returns a mapping from ISO 639-1 codes to ISO 639-2 codes.
+     *
+     * @param context here, there, and everywhere
+     * @param iso639_1_set 639-1 codes to be mapped
+     * @return mapping
+     * @throws Exception hmm
+     */
+    public Map<String, String> iso639_1_to_iso639_2(ServiceContext context, Set<String> iso639_1_set) throws Exception {
+        Map<String, String> result = new HashMap<String, String>();
+        if(CollectionUtils.isNotEmpty(iso639_1_set)) {
+            Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
+            String query = "SELECT code, shortcode FROM IsoLanguages WHERE ";
+            for(String iso639_1 : iso639_1_set) {
+                query += "shortcode = ? OR ";
+            }
+            query = query.substring(0, query.lastIndexOf("OR"));
+            @SuppressWarnings(value = "unchecked")
+            List<Element> records = dbms.select(query, iso639_1_set.toArray()).getChildren();
+            for(Element record : records) {
+                result.put(record.getChildText("shortcode"), record.getChildText("code"));
+            }
+        }
+        return result;       
+    }
 
 	/**
 	 * Add extra information about the metadata record

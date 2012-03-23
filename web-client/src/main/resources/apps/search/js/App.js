@@ -113,11 +113,11 @@ GeoNetwork.app = function(){
                 triggerAction: 'all',
                 width: 80,
                 store: new Ext.data.ArrayStore({
-                    idIndex: 0,
-                    fields: ['id', 'name'],
+                    idIndex: 2,
+                    fields: ['id', 'name', 'id2'],
                     data: GeoNetwork.Util.locales
                 }),
-                valueField: 'id',
+                valueField: 'id2',
                 displayField: 'name',
                 value: lang,
                 listeners: {
@@ -286,10 +286,19 @@ GeoNetwork.app = function(){
         var denominatorField = GeoNetwork.util.SearchFormTools.getScaleDenominatorField(true);
         var statusField = GeoNetwork.util.SearchFormTools.getStatusField(services.getStatus, true);
         
+        // Add hidden fields to be use by quick metadata links from the admin panel (eg. my metadata).
+        var ownerField = new Ext.form.TextField({
+            name: 'E__owner',
+            hidden: true
+        });
+        var isHarvestedField = new Ext.form.TextField({
+            name: 'E__isHarvested',
+            hidden: true
+        });
         advancedCriteria.push(themekeyField, orgNameField, categoryField, 
                                 when, spatialTypes, denominatorField, 
                                 catalogueField, groupField, 
-                                metadataTypeField, validField, statusField);
+                                metadataTypeField, validField, statusField, ownerField, isHarvestedField);
         var adv = {
             xtype: 'fieldset',
             title: OpenLayers.i18n('advancedSearchOptions'),
@@ -491,8 +500,8 @@ GeoNetwork.app = function(){
             createMainTagCloud();
             createLatestUpdate();
         } else {
-            Ext.get('infoPanel').getUpdater().update({url:'home_en.html'});
-            Ext.get('helpPanel').getUpdater().update({url:'help_en.html'});
+            Ext.get('infoPanel').getUpdater().update({url:'home_eng.html'});
+            Ext.get('helpPanel').getUpdater().update({url:'help_eng.html'});
         }
     }
     /** private: methode[createInfoPanel]
@@ -652,7 +661,7 @@ GeoNetwork.app = function(){
             geonetworkUrl = GeoNetwork.URL || window.location.href.match(/(http.*\/.*)\/apps\/search.*/, '')[1];
 
             urlParameters = GeoNetwork.Util.getParameters(location.href);
-            var lang = GeoNetwork.Util.getCatalogueLang(urlParameters.hl || GeoNetwork.defaultLocale);
+            var lang = urlParameters.hl || GeoNetwork.Util.defaultLocale;
             if (urlParameters.extent) {
                 urlParameters.bounds = new OpenLayers.Bounds(urlParameters.extent[0], urlParameters.extent[1], urlParameters.extent[2], urlParameters.extent[3]);
             }
@@ -894,7 +903,7 @@ GeoNetwork.app = function(){
 };
 
 Ext.onReady(function(){
-    var lang = /hl=([a-z]{2})/.exec(location.href);
+    var lang = /hl=([a-z]{3})/.exec(location.href);
     GeoNetwork.Util.setLang(lang && lang[1], '..');
 
     Ext.QuickTips.init();

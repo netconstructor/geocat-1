@@ -32,7 +32,7 @@ import org.fao.geonet.kernel.harvest.harvester.AbstractHarvester;
 import org.fao.geonet.kernel.harvest.harvester.AbstractParams;
 import org.fao.geonet.kernel.harvest.harvester.ErrorTracker;
 import org.fao.geonet.lib.Lib;
-import org.fao.geonet.logos.Logos;
+import org.fao.geonet.resources.Resources;
 import org.jdom.Element;
 
 import javax.servlet.ServletContext;
@@ -74,7 +74,7 @@ public class WebDavHarvester extends AbstractHarvester {
 	//---
 	//---------------------------------------------------------------------------
 	protected void doDestroy(Dbms dbms) throws SQLException {
-        File icon = new File(Logos.locateLogosDir(context), params.uuid +".gif");
+        File icon = new File(Resources.locateLogosDir(context), params.uuid +".gif");
 
 		icon.delete();
 		Lib.sources.delete(dbms, params.uuid);
@@ -94,7 +94,7 @@ public class WebDavHarvester extends AbstractHarvester {
 		String id = settingMan.add(dbms, "harvesting", "node", getType());
 		storeNode(dbms, params, "id:"+id);
 		Lib.sources.update(dbms, params.uuid, params.name, true);
-		Logos.copyLogo(context, "harvesting/"+ params.icon, params.uuid);
+		Resources.copyLogo(context, "harvesting/"+ params.icon, params.uuid);
 		return id;
 	}
 
@@ -114,7 +114,7 @@ public class WebDavHarvester extends AbstractHarvester {
 		//--- we update a copy first because if there is an exception CswParams
 		//--- could be half updated and so it could be in an inconsistent state
 		Lib.sources.update(dbms, copy.uuid, copy.name, true);
-		Logos.copyLogo(context, "harvesting/"+ copy.icon, copy.uuid);
+		Resources.copyLogo(context, "harvesting/"+ copy.icon, copy.uuid);
 		params = copy;
 	}
 

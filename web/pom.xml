@@ -29,6 +29,14 @@
 
   <!-- FIXME set common dependencies to the root pom.xml  -->
   <dependencies>
+
+      <!-- rewrite url servletfilter -->
+      <dependency>
+          <groupId>org.tuckey</groupId>
+          <artifactId>urlrewritefilter</artifactId>
+          <version>3.2.0</version>
+      </dependency>
+
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -548,7 +556,6 @@
             <aggregation>
               <output>${geonetwork.webapp.dir}/scripts/lib/gn.search.js</output>
               <includes>
-                <!--include>${geonetwork.build.dir}/scripts/gn_intermap.js</include-->
                 <include>${geonetwork.build.dir}/scripts/gn_search.js</include>
               </includes>
             </aggregation>
@@ -834,7 +841,7 @@
           </overlays>
           <packagingExcludes>WEB-INF/metadata_subversion/**,WEB-INF/data/**</packagingExcludes>
 <!--          <warSourceDirectory>src/main/geonetwork</warSourceDirectory> -->
-          
+          <webXml>${build.webapp.resources}/WEB-INF/web.xml</webXml>
           <attachClasses>true</attachClasses>
           <warName>geonetwork</warName>
           <webappDirectory>${project.build.directory}/geonetwork</webappDirectory>
@@ -852,7 +859,7 @@
             </connector>
           </connectors>
           <webApp>${project.build.directory}/geonetwork</webApp>
-<!--          <webXml>${build.webapp.resources}/WEB-INF/web.xml</webXml> -->
+          <webXml>${build.webapp.resources}/WEB-INF/web.xml</webXml>
 <!--      <webAppSourceDirectory>${build.webapp.resources}</webAppSourceDirectory> -->
           <webAppConfig>
             <contextPath>/geonetwork</contextPath>
@@ -913,6 +920,13 @@
       <properties>
         <webXmlWidgetConfigOverrides>/WEB-INF/config-overrides-widget.xml</webXmlWidgetConfigOverrides>
         <widgetsWebappResources>,../web-client/src/main/resources/</widgetsWebappResources>
+      </properties>
+    </profile>
+    <profile>
+      <id>widgets-tab</id>
+      <properties>
+          <web.xml.widget.config.overrides>/WEB-INF/config-overrides-widgettab.xml</web.xml.widget.config.overrides>
+          <widgets.webapp.resources>,../web-client/src/main/resources/</widgets.webapp.resources>
       </properties>
     </profile>
   </profiles>

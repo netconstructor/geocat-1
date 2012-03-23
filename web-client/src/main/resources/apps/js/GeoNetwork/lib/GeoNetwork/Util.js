@@ -25,7 +25,7 @@ Ext.namespace('GeoNetwork');
 GeoNetwork.Lang = {};
 
 GeoNetwork.Util = {
-    defaultLocale: 'en',
+    defaultLocale: 'eng',
     /**
      * Supported GeoNetwork GUI languages
      */
@@ -48,25 +48,20 @@ GeoNetwork.Util = {
      */
     setLang: function(lang, baseUrl){
         lang = lang || GeoNetwork.Util.defaultLocale;
-        OpenLayers.Lang.setCode(lang);
+        // translate to ISO2 language code
+        var openlayerLang = this.getISO2LangCode(lang);
+
+        OpenLayers.Lang.setCode(openlayerLang);
         var s = document.createElement("script");
         s.type = 'text/javascript';
-        s.src = baseUrl + "/js/ext/src/locale/ext-lang-" + lang + ".js";
+        s.src = baseUrl + "/js/ext/src/locale/ext-lang-" + openlayerLang + ".js";
         document.getElementsByTagName("head")[0].appendChild(s);
     },
     /**
      * Return a valid language code if translation is available.
+     * Catalogue use ISO639-2 code.
      */
     getCatalogueLang: function(lang){
-        var i;
-        for (i = 0; i < GeoNetwork.Util.locales.length; i++) {
-            if (GeoNetwork.Util.locales[i][0] === lang) {
-                return GeoNetwork.Util.locales[i][0];
-            }
-        }
-        return GeoNetwork.Util.defaultLocale;
-    },
-    getISO3LangCode: function(lang){
         var i;
         for (i = 0; i < GeoNetwork.Util.locales.length; i++) {
             if (GeoNetwork.Util.locales[i][0] === lang) {
@@ -74,6 +69,19 @@ GeoNetwork.Util = {
             }
         }
         return 'eng';
+    },
+    /**
+     * Return ISO2 language code (Used by OpenLayers lang and before GeoNetwork 2.7.0)
+     * for corresponding ISO639-2 language code.
+     */
+    getISO2LangCode: function(lang){
+        var i;
+        for (i = 0; i < GeoNetwork.Util.locales.length; i++) {
+            if (GeoNetwork.Util.locales[i][2] === lang) {
+                return GeoNetwork.Util.locales[i][0];
+            }
+        }
+        return 'en';
     },
     getParameters: function(url){
         var parameters = OpenLayers.Util.getParameters(url);

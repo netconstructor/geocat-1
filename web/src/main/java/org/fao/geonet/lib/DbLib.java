@@ -58,7 +58,7 @@ public class DbLib {
 
 	// -----------------------------------------------------------------------------
 
-	public Element select(Dbms dbms, String table, String name, String where)
+	private Element select(Dbms dbms, String table, String name, String where)
 			throws SQLException {
 		String query = "SELECT * FROM " + table;
 
@@ -323,11 +323,11 @@ public class DbLib {
 	
 	private List<String> loadSqlDataFile(ServletContext servletContext, Dbms dbms, String appPath, String filePath, String filePrefix)
 			throws FileNotFoundException, IOException {
-        // --- find out which dbms data file to load
-        String file = checkFilePath(filePath, filePrefix, getDBType(dbms));
-        
-        // --- load the sql data
-        return Lib.text.load(servletContext, appPath, file, "UTF-8");
+		// --- find out which dbms data file to load
+		String file = checkFilePath(filePath, filePrefix, getDBType(dbms));
+		
+		// --- load the sql data
+		return Lib.text.load(servletContext, appPath, file, "UTF-8");
 	}
 
 	private String getObjectName(String createStatem) {

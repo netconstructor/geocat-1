@@ -14,6 +14,7 @@ Administration
     metadata_ownership/index.rst
     templates/index.rst
     thesaurus/index.rst
+    multilingual/index.rst
     gast/index.rst
     localization/index.rst
     import2/index.rst

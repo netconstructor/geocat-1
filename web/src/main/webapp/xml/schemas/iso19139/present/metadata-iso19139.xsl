@@ -964,7 +964,8 @@
 	</xsl:template>
 
 	<!-- Attributes 
-	 * gmd:PT_Locale/@id is set by update-fixed-info using first 2 letters.
+	  * deprecated: gmd:PT_Locale/@id is set by update-fixed-info using first 2 letters.
+      * gmd:PT_Locale/@id is set by update-fixed-info with 639-2 iso code
 	-->
 	<xsl:template mode="iso19139" match="gmd:PT_Locale/@id"
 		priority="2">
@@ -3320,9 +3321,9 @@
 		<xsl:param name="langId"/>
 		<xsl:param name="info"/>
 		
-			<xsl:if test="gmd:citation/gmd:CI_Citation/gmd:title">
+			<xsl:if test="gmd:citation/*/gmd:title">
 				<title>
-					<xsl:apply-templates mode="localised" select="gmd:citation/gmd:CI_Citation/gmd:title">
+					<xsl:apply-templates mode="localised" select="gmd:citation/*/gmd:title">
 						<xsl:with-param name="langId" select="$langId"></xsl:with-param>
 					</xsl:apply-templates>
 				</title>
@@ -4065,7 +4066,7 @@
 				<xsl:variable name="tmpFreeText">
 					<xsl:call-template name="PT_FreeText_Tree" />
 				</xsl:variable>
-				
+								
 				<xsl:variable name="ptFreeTextTree" select="exslt:node-set($tmpFreeText)" />
 
 				<xsl:variable name="mainLang" 

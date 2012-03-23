@@ -247,8 +247,12 @@ GeoNetwork.Lang.fr = {
     'logout': 'Déconnexion',
     'administration': 'Administration',
     'validationReport': 'Rapport de validation',
-    'status': 'Status',
-    'statusTT': 'Modifier le statut dune métadonnée (eg. brouillon, validé, rejeté).',
+    'setStatus': 'État de la métadonnée',
+    'status': 'État',
+    'updateStatus': 'Mettre à jour l\'état',
+    'updateVersion': 'Activer le suivi des versions',
+    'statusTT': 'Modifier l\'état d\'une métadonnée (eg. brouillon, validé, rejeté).',
+    'setVersioning': 'Suivi des versions',
     'versioning': 'Activer le suivi des versions',
     'versioningTT': 'Une fois activé, tous les changements réalisés sur la fiche seront sauvegardés dans le dépôt SVN pour le suivi des versions.',
     'items': 'éléments',
@@ -482,6 +486,7 @@ GeoNetwork.Lang.fr = {
     'privTplElTT': 'Gérer les privilèges sur la sélection.',
     'addTplElTT': "Ajouter un élément à partir d'un fragment d'XML. L'annuaire cible est basé sur le nom de la balise racine (eg. gmd:CI_ResponsibleParty).",
     'copyTplElTT': "Créer un nouvel élément dans l'annuaire à partir de l'élément sélectionné.",
-    'delTplElTT': 'Supprimer la sélection.'
+    'delTplElTT': 'Supprimer la sélection.',
+    'language': 'Langue'
 };
 OpenLayers.Util.extend(OpenLayers.Lang.fr, GeoNetwork.Lang.fr);

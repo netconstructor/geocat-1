@@ -50,7 +50,7 @@ Pour créer de nouveaux groupes, il faut être identifié à l'aide d'un compte 
 #. Cliquer sur *Sauver*
 
 .. warning:: 
-    Le nom ne doit pas contenir d'espace ! Les descriptions des groupes peuvent être internationalisés 
+    Le nom ne doit pas contenir d'espace ! Les descriptions des groupes peuvent être traduites 
     (cf. :ref:`localization`).
 
 Les privilèges d'accès peuvent être définis pour chaque fiche de métadonnées. Ils peuvent être définis sur la base des groupes d'utilisateurs.

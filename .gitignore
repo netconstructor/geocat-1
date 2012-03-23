@@ -37,7 +37,6 @@ web/src/main/webapp/scripts/ext/locale/ext-lang-???.js
 web/*.db
 */bin
 */target
-web/src/main/webapp/loc/???
 .project
 .classpath
 .settings
