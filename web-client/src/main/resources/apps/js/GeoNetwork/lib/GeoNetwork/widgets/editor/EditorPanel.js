@@ -1029,13 +1029,14 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
             // matched with GUI language in order to edit by default
             // element
             // in GUI language. If none, default language is selected.
-            for (i = 0; i < input.options.length; i += 1) {
+            for (i = 0; i < input.options.length; i ++) {
                 if (input.options[i].getAttribute("code").toLowerCase() === this.lang) {
                     input.options[i].selected = true;
+                    i = input.options.length;
                 }
             }
             // FIXME this.enableLocalInput(input, false);
-        });
+        }, this);
         
         // --- display validator events when needed.
         items = Ext.DomQuery.select('input,textarea,select');
@@ -1048,7 +1049,7 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
      * 
      *  Initialize all calendar divs identified by class "cal".
      *
-     *  All calendars are composed of one div and 2 inputs;
+     *  All calendars are composed of one div and 1 or 2 inputs;
      *  one for the format, one for the value. According
      *  to the format, A DateTime or a DateField component
      *  are initialized.
@@ -1066,7 +1067,7 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
             cal.id = id + 'Id'; // In order to get the input if a get by id is made
             // later (eg. gn_search.js).
             
-            if (cal.firstChild === null || cal.childNodes.length === 1) { // Check if
+            if (cal.firstChild === null || cal.childNodes.length === 0) { // Check if
                 // already
                 // initialized
                 // or not
@@ -1213,7 +1214,7 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
         Ext.applyIf(this, this.defaultConfig);
         
         this.disabled = (this.metadataId ? false : true);
-        this.lang = (this.lang ? this.lang : 'en');
+        this.lang = (this.catalogue.lang ? this.catalogue.lang : 'eng');
         
         this.editUrl = this.catalogue.services.mdEdit;
         this.createUrl = this.catalogue.services.mdCreate;
