@@ -30,6 +30,7 @@ import org.fao.geonet.kernel.LocaleUtil;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
 import org.fao.geonet.languages.IsoLanguagesMapper;
+import org.fao.geonet.util.LangUtils;
 import org.jdom.Element;
 import org.openrdf.model.Value;
 import org.openrdf.sesame.config.AccessDeniedException;
@@ -118,7 +119,7 @@ public class KeywordsSearcher {
                 if(localized) {
                     KeywordBean kb = null;
                     for (int row = 0; row < rowCount; row++) {
-                        KeywordBean newKb = createKeywordBean(lang, 0, sThesaurusName, thesaurus, resultsTable, row);
+                        KeywordBean newKb = createKeywordBean(lang, 0, thesaurus, resultsTable, row);
                         if(kb==null){
                             kb = newKb;
                         } else {
@@ -160,18 +161,6 @@ public class KeywordsSearcher {
      * @throws Exception hmm
      */
     public void search(ServiceContext srvContext, Element params) throws Exception {
-        //System.out.println("KeywordsSearcher search");
-        search(srvContext.getLanguage(),params);
-    }
-	public void search(String defaultLang, Element params)
-			throws Exception {
-        if (params.getChild("pLanguage") != null){                            // if param pLanguage here
-            defaultLang = Util.getParam(params, "pLanguage");
-        }
-        if( defaultLang!=null && defaultLang.length()>2 ){
-            defaultLang=defaultLang.substring(0, 2);
-        }
-
 		// Get params from request and set default
 		String sKeyword = Util.getParam(params, "pKeyword","");
 		
@@ -232,21 +221,32 @@ public class KeywordsSearcher {
 		    	    }
 		        }
 		    }
+		    String lang = null;
+		    if(srvContext!=null)
+		        IsoLanguagesMapper.getInstance().iso639_2_to_iso639_1(srvContext.getLanguage());
+	        if (params.getChild("pLanguage") != null){
+	            // if param pLanguage here
+	            lang = Util.getParam(params, "pLanguage");
+	        }
+	        if( lang!=null && lang.length()>2 ){
+	            lang=lang.substring(0, 2);
+	        }
+	        if (lang==null) {
+	            lang="*";
+	        }
             // Keyword to look for
             if (!sKeyword.equals("")) {
-                String lang = IsoLanguagesMapper.getInstance().iso639_2_to_iso639_1(srvContext.getLanguage());
                 createQuery(lang, sKeyword, pTypeSearch);
             }
-            search(IsoLanguagesMapper.getInstance().iso639_2_to_iso639_1(srvContext.getLanguage()), listThesauri);
+            search(lang, listThesauri);
             List<KeywordBean> resultsWithLanguage = _results;
 
             // repeat search for language = "#default"
             // #default doesn't work in sesame search -- replaced it by 00
             if (!sKeyword.equals("")) {
-                String lang = "00";
-                createQuery(lang, sKeyword, pTypeSearch);
+                createQuery("00", sKeyword, pTypeSearch);
             }
-            search(defaultLang, listThesauri);
+            search(lang, listThesauri);
             List<KeywordBean> resultsWithoutLanguage = _results;
 
             // end results are results without language except for those that also do have a language
@@ -296,7 +296,7 @@ public class KeywordsSearcher {
             int rowCount = resultsTable.getRowCount();
 
             for (int row = 0; row < rowCount; row++) {
-                KeywordBean kb = createKeywordBean(defaultLang, idKeyword, sThesaurusName, thesaurus, resultsTable, row);
+                KeywordBean kb = createKeywordBean(defaultLang, idKeyword, thesaurus, resultsTable, row);
 
                 if( bag.containsKey(kb.getCode()) ){
                     bag.get(kb.getCode()).setLabel(kb.getDefaultPrefLabel(), kb.getDefaultLocale());
@@ -695,7 +695,7 @@ public class KeywordsSearcher {
 		return keyword;
 	}
 
-    private KeywordBean createKeywordBean(String defaultLangCode, int idKeyword, String sThesaurusName, Thesaurus thesaurus,
+    private KeywordBean createKeywordBean(String defaultLangCode, int idKeyword, Thesaurus thesaurus,
                                           QueryResultsTable resultsTable, int row)
     {
         // preflab
@@ -755,7 +755,7 @@ public class KeywordsSearcher {
 
         KeywordBean kb = new KeywordBean(idKeyword, sValue,
         		sDefinition, sUri, sEast, sWest, sSouth, sNorth,
-        		sThesaurusName, false, sLang, thesaurus.getTitle(), 
+        		thesaurus.getKey(), false, sLang, thesaurus.getTitle(), 
         		thesaurus.getDate() );
         return kb;
     }

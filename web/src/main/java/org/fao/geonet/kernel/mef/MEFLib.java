@@ -243,7 +243,7 @@ public class MEFLib {
         boolean withEditorValidationErrors = false;
 		boolean elementsHide = true;
         boolean allowDbmsClosing = false;
-        Element metadata = dm.getMetadata(context, id, forEditing, withEditorValidationErrors, !removeXlinkAttribute, elementsHide, allowDbmsClosing);
+        Element metadata = dm.getGeocatMetadata(context, id, forEditing, withEditorValidationErrors, !removeXlinkAttribute, elementsHide, allowDbmsClosing);
         if(resolveXlink) {
             Processor.detachXLink(metadata, context);
         }

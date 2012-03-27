@@ -2,8 +2,8 @@
 <application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.zeroturnaround.com" xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd">
 
 	<classpath>
-		<dir name="${project.basedir}/target/classes/main"/>
-		<dir name="${project.basedir}/../jeeves/target/classes/main"/>
+		<dir name="${project.basedir}/target/classes"/>
+		<dir name="${project.basedir}/../jeeves/target/test-classes"/>
 	</classpath>
 
 	<web>
@@ -12,7 +12,7 @@
 			</dir>
 		</link>
 		<link target="/">
-			<dir name="${project.basedir}/build/webResources">
+			<dir name="${project.basedir}/target/webapp">
 			</dir>
 		</link>
 	</web>

@@ -115,22 +115,6 @@ public class KeywordBean {
 		this.selected = selected;
 	}
 	
-	/**
-     * TODO javadoc.
-     *
-	 * @param value
-	 * @param definition
-	 * @param thesaurus
-	 * @param selected
-	 */
-	public KeywordBean(String value, String definition, String thesaurus, boolean selected) {
-		super();
-		this.value = value;
-		this.definition = definition;
-		this.thesaurus = thesaurus;
-		this.selected = selected;
-	}
-
 	public String getDefinition() {
 		return definition;
 	}

@@ -72,8 +72,11 @@ public class List implements Service
 		Dbms dbms = (Dbms) context.getResourceManager().open (Geonet.Res.MAIN_DB);
 
 		String userProfile = session.getProfile();
-		Set<String> hsMyGroups = getGroups(dbms, session.getUserId(), userProfile);
-
+		Set<String> hsMyGroups = Collections.emptySet();
+		
+		if (userProfile != null) {
+		    hsMyGroups = getGroups(dbms, session.getUserId(), userProfile);
+		}
 		Set profileSet = (userProfile == null) ?
 							Collections.emptySet():context.getProfileManager().getProfilesSet(userProfile);
 

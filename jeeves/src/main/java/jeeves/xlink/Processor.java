@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -234,7 +235,12 @@ public final class Processor {
 		} else {
 			res = (Element)remoteFragment.clone();
 		}
-		Log.debug(Log.XLINK_PROCESSOR,"Read:"+Xml.getString(res));
+		
+        Log.debug(Log.XLINK_PROCESSOR,"Read: Before recursive processXLink: "+Xml.getString(res));
+        
+		res = processXLink(res, srvContext);
+		
+		Log.debug(Log.XLINK_PROCESSOR,"Read: After recursive processXLink: "+Xml.getString(res));
 		return res;
 	}
 

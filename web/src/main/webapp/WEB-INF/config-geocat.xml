@@ -209,13 +209,6 @@
         </service>
 
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-		<!-- Validation -->
-		<service name="metadata.validation.report">
-			<class name=".services.metadata.GetValidationErrors"/>
-		</service>
-
-
-        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 		<!-- Monitoring -->
 
 		<service name="monitoring.report">

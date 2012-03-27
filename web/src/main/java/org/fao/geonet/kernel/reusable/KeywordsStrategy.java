@@ -67,12 +67,10 @@ public final class KeywordsStrategy extends ReplacementStrategy
 
     private final ThesaurusManager _thesaurusMan;
     private final String           _styleSheet;
-    private final String           _baseURL;
     private final String           _currentLocale;
 
     public KeywordsStrategy(ThesaurusManager thesaurusMan, String appPath, String baseURL, String currentLocale)
     {
-        this._baseURL = baseURL;
         this._thesaurusMan = thesaurusMan;
         _styleSheet = appPath + Utils.XSL_REUSABLE_OBJECT_DATA_XSL;
 
@@ -173,7 +171,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
 
         KeywordsSearcher searcher = new KeywordsSearcher(_thesaurusMan);
 
-        searcher.search("*", searchParams);
+        searcher.search(null, searchParams);
         searcher.sortResults("label");
         return searcher;
     }
@@ -189,7 +187,7 @@ public final class KeywordsStrategy extends ReplacementStrategy
         params.addContent(new Element("pTypeSearch").setText("2"));
         params.addContent(new Element("pKeyword").setText("*"));
         
-        searcher.search("*", params);
+        searcher.search(null, params);
         searcher.sortResults("label");
         session.setProperty(Geonet.Session.SEARCH_KEYWORDS_RESULT, searcher);
 

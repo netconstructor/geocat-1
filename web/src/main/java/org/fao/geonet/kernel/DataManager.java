@@ -158,7 +158,7 @@ public class DataManager {
         servContext=context;
         this.reusableObjMan = reusableObjMan;
         this.extentMan = extentMan;
-		this.validator = new Validator(htmlCacheDir);
+		this.validator = new Validator(searchMan.getHtmlCacheDir());
 		this.baseURL = baseURL;
         this.dataDir = dataDir;
         this.thesaurusMan = thesaurusMan;
@@ -1719,7 +1719,7 @@ public class DataManager {
      * @throws Exception
      */
 	public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes) throws Exception {
-		return getGeocatMetadata(srvContext,id,forEditing,withEditorValidationErrors,keepXlinkAttributes, true, true);
+		return getGeocatMetadata(srvContext,id,forEditing,withEditorValidationErrors,keepXlinkAttributes, true, false);
 	}
 	public Element getGeocatMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes, boolean elementsHide, boolean allowDbmsClosing) throws Exception {
 		Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
@@ -3155,7 +3155,7 @@ public class DataManager {
      */
     public Map<String, String> iso639_1_to_iso639_2(ServiceContext context, Set<String> iso639_1_set) throws Exception {
         Map<String, String> result = new HashMap<String, String>();
-        if(CollectionUtils.isNotEmpty(iso639_1_set)) {
+        if(iso639_1_set!= null && !iso639_1_set.isEmpty() ) {
             Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
             String query = "SELECT code, shortcode FROM IsoLanguages WHERE ";
             for(String iso639_1 : iso639_1_set) {
@@ -3603,61 +3603,6 @@ public class DataManager {
         yes, no
     }
 
-    public Element getValidationReport(ServiceContext srvContext, String id) throws Exception
-    {
-        Dbms dbms = (Dbms) srvContext.getResourceManager().open(Geonet.Res.MAIN_DB);
-
-        // TODO : Xlinks resolved ?
-        //Was : Element md = XmlSerializer.select(dbms, "Metadata", id, true);
-        Element md = xmlSerializer.select(dbms, "Metadata", id, srvContext);
-
-        if (md == null)
-        {
-            return null;
-        }
-
-        InstrumentAndValidateResult report = instrumentMetadataAndValidate(dbms, id, md, srvContext);
-
-        Element result = new Element("validationReport");
-        result.setAttribute("id", id);
-        if (report.xsdErrors != null)
-            result.addContent(report.xsdErrors);
-        if (report.schematronReport != null)
-            result.addContent(report.schematronReport);
-        return result;
-    }
-	private InstrumentAndValidateResult instrumentMetadataAndValidate(Dbms dbms, String mdId, Element md, ServiceContext srvContext)
-	throws Exception
-    {
-        String schema = getMetadataSchema(dbms, mdId);
-        MetadataSchema mds = getSchema(schema);
-        // XSD checking on metadata
-
-        Element xsdErrors = validator.getXSDXmlReport(mds, md);
-
-        // Add editing elements
-        editLib.expandElements(schema, md);
-        String version = editLib.addEditingInfo(schema, mdId, md);
-
-        // Schematron checking
-        Element elemChecks = validator.getSchemaTronXmlReport(mds, md, srvContext.getLanguage());
-        return new InstrumentAndValidateResult(xsdErrors, elemChecks, version);
-    }
-
-
-	private static final class InstrumentAndValidateResult {
-        public final Element xsdErrors;
-        public final Element schematronReport;
-        public final String version;
-        public InstrumentAndValidateResult(Element xsdErrors, Element schematronReport, String version)
-        {
-            this.xsdErrors = xsdErrors;
-            this.schematronReport = schematronReport;
-            this.version = version;
-        }
-
-
-	}
 
 	public boolean isIndexing() {
 	    synchronized (indexing) {

@@ -41,24 +41,24 @@
                         <xsl:when test="/root/gui/language='eng'">
                         </xsl:when>
                         <xsl:otherwise>
-                            <a class="banner" href="../eng/geocat"><xsl:value-of select="/root/gui/strings/en"/></a> |
+                            <a class="banner" href="../eng/geocat"><xsl:value-of select="/root/gui/strings/eng"/></a> |
                         </xsl:otherwise>
                     </xsl:choose>
                     <xsl:choose>
-                        <xsl:when test="/root/gui/language='fra'">
+                        <xsl:when test="/root/gui/language='fra' or /root/gui/language='fre'">
                         </xsl:when>
                         <xsl:otherwise>
-                            <a class="banner" href="../fra/geocat"><xsl:value-of select="/root/gui/strings/fr"/></a>
-                            <xsl:choose><xsl:when test="not(/root/gui/language='deu')">
+                            <a class="banner" href="../fra/geocat"><xsl:value-of select="/root/gui/strings/fre"/></a>
+                            <xsl:choose><xsl:when test="not(/root/gui/language='deu' or /root/gui/language='ger')">
                                 |
                             </xsl:when></xsl:choose>
                         </xsl:otherwise>
                     </xsl:choose>
                     <xsl:choose>
-                        <xsl:when test="/root/gui/language='deu'">
+                        <xsl:when test="/root/gui/language='deu' or /root/gui/language='ger'">
                         </xsl:when>
                         <xsl:otherwise>
-                            <a class="banner" href="../deu/geocat"><xsl:value-of select="/root/gui/strings/de"/></a>
+                            <a class="banner" href="../deu/geocat"><xsl:value-of select="/root/gui/strings/ger"/></a>
                             <!--<xsl:choose><xsl:when test="not(/root/gui/language='ita')">
                                 |
                             </xsl:when></xsl:choose>-->

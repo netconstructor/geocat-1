@@ -74,6 +74,8 @@
                 <xsl:when test="$langGui='eng'">eng</xsl:when>
                 <xsl:when test="$langGui='fra'">fra</xsl:when>
                 <xsl:when test="$langGui='ita'">ita</xsl:when>
+                <xsl:when test="$langGui='fre'">fra</xsl:when>
+                <xsl:when test="$langGui='ger'">deu</xsl:when>
                 <xsl:when test="$langGui='de'">deu</xsl:when>
                 <xsl:when test="$langGui='en'">eng</xsl:when>
                 <xsl:when test="$langGui='fr'">fra</xsl:when>

@@ -20,7 +20,8 @@ psql -d $DB -f $SQL_DIR/postgis.sql
 psql -d $DB -f $SQL_DIR/spatial_ref_sys.sql
 
 rm -rf /tmp/gc_data
-rm -rf /tmp/gc_lucene
+mkdir -p /tmp/gc_data/config/codelist/
+cp -R src/main/webapp/WEB-INF/data/codelist/* /tmp/gc_data/config/codelist/
 
 psql -d $DB -c "ALTER TABLE geometry_columns OWNER TO \"www-data\";"
 psql -d $DB -c "ALTER TABLE spatial_ref_sys OWNER TO \"www-data\";"

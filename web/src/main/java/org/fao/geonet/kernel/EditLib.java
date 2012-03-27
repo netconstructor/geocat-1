@@ -29,6 +29,9 @@ package org.fao.geonet.kernel;
 
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
+import jeeves.xlink.Processor;
+import jeeves.xlink.XLink;
+
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.reusable.ReusableObjManager;
@@ -43,9 +46,12 @@ import org.jdom.Namespace;
 import org.jdom.filter.ElementFilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -120,7 +126,7 @@ public class EditLib {
      */
 	public void enumerateTree(Element md) throws Exception {
         Map<String, Integer> xlinks = new HashMap<String,Integer>();
-		enumerateTree(md,1,0,xlinks, flase);
+		enumerateTree(md,1,0,xlinks, false);
 	}
 
     /**
@@ -723,7 +729,7 @@ public class EditLib {
      * @return
      * @throws Exception
      */
-	private int enumerateTree(Element md, int ref, int parent, Map<String,Integer> xlinks, boolean parentInDisabledXLinkElem)) throws Exception {
+	private int enumerateTree(Element md, int ref, int parent, Map<String,Integer> xlinks, boolean parentInDisabledXLinkElem) throws Exception {
 
 		int thisRef = ref;
 		int thisParent = ref;
@@ -1387,5 +1393,78 @@ public class EditLib {
 			md.addContent(attribute);
 		}
 	}
+
+    /**
+     * Get the XPath expression for identified Element.
+     *
+     * @param md metadata element
+     * @param ref id of the target Element
+     * @return XPath expression String or null (error)
+     */
+    public String getXPathExpr(Element md, String ref)
+    {
+        // TODO: optimize, this is simple but inefficient
+        String xPath = null;
+
+        try {
+            Element origElm = Xml.selectElement(md, "*//*[@ref='" + ref + "']");
+            Element parent = origElm.getParentElement();
+
+            if (parent == null) {
+                // What should we do (means entire doc to be hidden)
+                return "//";
+            }
+
+            String name = parent.getName();
+            String namespace = parent.getNamespace().getPrefix();
+
+            int index = 1;
+
+            // Base expression using "AbbreviatedAbsoluteLocationPath"
+            // (See XSLT 2nd ed. wrox p353)
+            // We now mainly need to figure out the number (index) of
+            // the target element within all descendants.
+            // We could select all nodes with only this expression and
+            // then figure out the index but somehow the order may not be
+            // guaranteed in all XPath implementations, see
+            // http://bytes.com/groups/net-xml/500575-xmlnode-selectnodes-order-nodes
+            String xPathBase = "descendant::" + namespace + ":" + name;
+            while (true)
+            {
+                xPath = xPathBase + "[" + index + "]";
+                String xPathRef = xPath + "/*[@ref]";
+
+                // Test the expression by getting the element using the ref
+                // And comparing with the original
+                List<Namespace> namespaces = Arrays.asList(new Namespace[]{parent.getNamespace()});
+                List<?> foundElms = Xml.selectNodes(md, xPathRef, namespaces);
+                if (foundElms.size() == 0) {
+                    // System.out.println("no elements found for xPathRef=" + xPathRef + " el=" + el.getName());
+                    xPath = null;
+                    break;
+                }
+
+                // Found at least one element
+
+                // Compare found element to original
+                if (foundElms.get(0).equals(origElm)) {
+                    // System.out.println("Found xPath=" + xPath + " el=" + el.getName());
+                    // Found it!!
+                    break;
+                }
+
+                // Not found: try next
+                index++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            xPath = null;
+        }
+        finally {
+            md.detach();
+        }
+
+        return xPath;
+    }
 
 }

@@ -12,7 +12,7 @@
         <wfs.port>8700</wfs.port>
     </properties>
     <file name=".*/WEB-INF/config.xml">
-        <replaceText xpath="default/language">deu</replaceText>
+        <replaceText xpath="default/language">eng</replaceText>
         <replaceAtt xpath="appHandler/param[@name = 'preferredSchema']" attName="value" value="iso19139.che"/>
         <addXML xpath="appHandler">
             <param name="postgisConfig">
@@ -57,6 +57,7 @@
                     <driver>org.postgis.DriverWrapper</driver>
                     <url>jdbc:postgresql_postGIS://${postgis.host}:${postgis.port}/${postgis.db}</url>
                     <poolSize>10</poolSize>
+	      			<validationQuery>SELECT 1</validationQuery>
                 </config>
             </resource>
         </replaceXML>
@@ -66,8 +67,10 @@
     </file>
     <file name=".*/WEB-INF/user-profiles.xml">
         <removeXML xpath="allow[@service='metadata.schema.add.form']"/>
+        <removeXml xpath="allow[@service='csw-publication']"/>
         <addXML xpath="profile[@name ='Editor']">
             <allow service="metadata.xlink.add"/>
+            <allow service="csw-publication"/>
         </addXML>
         <addXML xpath="profile[@name ='RegisteredUser']">
         </addXML>
@@ -106,9 +109,6 @@
             <allow service="metadata.xsl.remove"/>
             <allow service="metadata.xsl.admin"/>
 
-            <!-- TODO : only administrators ? -->            
-            <allow service="metadata.validation.report"/>
-            
             <!-- Monitoring services -->
             <allow service="monitoring.indexing"/>
             <allow service="monitoring.report"/>

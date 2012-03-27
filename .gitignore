@@ -44,4 +44,4 @@ web/*.db
 web-client/src/main/resources/apps/js/GeoNetwork-mini-nomap.js
 web-client/src/main/resources/apps/js/GeoNetwork-mini.js
 web-client/src/main/resources/apps/search/js/App-mini.js
-
+web-client/src/main/resources/apps/tabsearch/js/App-mini.js

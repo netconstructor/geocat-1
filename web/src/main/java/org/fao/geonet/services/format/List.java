@@ -61,9 +61,8 @@ public class List implements Service {
         if (name == null)
             el = dbms.select("SELECT * FROM Formats ORDER BY name, version");
         else {
-            name = name.toUpperCase();
             el = dbms.select("SELECT * FROM Formats WHERE "
-                    + "UPPER(name) like '%" + name + "%' "
+                    + "name ilike '%" + name + "%' "
                     + "ORDER BY name, version");
         }
 

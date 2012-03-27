@@ -41,7 +41,7 @@ import jeeves.utils.Util;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
 import org.fao.geonet.lib.Lib;
-import org.fao.geonet.logos.Logos;
+import org.fao.geonet.resources.Resources;
 import org.jdom.Element;
 
 //=============================================================================
@@ -91,7 +91,7 @@ public class Update implements Service
             Graphics2D g = bimg.createGraphics();
             g.drawImage(thumb, 0, 0, null);
             g.dispose();
-            String logoDir = Logos.locateLogosDir(context);
+            String logoDir = Resources.locateLogosDir(context);
             logoUUID = UUID.randomUUID().toString();
             ImageIO.write(bimg, "png", new File(logoDir, logoUUID + ".png"));
         }
@@ -107,7 +107,6 @@ public class Update implements Service
 			String query = "INSERT INTO Groups(id, name, description, email, website, logoUuid) VALUES (?, ?, ?, ?, ?, ?)";
 
             dbms.execute(query, newId, name, descr, email, website, logoUUID);
-            Lib.local.insert(dbms, "Groups", newId, name);
 
 			elRes.addContent(new Element(Jeeves.Elem.OPERATION).setText(Jeeves.Text.ADDED));
 		}

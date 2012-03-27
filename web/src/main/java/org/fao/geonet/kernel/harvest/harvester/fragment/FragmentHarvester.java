@@ -329,7 +329,7 @@ public class FragmentHarvester {
                 boolean ufo = false;
                 boolean index = false;
                 String language = context.getLanguage();
-        dataMan.updateMetadata(context, dbms, id, md, validate, ufo, index, language, df.format(date), false);
+        dataMan.updateMetadata(context, dbms, id, md, validate, ufo, index, language, df.format(date), false, false);
 				int iId = Integer.parseInt(id);
 	
 
@@ -341,7 +341,7 @@ public class FragmentHarvester {
 
 				dataMan.setTemplateExt(dbms, iId, "s", null);
 				dataMan.setHarvestedExt(dbms, iId, params.uuid, harvestUri);
-        dataMan.indexMetadataGroup(dbms, id);
+        dataMan.indexMetadataGroup(dbms, id, false, context);
 
         dbms.commit();
 
@@ -499,7 +499,7 @@ public class FragmentHarvester {
                 boolean ufo = false;
                 boolean index = false;
                 String language = context.getLanguage();
-        dataMan.updateMetadata(context, dbms, id, template, validate, ufo, index, language, df.format(date), false);
+        dataMan.updateMetadata(context, dbms, id, template, validate, ufo, index, language, df.format(date), false, false);
 
 				int iId = Integer.parseInt(id);
 
@@ -509,7 +509,7 @@ public class FragmentHarvester {
         dbms.execute("DELETE FROM MetadataCateg WHERE metadataId=?", iId);
         addCategories(id);
 
-        dataMan.indexMetadataGroup(dbms, id);	
+        dataMan.indexMetadataGroup(dbms, id, false, context);	
 
         dbms.commit();
 				harvestSummary.recordsUpdated++;

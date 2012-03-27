@@ -68,6 +68,7 @@ import org.fao.geonet.kernel.search.spatial.SpatialIndexWriter;
 import org.fao.geonet.kernel.search.spatial.TouchesFilter;
 import org.fao.geonet.kernel.search.spatial.WithinFilter;
 import org.fao.geonet.kernel.setting.SettingInfo;
+import org.fao.geonet.kernel.setting.SettingManager;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
@@ -219,14 +220,16 @@ public class SearchManager {
 
 	/**
 	 * Returns a default- (hardcoded) configured PerFieldAnalyzerWrapper, creating it if necessary.
+	 * @param ignoreChars 
      *
 	 */
-	private static void initHardCodedAnalyzers() {
+	private static void initHardCodedAnalyzers(char[] ignoreChars) {
+	    
         Log.debug(Geonet.SEARCH_ENGINE, "initializing hardcoded analyzers");
         // no default analyzer instantiated: create one
         if(_defaultAnalyzer == null) {
             // create hardcoded default PerFieldAnalyzerWrapper w/o stopwords
-            _defaultAnalyzer = SearchManager.createHardCodedPerFieldAnalyzerWrapper(null, null);
+            _defaultAnalyzer = SearchManager.createHardCodedPerFieldAnalyzerWrapper(null, ignoreChars);
         }
         if(!_stopwordsDir.exists() || !_stopwordsDir.isDirectory()) {
             Log.warning(Geonet.SEARCH_ENGINE, "Invalid stopwords directory " + _stopwordsDir.getAbsolutePath() + ", not using any stopwords.");
@@ -242,7 +245,7 @@ public class SearchManager {
                 Set<String> stopwordsForLanguage = StopwordFileParser.parse(stopwordsFile.getAbsolutePath());
                 if(stopwordsForLanguage != null) {
                     Log.debug(Geonet.LUCENE, "loaded # " + stopwordsForLanguage.size() + " stopwords for language " + language);
-                    Analyzer languageAnalyzer = SearchManager.createHardCodedPerFieldAnalyzerWrapper(stopwordsForLanguage, null);
+                    Analyzer languageAnalyzer = SearchManager.createHardCodedPerFieldAnalyzerWrapper(stopwordsForLanguage, ignoreChars);
                     analyzerMap.put(language, languageAnalyzer);
                 }
                 else {
@@ -266,7 +269,7 @@ public class SearchManager {
             Log.debug(Geonet.SEARCH_ENGINE, "Creating analyzer defined in Lucene config:" + analyzerClassName);
             // GNA analyzer
             if(analyzerClassName.equals("org.fao.geonet.kernel.search.GeoNetworkAnalyzer")) {
-                analyzer = SearchManager.createGeoNetworkAnalyzer(stopwords, null);
+                analyzer = SearchManager.createGeoNetworkAnalyzer(stopwords, _settingInfo.getAnalyzerIgnoreChars());
             }
             // non-GNA analyzer
             else {
@@ -321,10 +324,11 @@ public class SearchManager {
 		Log.debug(Geonet.SEARCH_ENGINE, "createAnalyzer start");
 		String defaultAnalyzerClass = _luceneConfig.getDefaultAnalyzerClass();
         Log.debug(Geonet.SEARCH_ENGINE, "defaultAnalyzer defined in Lucene config: " + defaultAnalyzerClass);
+        char[] ignoreChars = _settingInfo.getAnalyzerIgnoreChars();
         // there is no default analyzer defined in lucene config
 		if (defaultAnalyzerClass == null) {
             // create default (hardcoded) analyzer
-            SearchManager.initHardCodedAnalyzers();
+            SearchManager.initHardCodedAnalyzers(ignoreChars );
 		}
         // there is an analyzer defined in lucene config
         else {

@@ -693,7 +693,7 @@ public class GetRecords extends AbstractOperation implements CatalogService {
             }
         }
 		// we always want to keep the relevancy as part of the sorting mechanism
-		return LuceneSearcher.makeSort(sortFields, context.getLanguage(), false);
+		return LuceneSearcher.makeSort(sortFields, context.getLanguage(), true);
 	}
 
 

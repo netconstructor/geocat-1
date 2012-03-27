@@ -352,7 +352,7 @@ public class ReusableObjManager
 			Element current = resolveXLink(currentXLinkElements, href,srvContext);
 			
 			if(current==null || originalElem.getChildren().isEmpty()) {
-			    if(current.getChildren().isEmpty()) {
+			    if(current==null || current.getChildren().isEmpty()) {
 			        updatePlaceholder(placeholder, originalElem);
 			    } else {
 			        updatePlaceholder(placeholder, current);

@@ -109,7 +109,6 @@ public class SettingManager
 		root = new Setting(0, null, null);
 		createSubTree(root, list);
 		
-		Log.debug(Log.APPHAND, "Loaded Settings: "+root.toString());
 	}
 
 	//---------------------------------------------------------------------------

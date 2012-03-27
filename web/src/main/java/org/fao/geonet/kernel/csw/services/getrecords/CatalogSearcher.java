@@ -480,7 +480,7 @@ public class CatalogSearcher {
 		Query groups = getGroupsQuery(context);
 		if (sort == null) {
 			List<Pair<String, Boolean>> fields = Collections.singletonList(Pair.read(Geonet.SearchResult.SortBy.RELEVANCE, true));
-            sort = LuceneSearcher.makeSort(fields, context.getLanguage(), false);
+            sort = LuceneSearcher.makeSort(fields, context.getLanguage(), true);
 		}
 
 		// --- put query on groups in AND with lucene query

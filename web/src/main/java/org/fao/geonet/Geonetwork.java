@@ -81,7 +81,6 @@ import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.fao.geonet.languages.LanguageDetector;
 import org.fao.geonet.lib.Lib;
 import org.fao.geonet.lib.ServerLib;
-import org.fao.geonet.logos.Logos;
 import org.fao.geonet.notifier.MetadataNotifierControl;
 import org.fao.geonet.notifier.MetadataNotifierManager;
 import org.fao.geonet.services.extent.ExtentManager;
@@ -105,20 +104,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import com.vividsolutions.jts.geom.MultiPolygon;
-
-import javax.servlet.ServletContext;
 
 /** This is the main class. It handles http connections and inits the system
   */
@@ -380,7 +366,7 @@ public class Geonetwork implements ApplicationHandler {
 			xmlSerializer = new XmlSerializerDb(settingMan);
 		}
 
-		DataManager dataMan = new DataManager(context, svnManager, xmlSerializer, schemaMan, searchMan, accessMan, dbms, settingMan, baseURL, dataDir, thesauriDir, path);
+		DataManager dataMan = new DataManager(context, svnManager, xmlSerializer, schemaMan, searchMan, accessMan, dbms, settingMan, baseURL, dataDir, thesauriDir, thesaurusMan, reusableObjMan, extentMan, path);
 
 
         /**

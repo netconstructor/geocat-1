@@ -93,7 +93,7 @@ public class CswDiscoveryDispatcher implements Service {
         System.out.println("CSW operation: " + operation);
 
         if(!operation.equals("GetCapabilities") && !operation.equals("GetRecords") && !operation.equals("GetRecordById")
-                && !operation.equals("DescribeRecord") && !operation.equals("GetDomain")) {
+                && !operation.equals("DescribeRecord") && !operation.equals("GetDomain") ) {
             System.out.println("Not a CSW Discovery operation: " + operation);
             Element info  = new Element("info").setText("Not a CSW Discovery operation: " + operation + ". Did you mean to use the CSW Publication service? Use service name /csw-publication");
 			response.addContent(info);
