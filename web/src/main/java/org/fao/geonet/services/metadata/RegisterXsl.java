@@ -32,6 +32,8 @@ import jeeves.server.context.ServiceContext;
 import org.apache.commons.io.FileUtils;
 import org.jdom.Element;
 
+import com.mckoi.database.sql.Util;
+
 /**
  * Allows a user to set the xsl used for displaying metadata
  * 
@@ -44,18 +46,22 @@ public class RegisterXsl implements Service {
 
     private String userXslDir;
 
-    public Element exec( Element params, ServiceContext context ) throws Exception {
+    public Element exec(Element params, ServiceContext context) throws Exception {
         Element xslFile = params.getChild("fname");
         String fileName = xslFile.getTextTrim();
-        String id = fileName;
+        String id = jeeves.utils.Util.getParam(params, "id", null);
 
-        int extentionIdx = fileName.lastIndexOf('.');
-        if (extentionIdx != -1) {
-            id = fileName.substring(0, extentionIdx);
+        if (id == null) {
+            id = fileName;
+            int extentionIdx = id.lastIndexOf('.');
+            if (extentionIdx != -1) {
+                id = id.substring(0, extentionIdx);
+            }
         }
+
         File file = new File(userXslDir + id + ".xsl");
         int i = 0;
-        while( file.exists() ) {
+        while (file.exists()) {
             i++;
             file = new File(userXslDir + id + "_" + i + ".xsl");
         }
@@ -71,7 +77,8 @@ public class RegisterXsl implements Service {
 
         return response;
     }
-    public void init( String appPath, ServiceConfig params ) throws Exception {
+
+    public void init(String appPath, ServiceConfig params) throws Exception {
         userXslDir = params.getMandatoryValue(USER_XSL_DIR);
         if (!userXslDir.endsWith(File.separator)) {
             userXslDir = userXslDir + File.separator;

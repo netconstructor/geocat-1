@@ -38,7 +38,7 @@
                     <Field name="_locale" string="{$isoLangId}" store="true" index="true" token="false"/>
                     <Field name="_docLocale" string="{$isoDocLangId}" store="true" index="true" token="false"/>
 
-                    <xsl:variable name="poundLangId" select="concat('#',translate($langId, $LOWER, $UPPER))" />
+                    <xsl:variable name="poundLangId" select="concat('#', upper-case($langId))" />
                     <xsl:variable name="_defaultTitle">
                         <xsl:call-template name="defaultTitle">
                             <xsl:with-param name="isoDocLangId" select="$isoDocLangId"/>

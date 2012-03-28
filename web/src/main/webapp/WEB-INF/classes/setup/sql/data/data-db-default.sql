@@ -889,7 +889,7 @@ INSERT INTO Settings VALUES (16,14,'subVersion','SNAPSHOT');
 INSERT INTO Settings VALUES (17,10,'svnUuid','');
 INSERT INTO Settings VALUES (20,1,'server',NULL);
 INSERT INTO Settings VALUES (21,20,'host','localhost');
-INSERT INTO Settings VALUES (22,20,'port','8080');
+INSERT INTO Settings VALUES (22,20,'port','8090');
 INSERT INTO Settings VALUES (23,20,'protocol','http');
 INSERT INTO Settings VALUES (30,1,'intranet',NULL);
 INSERT INTO Settings VALUES (31,30,'network','127.0.0.1');
