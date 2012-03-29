@@ -513,7 +513,7 @@ Assigning Privileges for a Map
 
 As an important step of entering metadata to your map, you need to assign privileges for each map. This means that you will identify which work groups have which privileges, i.e. view, download, etc. for your particular map.
 
-For instance, you can fdefine if the information and related services is visible to all (Internet users) or just to internal users only (Intranet). Privileges are assigned on a per group basis. Depending on the user profile (Guest, Registered User, Editor, Admin etc.) access to these functions may differ on a per user basis.
+For instance, you can define if the information and related services is visible to all (Internet users) or just to internal users only (Intranet). Privileges are assigned on a per group basis. Depending on the user profile (Guest, Registered User, Editor, Admin etc.) access to these functions may differ on a per user basis.
 
 To assign privileges for your map, follow these steps:
 

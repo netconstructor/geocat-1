@@ -31,6 +31,11 @@ Glossary
         application to manage spatially referenced resources through the web. 
         http://geonetwork-opensource.org
     
+    GeoServer
+    	GeoServer is an open source software server written in Java that allows users to 
+    	share and edit geospatial data. Designed for interoperability, it publishes data 
+    	from any major spatial data source using open standards.
+    	
     GPL
         The GNU General Public License is a free, copyleft license for software and other kinds of works.
         GeoNetwork opensource is released under the GPL 2 license. 
@@ -241,3 +246,10 @@ Glossary
         "Write Once, Run Anywhere" capabilities for applications that require access
         to enterprise data. With a JDBC technology-enabled driver, you can connect
         all corporate data even in a heterogeneous environment.
+
+    JAI
+        Java Advanced Imaging (JAI) is a Java platform extension API that provides a set of
+        object-oriented interfaces that support a simple, high-level programming model 
+        which allows developers to create their own image manipulation routines without 
+        the additional cost or licensing restrictions, associated with commercial image 
+        processing software.
