@@ -476,8 +476,16 @@
 			<xsl:variable name="disabled" select="$currentNode/../geonet:element/@disabled" />
 			<xsl:variable name="min" select="$currentNode/../geonet:element/@min" />
             <xsl:variable name="guiLang" select="/root/gui/language" />
-            <xsl:variable name="language"
-                    select="/root/gui/isoLang/record[code=$code]/label/*[name(.)=$guiLang]" />
+			<xsl:variable name="language">
+				<xsl:choose>
+					<xsl:when test="/root/gui/isoLang/record[code=$code]/label/*[name(.)=$guiLang]">
+						<xsl:value-of select="/root/gui/isoLang/record[code=$code]/label/*[name(.)=$guiLang]"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$code"/> no found in <xsl:value-of select="$guiLang"/> 
+					</xsl:otherwise>
+				</xsl:choose>			
+			</xsl:variable>
             <che:PT_FreeURL xlink:title="{$currentNode/ancestor-or-self::*[contains(@xlink:title,'rejected')]/@xlink:title}">
                 <!-- Propagate xlink attribute to the var which contains translation
                 in order to turn off editing. -->

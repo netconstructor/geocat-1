@@ -64,6 +64,8 @@
     <hitsPerPageChoice value="50">50</hitsPerPageChoice>
     <hitsPerPageChoice value="100">100</hitsPerPageChoice>
     <rm>Rätoromanisch</rm>
+	<fra>Français</fra> <!-- Do not translate! -->
+    <deu>Deutsch</deu> <!-- Do not translate! -->
 	<metadata.expired>
 		<recipient>E-Mail Empfänger</recipient>
 		<numExpiredElements>Anzahl der abgelaufen Records</numExpiredElements>
@@ -489,6 +491,7 @@ Ihr geocat.ch-Team</msg>
 	<schematronReport>Compliance to metadata recommandations (Schematron)</schematronReport>
 	<xsdReport>Compliance to metadata standard (XML Schema)</xsdReport>
 	<rules name="schematron-rules-inspire">INSPIRE implementing rules</rules>
+	<rules name="schematron-rules-iso-che">GM03 implementing rules</rules>
 	<rules name="schematron-rules-iso">ISO 19115/19119 rules</rules>
 	<rules name="schematron-rules-geonetwork">GeoNetwork recommandations</rules>	
 	<getCapabilitiesLayer js="true">GetCapabilities layer</getCapabilitiesLayer>

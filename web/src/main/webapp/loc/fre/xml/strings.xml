@@ -268,6 +268,10 @@ Votre équipe geocat.ch</msg>
 	<emailSent>E-Mail envoyé!</emailSent>
 	<replaceDuplicates>Doublons</replaceDuplicates>
 	<permlink mode="js">Lien permanent</permlink>
+	<rm>Romanche</rm>
+	<fra>Français</fra> <!-- Do not translate! -->
+    <deu>Deutsch</deu> <!-- Do not translate! -->
+	
 	<!-- END GEOCAT Strings -->
 
 
@@ -504,6 +508,7 @@ Votre équipe geocat.ch</msg>
 	<schematronReport>Conformité par rapport aux recommendations (Schematron)</schematronReport>
 	<xsdReport>Conformité par rapport au standard (Schéma XML)</xsdReport>
 	<rules name="schematron-rules-inspire">Règles INSPIRE</rules>
+	<rules name="schematron-rules-iso-che">Règles GM03</rules>
 	<rules name="schematron-rules-iso">Règles ISO 19115/19119</rules>
 	<rules name="schematron-rules-geonetwork">Recommendations GeoNetwork</rules>
 	<getCapabilitiesLayer js="true">Couches du GetCapabilities</getCapabilitiesLayer>
