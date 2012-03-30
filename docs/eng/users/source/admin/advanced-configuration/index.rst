@@ -237,33 +237,156 @@ or more metadata records:
 
 .. _system_properties_configuration:
 
-System Properties configuration
--------------------------------
+GeoNetwork data directory
+-------------------------
 
 When customizing Geonetwork for a specific deployment server you need to be able to modify the configuration for that specific server.  One way is to 
 modify the configuration files within Geonetwork web application, however this is a problematic method because you essentially need either a different
 web application for each deployment target or need to patch each after deployment.  Geonetwork provides two methods for addressing this issue
 
- #. System property configuration
- #. Configuration override files - Discussed in next section
+ #. GeoNetwork data directory
+ #. Configuration override files (See :ref:`adv_configuration_overriddes`)
+
+
+The GeoNetwork data directory is the location on the file system where GeoNetwork stores all of its custom configuration. 
+This configuration defines such things as: What thesaurus is used by GeoNetwork? What schema is plugged in GeoNetwork? 
+The data directory also contains a number of support files used by GeoNetwork for various purposes (eg. Lucene index, spatial index, logos).
+
+
+It is a good idea to define an external data directory when going to production in order to make upgrade easier.
+
+Creating a new data directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The data directory needs to be created before starting the catalogue. It must be readable and writable by the user starting the catalogue. 
+If the data directory is an empty folder, the catalogue will initialized the directory default structure. The easiest way to create a 
+new data directory is to copy one that comes with a standards installation.
+
+Setting the data directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The data directory variable could be set using:
+
+ - Java environment variable
+ - Servlet context parameter
+ - System environment variable
+
+
+For java environment variable and servlet context parameter use:
+
+ - <webappName>.dir and if not set using:
+ - geonetwork.dir
+
+
+For system environment variable use:
+
+ - <webappName>_dir and if not set using:
+ - geonetwork_dir
+
+
+Java System Property
+~~~~~~~~~~~~~~~~~~~~
+
+Depending on the servlet container used it is also possible to specify the data directory location with a Java System Property.
+
+For Tomcat, configuration is::
+
+  CATALINA_OPTS="-Dgeonetwork.dir=/var/lib/geonetwork_data"
+
+
+Run the web application in read-only mode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to run the catalogue with the webapp folder in read-only mode, user needs to set 2 variables:
+
+ - <webappName>.dir or geonetwork.dir for the data folder.
+ - (optional) config overrides if configuration files needs to be changed (See :ref:`adv_configuration_overriddes`).
  
+ 
+For Tomcat, configuration could be::
+
+  CATALINA_OPTS="-Dgeonetwork.dir=/var/lib/geonetwork_data -Dgeonetwork.jeeves.configuration.overrides.file=/var/lib/geonetwork_data/config/my-config.xml"
+
+
+Structure of the data directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The structure of the data directory is::
+
+
+ data_directory/
+  |--data
+  |   |--metadata_data: The data related to metadata records
+  |   |--resources:
+  |   |     |--htmlcache
+  |   |     |--images
+  |   |     |   |--harvesting
+  |   |     |   |--logo
+  |   |     |   |--statTmp
+  |   |
+  |   |--removed: Folder with removed metadata.
+  |   |--svn_repository: The subversion repository
+  |
+  |--config: Extra configuration (eg. overrides)
+  |   |--schemaplugin-uri-catalog.xml
+  |   |--JZKitConfig.xml
+  |   |--codelist: The thesaurus in SKOS format
+  |   |--schemaPlugins: The directory used to store new metadata standards
+  |
+  |--index: All indexes used for search
+  |   |--nonspatial: Lucene index
+  |   |--spatialindex.*: ESRI Shapefile for the index (if not using PostGIS)
+  
+  
+
+Advanced configuration
+~~~~~~~~~~~~~~~~~~~~~~
+All sub-directories could be configured separately using java system property. For example, to put index directory in a custom location use:
+
+ - <webappName>.lucene.dir and if not set using:
+ - geonetwork.lucene.dir
+
+
+Example:
+
+ - Add the following java properties to start-geonetwork.sh script::
+    
+    java -Xms48m -Xmx512m -Xss2M -XX:MaxPermSize=128m -Dgeonetwork.dir=/app/geonetwork_data_dir -Dgeonetwork.lucene.dir=/ssd/geonetwork_lucene_dir
+
+ - Add the following system properties to start-geonetwork.sh script::
+
+    # Set custom data directory location using system property
+    export geonetwork_dir=/app/geonetwork_data_dir
+    export geonetwork_lucene_dir=/ssd/geonetwork_lucene_dir
+
+
+System information
+~~~~~~~~~~~~~~~~~~
+
+All catalogue configuration directory could be check in administration > system information panel.
+
+    .. figure:: geonetwork-data-dirs.png
+
+
+
+Other system properties
+~~~~~~~~~~~~~~~~~~~~~~~
+
 In Geonetwork there are several system properties that can be used to configure different aspects of Geonetwork.  When a webcontainer
 is started the properties can be set.  For example in Tomcat one can set either JAVA_OPTS or CATALINA_OPTS with -D<propertyname>=<value>.
 
- * <webappname>.lucene.dir - The path to a directory where the lucene indices should be stored
- * <webappname>.data.dir - The path to a directory where the majority of the geonetwork data should be stored
- * <webappname>.codeList.dir - The path to a directory where the Thesaurus files will be maintained.
  * <webappname>.jeeves.configuration.overrides.file - See :ref:`adv_configuration_overriddes`
  * jeeves.configuration.overrides.file - See :ref:`adv_configuration_overriddes`
  * mime-mappings -  mime mappings used by jeeves for generating the response content type
  * http.proxyHost - The internal geonetwork Http proxy uses this for configuring how it can access the external network (Note for harvesters there is also a setting in the Settings page of the administration page)
  * http.proxyPort - The internal geonetwork Http proxy uses this for configuring how it can access the external network (Note for harvesters there is also a setting in the Settings page of the administration page)
  * geonetwork.sequential.execution - (true,false) Force indexing to occur in current thread rather than being queued in the ThreadPool.  Good for debugging issues.
-                                     
- 
+
+
 There is a usecase where multiple geonetwork instances might be ran in the same webcontainer, because of this many of the system properties 
 listed above have <webappname>.  When declaring the property this should be replaced with the webapp name the setting applies to. Typically this will
 be geonetwork.
+
 
 .. _adv_configuration_overriddes:
 

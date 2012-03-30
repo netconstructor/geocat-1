@@ -49,6 +49,7 @@ public class KeywordBean {
 	private boolean selected;
     private String thesaurusTitle;
 	private String thesaurusDate;
+	private String downloadUrl;
 
     /**
      * A Hashmap of all the languages available in this keyword
@@ -58,6 +59,7 @@ public class KeywordBean {
 	private final HashMap<String, String> labels = new HashMap<String,String>();
 	private static final Namespace NS_GMD = Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
 	private static final Namespace NS_GCO = Namespace.getNamespace("gco", "http://www.isotc211.org/2005/gco");
+	private static final Namespace NS_GMX = Namespace.getNamespace("gmx", "http://www.isotc211.org/2005/gmx");
 	
 	/**
      * TODO javadoc.
@@ -79,7 +81,7 @@ public class KeywordBean {
 	public KeywordBean(int id, String value, String definition, String code, 
 				String coordEast, String coordWest, 
 				String coordSouth, String coordNorth, 
-				String thesaurus, boolean selected, String lang, String thesaurusTitle, String thesaurusDate) {
+				String thesaurus, boolean selected, String lang, String thesaurusTitle, String thesaurusDate, String downloadUrl) {
 		super();
 		this.id = id;
 		this.value = value;
@@ -95,6 +97,7 @@ public class KeywordBean {
 		this.selected = selected;
         this.thesaurusTitle = thesaurusTitle;
         this.thesaurusDate = thesaurusDate;
+		this.downloadUrl = downloadUrl;
 	}
 
 	/**
@@ -106,15 +109,33 @@ public class KeywordBean {
 	 * @param thesaurus
 	 * @param selected
 	 */
-	public KeywordBean(int id, String value, String definition, String thesaurus, boolean selected) {
+	public KeywordBean(int id, String value, String definition, String thesaurus, boolean selected, String downloadUrl) {
 		super();
 		this.id = id;
 		this.value = value;
 		this.definition = definition;
 		this.thesaurus = thesaurus;
 		this.selected = selected;
+		this.downloadUrl = downloadUrl;
 	}
 	
+	/**
+     * TODO javadoc.
+     *
+	 * @param value
+	 * @param definition
+	 * @param thesaurus
+	 * @param selected
+	 */
+	public KeywordBean(String value, String definition, String thesaurus, boolean selected, String downloadUrl) {
+		super();
+		this.value = value;
+		this.definition = definition;
+		this.thesaurus = thesaurus;
+		this.selected = selected;
+		this.downloadUrl = downloadUrl;
+	}
+
 	public String getDefinition() {
 		return definition;
 	}
@@ -240,6 +261,10 @@ public class KeywordBean {
 		return thesaurus.substring(tmpDotIndex+1, thesaurus.indexOf(".",tmpDotIndex+1));
 	}
 	
+	public String getThesaurusType() {
+		return org.apache.commons.lang.StringUtils.substringBefore(thesaurus, ".");
+	}
+	
 	/**
 	 * Transforms a KeywordBean object into its iso19139 representation.
 	 * 
@@ -251,11 +276,14 @@ public class KeywordBean {
 	 *  		<gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_KeywordTypeCode" codeListValue="TYPE"/>
 	 *  	</gmd:type>
 	 *  	<gmd:thesaurusName>
-	 *  		<gmd:CI_Citation>
+	 *  		<gmd:CI_Citation "id="geonetwork.thesaurus.register.theme.bc44a748-f1a1-4775-9395-a4a6d8bb8df6">
 	 *  			<gmd:title>
 	 *  				<gco:CharacterString>THESAURUS NAME</gco:CharacterString>
 	 *  			</gmd:title>
 	 *  			<gmd:date gco:nilReason="unknown"/>
+	 *				<gmd:otherCitationDetails>
+	 *					<gmx:FileName src="http://localhost:8080/geonetwork/srv/eng/metadata.show?uuid=bc44a748-f1a1-4775-9395-a4a6d8bb8df6">register.theme.bc44a748-f1a1-4775-9395-a4a6d8bb8df6</gmx:FileName>
+	 *				</gmd:otherCitationDetails>
 	 *  		</gmd:CI_Citation>
 	 *  	</gmd:thesaurusName>
 	 * </pre>
@@ -271,7 +299,7 @@ public class KeywordBean {
 		Element type = KeywordBean.createKeywordTypeElt(this);
 		
 		Element thesaurusName = KeywordBean.createThesaurusNameElt(this);
-		
+
 		el.addContent(cs);
 		
 		ele.addContent(el);
@@ -296,11 +324,14 @@ public class KeywordBean {
 	 *  		<gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_KeywordTypeCode" codeListValue="TYPE"/>
 	 *  	</gmd:type>
 	 *  	<gmd:thesaurusName>
-	 *  		<gmd:CI_Citation>
+	 *  		<gmd:CI_Citation id="geonetwork.thesaurus.register.theme.bc44a748-f1a1-4775-9395-a4a6d8bb8df6">
 	 *  			<gmd:title>
 	 *  				<gco:CharacterString>THESAURUS NAME</gco:CharacterString>
 	 *  			</gmd:title>
 	 *  			<gmd:date gco:nilReason="unknown"/>
+	 *				<gmd:otherCitationDetails>
+	 *					<gmx:FileName src="http://localhost:8080/geonetwork/srv/eng/metadata.show?uuid=bc44a748-f1a1-4775-9395-a4a6d8bb8df6">register.theme.bc44a748-f1a1-4775-9395-a4a6d8bb8df6</gmx:FileName>
+	 *				</gmd:otherCitationDetails>
 	 *  		</gmd:CI_Citation>
 	 *  	</gmd:thesaurusName>
 	 *  </gmd:MD_Keywords>
@@ -367,6 +398,7 @@ public class KeywordBean {
 	private static Element createThesaurusNameElt (KeywordBean kb) {
 		Element thesaurusName = new Element("thesaurusName", NS_GMD);
 		Element citation = new Element("CI_Citation", NS_GMD);
+		citation.setAttribute("id","geonetwork.thesaurus."+kb.thesaurus);
 		Element title = new Element("title", NS_GMD);
 		Element cs = new Element("CharacterString", NS_GCO);
 		Element date = new Element("date", NS_GMD);
@@ -395,144 +427,17 @@ public class KeywordBean {
             date.setAttribute("nilReason", "unknown",NS_GCO);
         }
 
+				Element otherCit = new Element("otherCitationDetails", NS_GMD);
+				Element gmxFileName = new Element("FileName", NS_GMX).setText(kb.thesaurus);
+				gmxFileName.setAttribute("src", kb.downloadUrl);
+				otherCit.addContent(gmxFileName);
+
 		title.addContent((Content) cs.clone());
 		citation.addContent(0,title);
-		citation.addContent(1, date);
+		citation.addContent(1,date);
+		citation.addContent(2,otherCit);
 		thesaurusName.addContent(citation);
 		
 		return thesaurusName;
 	}
-
-    public Collection<String> getLanguages() {
-        return labels.keySet();
-    }
-
-    public String getLabel(String lang) {
-        return labels.get(lang.toLowerCase());
-    }
-
-	public void setLabel(String value, String lang) {
-		this.labels.put(LangUtils.to2CharLang(lang.toLowerCase()), value);
-	}
-
-	/**
-	 * Return prefLabel in default language or the first
-	 * prefLabel of the keyword.
-	 *
-	 * @return
-	 */
-	public String getDefaultPrefLabel () {
-		if (labels.containsKey(lang.toLowerCase()))
-			return labels.get(lang.toLowerCase());
-		else {
-			Iterator iter = labels.entrySet().iterator();
-			Map.Entry<String, String> e = (Map.Entry<String, String>) iter.next();
-		    return e.getValue();
-		}
-	}
-
-    /**
-     * Return locale name
-     *
-     * @return
-     */
-    public String getDefaultLocale () {
-        if (labels.containsKey(lang.toLowerCase()))
-            return lang;
-        else {
-            Iterator iter = labels.entrySet().iterator();
-            Map.Entry<String, String> e = (Map.Entry<String, String>) iter.next();
-            if( !e.getKey().matches("\\w\\w+") ){
-                return lang;
-            }
-            return e.getKey();
-        }
-    }
-    /**
-     * Create a xml node for the current Keyword
-     *
-     * @return
-     */
-    public Element toElement(String defaultLang, String... langs) {
-        defaultLang = LangUtils.to2CharLang(defaultLang);
-        List<String> prioritizedList = new ArrayList<String>();
-        prioritizedList.add(defaultLang);
-        for (String s : langs) {
-            s = LangUtils.to2CharLang(s);
-            prioritizedList.add(s.toLowerCase());
-        }
-        TreeSet<String> languages = new TreeSet<String>(new PrioritizedLangComparator(defaultLang, prioritizedList));
-
-        for(String l : labels.keySet()) {
-            l = LangUtils.to2CharLang(l);
-            languages.add(l.toLowerCase());
-        }
-
-        Element elKeyword = new Element("keyword");
-
-        Element elId = new Element("id");
-        elId.addContent(Integer.toString(this.getId()));
-        Element elCode = new Element("code");
-        String code = this.getRelativeCode();
-        elCode.setText(code);
-        // TODO : Add Thesaurus name
-        Element elSelected = new Element("selected");
-        if (this.isSelected()) {
-            elSelected.addContent("true");
-        } else {
-            elSelected.addContent("false");
-        }
-
-        elKeyword.addContent(elId);
-        elKeyword.addContent(elCode);
-
-        for (String language : languages) {
-            if(!prioritizedList.isEmpty() && ! prioritizedList.contains(language)) {
-                continue;
-            }
-
-            Element elValue = new Element("value");
-            elValue.addContent(labels.get(language));
-            elValue.setAttribute("lang", language.toUpperCase());
-            elKeyword.addContent(elValue);
-        }
-
-        Element elDefiniton = new Element("definition");
-        elDefiniton.addContent(this.definition);
-        Element elUri = new Element("uri");
-        elUri.addContent(this.getCode());
-
-        String thesaurusType = this.getThesaurus();
-        thesaurusType = thesaurusType.replace('.', '-');
-        if (thesaurusType.contains("-"))
-            thesaurusType = thesaurusType.split("-")[1];
-        elKeyword.setAttribute("type", thesaurusType);
-        Element elthesaurus = new Element("thesaurus").setText(this.getThesaurus());
-
-        // Geo attribute
-        if (this.getCoordEast() != null && this.getCoordWest() != null
-                && this.getCoordSouth() != null && this.getCoordNorth() != null) {
-            Element elBbox = new Element("geo");
-            Element elEast = new Element("east");
-            elEast.addContent(this.getCoordEast());
-            Element elWest = new Element("west");
-            elWest.addContent(this.getCoordWest());
-            Element elSouth = new Element("south");
-            elSouth.addContent(this.getCoordSouth());
-            Element elNorth = new Element("north");
-            elNorth.addContent(this.getCoordNorth());
-            elBbox.addContent(elEast);
-            elBbox.addContent(elWest);
-            elBbox.addContent(elSouth);
-            elBbox.addContent(elNorth);
-            elKeyword.addContent(elBbox);
-        }
-
-        elKeyword.addContent(elthesaurus);
-        elKeyword.addContent(elDefiniton);
-        elKeyword.addContent(elSelected);
-        elKeyword.addContent(elUri);
-        return elKeyword;
-    }
-
 }

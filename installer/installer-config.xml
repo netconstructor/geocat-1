@@ -91,7 +91,8 @@
 			<fileset dir="../web/target/geonetwork"  targetdir="$INSTALL_PATH/web/geonetwork" />
 
 			<fileset dir="../release/data"   targetdir="$INSTALL_PATH/data" />
-			<fileset dir="../release/schemaPlugins"   targetdir="$INSTALL_PATH/web/geonetwork/schemaPlugins" />
+			<fileset dir="../release/schemaPlugins"   targetdir="$INSTALL_PATH/web/geonetwork/WEB-INF/data/config/schema_plugins" />
+			
 
             <fileset dir="../web-client/target/classes/apps" targetdir="$INSTALL_PATH/web/geonetwork/apps" />
 

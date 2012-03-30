@@ -92,3 +92,41 @@ Your permissions should now look like this::
 
 :command:`chown -R tomcat:tomcat <install directory>/data`
 
+The base maps are not visible
+-----------------------------
+
+**GeoServer** may not have started properly. Confirm this by trying to connect to http://<yourdomain>:8080/geoserver (on your local machine this is http:;/localhost:8080/geoserver )
+
+Native JAI error on Jetty
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Error in output.log::
+
+  sun.misc.ServiceConfigurationError: javax.imageio.spi.ImageOutputStreamSpi: Provider com.sun.media.imageioimpl.stream.ChannelImageOutputStreamSpi could not be instantiated: java.lang.SecurityException: sealing violation: package com.sun.media.imageioimpl.stream is sealed.
+
+Jetty by default ships with a classloader that does not conform to the Java classloading model: 
+you'll notice because Geoserver will fail all (:term:`JAI`) usage attempt with a "sealing violation" exception. 
+It can be restored to standard behaviour locating the etc/jetty-webapps.xml configuration file and 
+changing the web app context configuration to look like the following::
+
+	<Configure id="Server" class="org.eclipse.jetty.server.Server">
+    <Ref id="DeploymentManager">
+          <Call id="webappprovider" name="addAppProvider">
+            <Arg>
+              <New class="org.eclipse.jetty.deploy.providers.WebAppProvider">
+                <Set name="monitoredDir"><Property name="jetty.home" default="." />/../web</Set>
+                <Set name="defaultsDescriptor"><Property name="jetty.home" default="."/>/etc/webdefault.xml</Set>
+                <Set name="scanInterval">1</Set>
+                <Set name="contextXmlDir"><Property name="jetty.home" default="." />/contexts</Set>
+                <Set name="extractWars">true</Set>
+                
+                <!-- uncomment in case of a JAI usage attempt with a "sealing violation" exception -->
+                <Set name="parentLoaderPriority">true</Set>
+                
+              </New>
+            </Arg>
+          </Call>
+    </Ref>
+  </Configure>
+
+.. note:: The importing line is the one where the **parentLoaderPriority** property is set to **true**
