@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -693,5 +694,70 @@ public class KeywordsSearcher {
 			}
 		return keyword;
 	}
+
+    private KeywordBean createKeywordBean(String defaultLangCode, int idKeyword, Thesaurus thesaurus,
+                                          QueryResultsTable resultsTable, int row)
+    {
+        // preflab
+        Value value = resultsTable.getValue(row, 0);
+        String sValue = "";
+        if (value != null) {
+        	sValue = value.toString();
+        }
+        // definition
+        Value definition = resultsTable.getValue(row, 1);
+        String sDefinition = "";
+        if (definition != null) {
+        	sDefinition = definition.toString();
+        }
+        // uri (= id in RDF file != id in list)
+        Value uri = resultsTable.getValue(row, 2);
+        String sUri = "";
+        if (uri != null) {
+            sUri = uri.toString();
+        }
+
+        // language of the result
+        Value lang = resultsTable.getValue(row, 5);
+        String sLang = defaultLangCode;
+        if (lang != null) {
+            sLang = lang.toString();
+        }
+
+        sLang = LangUtils.two2ThreeLangCode(sLang);
+
+
+        Value lowCorner = resultsTable.getValue(row, 3);
+        Value upperCorner = resultsTable.getValue(row, 4);
+
+        String sUpperCorner = "";
+        String sLowCorner = "";
+
+        String sEast = "";
+        String sSouth = "";
+        String sWest = "";
+        String sNorth = "";
+
+        // lowcorner
+        if (lowCorner != null) {
+        	sLowCorner = lowCorner.toString();
+        	sWest = sLowCorner.substring(0, sLowCorner.indexOf(' ')).trim();
+        	sSouth = sLowCorner.substring(sLowCorner.indexOf(' ')).trim();
+        }
+
+        // uppercorner
+        if (upperCorner != null) {
+        	sUpperCorner = upperCorner.toString();
+        	sEast = sUpperCorner.substring(0,sUpperCorner.indexOf(' ')).trim();
+        	sNorth = sUpperCorner.substring(sUpperCorner.indexOf(' '))
+        			.trim();
+        }
+
+        KeywordBean kb = new KeywordBean(idKeyword, sValue,
+        		sDefinition, sUri, sEast, sWest, sSouth, sNorth,
+        		thesaurus.getKey(), false, sLang, thesaurus.getTitle(), 
+        		thesaurus.getDate(), null );
+        return kb;
+    }
 
 }

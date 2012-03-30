@@ -440,4 +440,137 @@ public class KeywordBean {
 		
 		return thesaurusName;
 	}
+
+    public Collection<String> getLanguages() {
+        return labels.keySet();
+    }
+
+    public String getLabel(String lang) {
+        return labels.get(lang.toLowerCase());
+    }
+
+	public void setLabel(String value, String lang) {
+		this.labels.put(LangUtils.to2CharLang(lang.toLowerCase()), value);
+	}
+
+	/**
+	 * Return prefLabel in default language or the first
+	 * prefLabel of the keyword.
+	 *
+	 * @return
+	 */
+	public String getDefaultPrefLabel () {
+		if (labels.containsKey(lang.toLowerCase()))
+			return labels.get(lang.toLowerCase());
+		else {
+			Iterator iter = labels.entrySet().iterator();
+			Map.Entry<String, String> e = (Map.Entry<String, String>) iter.next();
+		    return e.getValue();
+		}
+	}
+
+    /**
+     * Return locale name
+     *
+     * @return
+     */
+    public String getDefaultLocale () {
+        if (labels.containsKey(lang.toLowerCase()))
+            return lang;
+        else {
+            Iterator iter = labels.entrySet().iterator();
+            Map.Entry<String, String> e = (Map.Entry<String, String>) iter.next();
+            if( !e.getKey().matches("\\w\\w+") ){
+                return lang;
+            }
+            return e.getKey();
+        }
+    }
+    /**
+     * Create a xml node for the current Keyword
+     *
+     * @return
+     */
+    public Element toElement(String defaultLang, String... langs) {
+        defaultLang = LangUtils.to2CharLang(defaultLang);
+        List<String> prioritizedList = new ArrayList<String>();
+        prioritizedList.add(defaultLang);
+        for (String s : langs) {
+            s = LangUtils.to2CharLang(s);
+            prioritizedList.add(s.toLowerCase());
+        }
+        TreeSet<String> languages = new TreeSet<String>(new PrioritizedLangComparator(defaultLang, prioritizedList));
+
+        for(String l : labels.keySet()) {
+            l = LangUtils.to2CharLang(l);
+            languages.add(l.toLowerCase());
+        }
+
+        Element elKeyword = new Element("keyword");
+
+        Element elId = new Element("id");
+        elId.addContent(Integer.toString(this.getId()));
+        Element elCode = new Element("code");
+        String code = this.getRelativeCode();
+        elCode.setText(code);
+        // TODO : Add Thesaurus name
+        Element elSelected = new Element("selected");
+        if (this.isSelected()) {
+            elSelected.addContent("true");
+        } else {
+            elSelected.addContent("false");
+        }
+
+        elKeyword.addContent(elId);
+        elKeyword.addContent(elCode);
+
+        for (String language : languages) {
+            if(!prioritizedList.isEmpty() && ! prioritizedList.contains(language)) {
+                continue;
+            }
+
+            Element elValue = new Element("value");
+            elValue.addContent(labels.get(language));
+            elValue.setAttribute("lang", language.toUpperCase());
+            elKeyword.addContent(elValue);
+        }
+
+        Element elDefiniton = new Element("definition");
+        elDefiniton.addContent(this.definition);
+        Element elUri = new Element("uri");
+        elUri.addContent(this.getCode());
+
+        String thesaurusType = this.getThesaurus();
+        thesaurusType = thesaurusType.replace('.', '-');
+        if (thesaurusType.contains("-"))
+            thesaurusType = thesaurusType.split("-")[1];
+        elKeyword.setAttribute("type", thesaurusType);
+        Element elthesaurus = new Element("thesaurus").setText(this.getThesaurus());
+
+        // Geo attribute
+        if (this.getCoordEast() != null && this.getCoordWest() != null
+                && this.getCoordSouth() != null && this.getCoordNorth() != null) {
+            Element elBbox = new Element("geo");
+            Element elEast = new Element("east");
+            elEast.addContent(this.getCoordEast());
+            Element elWest = new Element("west");
+            elWest.addContent(this.getCoordWest());
+            Element elSouth = new Element("south");
+            elSouth.addContent(this.getCoordSouth());
+            Element elNorth = new Element("north");
+            elNorth.addContent(this.getCoordNorth());
+            elBbox.addContent(elEast);
+            elBbox.addContent(elWest);
+            elBbox.addContent(elSouth);
+            elBbox.addContent(elNorth);
+            elKeyword.addContent(elBbox);
+        }
+
+        elKeyword.addContent(elthesaurus);
+        elKeyword.addContent(elDefiniton);
+        elKeyword.addContent(elSelected);
+        elKeyword.addContent(elUri);
+        return elKeyword;
+    }
+
 }
