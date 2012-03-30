@@ -49,6 +49,10 @@ function doXLinkNewElementAjax(index, metadataId, thisElement) {
         method: 'get',
         parameters: pars,
         onSuccess: function(req) {
+            var eBusy = $('editorBusy');
+            if (eBusy) eBusy.hide();
+            $('editorOverlay').setStyle({display: "none"});
+
             if (index > 0) {
                 doXLinkNewElementAjax(index - 1,metadataId,thisElement);
             }
@@ -73,9 +77,6 @@ function doXLinkNewElementAjax(index, metadataId, thisElement) {
             }
             
             if (index == 0) {
-                var eBusy = $('editorBusy');
-                if (eBusy) eBusy.hide();
-                $('editorOverlay').setStyle({display: "none"});
                 // Init map if spatial extent editing - usually bounding box or bounding polygon
                 if (dialogRequest.name == 'gmd:geographicElement' || dialogRequest.name == 'gmd:polygon' 
                 	|| dialogRequest.name == 'gmd:extent' || dialogRequest.name == 'gmd:serviceExtent'
