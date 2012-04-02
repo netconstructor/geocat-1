@@ -66,29 +66,26 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
         // clean up expired changes
         dbms.execute("DELETE FROM publish_tracking where changedate < current_date-" + Math.min(1, keepDuration));
 
-        List<Record> newTodayValues = new ArrayList<Record>();
-
         List<MetadataRecord> metadataids = lookUpMetadataIds(dbms);
 
         DataManager dataManager = gc.getDataManager();
         dataManager.startIndexGroup();
-        for (MetadataRecord metadataRecord : metadataids) {
-            String id = "" + metadataRecord.id;
-            try {
-                Record newTodayRecord = validate(gc, metadataRecord, dbms, dataManager);
-                if (newTodayRecord == null)
-                    continue;
-                newTodayValues.add(newTodayRecord);
-                dataManager.indexMetadataGroup(dbms, id, false, null);
-            } catch (Exception e) {
-                String error = Xml.getString(JeevesException.toElement(e));
-                Log.error(Geonet.INDEX_ENGINE, "Error during Validation/Unpublish process of metadata " + id + ".  Exception: " + error);
+        try {
+            for (MetadataRecord metadataRecord : metadataids) {
+                String id = "" + metadataRecord.id;
+                try {
+                    Record newTodayRecord = validate(gc, metadataRecord, dbms, dataManager);
+                    if (newTodayRecord != null) {
+                        newTodayRecord.insertInto(dbms);
+                    }
+                    dataManager.indexMetadataGroup(dbms, id, false, null);
+                } catch (Exception e) {
+                    String error = Xml.getString(JeevesException.toElement(e));
+                    Log.error(Geonet.INDEX_ENGINE, "Error during Validation/Unpublish process of metadata " + id + ".  Exception: " + error);
+                }
             }
-        }
-        dataManager.endIndexGroup();
-
-        for (Record record : newTodayValues) {
-            record.insertInto(dbms);
+        } finally {
+            dataManager.endIndexGroup();
         }
     }
 
