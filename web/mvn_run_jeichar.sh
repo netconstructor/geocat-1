@@ -12,4 +12,5 @@ MEMORY="-XX:MaxPermSize=256m -Xmx1024M -server"
 DIRS="-Dgeonetwork.dir=/tmp/gc_data"
 export MAVEN_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS -Dfile.encoding=UTF8 -Dlog4j.debug"
 
-mvn jetty:run -Penv-dev,widgets-tab -o $@
+cd ../jeeves 
+mvn install -Dmaven.test.skip && cd ../web && mvn jetty:run -Penv-dev,widgets-tab $@

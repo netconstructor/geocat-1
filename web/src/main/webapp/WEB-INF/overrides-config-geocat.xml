@@ -64,6 +64,9 @@
         <addXML xpath="">
             <include>config-geocat.xml</include>
         </addXML>
+        <addXml xpath="schedules">
+        	<schedule name="unpublish-invalid-metadata" when="1 hour" class=".kernel.UnpublishInvalidMetadataJob" />
+        </addXml>
     </file>
     <file name=".*/WEB-INF/user-profiles.xml">
         <removeXML xpath="allow[@service='metadata.schema.add.form']"/>
@@ -83,6 +86,11 @@
             <!-- Format facilities -->
             <allow service="format.admin"/>
             <allow service="format"/>
+
+            <!-- Unpublish facilities -->
+            <allow service="unpublish.invalid.metadata"/>
+            <allow service="xml.unpublish.report"/>
+            <allow service="unpublish.report"/>
 
             <!-- Extent facilities -->
             <allow service="xml.extent.add"/>

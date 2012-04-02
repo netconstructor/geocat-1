@@ -2,6 +2,10 @@
 <strings>
 
 	<!-- GEOCAT Strings -->
+	<unpublishReport>Unpublish Report</unpublishReport>
+	<autoUnpublish>System unpublish</autoUnpublish>
+	<manualUnpublish>User unpublish</manualUnpublish>
+	<allElements>All published and unpublished</allElements>
 	<duplicate>Dupliquer</duplicate>
     <geocatNext js="true">Prochain</geocatNext>
     <geocatPrevious js="true">Précédente</geocatPrevious>

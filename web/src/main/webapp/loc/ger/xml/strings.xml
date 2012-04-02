@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
 	<!-- GEOCAT Strings -->
+	<unpublishReport>Unpublish Report</unpublishReport>
+	<autoUnpublish>System unpublish</autoUnpublish>
+	<manualUnpublish>User unpublish</manualUnpublish>
+	<allElements>All published and unpublished</allElements>
 	<duplicate>Vervielfältigen</duplicate>
     <geocatNext js="true">Vorwärts</geocatNext>
     <geocatPrevious js="true">Zurück</geocatPrevious>

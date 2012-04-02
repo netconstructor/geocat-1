@@ -210,7 +210,6 @@
 					<xsl:if test="/root/gui/env/metadataprivs/usergrouponly!='true'">
 					* <xsl:value-of select="/root/gui/strings/usergroups"/>
 					</xsl:if>
-					</table>
 					</td>
 					<xsl:if test="not(contains(/root/gui/reqService,'metadata.batch'))">
 					<td class="padded-center">

@@ -70,7 +70,6 @@
             </output>
         </service>
 
-
         <service name="validated.shared.user.update">
             <class name=".services.user.SharedUpdate" />
             <output forward="validated.shared.user.admin" />
@@ -451,6 +450,19 @@
 				<param name="maxHitsInSummary" value="10000" />
 			</class>
 			<output sheet="thesaurus/sortedKeywords.xsl" contentType="text/xml; charset=UTF-8"/>
+        </service>
+
+		<!-- Unpublishing control and monitor services -->        
+        <service name="unpublish.invalid.metadata">
+            <class name=".kernel.UnpublishInvalidMetadataJob" />
+        </service>
+
+        <service name="xml.unpublish.report" contentType="xml">
+            <class name=".kernel.UnpublishInvalidMetadataReport"/>
+        </service>
+        <service name="unpublish.report">
+            <class name=".kernel.UnpublishInvalidMetadataReport"/>
+			<output sheet="unpublish-report.xsl"/>
         </service>
         
     </services>

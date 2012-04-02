@@ -2020,17 +2020,21 @@ public class DataManager {
 	    String version = null;
 		Log.debug(Geonet.DATA_MANAGER, "Creating validation report for record #" + id + " [schema: " + schema + "].");
 
-		UserSession session = context.getUserSession();
+		
 		Element md = (Element) metadata.clone();
 		// always hideElements for validation
 		hideElements(context, dbms, md, id, false, true);
 		
-		Element sessionReport = (Element)session.getProperty(Geonet.Session.VALIDATION_REPORT + id);
-		if (sessionReport != null && !forEditing) {
-			Log.debug(Geonet.DATA_MANAGER, "  Validation report available in session.");
-			sessionReport.detach();
-			return Pair.read(sessionReport, version);
-		}
+        UserSession session = null;
+        if(context != null) {
+            session  = context.getUserSession();
+            Element sessionReport = (Element)session.getProperty(Geonet.Session.VALIDATION_REPORT + id);
+            if (sessionReport != null && !forEditing) {
+                Log.debug(Geonet.DATA_MANAGER, "  Validation report available in session.");
+                sessionReport.detach();
+                return Pair.read(sessionReport, version);
+            }
+        }
 
 	    Map <String, Integer[]> valTypeAndStatus = new HashMap<String, Integer[]>();
 		Element errorReport = new Element ("report", Edit.NAMESPACE);
@@ -2091,7 +2095,9 @@ public class DataManager {
         }
 
         // Save report in session (invalidate by next update) and db
-   		session.setProperty(Geonet.Session.VALIDATION_REPORT + id, errorReport);
+        if(session != null) {
+            session.setProperty(Geonet.Session.VALIDATION_REPORT + id, errorReport);
+        }
 		saveValidationStatus(dbms, id, valTypeAndStatus, new ISODate().toString());
 
 		return Pair.read(errorReport, version);
