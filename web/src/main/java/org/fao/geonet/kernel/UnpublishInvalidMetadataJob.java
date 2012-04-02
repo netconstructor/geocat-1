@@ -95,9 +95,8 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
         String schema = gc.getSchemamanager().autodetectSchema(md);
         Record todayRecord = null;
         boolean published = isPublished(id, dbms);
+        Element report = dataManager.doValidate(null, dbms, schema, id, md, "eng", false).one();
         if (published) {
-            Element report = dataManager.doValidate(null, dbms, schema, id, md, "eng", false).one();
-
             String failureReason = failureReason(report);
             if (!failureReason.isEmpty()) {
                 boolean validated = false;
