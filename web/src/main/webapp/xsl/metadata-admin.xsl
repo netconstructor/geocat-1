@@ -14,7 +14,7 @@
 			<xsl:with-param name="title" select="/root/gui/strings/privileges"/>
 			<xsl:with-param name="content">
 			
-				<xsl:variable name="lang" select="substring(/root/gui/language,0,3)"/>
+				<xsl:variable name="lang" select="/root/gui/language"/>
 				<xsl:variable name="disabled" select="(/root/response/owner='false')"/>
 				<xsl:variable name="path" select="string(/root/response/luceneIndexPath)"/>
 				<xsl:variable name="id" select="string(/root/response/id)"/>
@@ -76,12 +76,12 @@
 							<!-- loop on all operations leaving editing and notify to last -->
 							<xsl:for-each select="/root/response/operations/record">
 								<xsl:if test="id!='2' and id!='3'">
-									<th class="padded-center"><xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/></th>
+									<th class="padded-center"><xsl:value-of select="label/child::*[name() = $lang]"/></th>
 								</xsl:if>
 							</xsl:for-each>
 							<xsl:for-each select="/root/response/operations/record">
 								<xsl:if test="id='2' or id='3'">
-									<th class="padded-center"><xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/></th>
+									<th class="padded-center"><xsl:value-of select="label/child::*[name() = $lang]"/></th>
 								</xsl:if>
 							</xsl:for-each>
 							<th width="70"/>
@@ -128,7 +128,12 @@
 												<xsl:if test="$disabled">
 													<xsl:attribute name="style">color: #A0A0A0;</xsl:attribute>
 												</xsl:if>
-												<xsl:value-of select="label/child::*[name() = $lang]"/>
+												<xsl:choose>
+													<xsl:when test="label/child::*[name() = $lang]">
+														<xsl:value-of select="label/child::*[name() = $lang]"/>
+													</xsl:when>
+													<xsl:otherwise><xsl:value-of select="name"/></xsl:otherwise>
+												</xsl:choose>
 												<xsl:if test="/root/gui/env/metadataprivs/usergrouponly!='true' and $userGroup='true'"><xsl:text> *</xsl:text></xsl:if>
 											</span>
 										</td>
@@ -276,7 +281,7 @@
 					<xsl:if test="$disabled">
 						<xsl:attribute name="style">color: #A0A0A0;</xsl:attribute>
 					</xsl:if>
-					<xsl:value-of select="label/child::*[substring(name(),0,3) = $lang]"/>
+					<xsl:value-of select="label/child::*[name() = $lang]"/>
 				</span>
 			</td>
 			

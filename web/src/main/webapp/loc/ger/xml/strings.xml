@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
 	<!-- GEOCAT Strings -->
-	<unpublishReport>Unpublish Report</unpublishReport>
-	<autoUnpublish>System unpublish</autoUnpublish>
-	<manualUnpublish>User unpublish</manualUnpublish>
-	<allElements>All published and unpublished</allElements>
+	<unpublishReport>Unpublish CSV Report</unpublishReport>
+	<unpublishReportDes>Download the CSV Report of the metadata publish/unpublishing for the last weeks</unpublishReportDes>
+
 	<duplicate>Vervielfältigen</duplicate>
     <geocatNext js="true">Vorwärts</geocatNext>
     <geocatPrevious js="true">Zurück</geocatPrevious>

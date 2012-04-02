@@ -371,10 +371,10 @@
 							</xsl:call-template>
 						</xsl:if>
 						<xsl:call-template name="addrow">
-							<xsl:with-param name="service" select="'monitoring.report'"/>
-							<xsl:with-param name="title" select="/root/gui/strings/monitoring"/>
+							<xsl:with-param name="service" select="'unpublish.report.csv'"/>
+							<xsl:with-param name="title" select="/root/gui/strings/unpublishReport"/>
 							<xsl:with-param name="desc"
-								select="/root/gui/strings/monitoringDes"/>
+								select="/root/gui/strings/unpublishReportDes"/>
 						</xsl:call-template>
 
 					</xsl:variable>

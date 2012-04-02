@@ -35,6 +35,7 @@ import org.fao.geonet.kernel.AccessManager;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.MdInfo;
 import org.fao.geonet.kernel.SelectionManager;
+import org.fao.geonet.kernel.UnpublishInvalidMetadataJob;
 import org.jdom.Element;
 
 import java.util.HashSet;
@@ -104,6 +105,9 @@ public class BatchUpdatePrivileges implements Service
 				if (us.getUserId().equals(info.owner) && !isAdmin && !isReviewer)
 					skip = true;
 
+				final boolean published = UnpublishInvalidMetadataJob.isPublished(id, dbms);
+		        boolean publishedAgain = false;
+
 				dm.deleteMetadataOper(dbms, id, skip);
 
 				//--- set new ones
@@ -121,12 +125,22 @@ public class BatchUpdatePrivileges implements Service
 						String groupId = st.nextToken();
 						String operId  = st.nextToken();
 
+						if(Integer.parseInt(groupId) == 1 && Integer.parseInt(operId) == 0) {
+		                    publishedAgain = true;
+		                }
+
 						dm.setOperation(context, dbms, id, groupId, operId);
 					}
 				}
 				metadata.add(new Integer(id));
+                if(published && !publishedAgain) {
+		              new UnpublishInvalidMetadataJob.Record(Integer.parseInt(id), false, false, context.getUserSession().getUsername(), "Manual unpublished by user").insertInto(dbms);
+		        } else if (!published && publishedAgain) {
+		            new UnpublishInvalidMetadataJob.Record(Integer.parseInt(id), true, true, context.getUserSession().getUsername(), "").insertInto(dbms);
+		        }
 			}
 		}
+
 		}
 
 		//--- reindex metadata

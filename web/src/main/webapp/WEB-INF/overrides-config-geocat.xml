@@ -89,8 +89,8 @@
 
             <!-- Unpublish facilities -->
             <allow service="unpublish.invalid.metadata"/>
-            <allow service="xml.unpublish.report"/>
-            <allow service="unpublish.report"/>
+            <allow service="unpublish.report.xml"/>
+            <allow service="unpublish.report.csv"/>
 
             <!-- Extent facilities -->
             <allow service="xml.extent.add"/>

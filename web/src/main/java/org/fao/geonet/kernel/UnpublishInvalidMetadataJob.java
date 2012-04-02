@@ -3,10 +3,8 @@ package org.fao.geonet.kernel;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import jeeves.exceptions.JeevesException;
 import jeeves.interfaces.Schedule;
@@ -21,13 +19,13 @@ import jeeves.utils.Xml;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
 import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.UnpublishInvalidMetadataJob.Record;
-import org.fao.geonet.kernel.search.spatial.Pair;
 import org.jdom.Element;
 import org.jdom.filter.Filter;
 import org.joda.time.DateTime;
 
 public class UnpublishInvalidMetadataJob implements Schedule, Service {
+
+    static final String AUTOMATED_ENTITY = "Automated";
 
     @Override
     public void init(String appPath, ServiceConfig params) throws Exception {
@@ -68,12 +66,7 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
         // clean up expired changes
         dbms.execute("DELETE FROM publish_tracking where changedate < current_date-" + Math.min(1, keepDuration));
 
-        Map<Integer, Record> yesterdayValues = values(dbms, 1);
-        Map<Integer, Record> todayValues = values(dbms, 0);
         List<Record> newTodayValues = new ArrayList<Record>();
-
-        // we will read todays record in later
-        dbms.execute("DELETE FROM publish_tracking where changedate = current_date");
 
         List<MetadataRecord> metadataids = lookUpMetadataIds(dbms);
 
@@ -82,10 +75,9 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
         for (MetadataRecord metadataRecord : metadataids) {
             String id = "" + metadataRecord.id;
             try {
-                Record yesterday = yesterdayValues.get(metadataRecord.id);
-                Record today = todayValues.get(id);
-                boolean earlierTodayAutoUnpublish = today == null ? false : today.autoUnpublish;
-                Record newTodayRecord = validate(gc, metadataRecord, dbms, dataManager, yesterday, earlierTodayAutoUnpublish);
+                Record newTodayRecord = validate(gc, metadataRecord, dbms, dataManager);
+                if (newTodayRecord == null)
+                    continue;
                 newTodayValues.add(newTodayRecord);
                 dataManager.indexMetadataGroup(dbms, id, false, null);
             } catch (Exception e) {
@@ -96,47 +88,33 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
         dataManager.endIndexGroup();
 
         for (Record record : newTodayValues) {
-            dbms.execute(
-                    "INSERT INTO publish_tracking (metadataid, autoUnpublish, validated, published, failureReason) VALUES (?,?,?,?,?)",
-                    record.id, codeForDatabase(record.autoUnpublish), codeForDatabase(record.validated), codeForDatabase(record.published),
-                    record.failureReason);
+            record.insertInto(dbms);
         }
     }
 
-    private String codeForDatabase(boolean value) {
-        return value ? "y" : "n";
-    }
-
-    private Record validate(GeonetContext gc, MetadataRecord metadataRecord, Dbms dbms, DataManager dataManager, Record yesterday,
-            boolean earlierTodayAutoUnpublish) throws Exception {
+    private Record validate(GeonetContext gc, MetadataRecord metadataRecord, Dbms dbms, DataManager dataManager) throws Exception {
         String id = "" + metadataRecord.id;
         Element md = gc.getXmlSerializer().select(dbms, "metadata", id, null);
         String schema = gc.getSchemamanager().autodetectSchema(md);
-        Element report = dataManager.doValidate(null, dbms, schema, id, md, "eng", false).one();
-
-        boolean validated = false;
+        Record todayRecord = null;
         boolean published = isPublished(id, dbms);
-        boolean autoUnpublish = earlierTodayAutoUnpublish;
-        if (yesterday == null) {
-            yesterday = new Record(metadataRecord.id, validated, published, autoUnpublish, "");
-        }
-        Record todayRecord;
-        String failureReason = failureReason(report);
-        if (failureReason.isEmpty()) {
-            validated = true;
-            autoUnpublish = !published && yesterday.autoUnpublish;
-            todayRecord = new Record(metadataRecord.id, validated, published, autoUnpublish, failureReason);
-        } else {
-            validated = false;
-            autoUnpublish = published || (!published && earlierTodayAutoUnpublish) || (!published && yesterday.autoUnpublish);
-            todayRecord = new Record(metadataRecord.id, validated, published, autoUnpublish, failureReason);
-            dbms.execute("DELETE FROM operationallowed where metadataid=? and groupid=1", metadataRecord.id);
+        if (published) {
+            Element report = dataManager.doValidate(null, dbms, schema, id, md, "eng", false).one();
+
+            String failureReason = failureReason(report);
+            if (!failureReason.isEmpty()) {
+                boolean validated = false;
+                String entity = AUTOMATED_ENTITY;
+                published = false;
+                todayRecord = new Record(metadataRecord.id, validated, published, entity, failureReason);
+                dbms.execute("DELETE FROM operationallowed WHERE metadataid = ? and (groupid = 1 or groupid = -1)", metadataRecord.id);
+            }
         }
 
         return todayRecord;
     }
 
-    private boolean isPublished(String id, Dbms dbms) throws SQLException {
+    public static boolean isPublished(String id, Dbms dbms) throws SQLException {
         @SuppressWarnings("rawtypes")
         List children = dbms.select(
                 "SELECT metadataid FROM operationallowed where metadataid=" + id + " and groupid = 1 and operationid = 0").getChildren(
@@ -148,22 +126,22 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
 
         @SuppressWarnings("unchecked")
         Iterator<Element> reports = report.getDescendants(new ReportFinder());
-        
+
         StringBuilder builder = new StringBuilder();
-        while(reports.hasNext()) {
+        while (reports.hasNext()) {
             report = reports.next();
             String reportType = report.getAttributeValue("rule", Edit.NAMESPACE);
             if (true) {
                 @SuppressWarnings("unchecked")
                 Iterator<Element> errors = report.getDescendants(new ErrorFinder());
-                if(errors.hasNext()) {
+                if (errors.hasNext()) {
                     if (builder.length() > 0)
                         builder.append(", ");
                     builder.append(reportType);
                 }
             }
         }
-        
+
         return builder.toString();
     }
 
@@ -182,50 +160,58 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
     }
 
     @SuppressWarnings("unchecked")
-    static Map<Integer, Record> values(Dbms dbms, int dayOffset) throws Exception {
-        Element results = dbms.select("SELECT * from publish_tracking where changedate = current_date-" + dayOffset);
+    static List<Record> values(Dbms dbms, int startOffset, int endOffset) throws Exception {
+        Element results = dbms.select("SELECT * from publish_tracking where changedate > current_date-" + startOffset+" and changedate <= current_date - "+endOffset);
 
-        Map<Integer, Record> recordMap = new HashMap<Integer, Record>();
+        List<Record> recordMap = new ArrayList<Record>();
 
+        @SuppressWarnings("rawtypes")
         List children = results.getChildren("record");
         for (Element result : (Collection<Element>) children) {
             Record record = new Record(result);
-            recordMap.put(record.id, record);
+            recordMap.add(record);
         }
 
         return recordMap;
     }
 
-    static class Record {
+    public static class Record {
         int id;
-        boolean autoUnpublish;
+        String entity;
         boolean validated;
         boolean published;
         String failureReason;
 
         Record(Element record) {
             this.id = Integer.parseInt(record.getChildTextTrim("metadataid"));
-            this.autoUnpublish = Boolean.parseBoolean(record.getChildTextTrim("autoUnpublish"));
+            this.entity = record.getChildTextTrim("entity");
             this.validated = Boolean.parseBoolean(record.getChildTextTrim("validated"));
             this.published = Boolean.parseBoolean(record.getChildTextTrim("published"));
-            this.failureReason = record.getChildTextTrim("failureReason");
+            this.failureReason = record.getChildTextTrim("failurereason");
         }
 
-        public Record(int id, boolean validated, boolean published, boolean autoUnpublish, String failureReason) {
+        public Record(int id, boolean validated, boolean published, String entity, String failureReason) {
             this.id = id;
-            this.autoUnpublish = autoUnpublish;
+            this.entity = entity;
             this.validated = validated;
             this.published = published;
             this.failureReason = failureReason;
         }
 
+        public void insertInto(Dbms dbms) throws SQLException {
+            dbms.execute("INSERT INTO publish_tracking (metadataid, entity, validated, published, failureReason) VALUES (?,?,?,?,?)", id,
+                    entity, codeForDatabase(validated), codeForDatabase(published), failureReason.replace('"', '\''));
+        }
+
+        private String codeForDatabase(boolean value) {
+            return value ? "y" : "n";
+        }
+
         public Element toElement() {
-            return new Element("Record").
-                    addContent(new Element("id").setText(""+id)).
-                    addContent(new Element("autoUnpublish").setText(""+autoUnpublish)).
-                    addContent(new Element("validated").setText(""+validated)).
-                    addContent(new Element("published").setText(""+published)).
-                    addContent(new Element("failureReason").setText(failureReason));
+            return new Element("record").addContent(new Element("id").setText("" + id)).addContent(new Element("entity").setText(entity))
+                    .addContent(new Element("validated").setText("" + validated))
+                    .addContent(new Element("published").setText("" + published))
+                    .addContent(new Element("failureReason").setText(failureReason));
         }
     }
 
@@ -259,8 +245,8 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
             }
             return false;
         }
-    }    
-    
+    }
+
     static class ReportFinder implements Filter {
         private static final long serialVersionUID = 1L;
 

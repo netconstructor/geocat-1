@@ -44,7 +44,7 @@ public class UnpublishInvalidMetadataReport implements Service {
         }
         Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
         
-        Map<Integer, Record> today = UnpublishInvalidMetadataJob.values(dbms, 0);
+        List<Record> records = UnpublishInvalidMetadataJob.values(dbms, 100, 0);
         
         Element report = new Element("report");
         
@@ -62,10 +62,10 @@ public class UnpublishInvalidMetadataReport implements Service {
             report.addContent(all);
         }
         
-        for(Record todayRecord : today.values()) {
+        for(Record todayRecord : records) {
             all.addContent(todayRecord.toElement());
             
-            if(todayRecord.autoUnpublish) {
+            if(UnpublishInvalidMetadataJob.AUTOMATED_ENTITY.equals(todayRecord.entity)) {
                 autoUnpublishedToday.addContent(todayRecord.toElement());
             } else {
                 manualUnpublishedToday.addContent(todayRecord.toElement());
