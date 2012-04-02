@@ -457,10 +457,10 @@
             <class name=".kernel.UnpublishInvalidMetadataJob" />
         </service>
 
-        <service name="xml.unpublish.report" contentType="xml">
+        <service name="xml.unpublish.report" >
             <class name=".kernel.UnpublishInvalidMetadataReport"/>
         </service>
-        <service name="unpublish.report">
+        <service name="unpublish.report" contentType="text/csv; charset=UTF-8">
             <class name=".kernel.UnpublishInvalidMetadataReport"/>
 			<output sheet="unpublish-report.xsl"/>
         </service>
