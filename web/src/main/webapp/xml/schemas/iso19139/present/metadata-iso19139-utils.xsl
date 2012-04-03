@@ -170,7 +170,10 @@
 		<xsl:param name="edit"/>
 
 		<xsl:variable name="metadata" select="/root/gmd:MD_Metadata|/root/*[@gco:isoType='gmd:MD_Metadata']"/>
-		<xsl:if test="starts-with(geonet:info/schema, 'iso19139') or geonet:info/schema = 'iso19110'">
+		<xsl:if test="
+				lower-case(normalize-space(/root/gui/reqService)) != 'metadata.xlink.add' and 
+				lower-case(normalize-space(/root/gui/reqService)) != 'metadata.elem.add' and 
+				lower-case(normalize-space(/root/gui/reqService)) != 'metadata.elem.delete' and (starts-with(geonet:info/schema, 'iso19139') or geonet:info/schema = 'iso19110')">
 
 			<xsl:variable name="uuid" select="$metadata/geonet:info/uuid"/>
 			

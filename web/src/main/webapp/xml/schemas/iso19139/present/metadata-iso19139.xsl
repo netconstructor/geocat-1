@@ -1319,8 +1319,8 @@
 						</xsl:call-template>
 					</div>
 				</xsl:if>
-				<xsl:if test="/root/gui/config/editor-metadata-relation">
-					<div style="float:right;">				
+				<xsl:if test="/root/gui/config/editor-metadata-relation">	
+					<div style="float:right;">			
 						<xsl:call-template name="relatedResources">
 							<xsl:with-param name="edit" select="$edit"/>
 						</xsl:call-template>

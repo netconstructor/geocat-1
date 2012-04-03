@@ -47,12 +47,7 @@
                                     <xsl:with-param name="metadata" select="$metadata"/>
                                 </xsl:call-template>
                             </td>
-                            <td>
-                                <xsl:call-template name="relatedResources">
-                                    <xsl:with-param name="edit" select="false()"/>
-                                </xsl:call-template>
-                            </td>
-                        </tr>
+                         </tr>
                     </table>
                 </td>
             </tr>
@@ -185,16 +180,18 @@
 	<xsl:template name="toggle-visibility-edit">
 		<xsl:param name="edit" select="false()"/>
 
-		<xsl:if test="$edit=true() or $edit='true'">
+		<xsl:variable name="ajaxService" select="lower-case(normalize-space(/root/gui/reqService)) = 'metadata.elem.delete' or 
+			lower-case(normalize-space(/root/gui/reqService)) = 'metadata.elem.add' or 
+			lower-case(normalize-space(/root/gui/reqService)) = 'metadata.xlink.add'"/>
+			
+	
+		<xsl:if test="$ajaxService=false() and ($edit=true() or $edit='true')">
 			<tr align="left">
                 <td></td>
 				<td colspan="1">
 					<xsl:if test="$currTab!='simple'">
 					<input class="content" type="checkbox" onclick="toggleVisibilityEdit()" name="toggleVisibilityEditCB" id="toggleVisibilityEditCB" value="true"/><label for="toggleVisibilityEditCB" style="margin-left:0.5em"><xsl:value-of select="/root/gui/strings/toggleVisibilityEdit"/></label>
 					</xsl:if>
-					<xsl:call-template name="relatedResources">
-						<xsl:with-param name="edit" select="true()"/>
-					</xsl:call-template>
 				</td>
 			</tr>
 		</xsl:if>
