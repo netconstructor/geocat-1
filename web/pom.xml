@@ -835,7 +835,7 @@
           <webAppConfig>
             <contextPath>/geonetwork</contextPath>
             <baseResource implementation="org.mortbay.resource.ResourceCollection">
-              <resourcesAsCSV>${basedir}/src/main/webapp,${build.webapp.resources}${widgetsWebappResources}</resourcesAsCSV>
+              <resourcesAsCSV>${basedir}/src/main/webapp,${build.webapp.resources}${widgets.webapp.resources}</resourcesAsCSV>
             </baseResource>
           </webAppConfig>
           <stopKey>JETTY_STOP</stopKey>
@@ -889,8 +889,8 @@
     <profile>
       <id>widgets</id>
       <properties>
-        <webXmlWidgetConfigOverrides>/WEB-INF/config-overrides-widget.xml</webXmlWidgetConfigOverrides>
-        <widgetsWebappResources>,../web-client/src/main/resources/</widgetsWebappResources>
+        <web.xml.widget.config.overrides>/WEB-INF/config-overrides-widget.xml</web.xml.widget.config.overrides>
+        <widgets.webapp.resources>,../web-client/src/main/resources/</widgets.webapp.resources>
       </properties>
     </profile>
     <profile>
@@ -921,10 +921,10 @@
     <geonetwork.webapp.css.dir>${geonetwork.webapp.dir}</geonetwork.webapp.css.dir>
     <minify.verbose>false</minify.verbose>
     <build.webapp.resources>${project.build.directory}/webapp</build.webapp.resources>
-    <webXmlMainConfigOverrides>/WEB-INF/config-overrides-${env}.xml</webXmlMainConfigOverrides>
-    <webXmlWidgetConfigOverrides></webXmlWidgetConfigOverrides>
-    <widgetsWebappResources></widgetsWebappResources>
-    <systemSpecificOverrides></systemSpecificOverrides>
+    <web.xml.main.config.overrides>/WEB-INF/config-overrides-${env}.xml</web.xml.main.config.overrides>
+    <web.xml.widget.config.overrides></web.xml.widget.config.overrides>
+    <widgets.webapp.resources></widgets.webapp.resources>
+    <system.specific.overrides></system.specific.overrides>
   </properties>
 
   <repositories>

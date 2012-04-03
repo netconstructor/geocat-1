@@ -13,4 +13,10 @@ DIRS="-Dgeonetwork.dir=/tmp/gc_data"
 export MAVEN_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS -Dfile.encoding=UTF8 -Dlog4j.debug"
 
 cd ../jeeves 
-mvn install -Dmaven.test.skip && cd ../web && mvn jetty:run -Penv-dev,widgets-tab $@
+mvn install -Dmaven.test.skip
+if [ ! $? -eq 0 ]; then
+    echo "[FAILURE] [deploy] Failed to execute 'jeeves' correctly"
+    exit -1
+fi
+cd ../web
+mvn jetty:run -Penv-dev,widgets-tab $@

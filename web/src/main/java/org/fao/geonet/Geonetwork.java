@@ -365,7 +365,7 @@ public class Geonetwork implements ApplicationHandler {
 			xmlSerializer = new XmlSerializerDb(settingMan);
 		}
 
-		DataManager dataMan = new DataManager(context, svnManager, xmlSerializer, schemaMan, searchMan, accessMan, dbms, settingMan, baseURL, dataDir, thesauriDir, thesaurusMan, reusableObjMan, extentMan, path);
+		DataManager dataMan = new DataManager(context, svnManager, xmlSerializer, schemaMan, searchMan, accessMan, dbms, settingMan, baseURL, dataDir, thesauriDir, reusableObjMan, extentMan, path);
 
 
         /**
@@ -384,7 +384,7 @@ public class Geonetwork implements ApplicationHandler {
 		logger.info("  - Thesaurus...");
 
 		thesaurusMan = ThesaurusManager.getInstance(path, dataMan, context.getResourceManager(), thesauriDir);
-
+		dataMan.setThesaurusManager(thesaurusMan);
 		//------------------------------------------------------------------------
 		//--- initialize harvesting subsystem
 

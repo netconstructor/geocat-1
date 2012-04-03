@@ -149,7 +149,7 @@ public class DataManager {
      * @param appPath
      * @throws Exception
      */
-	public DataManager(ServiceContext context, SvnManager svnManager, XmlSerializer xmlSerializer, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, String baseURL, String dataDir, String thesaurusDir, ThesaurusManager thesaurusMan, ReusableObjManager reusableObjMan, ExtentManager extentMan, String appPath) throws Exception {
+	public DataManager(ServiceContext context, SvnManager svnManager, XmlSerializer xmlSerializer, SchemaManager scm, SearchManager sm, AccessManager am, Dbms dbms, SettingManager ss, String baseURL, String dataDir, String thesaurusDir, ReusableObjManager reusableObjMan, ExtentManager extentMan, String appPath) throws Exception {
 		searchMan = sm;
 		accessMan = am;
 		settingMan= ss;
@@ -161,7 +161,6 @@ public class DataManager {
 		this.validator = new Validator(searchMan.getHtmlCacheDir());
 		this.baseURL = baseURL;
         this.dataDir = dataDir;
-        this.thesaurusMan = thesaurusMan;
         this.thesaurusDir = thesaurusDir;
 		this.appPath = appPath;
 		stylePath = context.getAppPath() + FS + Geonet.Path.STYLESHEETS + FS;
@@ -532,7 +531,8 @@ public class DataManager {
 	                    xmlSerializer.update(dbms, id, md, new ISODate().toString(), false, servContext);
 	                }
             	} catch (Exception e) {
-            		Log.error(Geonet.DATA_MANAGER, "error while trying to update shared objects of metadata, "+id+" "+e.getMessage()); //DEBUG
+            	    Element stackTrace = JeevesException.toElement(e);
+            		Log.error(Geonet.DATA_MANAGER, "error while trying to update shared objects of metadata, "+id+":\n "+Xml.getString(stackTrace)); //DEBUG
             	}
             }
             if (xmlSerializer.resolveXLinks()) {
@@ -3549,7 +3549,7 @@ public class DataManager {
 	private HarvestManager harvestMan;
     private final ReusableObjManager reusableObjMan;
     private final ExtentManager extentMan;
-    private final ThesaurusManager thesaurusMan;
+    private ThesaurusManager thesaurusMan;
     private String dataDir;
 	private String thesaurusDir;
     private ServiceContext servContext;
@@ -3633,5 +3633,9 @@ public class DataManager {
         }
 
         dbms.commit();
+    }
+
+    public void setThesaurusManager(ThesaurusManager thesaurusMan2) {
+        this.thesaurusMan = thesaurusMan2;
     }
 }
