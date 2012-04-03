@@ -127,7 +127,8 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
         while (reports.hasNext()) {
             report = reports.next();
             String reportType = report.getAttributeValue("rule", Edit.NAMESPACE);
-            if (true) {
+            reportType = reportType == null ? "No name for rule" : reportType;
+            if (!reportType.equals("schematron-rules-inspire")) {
                 @SuppressWarnings("unchecked")
                 Iterator<Element> errors = report.getDescendants(new ErrorFinder());
                 if (errors.hasNext()) {
