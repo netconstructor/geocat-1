@@ -74,8 +74,10 @@ public class Format2 implements Service
         
         if(!xslUrl.exists())
             throw new IllegalArgumentException("The 'xsl' parameter must be a valid URL");
+
+        // verify xsl is a valid file before loading metadata and increasing popularity
         Xml.loadFile(xslUrl);
-        
+
         Element metadata = showService.exec(params, context);
         Element transformed = Xml.transform(metadata, xslUrl.getAbsolutePath());
         Element response = new Element("metadata");

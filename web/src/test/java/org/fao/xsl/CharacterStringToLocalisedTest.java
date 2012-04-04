@@ -7,6 +7,8 @@ import java.util.List;
 
 import jeeves.utils.Xml;
 
+import org.fao.geonet.constants.Geocat;
+import org.fao.geonet.util.XslUtil;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Test;
@@ -29,7 +31,23 @@ public class CharacterStringToLocalisedTest {
         assertNoLocalisationString(data, ".//gmd:distributionFormat//gmd:name");
         assertNoLocalisationString(data, ".//gmd:distributionFormat//gmd:version");
     }
+    @Test
+    public void convertGmdLinkageIncorrectlyEmbeds() throws Exception
+    {
+        String pathToXsl = TransformationTestSupport.geonetworkWebapp+"/xsl/characterstring-to-localisedcharacterstring.xsl";
 
+        Element testData = Xml.loadString(
+                "<gmd:linkage xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:che=\"http://www.geocat.ch/2008/che\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xsi:type=\"che:PT_FreeURL_PropertyType\">" +
+                "<gmd:URL>http://wms.geo.admin.ch/?lang=de&amp;</gmd:URL>" +
+                "<che:PT_FreeURL><che:URLGroup><che:LocalisedURL locale=\"#FR\">http://wms.geo.admin.ch/?lang=fr&amp;</che:LocalisedURL></che:URLGroup></che:PT_FreeURL>" +
+                "</gmd:linkage>", false);
+
+        Element transformed = Xml.transform(testData, pathToXsl);
+        
+        assertEquals(1, transformed.getChildren("PT_FreeURL", XslUtil.CHE_NAMESPACE).size());
+        assertEquals(1, transformed.getChildren().size());
+        assertEquals(2, transformed.getChild("PT_FreeURL", XslUtil.CHE_NAMESPACE).getChildren("URLGroup", XslUtil.CHE_NAMESPACE).size());
+    }
     private void assertNoLocalisationString(Element data, String baseXPath) throws Exception {
         assertNoLocalisation(data, baseXPath, "gmd:PT_FreeText", "gco:CharacterString");
     }

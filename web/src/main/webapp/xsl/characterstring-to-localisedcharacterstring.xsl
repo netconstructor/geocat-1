@@ -112,7 +112,7 @@
                   <xsl:attribute name="xsi:type">che:PT_FreeURL_PropertyType</xsl:attribute>
 		           <che:PT_FreeURL>
 		               <xsl:copy-of select="$urlGroup"/>
-		               <xsl:copy-of select="che:PT_FreeURL"/>
+		               <xsl:copy-of select="che:PT_FreeURL/*"/>
 		           </che:PT_FreeURL>
 	           </xsl:copy>
 	       </xsl:when>

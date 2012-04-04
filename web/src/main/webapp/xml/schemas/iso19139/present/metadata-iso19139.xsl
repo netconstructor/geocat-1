@@ -875,7 +875,7 @@
 				
 				<xsl:variable name="codelistCore">
 					<xsl:choose>
-						<xsl:when test="normalize-space($codelistProfil)!=''">
+						<xsl:when test="$codelistProfil">
 							<xsl:copy-of select="$codelistProfil" />
 						</xsl:when>
 						<xsl:otherwise>

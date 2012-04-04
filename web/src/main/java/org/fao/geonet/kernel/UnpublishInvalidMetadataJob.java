@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import jeeves.exceptions.JeevesException;
 import jeeves.interfaces.Schedule;
@@ -26,6 +27,8 @@ import org.joda.time.DateTime;
 public class UnpublishInvalidMetadataJob implements Schedule, Service {
 
     static final String AUTOMATED_ENTITY = "Automated";
+
+    AtomicBoolean running = new AtomicBoolean(false);
 
     @Override
     public void init(String appPath, ServiceConfig params) throws Exception {
@@ -58,34 +61,42 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
     // --------------------------------------------------------------------------------
 
     private void performJob(GeonetContext gc, Dbms dbms) throws SQLException, Exception {
-        Integer keepDuration = gc.getSettingManager().getValueAsInt("system/publish_tracking_duration");
-        if (keepDuration == null) {
-            keepDuration = 14;
+        if (!running.compareAndSet(false, true)) {
+            throw new IllegalStateException("Unpublish Job is already running");
         }
-
-        // clean up expired changes
-        dbms.execute("DELETE FROM publish_tracking where changedate < current_date-" + Math.min(1, keepDuration));
-
-        List<MetadataRecord> metadataids = lookUpMetadataIds(dbms);
-
-        DataManager dataManager = gc.getDataManager();
-        dataManager.startIndexGroup();
         try {
-            for (MetadataRecord metadataRecord : metadataids) {
-                String id = "" + metadataRecord.id;
-                try {
-                    Record newTodayRecord = validate(gc, metadataRecord, dbms, dataManager);
-                    if (newTodayRecord != null) {
-                        newTodayRecord.insertInto(dbms);
+            Integer keepDuration = gc.getSettingManager().getValueAsInt("system/publish_tracking_duration");
+            if (keepDuration == null) {
+                keepDuration = 14;
+            }
+
+            // clean up expired changes
+            dbms.execute("DELETE FROM publish_tracking where changedate < current_date-" + Math.min(1, keepDuration));
+
+            List<MetadataRecord> metadataids = lookUpMetadataIds(dbms);
+
+            DataManager dataManager = gc.getDataManager();
+            dataManager.startIndexGroup();
+            try {
+                for (MetadataRecord metadataRecord : metadataids) {
+                    String id = "" + metadataRecord.id;
+                    try {
+                        Record newTodayRecord = validate(gc, metadataRecord, dbms, dataManager);
+                        if (newTodayRecord != null) {
+                            newTodayRecord.insertInto(dbms);
+                        }
+                        dataManager.indexMetadataGroup(dbms, id, false, null);
+                    } catch (Exception e) {
+                        String error = Xml.getString(JeevesException.toElement(e));
+                        Log.error(Geonet.INDEX_ENGINE, "Error during Validation/Unpublish process of metadata " + id + ".  Exception: "
+                                + error);
                     }
-                    dataManager.indexMetadataGroup(dbms, id, false, null);
-                } catch (Exception e) {
-                    String error = Xml.getString(JeevesException.toElement(e));
-                    Log.error(Geonet.INDEX_ENGINE, "Error during Validation/Unpublish process of metadata " + id + ".  Exception: " + error);
                 }
+            } finally {
+                dataManager.endIndexGroup();
             }
         } finally {
-            dataManager.endIndexGroup();
+            running.set(false);
         }
     }
 
@@ -158,7 +169,8 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
 
     @SuppressWarnings("unchecked")
     static List<Record> values(Dbms dbms, int startOffset, int endOffset) throws Exception {
-        Element results = dbms.select("SELECT * from publish_tracking where changedate > current_date-" + startOffset+" and changedate <= current_date - "+endOffset);
+        Element results = dbms.select("SELECT * from publish_tracking where changedate > current_date-" + startOffset
+                + " and changedate <= current_date - " + endOffset);
 
         List<Record> recordMap = new ArrayList<Record>();
 
