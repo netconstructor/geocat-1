@@ -72,5 +72,6 @@ public class Geocat {
 
 	public static final String DEFAULT_LANG = "eng";
 	public static final String LUCENE_LOCALE_KEY = "_lucene";
+    public static final String INSPIRE_SCHEMATRON_ID = "schematron-rules-inspire";
     
 }

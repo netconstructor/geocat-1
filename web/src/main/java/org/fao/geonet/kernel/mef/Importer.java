@@ -354,10 +354,11 @@ public class Importer {
 					addOperations(context, dm, dbms, privileges, id.get(index), groupId);
 
 				if (indexGroup) {
+				    dm.doValidate(context, dbms, schema, id.get(index), md.get(index), context.getLanguage(), false);
 					dm.indexMetadataGroup(dbms, id.get(index), true, context);
 				}
                 else {
-                    dm.indexInThreadPool(context,id.get(index),dbms, true);
+                    dm.indexInThreadPool(context,id.get(index),dbms, true, true);
 				}
 			}
 

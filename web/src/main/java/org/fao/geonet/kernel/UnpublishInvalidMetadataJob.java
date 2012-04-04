@@ -19,6 +19,7 @@ import jeeves.utils.Xml;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.jdom.Element;
 import org.jdom.filter.Filter;
@@ -139,7 +140,7 @@ public class UnpublishInvalidMetadataJob implements Schedule, Service {
             report = reports.next();
             String reportType = report.getAttributeValue("rule", Edit.NAMESPACE);
             reportType = reportType == null ? "No name for rule" : reportType;
-            if (!reportType.equals("schematron-rules-inspire")) {
+            if (!reportType.equals(Geocat.INSPIRE_SCHEMATRON_ID)) {
                 @SuppressWarnings("unchecked")
                 Iterator<Element> errors = report.getDescendants(new ErrorFinder());
                 if (errors.hasNext()) {

@@ -65,6 +65,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
+import org.fao.geonet.constants.Geocat;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Params;
 import org.fao.geonet.exceptions.NoSchemaMatchesException;
@@ -324,8 +325,11 @@ public class DataManager {
      * @param id
      * @throws SQLException
      */
-	public void indexInThreadPool(ServiceContext context, String id, Dbms dbms, boolean processSharedObjects) throws SQLException {
+    public void indexInThreadPool(ServiceContext context, String id, Dbms dbms, boolean processSharedObjects) throws SQLException {
         indexInThreadPool(context, Collections.singletonList(id), dbms, processSharedObjects, false);
+    }   
+    public void indexInThreadPool(ServiceContext context, String id, Dbms dbms, boolean processSharedObjects, boolean performValidation) throws SQLException {
+        indexInThreadPool(context, Collections.singletonList(id), dbms, processSharedObjects, performValidation);
     }
     /**
      * Adds metadata ids to the thread pool for indexing.
@@ -410,7 +414,8 @@ public class DataManager {
                             for(int i=beginIndex; i<beginIndex+count; i++) {
                                 try {
                                     if(performValidation) {
-                                        getGeocatMetadata(context, ids.get(i), false, true, true, true, false);
+                                        getGeocatMetadata(context, ids.get(i), true, true, true, true, false);
+                                        dbms.commit();
                                     }
                                     indexMetadataGroup(dbms, ids.get(i).toString(), processSharedObjects, context);
                                 }
@@ -425,7 +430,7 @@ public class DataManager {
                     }
                     else {
                         if(performValidation) {
-                            getGeocatMetadata(context, ids.get(0), false, true, true, true, false);
+                            getGeocatMetadata(context, ids.get(0), true, true, true, true, false);
                         }
                         indexMetadata(dbms, ids.get(0), false, processSharedObjects, context);
                     }
@@ -649,7 +654,7 @@ public class DataManager {
                     Element vi = (Element) elem;
                     String type = vi.getChildText("valtype");
                     String status = vi.getChildText("status");
-                    if ("0".equals(status)) {
+                    if (type.equals(Geocat.INSPIRE_SCHEMATRON_ID) && "0".equals(status)) {
                         isValid = "0";
                     }
                     moreFields.add(SearchManager.makeField("_valid_" + type, status, true, true));
@@ -934,7 +939,7 @@ public class DataManager {
             theNSs.add(Namespace.getNamespace("geonet", "http://www.fao.org/geonetwork"));
             theNSs.add(Namespace.getNamespace("svrl", "http://purl.oclc.org/dsdl/svrl"));
 
-            Element inspireReport = Xml.selectElement(schemaTronReport, "geonet:report[@geonet:rule = 'schematron-rules-inspire']", theNSs);
+            Element inspireReport = Xml.selectElement(schemaTronReport, "geonet:report[@geonet:rule = '"+Geocat.INSPIRE_SCHEMATRON_ID+"']", theNSs);
             if(inspireReport != null) {
                 inspireReport.detach();
             }
