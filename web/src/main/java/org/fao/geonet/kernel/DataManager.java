@@ -394,6 +394,7 @@ public class DataManager {
          * TODO javadoc.
          */
         public void run() {
+            context.setAsThreadLocal();
             try {
                 // poll context to see whether servlet is up yet
                 while (!context.isServletInitialized()) {
@@ -1399,9 +1400,9 @@ public class DataManager {
      * @return
      */
 	public String getSiteURL() {
-        String protocol = settingMan.getValue("system/server/protocol");
-		String host    = settingMan.getValue("system/server/host");
-		String port    = settingMan.getValue("system/server/port");
+        String protocol = settingMan.getValue(Geonet.Settings.SERVER_PROTOCOL);
+		String host    = settingMan.getValue(Geonet.Settings.SERVER_HOST);
+		String port    = settingMan.getValue(Geonet.Settings.SERVER_PORT);
 		String locServ = baseURL +"/"+ Jeeves.Prefix.SERVICE +"/en";
 
 		return protocol + "://" + host + (port.equals("80") ? "" : ":" + port) + locServ;
@@ -3143,9 +3144,9 @@ public class DataManager {
         }
 
 		// add baseUrl of this site (from settings)
-        String protocol = settingMan.getValue("system/server/protocol");
-		String host    = settingMan.getValue("system/server/host");
-		String port    = settingMan.getValue("system/server/port");
+        String protocol = settingMan.getValue(Geonet.Settings.SERVER_PROTOCOL);
+		String host    = settingMan.getValue(Geonet.Settings.SERVER_HOST);
+		String port    = settingMan.getValue(Geonet.Settings.SERVER_PORT);
 		addElement(info, Edit.Info.Elem.BASEURL, protocol + "://" + host + (port == "80" ? "" : ":" + port) + baseURL);
 		addElement(info, Edit.Info.Elem.LOCSERV, "/srv/en" );
 		return info;

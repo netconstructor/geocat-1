@@ -388,7 +388,7 @@ public final class Processor {
 	}
 
 	//--------------------------------------------------------------------------
-	private static void doXLink(String hrefUri, String idSearch, Attribute xlink, String action, ServiceContext srvContext) { 
+	private static void doXLink(String hrefUri, String idSearch, Attribute xlink, String action, ServiceContext srvContext) {
 		Element element = xlink.getParent();
 
         // Don't process XLink for operatesOn

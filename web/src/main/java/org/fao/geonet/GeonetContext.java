@@ -69,7 +69,8 @@ public class GeonetContext
 
 	Class statusActionsClass;
 
-	//---------------------------------------------------------------------------
+
+    //---------------------------------------------------------------------------
 	/*package*/ GeonetContext() {}
 	//---------------------------------------------------------------------------
 
@@ -90,7 +91,7 @@ public class GeonetContext
 	public OaiPmhDispatcher  getOaipmhDispatcher()  { return oaipmhDis;    }
 	public ApplicationContext  getApplicationContext() { return app_context; }
   public MetadataNotifierManager getMetadataNotifier() { return metadataNotifierMan; }
-	public ThreadPool        getThreadPool()        { return threadPool;   }
+    public ThreadPool        getThreadPool()        { return threadPool;   }
     public Email             getEmail()     { return email;     }
 
 	//---------------------------------------------------------------------------
