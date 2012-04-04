@@ -3427,7 +3427,7 @@ public class DataManager {
     }
 
     private void hideElements(ServiceContext context, Element elMd, String id, boolean forEditing, boolean allowDbmsClosing) throws Exception {
-        Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
+        Dbms dbms = (Dbms) context.getResourceManager().open(Geonet.Res.MAIN_DB);
         try {
             boolean forceHideElements = false;
             hideElements(context, dbms, elMd, id, forEditing, forceHideElements);

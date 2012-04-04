@@ -37,8 +37,10 @@ import jeeves.utils.Log;
 import jeeves.utils.SerialFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.jdom.Element;
@@ -183,44 +185,26 @@ public class ServiceContext extends BasicContext
 		ServiceContext context = new ServiceContext(request.getService(), getMonitorManager(), getProviderManager(), getSerialFactory(), getProfileManager(), htContexts) {
 			public ResourceManager getResourceManager() {
 				return new ResourceManager(getMonitorManager(), getProviderManager()) {
-				    HashSet<Object> toClose = new HashSet<Object>();
-				    @Override
-				    public synchronized Object open(String name) throws Exception {
-                        Object opened = super.open(name);
-                        toClose.add(opened);
-                        return opened;
-				    }
-				    
-				    @Override
-				    public synchronized Object openDirect(String name) throws Exception {
-				        Object opened = super.openDirect(name);
-				        toClose.add(opened);
-				        return opened;
-				    }
 					@Override
 					public synchronized void abort() throws Exception {
-					    close();
 					}
 					@Override
 					public synchronized void close() throws Exception {
-					    for (Object resource : toClose) {
-                            closeMetrics(resource);
-                        }
-					    toClose.clear();
 					}
 					@Override
 					public synchronized void close(String name, Object resource)
 							throws Exception {
-                        closeMetrics(resource);
-                        toClose.remove(resource);
 					}
 					@Override
 					public synchronized void abort(String name, Object resource)
 							throws Exception {
-					    closeMetrics(resource);
-					    toClose.clear();
 					}
-					
+					@Override
+					protected void openMetrics(Object resource) {
+					}
+					@Override
+					protected void closeMetrics(Object resource) {
+					}
 				};
 			}
 		};
