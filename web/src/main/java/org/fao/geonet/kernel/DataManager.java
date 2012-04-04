@@ -934,6 +934,10 @@ public class DataManager {
             theNSs.add(Namespace.getNamespace("geonet", "http://www.fao.org/geonetwork"));
             theNSs.add(Namespace.getNamespace("svrl", "http://purl.oclc.org/dsdl/svrl"));
 
+            Element inspireReport = Xml.selectElement(schemaTronReport, "geonet:report[@geonet:rule = 'schematron-rules-inspire']", theNSs);
+            if(inspireReport != null) {
+                inspireReport.detach();
+            }
             Element failedAssert = Xml.selectElement(schemaTronReport, "geonet:report/svrl:schematron-output/svrl:failed-assert", theNSs);
 
             Element failedSchematronVerification = Xml.selectElement(schemaTronReport, "geonet:report/geonet:schematronVerificationError", theNSs);
