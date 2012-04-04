@@ -257,12 +257,12 @@ public class QueryRequest {
 					this.requestId,
 					this.getFormattedDate(),
 					this.getIp(),
-					this.getLuceneQuery().substring(0, 3999),
+					cap(this.getLuceneQuery()),
 					this.getHits(),
 					this.getLanguage(),
 					this.getSortBy(),
-					this.getSpatialFilter().substring(0, 3999),
-					this.getMdType().substring(0, 3999),
+					cap(this.getSpatialFilter()),
+					cap(this.getMdType()),
 					(this.simpleQuery ? 1 : 0),
 					(this.autoGenQuery ? 1 : 0),
 					this.getService());
@@ -300,5 +300,9 @@ public class QueryRequest {
 		}
 		return true;
 	}
+
+    private String cap(String string) {
+        return string.substring(0, Math.min(3999, string.length()));
+    }
 
 }
