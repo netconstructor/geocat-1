@@ -766,6 +766,7 @@ public class ServiceManager
 
 					try
 					{
+					    Element transformedElem = rootElem;
 					    for (String preSheet : preSheets) {
 							info("     -> transforming with pre-stylesheet : " +preSheet);
                             transformedElem = Xml.transform(transformedElem, toStyleSheetFile(preSheet));
@@ -774,7 +775,7 @@ public class ServiceManager
                         TimerContext timerContext = context.getMonitorManager().getTimer(ServiceManagerXslOutputTransformTimer.class).time();
                         try {
                             //--- first we do the transformation
-                            Xml.transform(rootElem, styleSheet, baos);
+                            Xml.transform(transformedElem, styleSheet, baos);
                         } finally {
                             timerContext.stop();
                         }
