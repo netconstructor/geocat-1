@@ -383,23 +383,6 @@ var searchTools = {
         }
     },
 
-    loadXMLDoc: function(fname) {
-        var xmlDoc;
-        if (window.ActiveXObject) {
-            // code for IE
-            xmlDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
-        } else if (document.implementation
-                && document.implementation.createDocument) {
-            // code for Mozilla, Firefox, Opera, etc.
-            xmlDoc = document.implementation.createDocument("", "", null);
-        } else {
-            alert('Your browser cannot handle this script');
-        }
-        xmlDoc.async = false;
-        xmlDoc.load(fname);
-        return xmlDoc;
-    },
-
     loadXMLString: function(text) {
         var xmlDoc;
         if (window.ActiveXObject) {
