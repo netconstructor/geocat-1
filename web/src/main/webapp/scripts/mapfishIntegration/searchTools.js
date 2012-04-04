@@ -2,32 +2,6 @@
  * Non-geocat specific stuff that could be reused
  */
 
-// code borrowed from Sarissa, to prevent mixing of XML parsers on geocat home page -- see https://intranet.camptocamp.com/rt/Ticket/Display.html?id=155325
-if (!window._SARISSA_DOM_PROGID) {
-    if (!window.Sarissa) Sarissa = {};
-    if (!Sarissa.pickRecentProgID) {
-        Sarissa.pickRecentProgID = function (idList){
-            // found progID flag
-            var bFound = false, e;
-            var o2Store;
-            var i;
-            for (i=0; i < idList.length && !bFound; i++) {
-                try{
-                    var oDoc = new ActiveXObject(idList[i]);
-                    o2Store = idList[i];
-                    bFound = true;
-                }catch (objException){
-                    // trap; try next progID
-                    e = objException;
-                }
-            }
-            idList = null;
-            return o2Store;
-        };
-    }
-    _SARISSA_DOM_PROGID = Sarissa.pickRecentProgID(["Msxml2.DOMDocument.6.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"]);
-}
-    
 var searchTools = {
     DEFAULT_SIMILARITY: 0.8,
     cswMethod: 'POST',
@@ -368,6 +342,7 @@ var searchTools = {
 
     transformXML: function(csw, xsl, targetEl) {
         var cswXsl = searchTools.loadXMLString(xsl);
+        csw = searchTools.loadXMLString(csw); // use same parser to convert xml and xsl strings to documents
         if (window.ActiveXObject) {
             //code for IE
             targetEl.innerHTML = csw.transformNode(cswXsl);
@@ -384,21 +359,21 @@ var searchTools = {
     },
 
     loadXMLString: function(text) {
-        var xmlDoc;
+        var out;
         if (window.ActiveXObject) {
             // code for IE
-            xmlDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
-            xmlDoc.async = true;
-            xmlDoc.loadXML(text);
+            out = new ActiveXObject("Msxml2.DOMDocument.6.0");
+            out.async = true;
+            out.loadXML(text);
         } else if (document.implementation
                 && document.implementation.createDocument) {
             // code for Mozilla, Firefox, Opera, etc.
             var parser = new DOMParser();
-            xmlDoc = parser.parseFromString(text, "text/xml");
+            out = parser.parseFromString(text, "text/xml");
         } else {
             alert('Your browser cannot handle this script');
         }
-        return xmlDoc;
+        return out;
     },
 
     readWFS: function(url, ns, type, properties, filter, queryOpts) {

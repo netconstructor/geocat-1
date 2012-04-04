@@ -371,7 +371,7 @@ var geocat = {
         target.removeClass("searching");
         
         geocat.showContours(result.responseXML);
-        searchTools.transformXML(result.responseXML, geocat.getResultsTemplate(getQuery), target.dom);
+        searchTools.transformXML(result.responseText, geocat.getResultsTemplate(getQuery), target.dom);
         geocat.transformSortBy();
         geocat.transformURIButtons(target.dom);
         geocat.metadataSelectInfo('selected=status');
@@ -400,7 +400,7 @@ var geocat = {
             refineRemove.innerHTML = '<table class="refineRemove">' + removeAll + data + '</table>';
         }
         var refineAdd = OpenLayers.Util.getElement("refineAdd");
-        searchTools.transformXML(result.responseXML, geocat.getRefinementTemplate(), refineAdd);
+        searchTools.transformXML(result.responseText, geocat.getRefinementTemplate(), refineAdd);
     },
 
     createRemoveCategory: function(catkey) {
