@@ -609,6 +609,20 @@
 		<tr>
 			<td/>
 			<td class="padded">
+				<xsl:value-of select="/root/gui/strings/unpublish_invalid_metadata_desc"/>
+			</td>
+			<td>
+				<button class="content"
+					onclick="idxOperation('unpublish.invalid.metadata','waitIdx', this.name, true)"
+					id="btUnpublishIdx" name="btUnpublishIdx">
+					<xsl:value-of select="/root/gui/strings/unpublish"/>
+				</button>
+				<img src="{/root/gui/url}/images/loading.gif" id="waitIdx" style="display:none;"/>
+			</td>
+		</tr>
+		<tr>
+			<td/>
+			<td class="padded">
 				<xsl:value-of select="/root/gui/strings/metadata.admin.index.optimize.desc"/>
 			</td>
 			<td>

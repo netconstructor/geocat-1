@@ -3,6 +3,7 @@
 	<!-- GEOCAT Strings -->
 	<unpublishReport>Unpublish CSV Report</unpublishReport>
 	<unpublishReportDes>Download the CSV Report of the metadata publish/unpublishing for the last weeks</unpublishReportDes>
+	<unpublish_invalid_metadata_desc>Perform validation of all local metadata and unpublish those that are found to be invalid</unpublish_invalid_metadata_desc>
 
 	<duplicate>Vervielfältigen</duplicate>
     <geocatNext js="true">Vorwärts</geocatNext>
