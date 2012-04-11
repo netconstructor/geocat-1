@@ -878,9 +878,12 @@
 						<xsl:when test="normalize-space($codelistProfil) != ''">
 							<xsl:copy-of select="$codelistProfil" />
 						</xsl:when>
+						<xsl:when test="/root/gui/schemas/iso19139.che/codelists/codelist[@name = $qname]">
+							<xsl:copy-of select="/root/gui/schemas/iso19139.che/codelists/codelist[@name = $qname]/*" />
+						</xsl:when>
 						<xsl:otherwise>
 							<xsl:copy-of
-								select="/root/gui/schemas/*[name(.)='iso19139' or name(.)='iso19139.che']/codelists/codelist[@name = $qname]/*" />
+								select="/root/gui/schemas/iso19139/codelists/codelist[@name = $qname]/*" />
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
@@ -916,6 +919,7 @@
 						<!-- codelist in view mode -->
 						<xsl:if test="normalize-space($value)!=''">
 							<b><xsl:value-of select="$codelist/entry[code = $value]/label"/></b>
+							
 							<xsl:value-of select="concat(': ',$codelist/entry[code = $value]/description)"/>
 						</xsl:if>
 					</xsl:otherwise>

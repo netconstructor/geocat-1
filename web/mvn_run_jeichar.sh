@@ -9,7 +9,7 @@ JREBEL_OPTS="-noverify -javaagent:$JREBEL_HOME/jrebel.jar"
 DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 OVERRIDES="-Dgeonetwork.jeeves.configuration.overrides.file=/WEB-INF/override-config-jeichar.xml"
 MEMORY="-XX:MaxPermSize=256m -Xmx1024M -server"
-DIRS="-Dgeonetwork.dir=/tmp/gc_data"
+DIRS="-Dgeonetwork.dir=$HOME/gc_data"
 export MAVEN_OPTS="$JREBEL_OPTS $DEBUG $OVERRIDES $MEMORY $DIRS -Dfile.encoding=UTF8 -Dlog4j.debug"
 
 cd ../jeeves 
