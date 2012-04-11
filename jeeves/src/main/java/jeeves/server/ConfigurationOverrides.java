@@ -12,7 +12,6 @@ import org.jdom.*;
 import org.jdom.filter.Filter;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -636,7 +635,8 @@ public class ConfigurationOverrides {
                             in.close();
                         }
                     } else {
-                        Log.debug(Log.JEEVES, "Unable to load Configuration Override resource: " + string);
+                        if(Log.isDebugEnabled(Log.JEEVES))
+                            Log.debug(Log.JEEVES, "Unable to load Configuration Override resource: " + string);
                     }
                 }
             }

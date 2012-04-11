@@ -36,6 +36,7 @@ import javax.sql.DataSource;
 import jeeves.constants.Jeeves;
 import jeeves.server.resources.ResourceListener;
 
+import jeeves.server.resources.Stats;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.geotools.data.DataStore;
 
@@ -56,8 +57,8 @@ import org.jdom.Element;
 
 public class ApacheDBCPool extends AbstractDbmsPool {
 
-	private Set<ResourceListener> hsListeners = Collections.synchronizedSet(new HashSet<ResourceListener>());
-	private BasicDataSource basicDataSource;
+    private BasicDataSource basicDataSource;
+	
 	// --------------------------------------------------------------------------
 	// ---
 	// --- API
@@ -221,12 +222,8 @@ public class ApacheDBCPool extends AbstractDbmsPool {
 
 	// --------------------------------------------------------------------------
 
-	public Map<String, String> getStats() {
-		Map<String, String> result = new HashMap<String, String>();
-		result.put("numactive",basicDataSource.getNumActive()+"");
-		result.put("numidle",basicDataSource.getNumIdle()+"");
-		result.put("maxactive",basicDataSource.getMaxActive()+""); 
-		return result;
+	public Stats getStats() {
+		return new Stats(basicDataSource.getNumActive(), basicDataSource.getNumIdle(), basicDataSource.getMaxActive());
 	}
 
 	//---------------------------------------------------------------------------

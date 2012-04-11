@@ -82,24 +82,29 @@ public final class BinaryFile
 	// file is remote
 
 
-   static String readInput(String path) {
-    StringBuffer buffer = new StringBuffer();
-    try {
-			FileInputStream fis = new FileInputStream(path);
-			InputStreamReader isr = new InputStreamReader(fis,"UTF8");
-			Reader in = new BufferedReader(isr);
-			int ch;
-			int numRead = 0;
-			while (((ch = in.read()) > -1) && (numRead < 2000))  {
-				buffer.append((char)ch);
-				numRead++;
-			}
-			in.close();
-			return buffer.toString();
-    } catch (IOException e) {
-			e.printStackTrace();
-			return null;
-    }
+    static String readInput(String path) {
+        StringBuffer buffer = new StringBuffer();
+
+        Reader in = null;
+
+        try {
+            FileInputStream fis = new FileInputStream(path);
+            InputStreamReader isr = new InputStreamReader(fis,"UTF8");
+            in = new BufferedReader(isr);
+            int ch;
+            int numRead = 0;
+            while (((ch = in.read()) > -1) && (numRead < 2000))  {
+                buffer.append((char)ch);
+                numRead++;
+            }
+
+            return buffer.toString();
+        } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
 	}	
 
 	//---------------------------------------------------------------------------
@@ -130,9 +135,10 @@ public final class BinaryFile
 					remotePath = tokens[4].trim();
 					remoteProtocol = getRemoteProtocol(fileContents.toLowerCase());
 					remoteFile = true;
-					Log.debug(Log.RESOURCES, "REMOTE: "+remoteUser+":********:"+remoteSite+":"+remotePath+":"+remoteProtocol);	
+                    if(Log.isDebugEnabled(Log.RESOURCES))
+                        Log.debug(Log.RESOURCES, "REMOTE: "+remoteUser+":********:"+remoteSite+":"+remotePath+":"+remoteProtocol);
 				} else {
-					Log.debug(Log.RESOURCES, "ERROR: remote file details were not valid");
+                    if(Log.isDebugEnabled(Log.RESOURCES)) Log.debug(Log.RESOURCES, "ERROR: remote file details were not valid");
 					remoteFile = false;
 				}
 		} else {
@@ -406,7 +412,7 @@ public final class BinaryFile
       }
       
 			// now get file name from scp 
-      Log.debug(Log.RESOURCES,"scp: file returned has filesize="+filesize+", file="+file);
+        if(Log.isDebugEnabled(Log.RESOURCES)) Log.debug(Log.RESOURCES,"scp: file returned has filesize="+filesize+", file="+file);
       
       // send '\0'
       buf[0]=0; outScp.write(buf, 0, 1); outScp.flush();

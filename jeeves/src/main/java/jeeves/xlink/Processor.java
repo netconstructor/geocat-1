@@ -192,7 +192,8 @@ public final class Processor {
 					BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
 					try {
 						remoteFragment = Xml.loadStream(in);
-						Log.debug(Log.XLINK_PROCESSOR,"Read:\n"+Xml.getString(remoteFragment));
+                        if(Log.isDebugEnabled(Log.XLINK_PROCESSOR))
+						  Log.debug(Log.XLINK_PROCESSOR,"Read:\n"+Xml.getString(remoteFragment));
 					} finally {
 						in.close();
 					}
@@ -208,7 +209,8 @@ public final class Processor {
 			
 			if (remoteFragment != null && !remoteFragment.getName().equalsIgnoreCase("error")) {
 				xlinkCache.putInGroup(uri.toLowerCase(), mappedURI, remoteFragment);
-				Log.debug(Log.XLINK_PROCESSOR,"cache miss for "+uri);
+                if(Log.isDebugEnabled(Log.XLINK_PROCESSOR))
+				  Log.debug(Log.XLINK_PROCESSOR,"cache miss for "+uri);
 			} else {
 				return null;
 			}	
@@ -229,18 +231,14 @@ public final class Processor {
 					res.removeAttribute("id");
 				}	
 			} catch (Exception e) {
-				Log.debug(Log.XLINK_PROCESSOR,"Failed to search for remote fragment using " + xpath + ", error" + e.getMessage());
+				Log.warning(Log.XLINK_PROCESSOR,"Failed to search for remote fragment using " + xpath + ", error" + e.getMessage());
 				return null;
 			}
 		} else {
 			res = (Element)remoteFragment.clone();
 		}
-		
-        Log.debug(Log.XLINK_PROCESSOR,"Read: Before recursive processXLink: "+Xml.getString(res));
-        
-		res = processXLink(res, srvContext);
-		
-		Log.debug(Log.XLINK_PROCESSOR,"Read: After recursive processXLink: "+Xml.getString(res));
+        if(Log.isDebugEnabled(Log.XLINK_PROCESSOR))
+            Log.debug(Log.XLINK_PROCESSOR,"Read:"+Xml.getString(res));
 		return res;
 	}
 
@@ -308,13 +306,13 @@ public final class Processor {
 	 */
 	private static void searchXLink(Element md, String action, ServiceContext srvContext) {
 		List<Attribute> xlinks = getXLinksWithXPath(md, "*//@xlink:href");
-		
-		Log.debug(Log.XLINK_PROCESSOR, "returned "+xlinks.size()+" elements");
-		
+
+        if(Log.isDebugEnabled(Log.XLINK_PROCESSOR)) Log.debug(Log.XLINK_PROCESSOR, "returned "+xlinks.size()+" elements");
+
 		// process remote xlinks, skip local xlinks for later
 		for (Attribute xlink : xlinks) {
 			String hrefUri = xlink.getValue();
-			Log.debug(Log.XLINK_PROCESSOR, "will resolve href '"+hrefUri+"'");
+            if(Log.isDebugEnabled(Log.XLINK_PROCESSOR)) Log.debug(Log.XLINK_PROCESSOR, "will resolve href '"+hrefUri+"'");
 			String idSearch = null;
 			int hash = hrefUri.indexOf('#');
 			if (hash > 0 && hash != hrefUri.length()-1) {
@@ -341,8 +339,9 @@ public final class Processor {
      */
 	private static void searchLocalXLink(Element md, String action) {
 		List<Attribute> xlinks = getXLinksWithXPath(md, "*//@xlink:href[starts-with(.,'#')]");
-				
-		Log.debug(Log.XLINK_PROCESSOR, "local xlink search returned "+xlinks.size()+" elements");
+
+        if(Log.isDebugEnabled(Log.XLINK_PROCESSOR))
+            Log.debug(Log.XLINK_PROCESSOR, "local xlink search returned "+xlinks.size()+" elements");
 
 		// now all remote fragments have been added, process local xlinks (uncached)
 		Map<String,Element> localIds = new HashMap<String,Element>();
@@ -352,7 +351,8 @@ public final class Processor {
 				element.removeContent();
 			} else {
 				String idSearch = xlink.getValue().substring(1);
-				Log.debug(Log.XLINK_PROCESSOR, "process local xlink '"+idSearch+"'");
+                if(Log.isDebugEnabled(Log.XLINK_PROCESSOR))
+                    Log.debug(Log.XLINK_PROCESSOR, "process local xlink '"+idSearch+"'");
 				Element localFragment = localIds.get(idSearch);
 				try {
 					if (localFragment == null) {  

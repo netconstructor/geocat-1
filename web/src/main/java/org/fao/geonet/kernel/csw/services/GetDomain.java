@@ -164,8 +164,9 @@ public class GetDomain extends AbstractOperation implements CatalogService
 
 		List<Element> domainValuesList = null;
 
-		Log.debug(Geonet.CSW,"Handling property names '"+Arrays.toString(propertyNames)+"' with max records of "+maxRecords);
-
+        if(Log.isDebugEnabled(Geonet.CSW))
+            Log.debug(Geonet.CSW,"Handling property names '"+Arrays.toString(propertyNames)+"' with max records of "+maxRecords);
+		
 		for (int i=0; i < propertyNames.length; i++) {
 
 			if (i==0) domainValuesList = new ArrayList<Element>();

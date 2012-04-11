@@ -199,12 +199,13 @@ public class AjaxEditUtils extends EditUtils {
                     String[] fragments = value.split(XML_FRAGMENT_SEPARATOR);
                     for (String fragment : fragments) {
                         if (name != null) {
-                            Log.debug(Geonet.EDITOR, "Add XML fragment; " + fragment 
-                                    + " to element with ref: " + ref);
+                            if(Log.isDebugEnabled(Geonet.EDITOR))
+                                Log.debug(Geonet.EDITOR, "Add XML fragment; " + fragment + " to element with ref: " + ref);
                             name = name.replace(COLON_SEPARATOR, ":");
                             editLib.addFragment(schema, el, name, fragment);
                         } else {
-                            Log.debug(Geonet.EDITOR, "Add XML fragment; " + fragment 
+                            if(Log.isDebugEnabled(Geonet.EDITOR))
+                                Log.debug(Geonet.EDITOR, "Add XML fragment; " + fragment
                                     + " to element with ref: " + ref + " replacing content.");
                             
                             // clean before update
@@ -238,7 +239,8 @@ public class AjaxEditUtils extends EditUtils {
      * @return
      */
 	protected static Element getMetadataFromSession(UserSession session, String id) {
-		Log.debug(Geonet.EDITOR, "Retrieving metadata from session " + session.getUserId());
+        if(Log.isDebugEnabled(Geonet.EDITOR))
+            Log.debug(Geonet.EDITOR, "Retrieving metadata from session " + session.getUserId());
 		Element md = (Element) session.getProperty(Geonet.Session.METADATA_EDITING + id);
 		md.detach();
 		return md;
@@ -252,7 +254,8 @@ public class AjaxEditUtils extends EditUtils {
      * @param id
      */
 	private void setMetadataIntoSession(UserSession session, Element md, String id) {
-		Log.debug(Geonet.EDITOR, "Storing metadata in session "+session.getUserId());
+        if(Log.isDebugEnabled(Geonet.EDITOR))
+            Log.debug(Geonet.EDITOR, "Storing metadata in session "+session.getUserId());
 		session.setProperty(Geonet.Session.METADATA_EDITING + id, md);
 	}
 
@@ -263,7 +266,8 @@ public class AjaxEditUtils extends EditUtils {
      * @param id
      */
 	public void removeMetadataEmbedded(UserSession session, String id) {
-		Log.debug(Geonet.EDITOR, "Removing metadata from session "+session.getUserId());
+        if(Log.isDebugEnabled(Geonet.EDITOR))
+            Log.debug(Geonet.EDITOR, "Removing metadata from session "+session.getUserId());
 		session.removeProperty(Geonet.Session.METADATA_EDITING + id);
 		session.removeProperty(Geonet.Session.VALIDATION_REPORT + id);
 	}

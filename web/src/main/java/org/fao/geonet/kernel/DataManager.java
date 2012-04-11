@@ -186,8 +186,10 @@ public class DataManager {
 
 		// get all metadata from DB
 		Element result = dbms.select("SELECT id, changeDate FROM Metadata ORDER BY id ASC");
+		
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+		    Log.debug(Geonet.DATA_MANAGER, "DB CONTENT:\n'"+ Xml.getString(result) +"'");
 
-		Log.debug(Geonet.DATA_MANAGER, "DB CONTENT:\n'"+ Xml.getString(result) +"'");
 
 		// get lastchangedate of all metadata in index
 		Map<String,String> docs = searchMan.getDocsChangeDate();
@@ -195,7 +197,8 @@ public class DataManager {
 		// set up results HashMap for post processing of records to be indexed
 		ArrayList<String> toIndex = new ArrayList<String>();
 
-		Log.debug(Geonet.DATA_MANAGER, "INDEX CONTENT:");
+        if (Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "INDEX CONTENT:");
 
 		// index all metadata in DBMS if needed
 		for(int i = 0; i < result.getContentSize(); i++) {
@@ -204,7 +207,8 @@ public class DataManager {
 			String  id     = record.getChildText("id");
 			int iId = Integer.parseInt(id);
 
-			Log.debug(Geonet.DATA_MANAGER, "- record ("+ id +")");
+            if (Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "- record ("+ id +")");
 
 			String idxLastChange = docs.get(id);
 
@@ -219,12 +223,15 @@ public class DataManager {
 
 				String lastChange    = record.getChildText("changedate");
 
-       	Log.debug(Geonet.DATA_MANAGER, "- lastChange: " + lastChange);
-       	Log.debug(Geonet.DATA_MANAGER, "- idxLastChange: " + idxLastChange);
-
+                if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                    Log.debug(Geonet.DATA_MANAGER, "- lastChange: " + lastChange);
+                if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                    Log.debug(Geonet.DATA_MANAGER, "- idxLastChange: " + idxLastChange);
+	
 				// date in index contains 't', date in DBMS contains 'T'
 				if (force || !idxLastChange.equalsIgnoreCase(lastChange)) {
-					Log.debug(Geonet.DATA_MANAGER, "-  will be indexed");
+                    if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                        Log.debug(Geonet.DATA_MANAGER, "-  will be indexed");
 					toIndex.add(id);
 				}
 			}
@@ -237,7 +244,8 @@ public class DataManager {
 		}
 
 		if (docs.size() > 0) { // anything left?
-			Log.debug(Geonet.DATA_MANAGER, "INDEX HAS RECORDS THAT ARE NOT IN DB:");
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "INDEX HAS RECORDS THAT ARE NOT IN DB:");
 		}
 
 		// remove from index metadata not in DBMS
@@ -245,7 +253,8 @@ public class DataManager {
 		{
 			searchMan.delete("_id", id);
 
-      Log.debug(Geonet.DATA_MANAGER, "- removed record (" + id + ") from index");
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "- removed record (" + id + ") from index");
 		}
 	}
 
@@ -260,7 +269,8 @@ public class DataManager {
 		// get all metadata with XLinks
 		Collection<Integer> toIndex = searchMan.getDocsWithXLinks();
 
-		Log.debug(Geonet.DATA_MANAGER, "Will index "+toIndex.size()+" records with XLinks");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Will index "+toIndex.size()+" records with XLinks");
 		if ( toIndex.size() > 0 ) {
 			// clean XLink Cache so that cache and index remain in sync
 			Processor.clearCache();
@@ -402,7 +412,8 @@ public class DataManager {
             try {
                 // poll context to see whether servlet is up yet
                 while (!context.isServletInitialized()) {
-                    Log.debug(Geonet.DATA_MANAGER, "Waiting for servlet to finish initializing..");
+                    if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                        Log.debug(Geonet.DATA_MANAGER, "Waiting for servlet to finish initializing..");
                     Thread.sleep(10000); // sleep 10 seconds
                 }
                 Dbms dbms = (Dbms) context.getResourceManager().openDirect(Geonet.Res.MAIN_DB);
@@ -474,9 +485,10 @@ public class DataManager {
      * @param id
      * @throws Exception
      */
-	public void indexMetadataGroup(Dbms dbms, String id, boolean processSharedObjects, ServiceContext srvContext) throws Exception {
-		Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
-		indexMetadata(dbms, id, true,processSharedObjects, servContext);
+	public void indexMetadataGroup(Dbms dbms, String id) throws Exception {
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
+		indexMetadata(dbms, id, true);
 	}
 
     /**
@@ -517,6 +529,10 @@ public class DataManager {
             String  popularity = rec.getChildText("popularity");
             String  rating     = rec.getChildText("rating");
 
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER)) {
+                Log.debug(Geonet.DATA_MANAGER, "record schema (" + schema + ")"); //DEBUG
+                Log.debug(Geonet.DATA_MANAGER, "record createDate (" + createDate + ")"); //DEBUG
+            }
 
             if(schema.trim().equals("iso19139.che")) {
                 /*
@@ -560,10 +576,6 @@ public class DataManager {
                 moreFields.add(SearchManager.makeField("_hasxlinks", "0", true, true));
             }
 
-
-
-            Log.debug(Geonet.DATA_MANAGER, "record schema (" + schema + ")"); //DEBUG
-            Log.debug(Geonet.DATA_MANAGER, "record createDate (" + createDate + ")"); //DEBUG
 
             moreFields.add(SearchManager.makeField("_root",        root,        true, true));
             moreFields.add(SearchManager.makeField("_schema",      schema,      true, true));
@@ -763,7 +775,8 @@ public class DataManager {
      */
 	public void validate(String schema, Element md) throws Exception {
 		String schemaLoc = md.getAttributeValue("schemaLocation", Geonet.XSI_NAMESPACE);
-		Log.debug(Geonet.DATA_MANAGER, "Extracted schemaLocation of "+schemaLoc);
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Extracted schemaLocation of "+schemaLoc);
 		if (schemaLoc == null) schemaLoc = "";
 
 		if (schema == null) {
@@ -793,7 +806,8 @@ public class DataManager {
 	    md.removeAttribute("schemaLocation", Xml.xsiNS);
 
 		String schemaLoc = md.getAttributeValue("schemaLocation", Geonet.XSI_NAMESPACE);
-		Log.debug(Geonet.DATA_MANAGER, "Extracted schemaLocation of "+schemaLoc);
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Extracted schemaLocation of "+schemaLoc);
 		if (schemaLoc == null) schemaLoc = "";
 
 		if (schema == null) {
@@ -979,7 +993,8 @@ public class DataManager {
 		for (String rule : rules) {
 			// -- create a report for current rules.
 			// Identified by a rule attribute set to shematron file name
-			Log.debug(Geonet.DATA_MANAGER, " - rule:" + rule);
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, " - rule:" + rule);
 			String ruleId = rule.substring(0, rule.indexOf(".xsl"));
 			Element report = new Element("report", Edit.NAMESPACE);
 			report.setAttribute("rule", ruleId,
@@ -1112,7 +1127,8 @@ public class DataManager {
 		String styleSheet = getSchemaDir(schema) + Geonet.File.EXTRACT_UUID;
 		String uuid       = Xml.transform(md, styleSheet).getText().trim();
 
-		Log.debug(Geonet.DATA_MANAGER, "Extracted UUID '"+ uuid +"' for schema '"+ schema +"'");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Extracted UUID '"+ uuid +"' for schema '"+ schema +"'");
 
 		//--- needed to detach md from the document
 		md.detach();
@@ -1132,7 +1148,8 @@ public class DataManager {
 		String styleSheet = getSchemaDir(schema) + Geonet.File.EXTRACT_DATE_MODIFIED;
 		String dateMod    = Xml.transform(md, styleSheet).getText().trim();
 
-		Log.debug(Geonet.DATA_MANAGER, "Extracted Date Modified '"+ dateMod +"' for schema '"+ schema +"'");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Extracted Date Modified '"+ dateMod +"' for schema '"+ schema +"'");
 
 		//--- needed to detach md from the document
 		md.detach();
@@ -1189,8 +1206,8 @@ public class DataManager {
 	public Element extractSummary(Element md) throws Exception {
 		String styleSheet = stylePath + Geonet.File.METADATA_BRIEF;
 		Element summary       = Xml.transform(md, styleSheet);
-
-		Log.debug(Geonet.DATA_MANAGER, "Extracted summary '\n"+Xml.getString(summary));
+        if (Log.isDebugEnabled(Geonet.DATA_MANAGER))
+		    Log.debug(Geonet.DATA_MANAGER, "Extracted summary '\n"+Xml.getString(summary));
 
 		//--- needed to detach md from the document
 		md.detach();
@@ -1443,11 +1460,13 @@ public class DataManager {
      */
 	public String autodetectSchema(Element md, String defaultSchema) throws SchemaMatchConflictException, NoSchemaMatchesException {
 
-		Log.debug(Geonet.DATA_MANAGER, "Autodetect schema for metadata with :\n * root element:'" + md.getQualifiedName()
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Autodetect schema for metadata with :\n * root element:'" + md.getQualifiedName()
 				 + "'\n * with namespace:'" + md.getNamespace()
 				 + "\n * with additional namespaces:" + md.getAdditionalNamespaces().toString());
 		String schema =  schemaMan.autodetectSchema(md, defaultSchema);
-		Log.debug(Geonet.DATA_MANAGER, "Schema detected was "+schema);
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Schema detected was "+schema);
 		return schema;
 	}
 
@@ -1506,7 +1525,8 @@ public class DataManager {
 		list  = dbms.select(query, id).getChildren();
 		String count = ((Element) list.get(0)).getChildText("numr");
 		rating = (int)(Float.parseFloat(sum) / Float.parseFloat(count) + 0.5);
-		Log.debug(Geonet.DATA_MANAGER, "Setting rating for id:"+ id +" --> rating is:"+rating);
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Setting rating for id:"+ id +" --> rating is:"+rating);
         //
 		// update metadata and reindex it
         //
@@ -1936,7 +1956,8 @@ public class DataManager {
         // XSD validation error(s)
         catch (Exception x) {
             // do not print stacktrace as this is 'normal' program flow
-            Log.debug(Geonet.DATA_MANAGER, "invalid metadata: " + x.getMessage());
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "invalid metadata: " + x.getMessage());
             return false;
         }
     }
@@ -1956,37 +1977,43 @@ public class DataManager {
 		boolean valid = true;
 
 		if (doc.getDocType() != null) {
-      Log.debug(Geonet.DATA_MANAGER, "Validating against dtd " + doc.getDocType());
-
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "Validating against dtd " + doc.getDocType());
+			
 			// if document has a doctype then validate using that (assuming that the
 			// dtd is either mapped locally or will be cached after first validate)
 			try {
 				Xml.validate(doc);
 				Integer[] results = {1, 0, 0};
 				valTypeAndStatus.put("dtd", results);
-      	Log.debug(Geonet.DATA_MANAGER, "Valid.");
+                if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                    Log.debug(Geonet.DATA_MANAGER, "Valid.");
 			} catch (Exception e) {
 				e.printStackTrace();
 				Integer[] results = {0, 0, 0};
 				valTypeAndStatus.put("dtd", results);
-      	Log.debug(Geonet.DATA_MANAGER, "Invalid.");
+                if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                    Log.debug(Geonet.DATA_MANAGER, "Invalid.");
 				valid = false;
 			}
 		} else {
-      Log.debug(Geonet.DATA_MANAGER, "Validating against XSD " + schema);
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "Validating against XSD " + schema);
 			// do XSD validation
 			Element md = doc.getRootElement();
     	Element xsdErrors = getXSDXmlReport(schema,md);
     	if (xsdErrors != null && xsdErrors.getContent().size() > 0) {
      		Integer[] results = {0, 0, 0};
      		valTypeAndStatus.put("xsd", results);
-      	Log.debug(Geonet.DATA_MANAGER, "Invalid.");
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "Invalid.");
 				valid = false;
     	} else {
      		Integer[] results = {1, 0, 0};
      		valTypeAndStatus.put("xsd", results);
-      	Log.debug(Geonet.DATA_MANAGER, "Valid.");
-    	}
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "Valid.");
+    	}	
 			// then do schematron validation
 			Element schematronError = null;
 			try {
@@ -2028,8 +2055,8 @@ public class DataManager {
 	 */
 	public Pair <Element, String> doValidate(ServiceContext context, Dbms dbms, String schema, String id, Element metadata, String lang, boolean forEditing) throws Exception {
 	    String version = null;
-		Log.debug(Geonet.DATA_MANAGER, "Creating validation report for record #" + id + " [schema: " + schema + "].");
-
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "Creating validation report for record #" + id + " [schema: " + schema + "].");
 		
 		Element md = (Element) metadata.clone();
 		// always hideElements for validation
@@ -2040,7 +2067,8 @@ public class DataManager {
             session  = context.getUserSession();
             Element sessionReport = (Element)session.getProperty(Geonet.Session.VALIDATION_REPORT + id);
             if (sessionReport != null && !forEditing) {
-                Log.debug(Geonet.DATA_MANAGER, "  Validation report available in session.");
+                if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                   Log.debug(Geonet.DATA_MANAGER, "  Validation report available in session.");
                 sessionReport.detach();
                 return Pair.read(sessionReport, version);
             }
@@ -2057,7 +2085,8 @@ public class DataManager {
 			errorReport.addContent(xsdErrors);
 			Integer[] results = {0, 0, 0};
 			valTypeAndStatus.put("xsd", results);
-		     Log.debug(Geonet.DATA_MANAGER, "  - XSD error: " + Xml.getString(xsdErrors));
+            if (Log.isDebugEnabled(Geonet.DATA_MANAGER))
+		        Log.debug(Geonet.DATA_MANAGER, "  - XSD error: " + Xml.getString(xsdErrors));
 		}
         else {
 		    Integer[] results = {1, 0, 0};
@@ -2069,7 +2098,8 @@ public class DataManager {
 
 		// edit mode
         if (forEditing) {
-              Log.debug(Geonet.DATA_MANAGER, "  - Schematron in editing mode.");
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "  - Schematron in editing mode.");
               //-- now expand the elements and add the geonet: elements
               editLib.expandElements(schema, md);
               version = editLib.getVersionForEditing(schema, id, md);
@@ -2080,7 +2110,8 @@ public class DataManager {
               schematronError = getSchemaTronXmlReport(schema, md, lang, valTypeAndStatus);
               if (schematronError != null) {
                   md.addContent((Element)schematronError.clone());
-                  Log.debug(Geonet.DATA_MANAGER, "  - Schematron error: " + Xml.getString(schematronError));
+                  if (Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                      Log.debug(Geonet.DATA_MANAGER, "  - Schematron error: " + Xml.getString(schematronError));
               }
 		}
         else {
@@ -2712,7 +2743,8 @@ public class DataManager {
 	public Element updateFixedInfo(String schema, String id, String uuid, Element md, String parentUuid, UpdateDatestamp updateDatestamp, Dbms dbms) throws Exception {
         boolean autoFixing = settingMan.getValueAsBool("system/autofixing/enable", true);
         if(autoFixing) {
-        	Log.debug(Geonet.DATA_MANAGER, "Autofixing is enabled, trying update-fixed-info (updateDatestamp: " + updateDatestamp.name() + ")");
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "Autofixing is enabled, trying update-fixed-info (updateDatestamp: " + updateDatestamp.name() + ")");
             
         	String query = "SELECT uuid, isTemplate FROM Metadata WHERE id = ?";
             Element rec = dbms.select(query, new Integer(id)).getChild("record");
@@ -2720,7 +2752,8 @@ public class DataManager {
 
             // don't process templates
             if(isTemplate) {
-                Log.debug(Geonet.DATA_MANAGER, "Not applying update-fixed-info for a template");
+                if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                    Log.debug(Geonet.DATA_MANAGER, "Not applying update-fixed-info for a template");
                 return md;
             }
             else {
@@ -2754,7 +2787,8 @@ public class DataManager {
             }
         }
         else {
-            Log.debug(Geonet.DATA_MANAGER, "Autofixing is disabled, not applying update-fixed-info");
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "Autofixing is disabled, not applying update-fixed-info");
             return md;
         }
 	}
@@ -2768,23 +2802,27 @@ public class DataManager {
      * @throws Exception
      */
     public Map<String,Element> getUnnotifiedMetadata(Dbms dbms, String notifierId) throws Exception {
-        Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadata start");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadata start");
         Map<String,Element> unregisteredMetadata = new HashMap<String,Element>();
 
         String query = "select m.id, m.uuid, m.data, mn.notifierId, mn.action from metadata m left join metadatanotifications mn on m.id = mn.metadataId\n" +
                 "where (mn.notified is null or mn.notified = 'n') and (mn.action <> 'd') and (mn.notifierId is null or mn.notifierId = ?)";
         List<Element> results = dbms.select(query, new Integer(notifierId)).getChildren();
-        Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadata after select: " + (results != null));
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadata after select: " + (results != null));
 
         if (results != null) {
           for(Element result : results) {
               String uuid = result.getChild("uuid").getText();
-              Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadata: " + uuid);
+              if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                  Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadata: " + uuid);
               unregisteredMetadata.put(uuid, (Element)((Element)result.clone()).detach());
           }
         }
 
-        Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadata returning #" + unregisteredMetadata.size() + " results");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadata returning #" + unregisteredMetadata.size() + " results");
         return unregisteredMetadata;
     }
 
@@ -2797,25 +2835,30 @@ public class DataManager {
      * @throws Exception
      */
     public Map<String,Element> getUnnotifiedMetadataToDelete(Dbms dbms, String notifierId) throws Exception {
-        Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete start");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete start");
         Map<String,Element> unregisteredMetadata = new HashMap<String,Element>();
-        Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete after dbms");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete after dbms");
 
         String query = "select metadataId as id, metadataUuid as uuid, notifierId, action from metadatanotifications " +
                 "where (notified = 'n') and (action = 'd') and (notifierId = ?)";
         List<Element> results = dbms.select(query, new Integer(notifierId)).getChildren();
-        Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete after select: " + (results != null));
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete after select: " + (results != null));
 
         if (results != null) {
           for(Element result : results) {
               String uuid = result.getChild("uuid").getText();
-              Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete: " + uuid);
+              if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                  Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete: " + uuid);
               unregisteredMetadata.put(uuid, (Element)((Element)result.clone()).detach());
 
           }
         }
 
-        Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete returning #" + unregisteredMetadata.size() + " results");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "getUnnotifiedMetadataToDelete returning #" + unregisteredMetadata.size() + " results");
         return unregisteredMetadata;
     }
 
@@ -2839,7 +2882,8 @@ public class DataManager {
             dbms.commit();
         }
 
-        Log.debug(Geonet.DATA_MANAGER, "setMetadataNotified finished for metadata with id " + metadataId + "and notitifer with id " + notifierId);
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "setMetadataNotified finished for metadata with id " + metadataId + "and notitifer with id " + notifierId);
     }
 
     /**
@@ -2851,7 +2895,8 @@ public class DataManager {
      * @throws Exception
      */
     public void setMetadataNotifiedError(String metadataId, String metadataUuid, String notifierId, boolean deleteNotification, String error, Dbms dbms) throws Exception {
-        Log.debug(Geonet.DATA_MANAGER, "setMetadataNotifiedError");
+        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+            Log.debug(Geonet.DATA_MANAGER, "setMetadataNotifiedError");
        try {
        String query = "DELETE FROM MetadataNotifications WHERE metadataId=? AND notifierId=?";
        dbms.execute(query, new Integer(metadataId), new Integer(notifierId));
@@ -2861,7 +2906,8 @@ public class DataManager {
        dbms.execute(query, new Integer(metadataId), new Integer(notifierId), metadataUuid, "n", action, error);
        dbms.commit();
 
-       Log.debug(Geonet.DATA_MANAGER, "setMetadataNotifiedError finished for metadata with id " + metadataId + "and notitifer with id " + notifierId);
+           if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+               Log.debug(Geonet.DATA_MANAGER, "setMetadataNotifiedError finished for metadata with id " + metadataId + "and notitifer with id " + notifierId);
        }
        catch (Exception ex) {
            ex.printStackTrace();
@@ -2924,7 +2970,8 @@ public class DataManager {
 			// Check privileges
 			if (!accessMan.canEdit(srvContext, childId)) {
 				untreatedChildSet.add(childId);
-				Log.debug(Geonet.DATA_MANAGER, "Could not update child ("
+                if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                    Log.debug(Geonet.DATA_MANAGER, "Could not update child ("
 						+ childId + ") because of privileges.");
 				continue;
 			}
@@ -2938,14 +2985,16 @@ public class DataManager {
 			// child are in the same schema (even not profil different)
 			if (!childSchema.equals(parentSchema)) {
 				untreatedChildSet.add(childId);
-				Log.debug(Geonet.DATA_MANAGER, "Could not update child ("
+                if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                    Log.debug(Geonet.DATA_MANAGER, "Could not update child ("
 						+ childId + ") because schema (" + childSchema
 						+ ") is different from the parent one (" + parentSchema
 						+ ").");
 				continue;
 			}
 
-			Log.debug(Geonet.DATA_MANAGER, "Updating child (" + childId +") ...");
+            if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+                Log.debug(Geonet.DATA_MANAGER, "Updating child (" + childId +") ...");
 
 			// --- setup xml element to be processed by XSLT
 

@@ -56,19 +56,21 @@ public final class Log
 	public static final String TRANSFORMER_FACTORY = JEEVES
 			+ ".transformerFactory";
 
-    public final class Dbms
-	{
-		/**
-       * Default constructor.
-       * Builds a Log.Dbms.
-       */
-      private Dbms() {}
-      
-	   public static final String SELECT = DBMS  + ".select";
-		public static final String EXECUTE= DBMS  + ".execute";
-	}
+    public final class Dbms {
 
-	//---------------------------------------------------------------------------
+        /**
+         * Default constructor.
+         * Builds a Log.Dbms.
+         */
+        private Dbms() {
+        }
+
+        public static final String SELECT = DBMS + ".select";
+        public static final String EXECUTE = DBMS + ".execute";
+        public static final String RESOURCE_TRACKING = ".resourcetracking";
+    }
+
+    //---------------------------------------------------------------------------
 	//---
 	//--- API methods
 	//---
@@ -80,7 +82,7 @@ public final class Log
 	}
 
 
-    public static boolean isDebug(String module) {
+    public static boolean isDebugEnabled(String module) {
         return Logger.getLogger(module).isDebugEnabled();
     }
 
@@ -119,7 +121,9 @@ public final class Log
 	{
 		return new jeeves.interfaces.Logger()
 		{
-			public void debug  (String message) { Log.debug  (module, message); }
+
+            public boolean isDebugEnabled() { return Log.isDebugEnabled(module);}
+            public void debug  (String message) { Log.debug  (module, message); }
 			public void info   (String message) { Log.info   (module, message); }
 			public void warning(String message) { Log.warning(module, message); }
 			public void error  (String message) { Log.error  (module, message); }
