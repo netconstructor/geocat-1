@@ -456,7 +456,22 @@ métadonnées doivent avoir un schéma connu par |project_name|. L'illustration 
 Le site permet de définir les paramètres de connexion de la même manière que
 pour le type Web DAV . Dans ce cas, l'URL pointe vers le document
 GetCapabilities du serveur CSW. Ce document permet d'obtenir les adresses pour
-réaliser les recherches distantes. Ajouter des critères de recherche de la même
+réaliser les recherches distantes. 
+
+Quelques exemples d'URL CSW GetCapabilities :
+
+ - FAO : http://www.fao.org/geonetwork/srv/en/csw?version=2.0.2&service=CSW&REQUEST=GetCapabilities
+
+ - Géocatalogue : http://www.geocatalogue.fr/api-public/servicesRest?version=2.0.2&service=CSW&REQUEST=GetCapabilities
+ 
+ - Cartorisque : http://www.mongeosource.fr/geosource-1033/srv/fr/csw?version=2.0.2&service=CSW&REQUEST=GetCapabilities
+
+ - Sandre : http://services.sandre.eaufrance.fr/geonetwork_CSW/srv/fr/csw?service=CSW&version=2.0.2&request=GetCapabilities
+ 
+ - Adélie : http://adelie.application.developpement-durable.gouv.fr/minicsw.do?REQUEST=GetCapabilities&SERVICE=CSW
+
+
+Ajouter des critères de recherche de la même
 manière que pour les catalogues de type |project_name| en cliquant sur le bouton
 ajouter. Pour les options générales ou les catégories, reportez-vous à la
 description dans la section Web DAV.
