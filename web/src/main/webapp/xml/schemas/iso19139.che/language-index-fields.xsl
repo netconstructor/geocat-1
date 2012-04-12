@@ -32,7 +32,7 @@
         <Documents>
             <xsl:for-each select="/*[name(.)='gmd:MD_Metadata' or @gco:isoType='gmd:MD_Metadata']/gmd:locale/gmd:PT_Locale">
                 <xsl:variable name="langId" select="@id" />
-                <xsl:variable name="isoLangId" select="java:twoCharLangCode(normalize-space(string(gmd:languageCode/gmd:LanguageCode/@codeListValue)))" />
+                <xsl:variable name="isoLangId" select="java:threeCharLangCode(normalize-space(string(gmd:languageCode/gmd:LanguageCode/@codeListValue)))" />
                     <Document locale="{$isoLangId}">
 
                     <Field name="_locale" string="{$isoLangId}" store="true" index="true" token="false"/>

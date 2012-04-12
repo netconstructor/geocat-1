@@ -32,21 +32,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import jeeves.constants.Jeeves;
@@ -61,7 +57,6 @@ import jeeves.utils.Util;
 import jeeves.utils.Xml;
 import jeeves.utils.Xml.ErrorHandler;
 import jeeves.xlink.Processor;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Edit;
@@ -93,21 +88,6 @@ import org.jdom.Namespace;
 import org.jdom.Parent;
 import org.jdom.filter.ElementFilter;
 
-import java.io.File;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.Vector;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Handles all operations on metadata (select,insert,update,delete etc...).
@@ -485,10 +465,10 @@ public class DataManager {
      * @param id
      * @throws Exception
      */
-	public void indexMetadataGroup(Dbms dbms, String id) throws Exception {
-        if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
-            Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
-		indexMetadata(dbms, id, true);
+	public void indexMetadataGroup(Dbms dbms, String id, boolean processSharedObjects, ServiceContext srvContext) throws Exception {
+	    if(Log.isDebugEnabled(Geonet.DATA_MANAGER))
+	        Log.debug(Geonet.DATA_MANAGER, "Indexing record (" + id + ")"); //DEBUG
+		indexMetadata(dbms, id, true,processSharedObjects, servContext);
 	}
 
     /**
@@ -3053,9 +3033,8 @@ public class DataManager {
 
                 t.addContent(new Element("hide", Edit.NAMESPACE).setAttribute("level", level));
 
-            } catch (JDOMException e)
-            {
-                e.printStackTrace();
+            } catch (JDOMException e) {
+                Log.error(Geonet.DATA_MANAGER, "Error occurred adding hiding info: "+e.getMessage());
             }
         }
 

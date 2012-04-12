@@ -173,12 +173,13 @@ public class SearchManager {
      * Creates GeoNetworkAnalyzer, using Admin-defined stopwords if there are any.
      *
      * @param stopwords
+     * @param ignoreChars 
      * @return
      */
-    private static Analyzer createGeoNetworkAnalyzer(Set<String> stopwords) {
+    private static Analyzer createGeoNetworkAnalyzer(Set<String> stopwords, char[] ignoreChars) {
         if(Log.isDebugEnabled(Geonet.SEARCH_ENGINE))
             Log.debug(Geonet.SEARCH_ENGINE, "Creating GeoNetworkAnalyzer");
-        return new GeoNetworkAnalyzer(stopwords);
+        return new GeoNetworkAnalyzer(stopwords, ignoreChars);
     }
 
     /**
@@ -221,10 +222,9 @@ public class SearchManager {
 
 	/**
 	 * Returns a default- (hardcoded) configured PerFieldAnalyzerWrapper, creating it if necessary.
-	 * @param ignoreChars 
      *
 	 */
-	private static void initHardCodedAnalyzers() {
+	private static void initHardCodedAnalyzers(char[] ignoreChars) {
         if(Log.isDebugEnabled(Geonet.SEARCH_ENGINE))
             Log.debug(Geonet.SEARCH_ENGINE, "initializing hardcoded analyzers");
         // no default analyzer instantiated: create one
@@ -337,7 +337,7 @@ public class SearchManager {
         // there is no default analyzer defined in lucene config
 		if (defaultAnalyzerClass == null) {
             // create default (hardcoded) analyzer
-            SearchManager.initHardCodedAnalyzers(ignoreChars );
+            SearchManager.initHardCodedAnalyzers(ignoreChars);
 		}
         // there is an analyzer defined in lucene config
         else {

@@ -884,23 +884,28 @@ public final class XslUtil {
      * language code.  However since there are multiple ways to map certain language or some time that method does not
      * work this mapping contains the exceptions.
      */
-    private static final Map<String,String> LANG_CODE_EXCEPTION_MAPPING;
+    private static final Map<String,String> LANG_CODE_MAPPING;
     static {
         HashMap<String, String> hm = new HashMap<String, String>();
-        hm.put("ger", "de");
-        hm.put("ge", "de");
+        hm.put("deu", "ger");
+        hm.put("de", "ger");
+        hm.put("ge", "ger");
+        hm.put("fra", "fre");
+        hm.put("fr", "fre");
+        hm.put("en", "eng");
+        hm.put("it", "ita");
 
-        LANG_CODE_EXCEPTION_MAPPING = Collections.unmodifiableMap(hm);
+        LANG_CODE_MAPPING = Collections.unmodifiableMap(hm);
     }
 
-	public static String twoCharLangCode(String langCode) {
-		if(langCode == null || langCode.length() < 2) return Geonet.DEFAULT_LANGUAGE;
+	public static String threeCharLangCode(String langCode) {
+	    if(langCode == null || langCode.length() < 2) return Geonet.DEFAULT_LANGUAGE;
 
-		String exception = LANG_CODE_EXCEPTION_MAPPING.get(langCode);
+		String map = LANG_CODE_MAPPING.get(langCode);
 
-		if(exception!=null) return exception;
+		if(map!=null) return map;
 
-		return langCode.substring(0,2).toLowerCase();
+		return langCode.toLowerCase();
 	}
 
 	public static boolean match(Object src, Object pattern) {

@@ -68,6 +68,11 @@
         	<schedule name="unpublish-invalid-metadata" when="1 hour" class=".kernel.UnpublishInvalidMetadataJob" />
         </addXml>
     </file>
+    <file name=".*/WEB-INF/config-monitoring.xml">
+        <addXml xpath="monitors[1]">
+        	<healthCheck class="org.fao.geonet.monitor.health.MetadataTypeHealthCheck"/>
+        </addXml>
+    </file>
     <file name=".*/WEB-INF/user-profiles.xml">
         <removeXML xpath="allow[@service='metadata.schema.add.form']"/>
         <removeXml xpath="allow[@service='csw-publication']"/>
