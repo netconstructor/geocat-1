@@ -21,3 +21,4 @@ Administration
     user-self-registration/index.rst
     advanced-configuration/index.rst
     processing/index.rst
+    monitoring/index.rst
