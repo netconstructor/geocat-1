@@ -46,6 +46,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -624,7 +625,14 @@ public class Importer {
 				return entity.getChildText("id");
 		}
 
-		if(entities.size() > 0) return ((Element) entities.get(0)).getChildText("id");
+		if(entities.size() > 0) {
+		    int id = 0;
+		    Iterator iter = entities.iterator();
+		    while(iter.hasNext() && id < 2) {
+		        id = Integer.parseInt(((Element) iter.next()).getChildText("id"));
+		    }
+		    return Integer.toBinaryString(id);
+		}
 		return null;
 	}
 }
