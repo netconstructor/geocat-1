@@ -165,7 +165,7 @@ public final class ExtentsStrategy extends ReplacementStrategy {
                             transformedGeom.setSRID(21781);
                         }
 
-                        Literal literal = filterFactory.literal(transformedGeom.convexHull().buffer(1000));
+                        Literal literal = filterFactory.literal(transformedGeom.convexHull().buffer(3000));
                         Within filter = filterFactory.within(property, literal);
 
                         final String[] properties = {featureType.idColumn, featureType.descColumn, geomAtt.getLocalPart()};
