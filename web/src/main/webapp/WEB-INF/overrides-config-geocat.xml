@@ -8,6 +8,7 @@
         <postgis.host>localhost</postgis.host>
         <postgis.port>5432</postgis.port>
         <postgis.db>geocat</postgis.db>
+        <postgis.max.conn>150</postgis.max.conn>
         <wfs.host>localhost</wfs.host>
         <wfs.port>8700</wfs.port>
     </properties>
@@ -56,8 +57,8 @@
                     <password>${postgis.pass}</password>
                     <driver>org.postgis.DriverWrapper</driver>
                     <url>jdbc:postgresql_postGIS://${postgis.host}:${postgis.port}/${postgis.db}</url>
-                    <poolSize>10</poolSize>
-	      			<validationQuery>SELECT 1</validationQuery>
+	                <poolSize>${postgis.max.conn}</poolSize>
+	        		<validationQuery>SELECT 1</validationQuery> 
                 </config>
             </resource>
         </replaceXML>

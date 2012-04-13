@@ -15,6 +15,7 @@
 
     <xsl:include href="metadata-che-layouts.xsl"/>
    
+	<xsl:template name="iso19139.che-javascript"/>
     <xsl:template name="iso19139.cheCompleteTab">
 	    <xsl:param name="tabLink"/>
 	    <xsl:param name="schema"/>

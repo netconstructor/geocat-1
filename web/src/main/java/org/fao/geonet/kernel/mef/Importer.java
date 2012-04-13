@@ -624,6 +624,7 @@ public class Importer {
 				return entity.getChildText("id");
 		}
 
+		if(entities.size() > 0) return ((Element) entities.get(0)).getChildText("id");
 		return null;
 	}
 }
