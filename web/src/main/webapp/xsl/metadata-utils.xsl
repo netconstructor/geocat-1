@@ -4,7 +4,6 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	xmlns:exslt="http://exslt.org/common" exclude-result-prefixes="exslt geonet">
 
-	<xsl:include href="../xml/schemas/iso19139.che/present/metadata-iso19139.che.xsl"/>
 	<xsl:include href="blanks/metadata-schema01.xsl"/>
 	<xsl:include href="blanks/metadata-schema02.xsl"/>
 	<xsl:include href="blanks/metadata-schema03.xsl"/>

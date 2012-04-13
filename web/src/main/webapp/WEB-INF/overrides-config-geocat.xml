@@ -73,9 +73,16 @@
         	<healthCheck class="org.fao.geonet.monitor.health.MetadataTypeHealthCheck"/>
         </addXml>
     </file>
+    <file name=".*/WEB-INF/config-db.xml">
+        <removeXML xpath="data/file" />
+        <addXml xpath="data">
+        	<file path="WEB-INF/classes/setup/sql/data" filePrefix="data-db-"/>
+		    <file path="WEB-INF/classes/setup/sql/data" filePrefix="loc-"/>
+        </addXml>
+    </file>
     <file name=".*/WEB-INF/user-profiles.xml">
         <removeXML xpath="allow[@service='metadata.schema.add.form']"/>
-        <removeXml xpath="allow[@service='csw-publication']"/>
+        <removeXML xpath="allow[@service='csw-publication']"/>
         <addXML xpath="profile[@name ='Editor']">
             <allow service="metadata.xlink.add"/>
             <allow service="csw-publication"/>

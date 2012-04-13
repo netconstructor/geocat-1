@@ -25,16 +25,6 @@ DELETE FROM Settings;
 DELETE FROM Relations;
 
 
-INSERT INTO Languages VALUES  ('eng', 'English', 'eng', 'y', 'n');
-INSERT INTO Languages VALUES  ('deu', 'German', 'deu', 'y', 'n');
-INSERT INTO Languages VALUES  ('fra', 'French', 'fra', 'y', 'n');
-INSERT INTO Languages VALUES  ('fre', 'French', 'fre', 'y', 'n');
-INSERT INTO Languages VALUES  ('ger', 'German', 'ger', 'y', 'n');
-INSERT INTO Languages VALUES  ('ita', 'Italian', 'ita', 'y', 'n');
-
-DELETE FROM isolanguagesdes ;
-DELETE FROM IsoLanguages;
-
 -- ======================================================================
 -- === Table: Categories
 -- ======================================================================

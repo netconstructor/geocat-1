@@ -90,7 +90,7 @@ public class ExtractGeometriesTest
     {
         Element xml = TransformationTestSupport.getXML(null, "/data/extractgeoms/"+metadataFile);
         Geometry geometries = SpatialIndexWriter.extractGeometriesFrom(
-                TransformationTestSupport.geonetworkWebapp.getAbsolutePath()+File.separator+"xml"+File.separator+"schemas"+File.separator+metadataType, xml, PARSER);
+                TransformationTestSupport.geonetworkWebapp.getAbsolutePath()+File.separator+"WEB-INF"+File.separator+"data"+File.separator+"config"+File.separator+"schema_plugins"+File.separator+metadataType, xml, PARSER);
         assertNotNull(geometries);
     }
 

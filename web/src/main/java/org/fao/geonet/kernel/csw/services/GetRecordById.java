@@ -47,6 +47,7 @@ import org.fao.geonet.csw.common.exceptions.MissingParameterValueEx;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
 import org.fao.geonet.kernel.AccessManager;
 import org.fao.geonet.kernel.DataManager;
+import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.csw.CatalogService;
 import org.fao.geonet.kernel.csw.services.getrecords.SearchController;
 import org.fao.geonet.kernel.search.LuceneConfig;
@@ -198,7 +199,7 @@ public class GetRecordById extends AbstractOperation implements CatalogService
 						// we then need to convert the MD into real classic iso19139
 
 
-						String styleSheet =  context.getAppPath() + "xml/schemas/iso19139.che/convert/to19139.xsl";
+						String styleSheet = gc.getSchemamanager().getSchemaDir("iso19139.che")+"/convert/to19139.xsl";
 						//String styleSheet =  context.getAppPath() + Geonet.Path.CONV_STYLESHEETS + "/export/xml_iso19139.xsl";
 
 						Document doc = new Document (new Element("MD_Metadata","gmd", "http://www.isotc211.org/2005/gmd"));

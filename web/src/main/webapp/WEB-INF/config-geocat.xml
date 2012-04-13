@@ -188,7 +188,7 @@
         <service name="gm03.xml" type="xml">
           <class name=".services.gm03.Gm03Service">
             <param name="xsl" value="xsl/conversion/import/ISO19139CHE-to-GM03.xsl" />
-            <param name="xsd" value="xml/schemas/iso19139.che/GM03_2.xsd" />
+            <param name="xsd" value="WEB-INF/data/config/schema_plugins/iso19139.che/GM03_2.xsd" />
           </class>
         </service>
 
@@ -203,7 +203,7 @@
           <class name=".services.cgp.CgpDispatcher">
             <param name="xsl19139CHEtoGM03" value="xsl/conversion/import/ISO19139CHE-to-GM03small.xsl" />
             <param name="xsdGM03" value="xml/validation/cgp-wsdl/xsd/gm03small.xsd" />
-            <param name="xsd19139CHE" value="xml/schemas/iso19139.che/schema.xsd" />
+            <param name="xsd19139CHE" value="WEB-INF/data/config/schema_plugins/iso19139.che/schema.xsd" />
           </class>
         </service>
 

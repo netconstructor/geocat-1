@@ -2,6 +2,7 @@ package org.fao.xsl;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ import org.junit.Test;
 public class ExtractGmlTest
 {
 
-    private static final String BASE_XML_DIR = TransformationTestSupport.geonetworkWebapp+"/xml/schemas/";
+    private static final String BASE_XML_DIR = TransformationTestSupport.geonetworkWebapp.getAbsolutePath()+File.separator+"WEB-INF"+File.separator+"data"+File.separator+"config"+File.separator+"schema_plugins"+File.separator;
 	private static String transformer;
 
     @BeforeClass
