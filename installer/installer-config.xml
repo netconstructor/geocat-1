@@ -117,8 +117,8 @@
         <description/>
 
         <!-- Enable schematron rules -->
-        <singlefile src="../web/target/geonetwork/xml/schemas/iso19139/schematron-rules-inspire.xsl.disabled"
-                    target="$INSTALL_PATH/web/geonetwork/xml/schemas/iso19139/schematron-rules-inspire.xsl"
+        <singlefile src="../web/target/geonetwork/WEB-INF/data/config/schema_plugins/iso19139/schematron-rules-inspire.xsl.disabled"
+                    target="$INSTALL_PATH/web/geonetwork/WEB-INF/data/config/schema_plugins/iso19139/schematron-rules-inspire.xsl"
                     override="true"/>
 
         <!-- Inspire thesaurus files -->
