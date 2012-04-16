@@ -10,7 +10,7 @@
     <!-- The properties can reference other properties -->
     <properties>
         <postgis.db>geocat2_trunk</postgis.db>
-        <postgis.max.active>10</postgis.max.active
+        <postgis.max.active>10</postgis.max.active>
         <postgis.max.idle>5</postgis.max.idle>>
         <datadir>/tmp/gc_data</datadir>
     </properties>

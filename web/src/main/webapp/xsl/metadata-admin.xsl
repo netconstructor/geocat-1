@@ -62,7 +62,7 @@
 						<!-- only apply restriction to iso19139 metadata records -->
 						<xsl:when test="contains(/root/gui/reqService,'metadata.batch')">y</xsl:when>
 						<xsl:when test="not(starts-with($schema, 'iso19139')) and $valid-xsd='1'">y</xsl:when>
-						<xsl:when test="starts-with($schema, 'iso19139') and $valid-xsd='1' and $validSch-iso-che='1' and validSch-iso='1'"><xsl:text>y</xsl:text></xsl:when>
+						<xsl:when test="starts-with($schema, 'iso19139') and $valid-xsd='1' and $validSch-iso-che='1' and $validSch-iso='1' and $validSch-geonetwork='1'"><xsl:text>y</xsl:text></xsl:when>
 						<xsl:otherwise><xsl:text>n</xsl:text></xsl:otherwise>
 					</xsl:choose>                                   
 				</xsl:variable>
@@ -89,7 +89,6 @@
 						</tr>
 			
 						<!-- 'Internet', 'Intranet' and GUEST groups -->
-
 						<xsl:apply-templates select="/root/response/groups/group[id='1']" mode="group">
 							<xsl:with-param name="lang" select="$lang"/>
 							<xsl:with-param name="disabled" select="($profile != 'Administrator' and $profile != 'Reviewer') or ($valid='n')"/>
