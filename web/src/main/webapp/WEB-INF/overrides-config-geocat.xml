@@ -8,7 +8,9 @@
         <postgis.host>localhost</postgis.host>
         <postgis.port>5432</postgis.port>
         <postgis.db>geocat</postgis.db>
-        <postgis.max.conn>150</postgis.max.conn>
+        <postgis.max.active>50</postgis.max.active>
+        <postgis.max.idle>20</postgis.max.idle>
+        <postgis.min.idle>0</postgis.min.idle>
         <wfs.host>localhost</wfs.host>
         <wfs.port>8700</wfs.port>
     </properties>
