@@ -2,12 +2,12 @@
 <strings>
 
 	<!-- GEOCAT Strings -->
-	<unpublishReport>Unpublish CSV Report</unpublishReport>
-	<unpublishReportDes>Download the CSV Report of the metadata publish/unpublishing for the last weeks</unpublishReportDes>
-	<unpublish_invalid_metadata_desc>Perform validation of all local metadata and unpublish those that are found to be invalid</unpublish_invalid_metadata_desc>
+	<unpublishReport>Rapport CSV de dépublication</unpublishReport>
+	<unpublishReportDes>Télécharger le rapport CSV des métadonnées (dé-)publiées ces dernières semaines</unpublishReportDes>
+	<unpublish_invalid_metadata_desc>Valider toutes les métadonnées locales et dépublier les non-valides</unpublish_invalid_metadata_desc>
 
 	<duplicate>Dupliquer</duplicate>
-    <geocatNext js="true">Prochain</geocatNext>
+    <geocatNext js="true">Suivante</geocatNext>
     <geocatPrevious js="true">Précédente</geocatPrevious>
     <nav>
         <home>Page d'accueil</home>
@@ -146,19 +146,19 @@ Votre équipe geocat.ch</msg>
     </extents>
     <page>Page</page>
     
-    <streetname>Street name</streetname>
+    <streetname>Nom de rue</streetname>
     <streetnumber>N°</streetnumber>
-    <postbox>Postbox</postbox>
+    <postbox>Case postale</postbox>
     <userdetails>User details</userdetails>
-    <facsimile>Facsimile</facsimile>
-    <phone>Phone</phone>
-    <orgacronym>Organisation acronym</orgacronym>
-    <positionname>Position name</positionname>
-    <directnumber>Direct number</directnumber>
+    <facsimile>Fax</facsimile>
+    <phone>Téléphone</phone>
+    <orgacronym>Abbréviation de l'organisation</orgacronym>
+    <positionname>Position</positionname>
+    <directnumber>Numéro direct</directnumber>
     <mobile>Mobile</mobile>
-    <onlineresource>Online resource</onlineresource>
+    <onlineresource>Site Web</onlineresource>
     <desc>Description</desc>
-    <hoursofservice>Hours of service</hoursofservice>
+    <hoursofservice>Heures de service</hoursofservice>
     <contactinstructions>Instructions pour le contact</contactinstructions>
     <mostPopular>Les plus populaires</mostPopular>
 
@@ -213,7 +213,7 @@ Votre équipe geocat.ch</msg>
 	        </ul>
 	    </createAssoServiceHelp>
 	<standardValid>Valide ISO et GM03</standardValid>
-	<scopedName>Layer name</scopedName>
+	<scopedName>Nom de la couche</scopedName>
 	<boxSelectEmptyText>Saisissez un texte ou pressez flèche vers le bas</boxSelectEmptyText>
 	<legislationInformation>Information sur la législation</legislationInformation>
 	<months>mois</months>
